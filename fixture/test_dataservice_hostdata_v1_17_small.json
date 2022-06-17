@@ -90,6 +90,7 @@
                         "psus": [],
                         "featureUsageStats": [],
                         "isCDB": false,
+                        "isRAC": false,
                         "pdbs": [],
                         "services": []
                     }

@@ -482,6 +482,7 @@
                         ],
                         "featureUsageStats": [],
                         "isCDB": false,
+                        "isRAC": false,
                         "pdbs": [],
                         "services": []
                     },
@@ -776,6 +777,7 @@
                         ],
                         "featureUsageStats": [],
                         "isCDB": false,
+                        "isRAC": false,
                         "pdbs": [],
                         "services": []
                     },
@@ -1165,6 +1167,7 @@
                         ],
                         "featureUsageStats": [],
                         "isCDB": false,
+                        "isRAC": false,
                         "pdbs": [],
                         "services": []
                     },
@@ -1536,6 +1539,7 @@
                         ],
                         "featureUsageStats": [],
                         "isCDB": false,
+                        "isRAC": false,
                         "pdbs": [],
                         "services": []
                     },
@@ -2159,6 +2163,7 @@
                         ],
                         "featureUsageStats": [],
                         "isCDB": false,
+                        "isRAC": false,
                         "pdbs": [],
                         "services": []
                     }
