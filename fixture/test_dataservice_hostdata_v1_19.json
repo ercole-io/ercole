@@ -335,6 +335,7 @@
                         "sgaMaxSize": 0.762,
                         "dailyCPUUsage": 0,
                         "name": "ERCSOL19",
+                        "isRAC": false,
                         "patches": [
                             {
                                 "description": "Database Release Update : 19.5.0.0.191015 (30125133)",
@@ -863,6 +864,7 @@
                         "archivelog": false,
                         "instanceNumber": 1,
                         "isCDB": true,
+                        "isRAC": false,
                         "memoryTarget": 0
                     }
                 ],

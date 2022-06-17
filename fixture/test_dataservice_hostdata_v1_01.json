@@ -390,6 +390,7 @@
                             }
                         ],
                         "isCDB": false,
+                        "isRAC": false,
                         "pdbs": [],
                         "services": []
                     }
