@@ -24,11 +24,19 @@ import (
 	"github.com/ercole-io/ercole/v2/thunder-service/job"
 )
 
-func (as *ThunderService) GetOciRecommendations(profiles []string) ([]model.OciRecommendation, error) {
-	ociRecommendations, err := as.Database.GetOciRecommendations(profiles)
-
+func (as *ThunderService) GetOciRecommendations() ([]model.OciRecommendation, error) {
+	selectedProfiles, err := as.Database.GetSelectedOciProfiles()
 	if err != nil {
 		return nil, err
+	}
+
+	ociRecommendations := make([]model.OciRecommendation, 0)
+	if len(selectedProfiles) > 0 {
+		ociRecommendations, err = as.Database.GetOciRecommendations(selectedProfiles)
+
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return ociRecommendations, err

@@ -20,6 +20,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
@@ -130,4 +131,27 @@ func (ctrl *ThunderController) DeleteOciProfile(w http.ResponseWriter, r *http.R
 	}
 
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func (ctrl *ThunderController) SelectOciProfile(w http.ResponseWriter, r *http.Request) {
+	profileId := mux.Vars(r)["profileid"]
+	selected, err := strconv.ParseBool(mux.Vars(r)["selected"])
+
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewError(err, "BAD_REQUEST"))
+		return
+	}
+
+	err = ctrl.Service.SelectOciProfile(profileId, selected)
+	if errors.Is(err, utils.ErrNotFound) {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
+		return
+	}
+
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, nil)
 }
