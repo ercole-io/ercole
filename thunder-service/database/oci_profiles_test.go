@@ -29,6 +29,7 @@ import (
 
 var strPrivateTestKey1 = "PrivateTestKey1"
 var strPrivateTestKey2 = "PrivateTestKey2"
+var strPrivateTestKey3 = "PrivateTestKey2"
 var strPrivateTestKey1Upd = "PrivateTestKey1Upd"
 
 var profile1 model.OciProfile = model.OciProfile{
@@ -39,6 +40,7 @@ var profile1 model.OciProfile = model.OciProfile{
 	Region:         "eu-frankfurt-99",
 	PrivateKey:     &strPrivateTestKey1,
 	ID:             utils.Str2oid("5dd40bfb12f54dfda7b1c291"),
+	Selected:       false,
 }
 
 var profile2 model.OciProfile = model.OciProfile{
@@ -49,6 +51,18 @@ var profile2 model.OciProfile = model.OciProfile{
 	Region:         "eu-frankfurt-22",
 	PrivateKey:     &strPrivateTestKey2,
 	ID:             utils.Str2oid("5dd40bfb12f54dfda2b2c292"),
+	Selected:       false,
+}
+
+var profile3 model.OciProfile = model.OciProfile{
+	Profile:        "TestProfile3",
+	TenancyOCID:    "ocid1.tenancy.test3",
+	UserOCID:       "ocid1.user.test3",
+	KeyFingerprint: "04:12:b5:62:75:e9:be:d2:0e:54:1e:de:32:f2:f2:d3",
+	Region:         "eu-frankfurt-33",
+	PrivateKey:     &strPrivateTestKey3,
+	ID:             utils.Str2oid("5dd40bfb12f54dfda2b2c293"),
+	Selected:       true,
 }
 
 var profile1UpdWithKey model.OciProfile = model.OciProfile{
@@ -59,6 +73,7 @@ var profile1UpdWithKey model.OciProfile = model.OciProfile{
 	Region:         "eu-frankfurt-77",
 	PrivateKey:     &strPrivateTestKey1Upd,
 	ID:             utils.Str2oid("5dd40bfb12f54dfda7b1c291"),
+	Selected:       false,
 }
 
 var profile1UpdWithoutKey model.OciProfile = model.OciProfile{
@@ -69,6 +84,7 @@ var profile1UpdWithoutKey model.OciProfile = model.OciProfile{
 	Region:         "eu-frankfurt-77",
 	PrivateKey:     nil,
 	ID:             utils.Str2oid("5dd40bfb12f54dfda7b1c291"),
+	Selected:       false,
 }
 
 var profile1UpdWithoutKeyResult model.OciProfile = model.OciProfile{
@@ -79,6 +95,7 @@ var profile1UpdWithoutKeyResult model.OciProfile = model.OciProfile{
 	Region:         "eu-frankfurt-77",
 	PrivateKey:     &strPrivateTestKey1,
 	ID:             utils.Str2oid("5dd40bfb12f54dfda7b1c291"),
+	Selected:       false,
 }
 
 func (m *MongodbSuite) TestInsertOciProfile_Success() {
@@ -116,6 +133,7 @@ func (m *MongodbSuite) TestGetOciProfilesWithPrivateKey_Success() {
 			KeyFingerprint: "04:12:b5:62:75:e9:be:d2:0e:54:1e:de:3a:f9:f9:d1",
 			Region:         "eu-frankfurt-99",
 			PrivateKey:     &strPrivateTestKey1,
+			Selected:       false,
 		},
 		{
 			ID:             utils.Str2oid("5dd40bfb12f54dfda2b2c292"),
@@ -125,6 +143,7 @@ func (m *MongodbSuite) TestGetOciProfilesWithPrivateKey_Success() {
 			KeyFingerprint: "04:12:b5:62:75:e9:be:d2:0e:54:1e:de:32:f2:f2:d2",
 			Region:         "eu-frankfurt-22",
 			PrivateKey:     &strPrivateTestKey2,
+			Selected:       false,
 		},
 	}
 	assert.EqualValues(m.T(), expected, profiles)
@@ -150,6 +169,7 @@ func (m *MongodbSuite) TestGetOciProfilesWithoutPrivateKey_Success() {
 			KeyFingerprint: "04:12:b5:62:75:e9:be:d2:0e:54:1e:de:3a:f9:f9:d1",
 			Region:         "eu-frankfurt-99",
 			PrivateKey:     nil,
+			Selected:       false,
 		},
 		{
 			ID:             utils.Str2oid("5dd40bfb12f54dfda2b2c292"),
@@ -159,6 +179,7 @@ func (m *MongodbSuite) TestGetOciProfilesWithoutPrivateKey_Success() {
 			KeyFingerprint: "04:12:b5:62:75:e9:be:d2:0e:54:1e:de:32:f2:f2:d2",
 			Region:         "eu-frankfurt-22",
 			PrivateKey:     nil,
+			Selected:       false,
 		},
 	}
 	assert.EqualValues(m.T(), expected, profiles)
@@ -218,4 +239,56 @@ func (m *MongodbSuite) TestdeleteOciProfile_Success() {
 		"_id": profile1.ID,
 	})
 	require.Error(m.T(), val.Err())
+}
+
+func (m *MongodbSuite) TestSelectOciProfile_Success() {
+	err := m.db.AddOciProfile(profile1)
+	require.NoError(m.T(), err)
+	defer m.db.Client.Database(m.dbname).Collection("oci_profiles").DeleteMany(context.TODO(), bson.M{})
+
+	err = m.db.SelectOciProfile(profile1.ID.Hex(), true)
+	require.NoError(m.T(), err)
+
+	expected := model.OciProfile{
+		ID:             utils.Str2oid("5dd40bfb12f54dfda7b1c291"),
+		Profile:        "TestProfile1",
+		TenancyOCID:    "ocid1.tenancy.test1",
+		UserOCID:       "ocid1.user.test1",
+		KeyFingerprint: "04:12:b5:62:75:e9:be:d2:0e:54:1e:de:3a:f9:f9:d1",
+		Region:         "eu-frankfurt-99",
+		PrivateKey:     &strPrivateTestKey1,
+		Selected:       true,
+	}
+
+	val := m.db.Client.Database(m.dbname).Collection("oci_profiles").FindOne(context.TODO(), bson.M{
+		"_id": profile1.ID,
+	})
+
+	require.NoError(m.T(), val.Err())
+
+	var out model.OciProfile
+	val.Decode(&out)
+
+	assert.EqualValues(m.T(), expected, out)
+}
+
+func (m *MongodbSuite) TestGetSelectedOciProfiles_Success() {
+	err := m.db.AddOciProfile(profile1)
+	require.NoError(m.T(), err)
+	err = m.db.AddOciProfile(profile2)
+	require.NoError(m.T(), err)
+	err = m.db.AddOciProfile(profile3)
+	require.NoError(m.T(), err)
+
+	defer m.db.Client.Database(m.dbname).Collection("oci_profiles").DeleteMany(context.TODO(), bson.M{})
+
+	err = m.db.SelectOciProfile(profile1.ID.Hex(), true)
+	require.NoError(m.T(), err)
+
+	expected := []string{"5dd40bfb12f54dfda7b1c291", "5dd40bfb12f54dfda2b2c293"}
+
+	selectedProfiles, err := m.db.GetSelectedOciProfiles()
+	require.NoError(m.T(), err)
+
+	assert.Equal(m.T(), expected, selectedProfiles)
 }

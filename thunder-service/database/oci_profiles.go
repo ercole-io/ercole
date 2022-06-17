@@ -133,3 +133,61 @@ func (md *MongoDatabase) DeleteOciProfile(id primitive.ObjectID) error {
 
 	return nil
 }
+
+func (md *MongoDatabase) SelectOciProfile(profileId string, selected bool) error {
+	var id primitive.ObjectID
+
+	var err error
+
+	if id, err = primitive.ObjectIDFromHex(profileId); err != nil {
+		return utils.NewError(err, "DB ERROR")
+	}
+
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(OciProfile_collection).UpdateOne(context.TODO(), bson.M{"_id": id}, bson.M{"$set": bson.M{"selected": selected}})
+
+	if err != nil {
+		return utils.NewError(err, "DB ERROR")
+	}
+
+	if cur.MatchedCount != 1 {
+		return utils.NewError(utils.ErrNotFound, "DB ERROR")
+	}
+
+	return nil
+}
+
+type profileId struct {
+	ID primitive.ObjectID `json:"id" bson:"_id"`
+}
+
+func (md *MongoDatabase) GetSelectedOciProfiles() ([]string, error) {
+	ctx := context.TODO()
+
+	opts := options.Find()
+	filter := bson.M{"selected": true}
+
+	opts.SetProjection(bson.M{"profile": 1})
+
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(OciProfile_collection).Find(ctx, filter, opts)
+	if err != nil {
+		return nil, utils.NewError(cur.Err(), "DB ERROR")
+	}
+
+	var selected []profileId
+
+	var selectedProfiles []string
+
+	if err := cur.All(context.TODO(), &selected); err != nil {
+		return nil, utils.NewError(err, "DB ERROR")
+	}
+
+	if err := cur.Err(); err != nil {
+		return nil, utils.NewError(err, "DB ERROR")
+	}
+
+	for _, s := range selected {
+		selectedProfiles = append(selectedProfiles, s.ID.Hex())
+	}
+
+	return selectedProfiles, nil
+}

@@ -46,10 +46,12 @@ func TestGetOciRecommendation_DBError(t *testing.T) {
 		var expectedRes []model.OciRecommendation
 		var strProfiles = []string{"TestProfile1", "TestProfile4"}
 
+		db.EXPECT().GetSelectedOciProfiles().Return(strProfiles, nil)
+
 		db.EXPECT().GetOciRecommendations(strProfiles).
 			Return(nil, utils.NewError(utils.ErrNotFound, "DB ERROR")).Times(1)
 
-		actual, err := as.GetOciRecommendations(strProfiles)
+		actual, err := as.GetOciRecommendations()
 		require.Error(t, err)
 		assert.ErrorIs(t, err, utils.ErrNotFound)
 
@@ -91,10 +93,12 @@ func TestGetOciRecommendations(t *testing.T) {
 			},
 		}
 		var strProfiles = []string{"TestProfile1", "TestProfile4"}
+		db.EXPECT().GetSelectedOciProfiles().Return(strProfiles, nil)
+
 		db.EXPECT().GetOciRecommendations(strProfiles).
 			Return(expected, nil).Times(1)
 
-		actual, err := as.GetOciRecommendations(strProfiles)
+		actual, err := as.GetOciRecommendations()
 		require.NoError(t, err)
 
 		assert.Equal(t, expected, actual)
@@ -102,10 +106,12 @@ func TestGetOciRecommendations(t *testing.T) {
 
 	t.Run("Error", func(t *testing.T) {
 		var strProfiles = []string{"TestProfile1", "TestProfile4"}
+		db.EXPECT().GetSelectedOciProfiles().Return(strProfiles, nil)
+
 		db.EXPECT().GetOciRecommendations(strProfiles).
 			Return(nil, errMock).Times(1)
 
-		actual, err := as.GetOciRecommendations(strProfiles)
+		actual, err := as.GetOciRecommendations()
 		require.EqualError(t, err, "MockError")
 
 		assert.Nil(t, actual)
