@@ -118,13 +118,12 @@ func (m *MongodbSuite) TestAddOciRecommendationErrors_Success() {
 func (m *MongodbSuite) TestGetOciRecommendationErrors_Success() {
 	var errors []model.OciRecommendationError
 	var results []model.OciRecommendationError
-	var strProfiles = []string{"TestProfile1", "TestProfile4"}
 
 	errors = append(errors, error1, error2, error3, error4)
 	err := m.db.AddOciRecommendationErrors(errors)
 	require.NoError(m.T(), err)
 	defer m.db.Client.Database(m.dbname).Collection("oci_recommendation_errors").DeleteMany(context.TODO(), bson.M{})
-	results, err = m.db.GetOciRecommendationErrors(strProfiles)
+	results, err = m.db.GetOciRecommendationErrors(999)
 	require.NoError(m.T(), err)
 
 	expected := []model.OciRecommendationError{
@@ -180,7 +179,6 @@ func (m *MongodbSuite) TestGetOciRecommendationErrorsByProfiles_Success() {
 func (m *MongodbSuite) TestDeleteOldOciRecommendationErrors_Success() {
 	var errors []model.OciRecommendationError
 	var results []model.OciRecommendationError
-	var strProfiles = []string{"TestProfile1", "TestProfile2", "TestProfile3", "TestProfile4"}
 
 	errors = append(errors, error1, error2, error3, error4, error5, error6)
 	err := m.db.AddOciRecommendationErrors(errors)
@@ -190,7 +188,7 @@ func (m *MongodbSuite) TestDeleteOldOciRecommendationErrors_Success() {
 	err = m.db.DeleteOldOciRecommendationErrors(time.Date(2022, 5, 24, 0, 0, 0, 0, time.UTC))
 	require.NoError(m.T(), err)
 
-	results, err = m.db.GetOciRecommendationErrors(strProfiles)
+	results, err = m.db.GetOciRecommendationErrors(999)
 	require.NoError(m.T(), err)
 
 	expected := []model.OciRecommendationError{

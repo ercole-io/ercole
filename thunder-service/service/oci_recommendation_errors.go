@@ -20,12 +20,11 @@ import (
 	"github.com/ercole-io/ercole/v2/model"
 )
 
-func (as *ThunderService) GetOciRecommendationErrors(profiles []string) ([]model.OciRecommendationError, error) {
-	oci_recommendation_errors, err := as.Database.GetOciRecommendationErrors(profiles)
-
+func (as *ThunderService) GetOciRecommendationErrors(seqNum uint64) ([]model.OciRecommendationError, error) {
+	ociRecommendationErrors, err := as.Database.GetOciRecommendationErrors(seqNum)
 	if err != nil {
 		return nil, err
 	}
 
-	return oci_recommendation_errors, nil
+	return ociRecommendationErrors, nil
 }

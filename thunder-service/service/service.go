@@ -37,9 +37,10 @@ type ThunderServiceInterface interface {
 	GetOciProfiles() ([]model.OciProfile, error)
 	DeleteOciProfile(id primitive.ObjectID) error
 	GetOciObjects() ([]model.OciObjects, error)
-	GetOciRecommendations(profiles []string) ([]model.OciRecommendation, error)
+	GetOciRecommendations() ([]model.OciRecommendation, error)
 	ForceGetOciRecommendations() error
-	GetOciRecommendationErrors(profiles []string) ([]model.OciRecommendationError, error)
+	GetOciRecommendationErrors(seqNum uint64) ([]model.OciRecommendationError, error)
+	SelectOciProfile(profileId string, selected bool) error
 }
 
 type ThunderService struct {

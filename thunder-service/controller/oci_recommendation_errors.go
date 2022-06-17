@@ -18,23 +18,22 @@ package controller
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
-	"strings"
+	"strconv"
 
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/gorilla/mux"
 )
 
 func (ctrl *ThunderController) GetOciRecommendationErrors(w http.ResponseWriter, r *http.Request) {
-	profileList := mux.Vars(r)["ids"]
-	if profileList == "" {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, errors.New("Ids not present or malformed"))
+	seqNum, err := strconv.ParseUint(mux.Vars(r)["seqnum"], 10, 64)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, fmt.Errorf("Can't decode seqnum: %w", err))
 		return
 	}
 
-	var profiles []string = strings.Split(profileList, ",")
-
-	data, err := ctrl.Service.GetOciRecommendationErrors(profiles)
+	data, err := ctrl.Service.GetOciRecommendationErrors(seqNum)
 
 	if errors.Is(err, utils.ErrInvalidProfileId) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)

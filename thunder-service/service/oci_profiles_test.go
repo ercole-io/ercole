@@ -257,3 +257,32 @@ func TestDeleteOciProfile(t *testing.T) {
 		require.EqualError(t, err, "MockError")
 	})
 }
+
+func TestSelectOciProfile(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := ThunderService{
+		Config:      config.Configuration{},
+		Database:    db,
+		TimeNow:     utils.Btc(utils.P("2022-06-14T16:02:10Z")),
+		Log:         logger.NewLogger("TEST"),
+		NewObjectID: utils.NewObjectIDForTests(),
+	}
+
+	t.Run("Success", func(t *testing.T) {
+		db.EXPECT().SelectOciProfile("000000000000000000000001", true).
+			Return(nil).Times(1)
+
+		err := as.SelectOciProfile("000000000000000000000001", true)
+		require.NoError(t, err)
+	})
+
+	t.Run("Error", func(t *testing.T) {
+		db.EXPECT().SelectOciProfile("000000000000000000000001", true).
+			Return(errMock).Times(1)
+
+		err := as.SelectOciProfile("000000000000000000000001", true)
+		require.EqualError(t, err, "MockError")
+	})
+}

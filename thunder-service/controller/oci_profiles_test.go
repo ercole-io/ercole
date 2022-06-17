@@ -887,3 +887,106 @@ func TestDeleteOciProfile_InternalServerError(t *testing.T) {
 	assert.Equal(t, "MockError", feErr.Error)
 	assert.Equal(t, "Internal Server Error", feErr.Message)
 }
+
+func TestSelectOciProfile_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockThunderServiceInterface(mockCtrl)
+	ac := ThunderController{
+		TimeNow: utils.Btc(utils.P("2022-06-14T15:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     logger.NewLogger("TEST"),
+	}
+
+	as.EXPECT().SelectOciProfile("aaaaaaaaaaaaaaaaaaaaaaaa", true).
+		Return(nil)
+
+	req, err := http.NewRequest("PUT", "/oracle-cloud/profile-selection/", nil)
+	require.NoError(t, err)
+	req = mux.SetURLVars(req, map[string]string{
+		"profileid": "aaaaaaaaaaaaaaaaaaaaaaaa",
+		"selected":  "true",
+	})
+
+	handler := http.HandlerFunc(ac.SelectOciProfile)
+	rr := httptest.NewRecorder()
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusOK, rr.Code)
+}
+
+func TestSelectOciProfile_ClusterNotFoundError(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockThunderServiceInterface(mockCtrl)
+	ac := ThunderController{
+		TimeNow: utils.Btc(utils.P("2022-06-14T15:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     logger.NewLogger("TEST"),
+	}
+
+	aerr := utils.NewError(utils.ErrNotFound, "test")
+	as.EXPECT().SelectOciProfile("aaaaaaaaaaaaaaaaaaaaaaaa", true).
+		Return(aerr)
+
+	req, err := http.NewRequest("PUT", "/oracle-cloud/profile-selection/", nil)
+	require.NoError(t, err)
+	req = mux.SetURLVars(req, map[string]string{
+		"profileid": "aaaaaaaaaaaaaaaaaaaaaaaa",
+		"selected":  "true",
+	})
+
+	handler := http.HandlerFunc(ac.SelectOciProfile)
+	rr := httptest.NewRecorder()
+	handler.ServeHTTP(rr, req)
+
+	assert.Equal(t, http.StatusNotFound, rr.Code)
+
+	var feErr utils.ErrorResponseFE
+	decoder := json.NewDecoder(bytes.NewReader(rr.Body.Bytes()))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&feErr)
+	require.NoError(t, err)
+
+	assert.Equal(t, "Not found", feErr.Error)
+	assert.Equal(t, "test", feErr.Message)
+}
+
+func TestSelectOciProfile_InternalServerError(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockThunderServiceInterface(mockCtrl)
+	ac := ThunderController{
+		TimeNow: utils.Btc(utils.P("2022-06-14T15:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     logger.NewLogger("TEST"),
+	}
+
+	as.EXPECT().SelectOciProfile("aaaaaaaaaaaaaaaaaaaaaaaa", true).
+		Return(errMock)
+
+	req, err := http.NewRequest("PUT", "/oracle-cloud/profile-selection/", nil)
+	require.NoError(t, err)
+	req = mux.SetURLVars(req, map[string]string{
+		"profileid": "aaaaaaaaaaaaaaaaaaaaaaaa",
+		"selected":  "true",
+	})
+
+	handler := http.HandlerFunc(ac.SelectOciProfile)
+	rr := httptest.NewRecorder()
+	handler.ServeHTTP(rr, req)
+
+	assert.Equal(t, http.StatusInternalServerError, rr.Code)
+
+	var feErr utils.ErrorResponseFE
+	decoder := json.NewDecoder(bytes.NewReader(rr.Body.Bytes()))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&feErr)
+	require.NoError(t, err)
+
+	assert.Equal(t, "MockError", feErr.Error)
+	assert.Equal(t, "Internal Server Error", feErr.Message)
+}

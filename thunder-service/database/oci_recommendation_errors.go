@@ -22,7 +22,6 @@ import (
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 const OciRecommendationError_collection = "oci_recommendation_errors"
@@ -59,44 +58,22 @@ func (md *MongoDatabase) AddOciRecommendationErrors(ociRecommendationErrors []mo
 	return nil
 }
 
-func (md *MongoDatabase) GetOciRecommendationErrors(profileIDs []string) ([]model.OciRecommendationError, error) {
+func (md *MongoDatabase) GetOciRecommendationErrors(seqNum uint64) ([]model.OciRecommendationError, error) {
+	ociRecommendationErrors := make([]model.OciRecommendationError, 0)
 	ctx := context.TODO()
 
-	findOptions := options.Find()
-	findOptions.SetSort(bson.M{"seqValue": -1})
+	filter := bson.M{"seqValue": seqNum}
 
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(OciRecommendationError_collection).Find(ctx, bson.D{}, findOptions)
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(OciRecommendationError_collection).Find(ctx, filter)
 	if err != nil {
 		return nil, utils.NewError(err, "DB ERROR")
 	}
 
-	ociRecommendationErrors := make([]model.OciRecommendationError, 0)
 	if err := cur.All(context.TODO(), &ociRecommendationErrors); err != nil {
 		return nil, utils.NewError(err, "DB ERROR")
 	}
 
-	if err := cur.Err(); err != nil {
-		return nil, utils.NewError(err, "DB ERROR")
-	}
-
-	ociRecommendationErrors1 := make([]model.OciRecommendationError, 0)
-
-	if len(ociRecommendationErrors) > 0 {
-		inCondition := bson.M{"$in": profileIDs}
-
-		filter := bson.M{"seqValue": ociRecommendationErrors[0].SeqValue, "profileID": inCondition}
-
-		cur1, err1 := md.Client.Database(md.Config.Mongodb.DBName).Collection(OciRecommendationError_collection).Find(ctx, filter)
-		if err1 != nil {
-			return nil, utils.NewError(err, "DB ERROR")
-		}
-
-		if err := cur1.All(context.TODO(), &ociRecommendationErrors1); err != nil {
-			return nil, utils.NewError(err, "DB ERROR")
-		}
-	}
-
-	return ociRecommendationErrors1, nil
+	return ociRecommendationErrors, nil
 }
 
 func (md *MongoDatabase) GetOciRecommendationErrorsByProfiles(profileIDs []string) ([]model.OciRecommendationError, error) {

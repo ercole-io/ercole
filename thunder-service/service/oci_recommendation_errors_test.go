@@ -44,12 +44,12 @@ func TestGetOciRecommendationErrors_DBError(t *testing.T) {
 
 	t.Run("DB Error", func(t *testing.T) {
 		var expectedRes []model.OciRecommendationError
-		var strProfiles = []string{"TestProfile1", "TestProfile4"}
 
-		db.EXPECT().GetOciRecommendationErrors(strProfiles).
+		var seqNum uint64 = 999
+		db.EXPECT().GetOciRecommendationErrors(seqNum).
 			Return(nil, utils.NewError(utils.ErrNotFound, "DB ERROR")).Times(1)
 
-		actual, err := as.GetOciRecommendationErrors(strProfiles)
+		actual, err := as.GetOciRecommendationErrors(seqNum)
 		require.Error(t, err)
 		assert.ErrorIs(t, err, utils.ErrNotFound)
 
@@ -79,22 +79,22 @@ func TestGetOciRecommendationErrors(t *testing.T) {
 				Error:     "",
 			},
 		}
-		var strProfiles = []string{"TestProfile1", "TestProfile4"}
-		db.EXPECT().GetOciRecommendationErrors(strProfiles).
+		var seqNum uint64 = 0
+		db.EXPECT().GetOciRecommendationErrors(seqNum).
 			Return(expected, nil).Times(1)
 
-		actual, err := as.GetOciRecommendationErrors(strProfiles)
+		actual, err := as.GetOciRecommendationErrors(seqNum)
 		require.NoError(t, err)
 
 		assert.Equal(t, expected, actual)
 	})
 
 	t.Run("Error", func(t *testing.T) {
-		var strProfiles = []string{"TestProfile1", "TestProfile4"}
-		db.EXPECT().GetOciRecommendationErrors(strProfiles).
+		var seqNum uint64 = 999
+		db.EXPECT().GetOciRecommendationErrors(seqNum).
 			Return(nil, errMock).Times(1)
 
-		actual, err := as.GetOciRecommendationErrors(strProfiles)
+		actual, err := as.GetOciRecommendationErrors(seqNum)
 		require.EqualError(t, err, "MockError")
 
 		assert.Nil(t, actual)

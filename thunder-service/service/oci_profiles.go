@@ -64,3 +64,11 @@ func (as *ThunderService) DeleteOciProfile(id primitive.ObjectID) error {
 
 	return nil
 }
+
+func (as *ThunderService) SelectOciProfile(profileId string, selected bool) error {
+	if err := as.Database.SelectOciProfile(profileId, selected); err != nil {
+		return err
+	}
+
+	return nil
+}
