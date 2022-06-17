@@ -57,7 +57,8 @@ func TestGetOciRecommendationErrors_Success(t *testing.T) {
 
 	var expectedRes []model.OciRecommendationError
 	expectedRes = append(expectedRes, recError)
-	as.EXPECT().GetOciRecommendationErrors(999).Return(expectedRes, nil)
+	var seqNum uint64 = 999
+	as.EXPECT().GetOciRecommendationErrors(seqNum).Return(expectedRes, nil)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.GetOciRecommendationErrors)
@@ -83,7 +84,8 @@ func TestGetOciRecommendationErrors_ClusterNotFoundError(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	as.EXPECT().GetOciRecommendationErrors(999).Return(nil, utils.ErrClusterNotFound)
+	var seqNum uint64 = 999
+	as.EXPECT().GetOciRecommendationErrors(seqNum).Return(nil, utils.ErrClusterNotFound)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.GetOciRecommendationErrors)
@@ -117,7 +119,8 @@ func TestGetOciRecommendationErrors_InternalServerError(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	as.EXPECT().GetOciRecommendationErrors(999).Return(nil, errMock)
+	var seqNum uint64 = 999
+	as.EXPECT().GetOciRecommendationErrors(seqNum).Return(nil, errMock)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.GetOciRecommendationErrors)
