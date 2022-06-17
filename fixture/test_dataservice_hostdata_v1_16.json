@@ -221,6 +221,7 @@
                             }
                         ],
                         "isCDB": false,
+                        "isRAC": false,
                         "pdbs": [],
                         "services": []
                     },
@@ -393,6 +394,7 @@
                             }
                         ],
                         "isCDB": false,
+                        "isRAC": false,
                         "pdbs": [],
                         "services": []
                     }
