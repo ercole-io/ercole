@@ -87,6 +87,13 @@ func (md *MongoDatabase) SearchOracleDatabases(keywords []string, sortBy string,
 				"database.services": "$database.services",
 				"database.licenses": "$database.licenses",
 			}),
+			mu.APSet(bson.M{
+				"database.pdbs": mu.APOCond("$database.isCDB", bson.M{
+					"$concatArrays": bson.A{
+						mu.APOMap("$database.pdbs", "pdb", "$$pdb.name"),
+					},
+				}, bson.A{""}),
+			}),
 			mu.APReplaceWith(mu.APOMergeObjects("$$ROOT", "$database")),
 			mu.APUnset("database"),
 			mu.APOptionalSortingStage(sortBy, sortDesc),
