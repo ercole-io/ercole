@@ -100,6 +100,10 @@ func (hds *HostDataService) checkSecondaryDbs(hostdata *model.HostDataBE) {
 
 		if utils.Contains(model.OracleDatabaseStatusMounted, db.Status) &&
 			db.Role != model.OracleDatabaseRolePrimary {
+			if db.Dataguard && !db.IsRAC {
+				continue
+			}
+
 			hds.addLicensesToSecondaryDb(hostdata.Info, hostdata.CoreFactor(), db)
 		}
 	}
