@@ -47,6 +47,7 @@ type DatabaseUsedLicense struct {
 	ClusterLicenses float64 `json:"clusterLicenses" bson:"clusterLicenses"`
 	Ignored         bool    `json:"ignored" bson:"ignored"`
 	IgnoredComment  string  `json:"ignoredComment" bson:"ignoredComment"`
+	OlvmCapped      bool    `json:"olvmCapped" bson:"olvmCapped"`
 }
 
 type DatabaseUsedLicensePerHost struct {
