@@ -288,6 +288,13 @@ var hostData6 model.HostDataBE = model.HostDataBE{
 							},
 						},
 					},
+					{
+						Name:      "Bart",
+						Dataguard: true,
+						IsRAC:     false,
+						Status:    model.OracleDatabaseStatusMounted[0],
+						Role:      model.OracleDatabaseRoleSnapshotStandby,
+					},
 				},
 			},
 		},
