@@ -1,0 +1,42 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "array",
+    "items": {
+        "required": [
+            "id",
+            "itemDescription",
+            "metric",
+            "cost",
+            "aliases",
+            "option"
+        ],
+        "properties": {
+            "id": {
+                "type": "string",
+                "minLength": 1
+            },
+            "itemDescription": {
+                "type": "string",
+                "minLength": 1
+            },
+            "metric": {
+                "type": "string",
+                "minLength": 1
+            },
+            "cost": {
+                "type": "integer"
+            },
+            "aliases": {
+                "type": "array",
+                "items": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "uniqueItems": true
+            },       
+            "option": {
+                "type": "boolean"
+            }
+        }
+    }   
+}
