@@ -48,6 +48,8 @@ var ErrNotInClusterHostNotFound = errors.New("Not in cluster host not found")
 
 var ErrInvalidHostdata = errors.New("Invalid hostdata")
 
+var ErrInvalidLicenseType = errors.New("Invalid license type")
+
 var ErrInvalidAck = errors.New("Alert(s) cannot be acknowledged")
 
 // ErrHostNotInCluster
