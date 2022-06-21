@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -30,8 +30,8 @@ import (
 )
 
 // SearchClusters search clusters
-func (as *APIService) SearchClusters(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, error) {
-	return as.Database.SearchClusters(full, strings.Split(search, " "), sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+func (as *APIService) SearchClusters(mode string, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, error) {
+	return as.Database.SearchClusters(mode, strings.Split(search, " "), sortBy, sortDesc, page, pageSize, location, environment, olderThan)
 }
 
 // GetCluster return the cluster specified in the clusterName param
@@ -79,7 +79,7 @@ func (as *APIService) GetClusterXLSX(clusterName string, olderThan time.Time) (*
 
 // SearchClustersAsXLSX return  clusters vms as xlxs file
 func (as *APIService) SearchClustersAsXLSX(filter dto.GlobalFilter) (*excelize.File, error) {
-	clusters, err := as.Database.SearchClusters(false, []string{}, "", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan)
+	clusters, err := as.Database.SearchClusters("full", []string{}, "", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan)
 	if err != nil {
 		return nil, err
 	}
