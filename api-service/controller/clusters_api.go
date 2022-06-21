@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ func (ctrl *APIController) SearchClusters(w http.ResponseWriter, r *http.Request
 
 // SearchClustersJSON search clusters data using the filters in the request returning it in JSON format
 func (ctrl *APIController) SearchClustersJSON(w http.ResponseWriter, r *http.Request) {
-	var full, sortDesc bool
+	var sortDesc bool
 
 	var search, sortBy, location, environment string
 
@@ -51,9 +51,14 @@ func (ctrl *APIController) SearchClustersJSON(w http.ResponseWriter, r *http.Req
 	var olderThan time.Time
 
 	var err error
-	//parse the query params
-	if full, err = utils.Str2bool(r.URL.Query().Get("full"), false); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+
+	mode := r.URL.Query().Get("mode")
+	if mode == "" {
+		mode = "full"
+	}
+
+	if mode != "full" && mode != "clusternames" {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, errors.New("Invalid mode value"))
 		return
 	}
 
@@ -83,19 +88,25 @@ func (ctrl *APIController) SearchClustersJSON(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	//get the data
-	clusters, err := ctrl.Service.SearchClusters(full, search, sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
+	clusters, err := ctrl.Service.SearchClusters(mode, search, sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
-	if pageNumber == -1 || pageSize == -1 {
-		//Write the data
-		utils.WriteJSONResponse(w, http.StatusOK, clusters)
+	if mode == "clusternames" {
+		clusternames := make([]string, len(clusters))
+		for i, h := range clusters {
+			clusternames[i] = h["name"].(string)
+		}
+
+		utils.WriteJSONResponse(w, http.StatusOK, clusternames)
 	} else {
-		//Write the data
-		utils.WriteJSONResponse(w, http.StatusOK, clusters[0])
+		if pageNumber == -1 || pageSize == -1 {
+			utils.WriteJSONResponse(w, http.StatusOK, clusters)
+		} else {
+			utils.WriteJSONResponse(w, http.StatusOK, clusters[0])
+		}
 	}
 }
 

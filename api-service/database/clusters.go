@@ -27,7 +27,7 @@ import (
 )
 
 // SearchClusters search clusters
-func (md *MongoDatabase) SearchClusters(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, error) {
+func (md *MongoDatabase) SearchClusters(mode string, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, error) {
 	var out []map[string]interface{} = make([]map[string]interface{}, 0)
 
 	//Find the matching hostdata
@@ -49,7 +49,6 @@ func (md *MongoDatabase) SearchClusters(full bool, keywords []string, sortBy str
 				"_id":                         true,
 				"environment":                 true,
 				"location":                    true,
-				"createdAt":                   1,
 				"hostnameAgentVirtualization": "$hostname",
 				"hostname":                    true,
 				"fetchEndpoint":               "$cluster.fetchEndpoint",
@@ -73,8 +72,9 @@ func (md *MongoDatabase) SearchClusters(full bool, keywords []string, sortBy str
 			mu.APSet(bson.M{
 				"vmsErcoleAgentCount": mu.APOSize("$vmsErcoleAgentCount"),
 			}),
-			mu.APOptionalStage(!full, mu.APProject(bson.M{
+			mu.APOptionalStage(mode == "full", mu.APProject(bson.M{
 				"_id":                         true,
+				"createdAt":                   1,
 				"environment":                 true,
 				"location":                    true,
 				"hostnameAgentVirtualization": true,
@@ -87,6 +87,10 @@ func (md *MongoDatabase) SearchClusters(full bool, keywords []string, sortBy str
 				"virtualizationNodes":         mu.APOJoin("$virtualizationNodes", " "),
 				"vmsCount":                    true,
 				"vmsErcoleAgentCount":         true,
+			})),
+			mu.APOptionalStage(mode == "clusternames", mu.APProject(bson.M{
+				"_id":  false,
+				"name": true,
 			})),
 			mu.APOptionalSortingStage(sortBy, sortDesc),
 			mu.APOptionalPagingStage(page, pageSize),

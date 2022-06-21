@@ -92,7 +92,7 @@ func (md *MongoDatabase) SearchOracleDatabases(keywords []string, sortBy string,
 					"$concatArrays": bson.A{
 						mu.APOMap("$database.pdbs", "pdb", "$$pdb.name"),
 					},
-				}, bson.A{""}),
+				}, []string{}),
 			}),
 			mu.APReplaceWith(mu.APOMergeObjects("$$ROOT", "$database")),
 			mu.APUnset("database"),
