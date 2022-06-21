@@ -120,7 +120,7 @@ func (m *MongodbSuite) TestSearchOracleDatabases() {
 				Name:         "ERCOLE",
 				Rac:          false,
 				SegmentsSize: 3,
-				PDBs:         []string{""},
+				PDBs:         []string{},
 				Licenses: []model.OracleDatabaseLicense{
 					{
 						Count:         0.5,
@@ -381,7 +381,7 @@ func (m *MongodbSuite) TestSearchOracleDatabases() {
 				Name:         "ERCOLE",
 				Rac:          false,
 				SegmentsSize: 3,
-				PDBs:         []string{""},
+				PDBs:         []string{},
 				Licenses: []model.OracleDatabaseLicense{
 					{
 						Count:         0.5,

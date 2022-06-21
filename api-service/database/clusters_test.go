@@ -33,7 +33,7 @@ func (m *MongodbSuite) TestSearchClusters() {
 	m.InsertHostData(mongoutils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_08.json"))
 
 	m.T().Run("should_filter_out_by_environment", func(t *testing.T) {
-		out, err := m.db.SearchClusters(false, []string{""}, "", false, -1, -1, "", "TST", utils.MAX_TIME)
+		out, err := m.db.SearchClusters("full", []string{""}, "", false, -1, -1, "", "TST", utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{}
 
@@ -41,7 +41,7 @@ func (m *MongodbSuite) TestSearchClusters() {
 	})
 
 	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
-		out, err := m.db.SearchClusters(false, []string{""}, "", false, -1, -1, "France", "", utils.MAX_TIME)
+		out, err := m.db.SearchClusters("full", []string{""}, "", false, -1, -1, "France", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{}
 
@@ -49,7 +49,7 @@ func (m *MongodbSuite) TestSearchClusters() {
 	})
 
 	m.T().Run("should_filter_out_by_older_than", func(t *testing.T) {
-		out, err := m.db.SearchClusters(false, []string{""}, "", false, -1, -1, "", "", utils.P("1999-05-04T16:09:46.608+02:00"))
+		out, err := m.db.SearchClusters("full", []string{""}, "", false, -1, -1, "", "", utils.P("1999-05-04T16:09:46.608+02:00"))
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{}
 
@@ -57,7 +57,7 @@ func (m *MongodbSuite) TestSearchClusters() {
 	})
 
 	m.T().Run("should_be_paging", func(t *testing.T) {
-		out, err := m.db.SearchClusters(false, []string{""}, "", false, 0, 1, "", "", utils.MAX_TIME)
+		out, err := m.db.SearchClusters("full", []string{""}, "", false, 0, 1, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{
 			map[string]interface{}{
@@ -94,7 +94,7 @@ func (m *MongodbSuite) TestSearchClusters() {
 	})
 
 	m.T().Run("should_be_sorting", func(t *testing.T) {
-		out, err := m.db.SearchClusters(false, []string{""}, "sockets", true, -1, -1, "", "", utils.MAX_TIME)
+		out, err := m.db.SearchClusters("full", []string{""}, "sockets", true, -1, -1, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{
 			map[string]interface{}{
@@ -131,7 +131,7 @@ func (m *MongodbSuite) TestSearchClusters() {
 	})
 
 	m.T().Run("should_search_return_anything", func(t *testing.T) {
-		out, err := m.db.SearchClusters(false, []string{"foobar"}, "", false, -1, -1, "", "", utils.MAX_TIME)
+		out, err := m.db.SearchClusters("full", []string{"foobar"}, "", false, -1, -1, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{}
 
@@ -139,7 +139,7 @@ func (m *MongodbSuite) TestSearchClusters() {
 	})
 
 	m.T().Run("should_search_return_found", func(t *testing.T) {
-		out, err := m.db.SearchClusters(false, []string{"Puzzait2"}, "", false, -1, -1, "", "", utils.MAX_TIME)
+		out, err := m.db.SearchClusters("full", []string{"Puzzait2"}, "", false, -1, -1, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{
 			map[string]interface{}{
@@ -163,7 +163,7 @@ func (m *MongodbSuite) TestSearchClusters() {
 	})
 
 	m.T().Run("fullmode", func(t *testing.T) {
-		out, err := m.db.SearchClusters(true, []string{""}, "", false, -1, -1, "", "", utils.MAX_TIME)
+		out, err := m.db.SearchClusters("full", []string{""}, "", false, -1, -1, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{
 			map[string]interface{}{
@@ -174,27 +174,12 @@ func (m *MongodbSuite) TestSearchClusters() {
 				"location":                    "Italy",
 				"name":                        "Puzzait",
 				"fetchEndpoint":               "olvmmgr",
-				"virtualizationNodes":         []string{"s157-cb32c10a56c256746c337e21b3f82402"},
+				"virtualizationNodes":         "s157-cb32c10a56c256746c337e21b3f82402",
 				"sockets":                     10,
 				"type":                        "vmware",
 				"_id":                         utils.Str2oid("5eb0222a45d85f4193704944"),
-				"createdAt":                   utils.P("2020-05-04T16:09:46.608+02:00").Local(),
 				"vmsCount":                    2,
 				"vmsErcoleAgentCount":         1,
-				"vms": []interface{}{
-					map[string]interface{}{
-						"cappedCPU":          false,
-						"hostname":           "test-virt",
-						"name":               "test-virt",
-						"virtualizationNode": "s157-cb32c10a56c256746c337e21b3f82402",
-					},
-					map[string]interface{}{
-						"cappedCPU":          false,
-						"hostname":           "test-db",
-						"name":               "test-db",
-						"virtualizationNode": "s157-cb32c10a56c256746c337e21b3f82402",
-					},
-				},
 			},
 			map[string]interface{}{
 				"cpu":                         130,
@@ -204,27 +189,26 @@ func (m *MongodbSuite) TestSearchClusters() {
 				"location":                    "Italy",
 				"fetchEndpoint":               "endpoint",
 				"name":                        "Puzzait2",
-				"virtualizationNodes":         []string{"s157-cb32c10a56c256746c337e21b3fffeua", "s157-cb32c10a56c256746c337e21b3ffffff"},
+				"virtualizationNodes":         "s157-cb32c10a56c256746c337e21b3fffeua s157-cb32c10a56c256746c337e21b3ffffff",
 				"sockets":                     13,
 				"type":                        "vmware",
 				"_id":                         utils.Str2oid("5eb0222a45d85f4193704944"),
-				"createdAt":                   utils.P("2020-05-04T16:09:46.608+02:00").Local(),
 				"vmsCount":                    2,
 				"vmsErcoleAgentCount":         0,
-				"vms": []interface{}{
-					map[string]interface{}{
-						"cappedCPU":          false,
-						"hostname":           "test-virt2",
-						"name":               "test-virt2",
-						"virtualizationNode": "s157-cb32c10a56c256746c337e21b3ffffff",
-					},
-					map[string]interface{}{
-						"cappedCPU":          false,
-						"hostname":           "test-db2",
-						"name":               "test-db2",
-						"virtualizationNode": "s157-cb32c10a56c256746c337e21b3fffeua",
-					},
-				},
+			},
+		}
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+
+	m.T().Run("clusternames", func(t *testing.T) {
+		out, err := m.db.SearchClusters("clusternames", []string{""}, "", false, -1, -1, "", "", utils.MAX_TIME)
+		m.Require().NoError(err)
+		var expectedOut interface{} = []interface{}{
+			map[string]interface{}{
+				"name": "Puzzait",
+			},
+			map[string]interface{}{
+				"name": "Puzzait2",
 			},
 		}
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))

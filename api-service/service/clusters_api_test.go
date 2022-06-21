@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -65,13 +65,46 @@ func TestSearchClusters_Success(t *testing.T) {
 	}
 
 	db.EXPECT().SearchClusters(
-		false, []string{"foo", "bar", "foobarx"}, "CPU",
+		"full", []string{"foo", "bar", "foobarx"}, "CPU",
 		true, 1, 1,
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
 	).Return(expectedRes, nil).Times(1)
 
 	res, err := as.SearchClusters(
-		false, "foo bar foobarx", "CPU",
+		"full", "foo bar foobarx", "CPU",
+		true, 1, 1,
+		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+	)
+
+	require.NoError(t, err)
+	assert.Equal(t, expectedRes, res)
+}
+
+func TestSearchClusterNames_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+	}
+
+	expectedRes := []map[string]interface{}{
+		{
+			"Name": "not_in_cluster",
+		},
+		{
+			"Name": "Puzzait",
+		},
+	}
+
+	db.EXPECT().SearchClusters(
+		"clusternames", []string{"foo", "bar", "foobarx"}, "CPU",
+		true, 1, 1,
+		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+	).Return(expectedRes, nil).Times(1)
+
+	res, err := as.SearchClusters(
+		"clusternames", "foo bar foobarx", "CPU",
 		true, 1, 1,
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
 	)
@@ -89,13 +122,13 @@ func TestSearchClusters_Fail(t *testing.T) {
 	}
 
 	db.EXPECT().SearchClusters(
-		false, []string{"foo", "bar", "foobarx"}, "CPU",
+		"full", []string{"foo", "bar", "foobarx"}, "CPU",
 		true, 1, 1,
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
 	).Return(nil, aerrMock).Times(1)
 
 	res, err := as.SearchClusters(
-		false, "foo bar foobarx", "CPU",
+		"full", "foo bar foobarx", "CPU",
 		true, 1, 1,
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
 	)
@@ -224,7 +257,7 @@ func TestSearchClustersAsXLSX_Success(t *testing.T) {
 	}
 
 	db.EXPECT().SearchClusters(
-		false, []string{}, "",
+		"full", []string{}, "",
 		false, -1, -1,
 		"Italy", "TST", utils.P("2019-12-05T14:02:03Z"),
 	).Return(data, nil).Times(1)
