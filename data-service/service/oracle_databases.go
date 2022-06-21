@@ -260,7 +260,7 @@ licenses:
 }
 
 func (hds *HostDataService) getOracleDatabaseLicenseTypes(environment string) ([]model.OracleDatabaseLicenseType, error) {
-	licenseTypes, err := hds.ApiSvcClient.GetOracleDatabaseLicenseTypes()
+	licenseTypes, err := hds.Database.GetOracleDatabaseLicenseTypes()
 	if err != nil {
 		return nil, utils.NewError(err, "Can't retrieve licenseTypes")
 	}
