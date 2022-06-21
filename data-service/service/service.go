@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -33,6 +33,8 @@ type HostDataServiceInterface interface {
 	InsertHostData(hostdata model.HostDataBE) error
 	AlertInvalidHostData(validationErr error, hostdata *model.HostDataBE)
 	CompareCmdbInfo(cmdbInfo dto.CmdbInfo) error
+	InsertOracleLicenseTypes(licenseTypes []model.OracleDatabaseLicenseType) error
+	SanitizeLicenseTypes(raw []byte) ([]model.OracleDatabaseLicenseType, error)
 }
 
 type HostDataService struct {

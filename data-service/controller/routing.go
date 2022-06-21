@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -44,6 +44,7 @@ func (ctrl *DataController) GetDataControllerHandler() http.Handler {
 func (ctrl *DataController) setupProtectedRoutes(router *mux.Router) {
 	router.HandleFunc("/hosts", ctrl.InsertHostData).Methods("POST")
 	router.HandleFunc("/cmdbs", ctrl.CompareCmdbInfo).Methods("POST")
+	router.HandleFunc("/oracle/license-types", ctrl.InsertOracleLicenseTypes).Methods("POST")
 }
 
 // AuthenticateMiddleware return the middleware used to authenticate (request) users
