@@ -209,3 +209,35 @@ func (md *MongoDatabase) GetHostnames() ([]string, error) {
 
 	return hostnames, nil
 }
+
+func (md *MongoDatabase) GetOracleDatabaseLicenseTypes() ([]model.OracleDatabaseLicenseType, error) {
+	ctx := context.TODO()
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).
+		Collection("oracle_database_license_types").
+		Find(ctx, bson.M{})
+
+	if err != nil {
+		return nil, utils.NewError(err, "DB ERROR")
+	}
+
+	licenseTypes := make([]model.OracleDatabaseLicenseType, 0)
+
+	defer cur.Close(ctx)
+
+	for cur.Next(ctx) {
+		var licenseType model.OracleDatabaseLicenseType
+
+		err := cur.Decode(&licenseType)
+		if err != nil {
+			md.Log.Fatal(err)
+		}
+
+		licenseTypes = append(licenseTypes, licenseType)
+	}
+
+	if err := cur.Err(); err != nil {
+		return nil, utils.NewError(err, "DB ERROR")
+	}
+
+	return licenseTypes, nil
+}

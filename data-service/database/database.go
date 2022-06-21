@@ -50,6 +50,7 @@ type MongoDatabaseInterface interface {
 	// FindMostRecentHostDataOlderThan return the most recest hostdata that is older than t
 	FindMostRecentHostDataOlderThan(hostname string, t time.Time) (*model.HostDataBE, error)
 	GetHostnames() ([]string, error)
+	GetOracleDatabaseLicenseTypes() ([]model.OracleDatabaseLicenseType, error)
 }
 
 type MongoDatabase struct {
