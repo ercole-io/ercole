@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -87,12 +87,12 @@ func TestSearchCluster_JSONPaged(t *testing.T) {
 	}
 
 	as.EXPECT().
-		SearchClusters(true, "foobar", "CPU", true, 2, 3, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
+		SearchClusters("full", "foobar", "CPU", true, 2, 3, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
 		Return(resFromService, nil)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchClusters)
-	req, err := http.NewRequest("GET", "/clusters?full=true&search=foobar&sort-by=CPU&sort-desc=true&page=2&size=3&location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
+	req, err := http.NewRequest("GET", "/clusters?mode=full&search=foobar&sort-by=CPU&sort-desc=true&page=2&size=3&location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
@@ -140,12 +140,52 @@ func TestSearchCluster_JSONUnpaged(t *testing.T) {
 	}
 
 	as.EXPECT().
-		SearchClusters(false, "", "", false, -1, -1, "", "", utils.MAX_TIME).
+		SearchClusters("full", "", "", false, -1, -1, "", "", utils.MAX_TIME).
 		Return(expectedRes, nil)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchClusters)
 	req, err := http.NewRequest("GET", "/clusters", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusOK, rr.Code)
+	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
+}
+
+func TestSearchClusterNames_JSONUnpaged(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     logger.NewLogger("TEST"),
+	}
+
+	returnedRes := []map[string]interface{}{
+		{
+			"name": "not_in_cluster",
+		},
+		{
+			"name": "Puzzait",
+		},
+	}
+
+	expectedRes := []string{
+		"not_in_cluster",
+		"Puzzait",
+	}
+
+	as.EXPECT().
+		SearchClusters("clusternames", "", "", false, -1, -1, "", "", utils.MAX_TIME).
+		Return(returnedRes, nil)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchClusters)
+	req, err := http.NewRequest("GET", "/clusters?mode=clusternames", nil)
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
@@ -167,7 +207,7 @@ func TestSearchCluster_JSONUnprocessableEntity1(t *testing.T) {
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchClusters)
-	req, err := http.NewRequest("GET", "/clusters?full=ddfssdf", nil)
+	req, err := http.NewRequest("GET", "/clusters?mode=pppccc", nil)
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
@@ -271,7 +311,7 @@ func TestSearchCluster_JSONInternalServerError(t *testing.T) {
 	}
 
 	as.EXPECT().
-		SearchClusters(false, "", "", false, -1, -1, "", "", utils.MAX_TIME).
+		SearchClusters("full", "", "", false, -1, -1, "", "", utils.MAX_TIME).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
