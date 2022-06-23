@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,10 +17,13 @@ package model
 
 // OracleDatabasePluggableDatabase holds information about an Oracle pluggable database.
 type OracleDatabasePluggableDatabase struct {
-	Name        string                     `json:"name" bson:"name"`
-	Status      string                     `json:"status" bson:"status"`
-	Tablespaces []OracleDatabaseTablespace `json:"tablespaces" bson:"tablespaces"`
-	Schemas     []OracleDatabaseSchema     `json:"schemas" bson:"schemas"`
-	Services    []OracleDatabaseService    `json:"services" bson:"services"`
-	GrantDba    []OracleGrantDba           `json:"grantDba" bson:"grantDba"`
+	Name         string                     `json:"name" bson:"name"`
+	Status       string                     `json:"status" bson:"status"`
+	SegmentsSize float64                    `json:"segmentsSize" bson:"segmentsSize"`
+	DatafileSize float64                    `json:"datafileSize" bson:"datafileSize"`
+	Allocable    float64                    `json:"allocable" bson:"allocable"`
+	Tablespaces  []OracleDatabaseTablespace `json:"tablespaces" bson:"tablespaces"`
+	Schemas      []OracleDatabaseSchema     `json:"schemas" bson:"schemas"`
+	Services     []OracleDatabaseService    `json:"services" bson:"services"`
+	GrantDba     []OracleGrantDba           `json:"grantDba" bson:"grantDba"`
 }
