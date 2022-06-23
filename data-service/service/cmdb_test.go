@@ -100,7 +100,7 @@ func TestCompareCmdbInfo_MissingHostInErcole(t *testing.T) {
 		AlertCode:     model.AlertCodeMissingHostInErcole,
 		AlertSeverity: model.AlertSeverityWarning,
 		AlertStatus:   model.AlertStatusNew,
-		Description:   fmt.Sprintf("Received unknown hostname %s from CMDB %s", "topolino", "thisCmdb"),
+		Description:   fmt.Sprintf("Received unknown hostname %s from CMDB %s\n", "topolino", "thisCmdb"),
 		Date:          hds.TimeNow(),
 	}
 
