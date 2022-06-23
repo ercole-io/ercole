@@ -29,32 +29,40 @@ func (hds *HostDataService) CompareCmdbInfo(cmdbInfo dto.CmdbInfo) error {
 		return err
 	}
 
-	missingAlerts := make([]model.Alert, 0)
+	missingAlerts := make([]model.Alert, 0, 2)
+
+	descriptionErcole := ""
 
 	for _, h := range differenceHostnames(cmdbInfo.Hostnames, hostnames) {
-		alert := model.Alert{
+		descriptionErcole += fmt.Sprintf("Received unknown hostname %s from CMDB %s\n", h, cmdbInfo.Name)
+	}
+
+	if descriptionErcole != "" {
+		missingAlerts = append(missingAlerts, model.Alert{
 			AlertCategory: model.AlertCategoryEngine,
 			AlertCode:     model.AlertCodeMissingHostInErcole,
 			AlertSeverity: model.AlertSeverityWarning,
 			AlertStatus:   model.AlertStatusNew,
-			Description:   fmt.Sprintf("Received unknown hostname %s from CMDB %s", h, cmdbInfo.Name),
 			Date:          hds.TimeNow(),
-		}
-
-		missingAlerts = append(missingAlerts, alert)
+			Description:   descriptionErcole,
+		})
 	}
 
+	descriptionCmdb := ""
+
 	for _, h := range differenceHostnames(hostnames, cmdbInfo.Hostnames) {
-		alert := model.Alert{
+		descriptionCmdb += fmt.Sprintf("Missing hostname %s in CMDB %s\n", h, cmdbInfo.Name)
+	}
+
+	if descriptionCmdb != "" {
+		missingAlerts = append(missingAlerts, model.Alert{
 			AlertCategory: model.AlertCategoryEngine,
 			AlertCode:     model.AlertCodeMissingHostInCmdb,
 			AlertSeverity: model.AlertSeverityWarning,
 			AlertStatus:   model.AlertStatusNew,
-			Description:   fmt.Sprintf("Missing hostname %s in CMDB %s", h, cmdbInfo.Name),
 			Date:          hds.TimeNow(),
-		}
-
-		missingAlerts = append(missingAlerts, alert)
+			Description:   descriptionCmdb,
+		})
 	}
 
 	if err := hds.throwNewOptionAlerts(missingAlerts); err != nil {
