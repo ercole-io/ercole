@@ -62,7 +62,9 @@ func (job *OciDataRetrieveJob) Run() {
 	}
 
 	for _, val := range ociProfiles {
-		profiles = append(profiles, val.ID.Hex())
+		if val.Selected {
+			profiles = append(profiles, val.ID.Hex())
+		}
 	}
 
 	seqValue, err = job.Database.GetLastOciSeqValue()
