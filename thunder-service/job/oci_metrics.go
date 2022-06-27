@@ -260,12 +260,19 @@ func (job *OciDataRetrieveJob) getOciDataForCoumputeInstanceAndServiceDecommisio
 				continue
 			}
 
-			allInstancesWithMetrics, err = job.getOciInstancesWithMetrics(allInstancesWithMetrics, compartment, profileId, customConfigProvider, verifyShape)
+			allInstancesWithMetrics, err = job.getOciInstancesWithMetrics(allInstances, allInstancesWithMetrics, compartment, profileId, customConfigProvider, verifyShape)
 			if err != nil {
 				recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
 				errors = append(errors, recError)
 
 				continue
+			}
+
+			// if an instance with metrics is not in the list of all instances I have to remove it
+			for _, b := range allInstancesWithMetrics {
+				if _, ok := allInstances[b.ResourceID]; !ok {
+					delete(allInstancesWithMetrics, b.ResourceID)
+				}
 			}
 
 			for _, inst := range allInstancesWithMetrics {
@@ -279,7 +286,7 @@ func (job *OciDataRetrieveJob) getOciDataForCoumputeInstanceAndServiceDecommisio
 				sTime.Time = time.Now().Local().AddDate(0, 0, -89)
 				eTime.Time = time.Now().Local()
 
-				instancesNotOptimizable, err = job.countEventsOccurence(monClient, strQueryAvgCPU, sTime, eTime, instancesNotOptimizable, compartment, profileId, AvgCPUThreshold, percAvgCPU, verifyShape, allInstanceMetrics, "AvgCPU")
+				instancesNotOptimizable, err = job.countEventsOccurence(allInstances, monClient, strQueryAvgCPU, sTime, eTime, instancesNotOptimizable, compartment, profileId, AvgCPUThreshold, percAvgCPU, verifyShape, allInstanceMetrics, "AvgCPU")
 				if err != nil {
 					recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
 					errors = append(errors, recError)
@@ -292,7 +299,7 @@ func (job *OciDataRetrieveJob) getOciDataForCoumputeInstanceAndServiceDecommisio
 				sTime.Time = sTime.Add(time.Hour * 1)
 				eTime.Time = time.Now().Local()
 
-				instancesNotOptimizable, err = job.countEventsOccurence(monClient, strQueryPeakCPU, sTime, eTime, instancesNotOptimizable, compartment, profileId, PeakCPUThreshold, percPeakCPU, verifyShape, allInstanceMetrics, "PeakCPU")
+				instancesNotOptimizable, err = job.countEventsOccurence(allInstances, monClient, strQueryPeakCPU, sTime, eTime, instancesNotOptimizable, compartment, profileId, PeakCPUThreshold, percPeakCPU, verifyShape, allInstanceMetrics, "PeakCPU")
 				if err != nil {
 					recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
 					errors = append(errors, recError)
@@ -304,7 +311,7 @@ func (job *OciDataRetrieveJob) getOciDataForCoumputeInstanceAndServiceDecommisio
 				sTime.Time = time.Now().Local().AddDate(0, 0, -7)
 				eTime.Time = time.Now().Local()
 
-				instancesNotOptimizable, err = job.countEventsOccurence(monClient, strQueryMemory, sTime, eTime, instancesNotOptimizable, compartment, profileId, MemoryThreshold, percMemoryUtilization, verifyShape, allInstanceMetrics, "AvgMemory")
+				instancesNotOptimizable, err = job.countEventsOccurence(allInstances, monClient, strQueryMemory, sTime, eTime, instancesNotOptimizable, compartment, profileId, MemoryThreshold, percMemoryUtilization, verifyShape, allInstanceMetrics, "AvgMemory")
 				if err != nil {
 					recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
 					errors = append(errors, recError)
@@ -457,7 +464,7 @@ func (job *OciDataRetrieveJob) getOciDataForCoumputeInstanceAndServiceDecommisio
 	}
 }
 
-func (job *OciDataRetrieveJob) countEventsOccurence(client monitoring.MonitoringClient, strQuery string, sTime common.SDKTime, eTime common.SDKTime, instances map[string]Instance, compartment model.OciCompartment, profileId string, threshold int, percThreshold int, verifyShape bool, allInstanceMetrics map[string]MetricData, sType string) (map[string]Instance, error) {
+func (job *OciDataRetrieveJob) countEventsOccurence(allInstances map[string]Instance, client monitoring.MonitoringClient, strQuery string, sTime common.SDKTime, eTime common.SDKTime, instancesNotOptimizable map[string]Instance, compartment model.OciCompartment, profileId string, threshold int, percThreshold int, verifyShape bool, allInstanceMetrics map[string]MetricData, sType string) (map[string]Instance, error) {
 	var metricData map[string]ValThresh
 
 	var valThresh ValThresh
@@ -475,7 +482,7 @@ func (job *OciDataRetrieveJob) countEventsOccurence(client monitoring.Monitoring
 	// Send the request using the service client
 	resp, err := client.SummarizeMetricsData(context.Background(), req)
 	if err != nil {
-		return instances, err
+		return instancesNotOptimizable, err
 	}
 
 	var instance Instance
@@ -515,10 +522,10 @@ func (job *OciDataRetrieveJob) countEventsOccurence(client monitoring.Monitoring
 
 		if cnt > threshold {
 			// the instance is not eligible for optimization
-			if !verifyShape || (s.Dimensions["shape"] != "VM.Standard2.1" && s.Dimensions["shape"] != "VM.StandardE2.1") {
-				if val, ok := instances[s.Dimensions["resourceId"]]; ok {
+			if !verifyShape || (allInstances[s.Dimensions["resourceId"]].OCPUs > 1) {
+				if val, ok := instancesNotOptimizable[s.Dimensions["resourceId"]]; ok {
 					val.Cnt += 1
-					instances[s.Dimensions["resourceId"]] = val
+					instancesNotOptimizable[s.Dimensions["resourceId"]] = val
 				} else {
 					instance.CompartmentID = compartment.CompartmentID
 					instance.CompartmentName = compartment.Name
@@ -526,13 +533,13 @@ func (job *OciDataRetrieveJob) countEventsOccurence(client monitoring.Monitoring
 					instance.ResourceID = s.Dimensions["resourceId"]
 					instance.Name = s.Dimensions["resourceDisplayName"]
 					instance.Shape = s.Dimensions["shape"]
-					instances[s.Dimensions["resourceId"]] = instance
+					instancesNotOptimizable[s.Dimensions["resourceId"]] = instance
 				}
 			}
 		}
 	}
 
-	return instances, nil
+	return instancesNotOptimizable, nil
 }
 
 func (job *OciDataRetrieveJob) getOciInstancesList(allInstances map[string]Instance, compartment model.OciCompartment, profileId string, customConfigProvider common.ConfigurationProvider, verifyShape bool) (map[string]Instance, error) {
@@ -554,7 +561,7 @@ func (job *OciDataRetrieveJob) getOciInstancesList(allInstances map[string]Insta
 	for _, s := range resp.Items {
 		var tmpInstance Instance
 
-		if !verifyShape || (*s.Shape != "VM.Standard2.1" && *s.Shape != "VM.StandardE2.1") {
+		if !verifyShape || (*s.ShapeConfig.Ocpus > 1) {
 			tmpInstance.CompartmentID = compartment.CompartmentID
 			tmpInstance.CompartmentName = compartment.Name
 			tmpInstance.ProfileID = profileId
@@ -577,11 +584,11 @@ func (job *OciDataRetrieveJob) getOciInstancesList(allInstances map[string]Insta
 	return allInstances, nil
 }
 
-func (job *OciDataRetrieveJob) getOciInstancesWithMetrics(instances map[string]Instance, compartment model.OciCompartment, profileId string, customConfigProvider common.ConfigurationProvider, verifyShape bool) (map[string]Instance, error) {
+func (job *OciDataRetrieveJob) getOciInstancesWithMetrics(allInstances map[string]Instance, allInstancesWithMetrics map[string]Instance, compartment model.OciCompartment, profileId string, customConfigProvider common.ConfigurationProvider, verifyShape bool) (map[string]Instance, error) {
 	client, err := monitoring.NewMonitoringClientWithConfigurationProvider(customConfigProvider)
 
 	if err != nil {
-		return instances, err
+		return allInstancesWithMetrics, err
 	}
 
 	req := monitoring.ListMetricsRequest{
@@ -593,20 +600,20 @@ func (job *OciDataRetrieveJob) getOciInstancesWithMetrics(instances map[string]I
 	resp, err := client.ListMetrics(context.Background(), req)
 
 	if err != nil {
-		return instances, err
+		return allInstancesWithMetrics, err
 	}
 
 	for _, s := range resp.Items {
-		if !verifyShape || (s.Dimensions["shape"] != "VM.StandardE2.1" && s.Dimensions["shape"] != "VM.Standard2.1") {
+		if !verifyShape || (allInstances[s.Dimensions["resourceId"]].OCPUs > 1) {
 			// if the instance is not in the list I have to put it
-			if _, ok := instances[s.Dimensions["resourceId"]]; !ok {
+			if _, ok := allInstancesWithMetrics[s.Dimensions["resourceId"]]; !ok {
 				tmpInstance := Instance{*s.CompartmentId, compartment.Name, profileId, s.Dimensions["resourceId"], s.Dimensions["resourceDisplayName"], "", s.Dimensions["shape"], 1, "", "", 0.0}
-				instances[s.Dimensions["resourceId"]] = tmpInstance
+				allInstancesWithMetrics[s.Dimensions["resourceId"]] = tmpInstance
 			}
 		}
 	}
 
-	return instances, nil
+	return allInstancesWithMetrics, nil
 }
 
 func (job *OciDataRetrieveJob) GetOciBlockStorageRightsizing(profiles []string, seqValue uint64) {
