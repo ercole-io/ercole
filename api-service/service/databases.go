@@ -431,10 +431,27 @@ func (as *APIService) getOracleDatabasesUsedLicenses(hostname string, filter dto
 			usedLicenses[i].ClusterName = cluster.Name
 			usedLicenses[i].ClusterType = cluster.Type
 
+			potentiallyCapped := true
+
 			for _, vm := range cluster.VMs {
-				if usedLicenses[i].Hostname == vm.Hostname && vm.IsErcoleInstalled {
-					usedLicenses[i].OlvmCapped = vm.CappedCPU
+				if !vm.CappedCPU {
+					potentiallyCapped = false
 					break
+				}
+			}
+
+			if potentiallyCapped {
+				for _, vm := range cluster.VMs {
+					exist, err := as.Database.ExistHostdata(vm.Hostname)
+					if err != nil {
+						as.Log.Error(err)
+						break
+					}
+
+					if usedLicenses[i].Hostname == vm.Hostname && exist {
+						usedLicenses[i].OlvmCapped = true
+						break
+					}
 				}
 			}
 
