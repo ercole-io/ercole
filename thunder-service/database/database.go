@@ -55,6 +55,12 @@ type MongoDatabaseInterface interface {
 	DeleteOldOciRecommendationErrors(dateFrom time.Time) error
 	SelectOciProfile(profileId string, selected bool) error
 	GetSelectedOciProfiles() ([]string, error)
+	GetAwsProfiles(hidePrivateKey bool) ([]model.AwsProfile, error)
+	GetMapAwsProfiles() (map[primitive.ObjectID]model.AwsProfile, error)
+	AddAwsProfile(profile model.AwsProfile) error
+	DeleteAwsProfile(id primitive.ObjectID) error
+	UpdateAwsProfile(profile model.AwsProfile) error
+	SelectAwsProfile(profileId string, selected bool) error
 }
 
 // MongoDatabase is a implementation

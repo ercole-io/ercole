@@ -46,6 +46,16 @@ type ThunderControllerInterface interface {
 	ForceGetOciRecommendations(w http.ResponseWriter, r *http.Request)
 	// SelectOciProfile define if a profile is active or not to retrieve recommendations associated to it
 	SelectOciProfile(w http.ResponseWriter, r *http.Request)
+	// Get Configuration profiles for AWS Access
+	GetAwsProfiles(w http.ResponseWriter, r *http.Request)
+	// Add a new Configuration profile for AWS Access
+	AddAwsProfile(w http.ResponseWriter, r *http.Request)
+	// Update an existing Configuration profile for AWS Access
+	UpdateAwsProfile(w http.ResponseWriter, r *http.Request)
+	// Delete an existing Configuration profile for AWS Access
+	DeleteAwsProfile(w http.ResponseWriter, r *http.Request)
+	// SelectAwsProfile define if a profile is active or not to retrieve recommendations associated to it
+	SelectAwsProfile(w http.ResponseWriter, r *http.Request)
 }
 
 // ThunderController is the struct used to handle the requests from agents and contains the concrete implementation of ThunderControllerInterface
