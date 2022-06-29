@@ -205,50 +205,6 @@ func TestAddAwsProfile_BadRequest_SecretAccessKeyNull(t *testing.T) {
 	assert.Equal(t, "Bad Request", feErr.Message)
 }
 
-/*
-func TestAddAwsProfile_BadRequest_ProfileNotValid(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockThunderServiceInterface(mockCtrl)
-	ac := ThunderController{
-		TimeNow: utils.Btc(utils.P("2022-06-28T12:02:03Z")),
-		Service: as,
-		Config:  config.Configuration{},
-		Log:     logger.NewLogger("TEST"),
-	}
-
-	var strSecretAccessKeyTestAdd = "SecretAccessKeyTestAdd"
-	wrongProfile := model.AwsProfile{
-		AccessKeyId:     "TestProfileAdd",
-		Region:          "eu-frankfurt-testAdd",
-		SecretAccessKey: &strSecretAccessKeyTestAdd,
-		Selected:        false,
-	}
-
-	proBytes, err := json.Marshal(wrongProfile)
-	require.NoError(t, err)
-
-	reader := bytes.NewReader(proBytes)
-	req, err := http.NewRequest("POST", "/", reader)
-	require.NoError(t, err)
-
-	handler := http.HandlerFunc(ac.AddAwsProfile)
-	rr := httptest.NewRecorder()
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusBadRequest, rr.Code)
-
-	var feErr utils.ErrorResponseFE
-	decoder := json.NewDecoder(bytes.NewReader(rr.Body.Bytes()))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&feErr)
-	require.NoError(t, err)
-
-	assert.Equal(t, "Profile configuration isn't valid", feErr.Error)
-	assert.Equal(t, "Bad Request", feErr.Message)
-}
-*/
-
 func TestAddAwsProfile_InternalServerError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
@@ -479,53 +435,6 @@ func TestUpdateAwsProfile_ObjectIdNotFound(t *testing.T) {
 	assert.Equal(t, "Object ID does not correspond", feErr.Error)
 	assert.Equal(t, "Bad Request", feErr.Message)
 }
-
-/*
-func TestUpdateAwsProfile_BadRequest_ProfileNotValid(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockThunderServiceInterface(mockCtrl)
-	ac := ThunderController{
-		TimeNow: utils.Btc(utils.P("2022-06-28T12:02:03Z")),
-		Service: as,
-		Config:  config.Configuration{},
-		Log:     logger.NewLogger("TEST"),
-	}
-
-	var strSecretAccessKeyTestAdd = "SecretAccessKeyTestAdd"
-	wrongProfile := model.AwsProfile{
-		AccessKeyId:     "TestProfileAdd",
-		Region:          "eu-frankfurt-testAdd",
-		SecretAccessKey: &strSecretAccessKeyTestAdd,
-		Selected:        false,
-	}
-
-	proBytes, err := json.Marshal(wrongProfile)
-	require.NoError(t, err)
-
-	reader := bytes.NewReader(proBytes)
-	req, err := http.NewRequest("PUT", "/", reader)
-	require.NoError(t, err)
-	req = mux.SetURLVars(req, map[string]string{
-		"id": "000000000000000000000000",
-	})
-
-	handler := http.HandlerFunc(ac.UpdateAwsProfile)
-	rr := httptest.NewRecorder()
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusBadRequest, rr.Code)
-
-	var feErr utils.ErrorResponseFE
-	decoder := json.NewDecoder(bytes.NewReader(rr.Body.Bytes()))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&feErr)
-	require.NoError(t, err)
-
-	assert.Equal(t, "Some profile fields are not valid", feErr.Error)
-	assert.Equal(t, "Bad Request", feErr.Message)
-}
-*/
 
 func TestUpdateAwsProfile_NotFoundError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
