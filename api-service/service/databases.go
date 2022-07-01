@@ -397,10 +397,11 @@ func (as *APIService) getOracleDatabasesUsedLicenses(hostname string, filter dto
 	}
 
 	hostdatasPerHostname := make(map[string]*model.HostDataBE, len(hostdatas))
+	hostdatasMap := make(map[string]model.HostDataBE, len(hostdatas))
 
-	for i := range hostdatas {
-		hd := &hostdatas[i]
-		hostdatasPerHostname[hd.Hostname] = hd
+	for _, hostdata := range hostdatas {
+		hostdatasPerHostname[hostdata.Hostname] = &hostdata
+		hostdatasMap[hostdata.Hostname] = hostdata
 	}
 
 	clusters, err := as.Database.GetClusters(dto.GlobalFilter{
@@ -410,6 +411,11 @@ func (as *APIService) getOracleDatabasesUsedLicenses(hostname string, filter dto
 	})
 	if err != nil {
 		return nil, err
+	}
+
+	clustersMap := make(map[string]dto.Cluster, len(clusters))
+	for _, cluster := range clusters {
+		clustersMap[cluster.Name] = cluster
 	}
 
 	for i, l := range usedLicenses {
@@ -431,29 +437,12 @@ func (as *APIService) getOracleDatabasesUsedLicenses(hostname string, filter dto
 			usedLicenses[i].ClusterName = cluster.Name
 			usedLicenses[i].ClusterType = cluster.Type
 
-			potentiallyCapped := true
-
-			for _, vm := range cluster.VMs {
-				if !vm.CappedCPU {
-					potentiallyCapped = false
-					break
-				}
+			isCapped, err := as.manageLicenseWithCappedCPU(l, clustersMap, hostdatasMap)
+			if err != nil {
+				return nil, err
 			}
 
-			if potentiallyCapped {
-				for _, vm := range cluster.VMs {
-					exist, err := as.Database.ExistHostdata(vm.Hostname)
-					if err != nil {
-						as.Log.Error(err)
-						break
-					}
-
-					if usedLicenses[i].Hostname == vm.Hostname && exist {
-						usedLicenses[i].OlvmCapped = true
-						break
-					}
-				}
-			}
+			usedLicenses[i].OlvmCapped = isCapped
 
 			continue
 		}
