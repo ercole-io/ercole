@@ -29,7 +29,6 @@ type PostgreSQLInstance struct {
 	UsersNum        int                  `json:"usersNum" bson:"usersNum"`
 	DbNum           int                  `json:"dbNum" bson:"dbNum"`
 	TblspNum        int                  `json:"tblspNum" bson:"tblspNum"`
-	TrustHbaEntries int                  `json:"trustHbaEntries" bson:"trustHbaEntries"`
 	Setting         *PostgreSQLSetting   `json:"setting" bson:"setting"`
 	Databases       []PostgreSQLDatabase `json:"databases" bson:"databases"`
 }
