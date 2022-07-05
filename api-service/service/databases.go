@@ -399,9 +399,10 @@ func (as *APIService) getOracleDatabasesUsedLicenses(hostname string, filter dto
 	hostdatasPerHostname := make(map[string]*model.HostDataBE, len(hostdatas))
 	hostdatasMap := make(map[string]model.HostDataBE, len(hostdatas))
 
-	for _, hostdata := range hostdatas {
-		hostdatasPerHostname[hostdata.Hostname] = &hostdata
-		hostdatasMap[hostdata.Hostname] = hostdata
+	for i := range hostdatas {
+		hd := &hostdatas[i]
+		hostdatasPerHostname[hd.Hostname] = hd
+		hostdatasMap[hd.Hostname] = *hd
 	}
 
 	clusters, err := as.Database.GetClusters(dto.GlobalFilter{
