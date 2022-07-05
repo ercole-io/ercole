@@ -437,7 +437,7 @@ func (as *APIService) getOracleDatabasesUsedLicenses(hostname string, filter dto
 			usedLicenses[i].ClusterName = cluster.Name
 			usedLicenses[i].ClusterType = cluster.Type
 
-			isCapped, err := as.manageLicenseWithCappedCPU(l, clustersMap, hostdatasMap)
+			isCapped, err := as.manageLicenseWithCappedCPU(usedLicenses[i], clustersMap, hostdatasMap)
 			if err != nil {
 				return nil, err
 			}
