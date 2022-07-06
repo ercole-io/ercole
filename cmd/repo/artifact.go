@@ -64,6 +64,7 @@ var (
 	agentWinRegex       *regexp.Regexp = regexp.MustCompile(`^ercole-agent-setup-(?P<version>` + semVer + `)\.exe$`)
 	agentPerlRpmRegex   *regexp.Regexp = regexp.MustCompile(`^ercole-agent-perl-(?P<version>` + semVer + `)-1\.(?P<dist>[a-z0-9.]+)\.(?P<arch>noarch)\.rpm$`)
 	agentPerlTarGzRegex *regexp.Regexp = regexp.MustCompile(`^ercole-agent-perl-(?P<version>` + semVer + `)-1\.(?P<dist>[a-z0-9.]+)\.(?P<arch>noarch)\.tar\.gz$`)
+	agentDebRegex       *regexp.Regexp = regexp.MustCompile(`^ercole-agent_(?P<version>` + semVer + `)\_(?P<arch>x86_64).deb$`)
 )
 
 const (
@@ -121,6 +122,12 @@ func (artifact *ArtifactInfo) SetInfoFromFileName(filename string) error {
 		artifact.Arch = data["arch"]
 		artifact.OperatingSystemFamily = "rhel"
 		artifact.OperatingSystem = "rhel" + data["dist"]
+
+	case agentDebRegex.MatchString(filename):
+		data := utils.FindNamedMatches(agentDebRegex, filename)
+		artifact.Name = "ercole-agent" + data["dist"]
+		artifact.Version = data["version"]
+		artifact.Arch = data["arch"]
 
 	case agentWinRegex.MatchString(filename):
 		data := utils.FindNamedMatches(agentWinRegex, filename)
