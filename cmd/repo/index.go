@@ -595,6 +595,22 @@ func (idx *Index) Install(artifact *ArtifactInfo) {
 		}
 	}
 
+	if strings.HasSuffix(artifact.Filename, ".deb") {
+		idx.log.Debugf("Executing createrepo %s\n", artifact.DirectoryPath(idx.distributedFiles()))
+		dirPath := artifact.DirectoryPath(idx.distributedFiles())
+		cmd := exec.Command("createrepo", dirPath)
+
+		if verbose {
+			cmd.Stdout = os.Stdout
+		}
+
+		cmd.Stderr = os.Stderr
+
+		if err := cmd.Run(); err != nil {
+			fmt.Printf("Error running createrepo: %s\n", err.Error())
+		}
+	}
+
 	artifact.Installed = true
 	idx.log.Infof("Installed %q", artifact.FullName())
 }
@@ -616,6 +632,20 @@ func (idx *Index) Remove(artifact *ArtifactInfo) {
 	}
 
 	if strings.HasSuffix(artifact.Filename, ".rpm") {
+		idx.log.Debugf("Executing createrepo %s\n", artifact.DirectoryPath(idx.distributedFiles()))
+		cmd := exec.Command("createrepo", artifact.DirectoryPath(idx.distributedFiles()))
+
+		if verbose {
+			cmd.Stdout = os.Stdout
+		}
+
+		cmd.Stderr = os.Stderr
+		if err := cmd.Run(); err != nil {
+			panic(err)
+		}
+	}
+
+	if strings.HasSuffix(artifact.Filename, ".deb") {
 		idx.log.Debugf("Executing createrepo %s\n", artifact.DirectoryPath(idx.distributedFiles()))
 		cmd := exec.Command("createrepo", artifact.DirectoryPath(idx.distributedFiles()))
 
