@@ -58,7 +58,7 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 					"hostsCount": 8,
 				},
 				{
-					"compliance": 0,
+					"compliance": 1,
 					"unpaidDues": 0,
 					"product":    model.TechnologyPostgreSQLPostgreSQL,
 					"hostsCount": 0,
