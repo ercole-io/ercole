@@ -59,7 +59,7 @@ func (as *APIService) ListManagedTechnologies(sortBy string, sortDesc bool, loca
 		CoveredByContracts: 0,
 		TotalCost:          0,
 		PaidCost:           0,
-		Compliance:         0,
+		Compliance:         1,
 		UnpaidDues:         0,
 		HostsCount:         int(hostsCountByTechnology[model.TechnologyPostgreSQLPostgreSQL]),
 	}
