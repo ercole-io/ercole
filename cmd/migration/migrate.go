@@ -16,11 +16,14 @@
 package migration
 
 import (
+	"errors"
+
 	"github.com/spf13/cobra"
 
 	"github.com/ercole-io/ercole/v2/config"
 	migration "github.com/ercole-io/ercole/v2/database-migration"
 	"github.com/ercole-io/ercole/v2/logger"
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 // migrateCmd represents the migrate command
@@ -33,7 +36,9 @@ func NewMigrateCmd(conf *config.Configuration) *cobra.Command {
 			log := logger.NewLogger("SERV")
 
 			err := migration.Migrate(conf.Mongodb)
-			if err != nil {
+			if err != nil && errors.Is(err, utils.ErrConnDB) {
+				log.Warn(err)
+			} else {
 				log.Fatal(err)
 			}
 			log.Info("Migrate successfully")
