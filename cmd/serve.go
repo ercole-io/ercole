@@ -17,6 +17,7 @@ package cmd
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"sync"
@@ -114,19 +115,23 @@ func serve(enableDataService bool,
 		log.Info("Migrating...")
 
 		err := migration.Migrate(ercoleConfig.Mongodb)
-		if err != nil {
+		if err != nil && errors.Is(err, utils.ErrConnDB) {
+			log.Warn(err)
+		} else {
 			log.Fatalf("Failed migrating database: %s", err)
 		}
 	}
 
 	if enableDataService || enableAlertService || enableAPIService || enableChartService || enableThunderService {
 		check, err := migration.IsAtTheLatestVersion(ercoleConfig.Mongodb)
-		if err != nil {
+		if err != nil && errors.Is(err, utils.ErrConnDB) {
+			log.Warn(err)
+		} else {
 			log.Fatalf("Failed checking database version: %s", err)
 		}
 
 		if !check {
-			log.Fatal("Database is not at the latest version\nYou can migrate to the latest version by running `ercole migrate`")
+			log.Warn("Database is not at the latest version\nYou can migrate to the latest version by running `ercole migrate`")
 		}
 	}
 

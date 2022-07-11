@@ -16,14 +16,7 @@
 package database
 
 import (
-	"fmt"
-	"math/rand"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
-
-	"github.com/ercole-io/ercole/v2/config"
-	"github.com/ercole-io/ercole/v2/logger"
 
 	"github.com/stretchr/testify/suite"
 )
@@ -36,24 +29,4 @@ func TestMongodbSuite(t *testing.T) {
 	mongodbHandlerSuiteTest := &MongodbSuite{}
 
 	suite.Run(t, mongodbHandlerSuiteTest)
-}
-
-func TestConnectToMongodb_FailToConnect(t *testing.T) {
-	logger := logger.NewLogger("TEST", logger.SetExitFunc(
-		func(int) {
-			panic("log.Fatal called by test")
-		},
-	))
-
-	db := MongoDatabase{
-		Config: config.Configuration{
-			Mongodb: config.Mongodb{
-				URI:    "wronguri:1234/test",
-				DBName: fmt.Sprintf("ercole_test_%d", rand.Int()),
-			},
-		},
-		Log: logger,
-	}
-
-	assert.PanicsWithValue(t, "log.Fatal called by test", db.ConnectToMongodb)
 }
