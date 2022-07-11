@@ -77,12 +77,12 @@ func (md *MongoDatabase) ConnectToMongodb() {
 	//Connect to MongoDB
 	md.Client, err = mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
-		md.Log.Fatal(err)
+		md.Log.Warn(err)
 	}
 
 	//Check the connection
 	err = md.Client.Ping(context.TODO(), nil)
 	if err != nil {
-		md.Log.Fatal(err)
+		md.Log.Warn(err)
 	}
 }
