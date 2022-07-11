@@ -63,7 +63,7 @@ func connectToMongodb(conf config.Mongodb) (*mongo.Database, error) {
 
 	err = client.Ping(ctx, nil)
 	if err != nil {
-		return nil, utils.NewError(err, "Can't connect to the database!")
+		return nil, utils.NewError(utils.ErrConnDB, err.Error())
 	}
 
 	return client.Database(conf.DBName), nil

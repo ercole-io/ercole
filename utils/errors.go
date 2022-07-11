@@ -56,3 +56,5 @@ var ErrInvalidAck = errors.New("Alert(s) cannot be acknowledged")
 var ErrHostNotInCluster = errors.New("host not in cluster")
 
 var ErrInvalidProfileId = errors.New("invalid profile id")
+
+var ErrConnDB = errors.New("Can't connect to the database!")
