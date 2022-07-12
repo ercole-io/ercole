@@ -118,7 +118,7 @@ func serve(enableDataService bool,
 		if err != nil && errors.Is(err, utils.ErrConnDB) {
 			log.Warn(err)
 		} else {
-			log.Fatalf("Failed migrating database: %s", err)
+			log.Warnf("Failed migrating database: %s", err)
 		}
 	}
 
@@ -127,7 +127,7 @@ func serve(enableDataService bool,
 		if err != nil && errors.Is(err, utils.ErrConnDB) {
 			log.Warn(err)
 		} else {
-			log.Fatalf("Failed checking database version: %s", err)
+			log.Warnf("Failed checking database version: %s", err)
 		}
 
 		if !check {
