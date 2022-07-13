@@ -45,38 +45,33 @@ func TestAddAwsProfile(t *testing.T) {
 	var strSecretAccessKeyTestAdd = "PrivateKeyTestAdd"
 	t.Run("Success", func(t *testing.T) {
 		expected := model.AwsProfile{
-			ID:              utils.Str2oid("000000000000000000000001"),
 			AccessKeyId:     "TestProfileAdd",
 			Region:          "eu-frankfurt-testAdd",
 			SecretAccessKey: &strSecretAccessKeyTestAdd,
 			Selected:        false,
 		}
 
-		db.EXPECT().AddAwsProfile(expected).
-			Return(nil).Times(1)
+		db.EXPECT().AddAwsObject(expected, "aws_profiles").
+			Return(nil)
 
 		profile := model.AwsProfile{
 			AccessKeyId:     "TestProfileAdd",
 			Region:          "eu-frankfurt-testAdd",
 			SecretAccessKey: &strSecretAccessKeyTestAdd,
 		}
-		actual, err := as.AddAwsProfile(profile)
+		err := as.AddAwsProfile(profile)
 		require.NoError(t, err)
-
-		assert.Equal(t, &expected, actual)
 	})
 
 	t.Run("Error", func(t *testing.T) {
 		profile := model.AwsProfile{
 			ID: utils.Str2oid("000000000000000000000002"),
 		}
-		db.EXPECT().AddAwsProfile(profile).
-			Return(errMock).Times(1)
+		db.EXPECT().AddAwsObject(profile, "aws_profiles").
+			Return(errMock)
 
-		actual, err := as.AddAwsProfile(profile)
+		err := as.AddAwsProfile(profile)
 		assert.EqualError(t, err, "MockError")
-
-		assert.Nil(t, actual)
 	})
 }
 
