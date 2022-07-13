@@ -41,7 +41,7 @@ type ThunderServiceInterface interface {
 	ForceGetOciRecommendations() error
 	GetOciRecommendationErrors(seqNum uint64) ([]model.OciRecommendationError, error)
 	SelectOciProfile(profileId string, selected bool) error
-	AddAwsProfile(profile model.AwsProfile) (*model.AwsProfile, error)
+	AddAwsProfile(profile model.AwsProfile) error
 	UpdateAwsProfile(profile model.AwsProfile) (*model.AwsProfile, error)
 	GetAwsProfiles() ([]model.AwsProfile, error)
 	DeleteAwsProfile(id primitive.ObjectID) error

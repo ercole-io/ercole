@@ -58,8 +58,7 @@ func TestAddAwsProfile_Success(t *testing.T) {
 	returnAgr.ID, err = primitive.ObjectIDFromHex("aaaaaaaaaaaaaaaaaaaaaaaa")
 	require.Nil(t, err)
 
-	as.EXPECT().AddAwsProfile(profile).
-		Return(&returnAgr, nil)
+	as.EXPECT().AddAwsProfile(profile).Return(nil)
 
 	agrBytes, err := json.Marshal(profile)
 	require.NoError(t, err)
@@ -76,7 +75,6 @@ func TestAddAwsProfile_Success(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusCreated, rr.Code)
-	assert.JSONEq(t, utils.ToJSON(returnAgr), rr.Body.String())
 }
 
 func TestAddAwsProfile_BadRequest_CantDecode(t *testing.T) {
@@ -203,51 +201,6 @@ func TestAddAwsProfile_BadRequest_SecretAccessKeyNull(t *testing.T) {
 
 	assert.Equal(t, "SecretAccessKey must not be null", feErr.Error)
 	assert.Equal(t, "Bad Request", feErr.Message)
-}
-
-func TestAddAwsProfile_InternalServerError(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockThunderServiceInterface(mockCtrl)
-	ac := ThunderController{
-		TimeNow: utils.Btc(utils.P("2022-06-28T12:02:03Z")),
-		Service: as,
-		Config:  config.Configuration{},
-		Log:     logger.NewLogger("TEST"),
-	}
-
-	var strSecretAccessKeyTestAdd = "SecretAccessKeyTestAdd"
-	profile := model.AwsProfile{
-		AccessKeyId:     "TestProfileAdd",
-		Region:          "eu-frankfurt-testAdd",
-		SecretAccessKey: &strSecretAccessKeyTestAdd,
-		Selected:        false,
-	}
-
-	as.EXPECT().AddAwsProfile(profile).
-		Return(nil, errMock)
-
-	proBytes, err := json.Marshal(profile)
-	require.NoError(t, err)
-
-	reader := bytes.NewReader(proBytes)
-	req, err := http.NewRequest("POST", "/", reader)
-	require.NoError(t, err)
-
-	handler := http.HandlerFunc(ac.AddAwsProfile)
-	rr := httptest.NewRecorder()
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusInternalServerError, rr.Code)
-
-	var feErr utils.ErrorResponseFE
-	decoder := json.NewDecoder(bytes.NewReader(rr.Body.Bytes()))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&feErr)
-	require.NoError(t, err)
-
-	assert.Equal(t, "MockError", feErr.Error)
-	assert.Equal(t, "Internal Server Error", feErr.Message)
 }
 
 func TestUpdateAwsProfile_Success(t *testing.T) {
