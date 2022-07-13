@@ -46,13 +46,13 @@ func (ctrl *ThunderController) AddAwsProfile(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	profileAdded, err := ctrl.Service.AddAwsProfile(profile)
+	err := ctrl.Service.AddAwsProfile(profile)
 	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
-	utils.WriteJSONResponse(w, http.StatusCreated, profileAdded)
+	utils.WriteJSONResponse(w, http.StatusCreated, nil)
 }
 
 func (ctrl *ThunderController) UpdateAwsProfile(w http.ResponseWriter, r *http.Request) {

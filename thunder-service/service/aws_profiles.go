@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -21,15 +21,12 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (as *ThunderService) AddAwsProfile(profile model.AwsProfile) (*model.AwsProfile, error) {
-	profile.ID = as.NewObjectID()
-
-	err := as.Database.AddAwsProfile(profile)
-	if err != nil {
-		return nil, err
+func (as *ThunderService) AddAwsProfile(profile model.AwsProfile) error {
+	if err := as.Database.AddAwsObject(profile, "aws_profiles"); err != nil {
+		return err
 	}
 
-	return &profile, nil
+	return nil
 }
 
 func (as *ThunderService) UpdateAwsProfile(profile model.AwsProfile) (*model.AwsProfile, error) {
