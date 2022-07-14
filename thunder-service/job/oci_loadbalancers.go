@@ -40,7 +40,7 @@ func (job *OciDataRetrieveJob) GetOciUnusedLoadBalancers(profiles []string, seqV
 		customConfigProvider, tenancyOCID, err := job.getOciCustomConfigProviderAndTenancy(profileId)
 
 		if err != nil {
-			recError := ore.SetOciRecommendationError(seqValue, "", model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+			recError := ore.SetOciRecommendationError(seqValue, "", model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 			errors = append(errors, recError)
 
 			continue
@@ -49,7 +49,7 @@ func (job *OciDataRetrieveJob) GetOciUnusedLoadBalancers(profiles []string, seqV
 		listCompartments, err = job.getOciProfileCompartments(tenancyOCID, customConfigProvider)
 
 		if err != nil {
-			recError := ore.SetOciRecommendationError(seqValue, "", model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+			recError := ore.SetOciRecommendationError(seqValue, "", model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 			errors = append(errors, recError)
 
 			continue
@@ -57,7 +57,7 @@ func (job *OciDataRetrieveJob) GetOciUnusedLoadBalancers(profiles []string, seqV
 
 		lbClient, err := loadbalancer.NewLoadBalancerClientWithConfigurationProvider(customConfigProvider)
 		if err != nil {
-			recError := ore.SetOciRecommendationError(seqValue, "", model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+			recError := ore.SetOciRecommendationError(seqValue, "", model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 			errors = append(errors, recError)
 
 			continue
@@ -72,7 +72,7 @@ func (job *OciDataRetrieveJob) GetOciUnusedLoadBalancers(profiles []string, seqV
 			resp, err := lbClient.ListLoadBalancerHealths(context.Background(), req)
 
 			if err != nil {
-				recError := ore.SetOciRecommendationError(seqValue, "", model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+				recError := ore.SetOciRecommendationError(seqValue, "", model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 				errors = append(errors, recError)
 
 				continue
@@ -83,13 +83,13 @@ func (job *OciDataRetrieveJob) GetOciUnusedLoadBalancers(profiles []string, seqV
 					recommendation.Details = make([]model.RecDetail, 0)
 					recommendation.SeqValue = seqValue
 					recommendation.ProfileID = profileId
-					recommendation.Category = model.UnusedResource
-					recommendation.Suggestion = model.DeleteLoadBalancerNotActive
+					recommendation.Category = model.OciUnusedResource
+					recommendation.Suggestion = model.OciDeleteLoadBalancerNotActive
 					recommendation.CompartmentID = compartment.CompartmentID
 					recommendation.CompartmentName = compartment.Name
 					recommendation.Name = ""
 					recommendation.ResourceID = *s.LoadBalancerId
-					recommendation.ObjectType = model.ObjectTypeLoadBalancer
+					recommendation.ObjectType = model.OciObjectTypeLoadBalancer
 					detail1 := model.RecDetail{Name: "Resource Id", Value: *s.LoadBalancerId}
 					detail2 := model.RecDetail{Name: "Resource Type", Value: "Load Balancer"}
 					detail3 := model.RecDetail{Name: "Resource Status", Value: fmt.Sprintf("%v", s.Status)}
@@ -107,7 +107,7 @@ func (job *OciDataRetrieveJob) GetOciUnusedLoadBalancers(profiles []string, seqV
 			resp1, err := lbClient.ListLoadBalancers(context.Background(), req1)
 
 			if err != nil {
-				recError := ore.SetOciRecommendationError(seqValue, "", model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+				recError := ore.SetOciRecommendationError(seqValue, "", model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 				errors = append(errors, recError)
 
 				continue

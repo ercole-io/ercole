@@ -44,7 +44,7 @@ func (job *OciDataRetrieveJob) GetOciUnusedStorage(profiles []string, seqValue u
 
 	volumeList, err := job.getOciVolumeList(profiles)
 	if err != nil {
-		recError := ore.SetOciRecommendationError(seqValue, "", model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+		recError := ore.SetOciRecommendationError(seqValue, "", model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 		errors = append(errors, recError)
 		errDb := job.Database.AddOciRecommendationErrors(errors)
 
@@ -57,7 +57,7 @@ func (job *OciDataRetrieveJob) GetOciUnusedStorage(profiles []string, seqValue u
 
 	attachedVolumeList, err = job.getOciAttachedVolumeList(profiles)
 	if err != nil {
-		recError := ore.SetOciRecommendationError(seqValue, "", model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+		recError := ore.SetOciRecommendationError(seqValue, "", model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 		errors = append(errors, recError)
 		errDb := job.Database.AddOciRecommendationErrors(errors)
 
@@ -78,13 +78,13 @@ func (job *OciDataRetrieveJob) GetOciUnusedStorage(profiles []string, seqValue u
 		recommendation.Details = make([]model.RecDetail, 0)
 		recommendation.SeqValue = seqValue
 		recommendation.ProfileID = vl.ProfileID
-		recommendation.Category = model.UnusedStorage
-		recommendation.Suggestion = model.DeleteBlockStorageNotUsed
+		recommendation.Category = model.OciUnusedStorage
+		recommendation.Suggestion = model.OciDeleteBlockStorageNotUsed
 		recommendation.CompartmentID = vl.CompartmentID
 		recommendation.CompartmentName = vl.CompartmentName
 		recommendation.ResourceID = vl.ResourceID
 		recommendation.Name = vl.Name
-		recommendation.ObjectType = model.ObjectTypeBlockStorage
+		recommendation.ObjectType = model.OciObjectTypeBlockStorage
 		detail1 := model.RecDetail{Name: "Block Storage Name", Value: vl.Name}
 		detail2 := model.RecDetail{Name: "Size", Value: vl.Size}
 		detail3 := model.RecDetail{Name: "Vpu", Value: vl.VpusPerGB}
@@ -242,7 +242,7 @@ func (job *OciDataRetrieveJob) GetOciOldSnapshotDecommissioning(profiles []strin
 	for _, profileId := range profiles {
 		customConfigProvider, tenancyOCID, err := job.getOciCustomConfigProviderAndTenancy(profileId)
 		if err != nil {
-			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+			recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 			errors = append(errors, recError)
 
 			continue
@@ -250,7 +250,7 @@ func (job *OciDataRetrieveJob) GetOciOldSnapshotDecommissioning(profiles []strin
 
 		coreClient, err := core.NewBlockstorageClientWithConfigurationProvider(customConfigProvider)
 		if err != nil {
-			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+			recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 			errors = append(errors, recError)
 
 			continue
@@ -258,7 +258,7 @@ func (job *OciDataRetrieveJob) GetOciOldSnapshotDecommissioning(profiles []strin
 
 		listCompartments, err = job.getOciProfileCompartments(tenancyOCID, customConfigProvider)
 		if err != nil {
-			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+			recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 			errors = append(errors, recError)
 
 			continue
@@ -274,7 +274,7 @@ func (job *OciDataRetrieveJob) GetOciOldSnapshotDecommissioning(profiles []strin
 			resp, err := coreClient.ListVolumeBackups(context.Background(), req)
 
 			if err != nil {
-				recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+				recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 				errors = append(errors, recError)
 
 				continue
@@ -288,13 +288,13 @@ func (job *OciDataRetrieveJob) GetOciOldSnapshotDecommissioning(profiles []strin
 					recommendation.Details = make([]model.RecDetail, 0)
 					recommendation.SeqValue = seqValue
 					recommendation.ProfileID = profileId
-					recommendation.Category = model.OldSnapshot
-					recommendation.Suggestion = model.DeleteSnapshotOlder
+					recommendation.Category = model.OciOldSnapshot
+					recommendation.Suggestion = model.OciDeleteSnapshotOlder
 					recommendation.CompartmentID = compartment.CompartmentID
 					recommendation.CompartmentName = compartment.Name
 					recommendation.ResourceID = *s.Id
 					recommendation.Name = *s.DisplayName
-					recommendation.ObjectType = model.ObjectTypeSnapshot
+					recommendation.ObjectType = model.OciObjectTypeSnapshot
 					detail1 := model.RecDetail{Name: "Snapshot Name", Value: *s.DisplayName}
 					detail2 := model.RecDetail{Name: "Compartment Name", Value: compartment.Name}
 					detail3 := model.RecDetail{Name: "Size", Value: fmt.Sprintf("%d GB", *s.SizeInGBs)}
@@ -316,7 +316,7 @@ func (job *OciDataRetrieveJob) GetOciOldSnapshotDecommissioning(profiles []strin
 			resp1, err := coreClient.ListBootVolumeBackups(context.Background(), req1)
 
 			if err != nil {
-				recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+				recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 				errors = append(errors, recError)
 
 				continue
@@ -328,13 +328,13 @@ func (job *OciDataRetrieveJob) GetOciOldSnapshotDecommissioning(profiles []strin
 					recommendation.Details = make([]model.RecDetail, 0)
 					recommendation.SeqValue = seqValue
 					recommendation.ProfileID = profileId
-					recommendation.Category = model.OldSnapshot
-					recommendation.Suggestion = model.DeleteSnapshotOlder
+					recommendation.Category = model.OciOldSnapshot
+					recommendation.Suggestion = model.OciDeleteSnapshotOlder
 					recommendation.CompartmentID = compartment.CompartmentID
 					recommendation.CompartmentName = compartment.Name
 					recommendation.ResourceID = *s.Id
 					recommendation.Name = *s.DisplayName
-					recommendation.ObjectType = model.ObjectTypeSnapshot
+					recommendation.ObjectType = model.OciObjectTypeSnapshot
 					detail1 := model.RecDetail{Name: "Snapshot Name", Value: *s.DisplayName}
 					detail2 := model.RecDetail{Name: "Compartment Name", Value: compartment.Name}
 					detail3 := model.RecDetail{Name: "Size", Value: fmt.Sprintf("%d GB", *s.SizeInGBs)}

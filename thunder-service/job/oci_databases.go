@@ -75,7 +75,7 @@ func (job *OciDataRetrieveJob) GetOciSISRightsizing(profiles []string, seqValue 
 
 	ercoleDatabases, err := job.Database.GetErcoleDatabases()
 	if err != nil {
-		recError := ore.SetOciRecommendationError(seqValue, "", model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+		recError := ore.SetOciRecommendationError(seqValue, "", model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 		errors = append(errors, recError)
 		errDb := job.Database.AddOciRecommendationErrors(errors)
 
@@ -88,7 +88,7 @@ func (job *OciDataRetrieveJob) GetOciSISRightsizing(profiles []string, seqValue 
 
 	ercoleActiveDatabases, err := job.Database.GetErcoleActiveDatabases()
 	if err != nil {
-		recError := ore.SetOciRecommendationError(seqValue, "", model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+		recError := ore.SetOciRecommendationError(seqValue, "", model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 		errors = append(errors, recError)
 		errDb := job.Database.AddOciRecommendationErrors(errors)
 
@@ -104,7 +104,7 @@ func (job *OciDataRetrieveJob) GetOciSISRightsizing(profiles []string, seqValue 
 	for _, profileId := range profiles {
 		customConfigProvider, tenancyOCID, err := job.getOciCustomConfigProviderAndTenancy(profileId)
 		if err != nil {
-			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+			recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 			errors = append(errors, recError)
 
 			continue
@@ -112,7 +112,7 @@ func (job *OciDataRetrieveJob) GetOciSISRightsizing(profiles []string, seqValue 
 
 		listCompartments, err = job.getOciProfileCompartments(tenancyOCID, customConfigProvider)
 		if err != nil {
-			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+			recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 			errors = append(errors, recError)
 
 			continue
@@ -120,7 +120,7 @@ func (job *OciDataRetrieveJob) GetOciSISRightsizing(profiles []string, seqValue 
 
 		dbClient, err := database.NewDatabaseClientWithConfigurationProvider(customConfigProvider)
 		if err != nil {
-			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+			recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 			errors = append(errors, recError)
 
 			continue
@@ -135,7 +135,7 @@ func (job *OciDataRetrieveJob) GetOciSISRightsizing(profiles []string, seqValue 
 			resp, err := dbClient.ListDbHomes(context.Background(), req)
 
 			if err != nil {
-				recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+				recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 				errors = append(errors, recError)
 
 				continue
@@ -172,7 +172,7 @@ func (job *OciDataRetrieveJob) GetOciSISRightsizing(profiles []string, seqValue 
 					dbList[dbRefId] = dbTmp
 
 					if err1 != nil {
-						recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+						recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 						errors = append(errors, recError)
 
 						continue
@@ -181,7 +181,7 @@ func (job *OciDataRetrieveJob) GetOciSISRightsizing(profiles []string, seqValue 
 					hostnamesAndStatus, err2 := job.getHostamesAndStatus(dbClient, compartment.CompartmentID, dbVal.DBSystemID, dbIdType)
 
 					if err2 != nil {
-						recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+						recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 						errors = append(errors, recError)
 
 						continue
@@ -192,13 +192,13 @@ func (job *OciDataRetrieveJob) GetOciSISRightsizing(profiles []string, seqValue 
 							recommendation.Details = make([]model.RecDetail, 0)
 							recommendation.SeqValue = seqValue
 							recommendation.ProfileID = profileId
-							recommendation.Category = model.UnusedServiceDecommisioning //TYPE 3
-							recommendation.Suggestion = model.DeleteDatabaseInstanceNotActive
+							recommendation.Category = model.OciUnusedServiceDecommisioning //TYPE 3
+							recommendation.Suggestion = model.OciDeleteDatabaseInstanceNotActive
 							recommendation.CompartmentID = compartment.CompartmentID
 							recommendation.CompartmentName = compartment.Name
 							recommendation.ResourceID = val.nodeId
 							recommendation.Name = val.hostname
-							recommendation.ObjectType = model.ObjectTypeDatabase
+							recommendation.ObjectType = model.OciObjectTypeDatabase
 							detail1 := model.RecDetail{Name: "Hostname", Value: val.hostname}
 							detail2 := model.RecDetail{Name: "CPU Core Count", Value: ""}
 
@@ -361,11 +361,11 @@ func (job *OciDataRetrieveJob) manageErcoleDatabases(ercoleDatabases []dto.Ercol
 			recommendation.Details = make([]model.RecDetail, 0)
 			recommendation.SeqValue = seqValue
 			recommendation.ProfileID = dbWork.profileID
-			recommendation.Category = model.SISRightsizing
-			recommendation.Suggestion = model.ResizeOversizedDatabaseInstance
+			recommendation.Category = model.OciSISRightsizing
+			recommendation.Suggestion = model.OciResizeOversizedDatabaseInstance
 			recommendation.Name = dbWork.hostname + "-" + dbWork.uniqueName
 			recommendation.ResourceID = ""
-			recommendation.ObjectType = model.ObjectTypeDatabase
+			recommendation.ObjectType = model.OciObjectTypeDatabase
 			detail1 := model.RecDetail{Name: "Instance Name", Value: recommendation.Name}
 			detail2 := model.RecDetail{Name: "Ercole Installed", Value: "YES"}
 			detail4 := model.RecDetail{Name: "Ercole Host Cpu Thread", Value: fmt.Sprintf("%d", dbWork.cpuThreads)}
@@ -417,13 +417,13 @@ func (job *OciDataRetrieveJob) verifyErcoleAndOciDatabasesConfiguration(ercoleDa
 						recommendation.Details = make([]model.RecDetail, 0)
 						recommendation.SeqValue = seqValue
 						recommendation.ProfileID = v.ProfileID
-						recommendation.Category = model.SISRightsizing
-						recommendation.Suggestion = model.ResizeOversizedDatabaseInstance
+						recommendation.Category = model.OciSISRightsizing
+						recommendation.Suggestion = model.OciResizeOversizedDatabaseInstance
 						recommendation.CompartmentID = v.CompartmentID
 						recommendation.CompartmentName = v.CompartmentName
 						recommendation.Name = eDBlist.Hostname + "-" + fList.UniqueName
 						recommendation.ResourceID = ""
-						recommendation.ObjectType = model.ObjectTypeDatabase
+						recommendation.ObjectType = model.OciObjectTypeDatabase
 						detail1 := model.RecDetail{Name: "Instance Name", Value: recommendation.Name}
 						detail2 := model.RecDetail{Name: "Ercole Installed", Value: "NO"}
 						detail3 := model.RecDetail{Name: "AWR Enabled", Value: "NO"}
@@ -444,13 +444,13 @@ func (job *OciDataRetrieveJob) verifyErcoleAndOciDatabasesConfiguration(ercoleDa
 			recommendation.Details = make([]model.RecDetail, 0)
 			recommendation.SeqValue = seqValue
 			recommendation.ProfileID = v.ProfileID
-			recommendation.Category = model.SISRightsizing
-			recommendation.Suggestion = model.ResizeOversizedDatabaseInstance
+			recommendation.Category = model.OciSISRightsizing
+			recommendation.Suggestion = model.OciResizeOversizedDatabaseInstance
 			recommendation.CompartmentID = v.CompartmentID
 			recommendation.CompartmentName = v.CompartmentName
 			recommendation.Name = k
 			recommendation.ResourceID = ""
-			recommendation.ObjectType = model.ObjectTypeDatabase
+			recommendation.ObjectType = model.OciObjectTypeDatabase
 			detail1 := model.RecDetail{Name: "Instance Name", Value: recommendation.Name}
 			detail2 := model.RecDetail{Name: "Ercole Installed", Value: "NO"}
 			detail3 := model.RecDetail{Name: "AWR Enabled", Value: "NO"}

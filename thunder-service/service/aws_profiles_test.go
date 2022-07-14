@@ -45,6 +45,7 @@ func TestAddAwsProfile(t *testing.T) {
 	var strSecretAccessKeyTestAdd = "PrivateKeyTestAdd"
 	t.Run("Success", func(t *testing.T) {
 		expected := model.AwsProfile{
+			ID:              utils.Str2oid("000000000000000000000001"),
 			AccessKeyId:     "TestProfileAdd",
 			Region:          "eu-frankfurt-testAdd",
 			SecretAccessKey: &strSecretAccessKeyTestAdd,
