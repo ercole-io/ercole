@@ -64,7 +64,7 @@ func (job *AwsDataRetrieveJob) GetAwsUnusedLoadBalancers(profiles []model.AwsPro
 
 		for _, l := range resultelbSvc_c.LoadBalancerDescriptions {
 			if *l.LoadBalancerName != "" {
-				params := *&elb.DescribeInstanceHealthInput{
+				params := elb.DescribeInstanceHealthInput{
 					LoadBalancerName: l.LoadBalancerName,
 				}
 				resultelbSvc, errSvc = elbSvc.DescribeInstanceHealth(&params)
