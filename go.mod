@@ -36,8 +36,12 @@ require (
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 )
 
+require github.com/jmespath/go-jmespath v0.4.0 // indirect
+
 require (
+	github.com/aws/aws-sdk-go v1.44.53
 	github.com/aymerick/douceur v0.2.0 // indirect
+	github.com/coreos/pkg v0.0.0-20220709002704-04386ae12ed0
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/felixge/httpsnoop v1.0.3 // indirect
 	github.com/go-stack/stack v1.8.1 // indirect
