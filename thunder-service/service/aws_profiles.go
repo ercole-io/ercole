@@ -22,6 +22,7 @@ import (
 )
 
 func (as *ThunderService) AddAwsProfile(profile model.AwsProfile) error {
+	profile.ID = as.NewObjectID()
 	if err := as.Database.AddAwsObject(profile, "aws_profiles"); err != nil {
 		return err
 	}

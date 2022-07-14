@@ -7,6 +7,7 @@ require (
 	github.com/360EntSecGroup-Skylar/excelize v1.4.1
 	github.com/OpenPeeDeeP/xdg v1.0.0
 	github.com/amreo/mu v0.0.0-20200710133257-efe27ae7258a
+	github.com/aws/aws-sdk-go v1.44.53
 	github.com/bamzi/jobrunner v1.0.0
 	github.com/fatih/color v1.13.0
 	github.com/goji/httpauth v0.0.0-20160601135302-2da839ab0f4d
@@ -39,9 +40,7 @@ require (
 require github.com/jmespath/go-jmespath v0.4.0 // indirect
 
 require (
-	github.com/aws/aws-sdk-go v1.44.53
 	github.com/aymerick/douceur v0.2.0 // indirect
-	github.com/coreos/pkg v0.0.0-20220709002704-04386ae12ed0
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/felixge/httpsnoop v1.0.3 // indirect
 	github.com/go-stack/stack v1.8.1 // indirect

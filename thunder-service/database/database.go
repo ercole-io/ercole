@@ -63,6 +63,7 @@ type MongoDatabaseInterface interface {
 	SelectAwsProfile(profileId string, selected bool) error
 	AddAwsObject(m interface{}, collection string) error
 	AddAwsObjects(m []interface{}, collection string) error
+	GetLastAwsSeqValue() (uint64, error)
 }
 
 // MongoDatabase is a implementation
