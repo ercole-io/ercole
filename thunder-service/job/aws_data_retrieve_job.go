@@ -20,6 +20,7 @@ import (
 
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
+	"github.com/ercole-io/ercole/v2/model"
 	db "github.com/ercole-io/ercole/v2/thunder-service/database"
 )
 
@@ -35,11 +36,11 @@ type AwsDataRetrieveJob struct {
 }
 
 func (job *AwsDataRetrieveJob) Run() {
-	//if err := job.RetrieveObjectStorageOptimization(); err != nil {
-	//	job.Log.Error(err)
-	//}
+	if err := job.RetrieveObjectStorageOptimization(); err != nil {
+		job.Log.Error(err)
+	}
 
-	var profiles []string
+	var profiles []model.AwsProfile
 
 	var seqValue uint64
 
@@ -53,7 +54,7 @@ func (job *AwsDataRetrieveJob) Run() {
 
 	for _, val := range awsProfiles {
 		if val.Selected {
-			profiles = append(profiles, val.ID.Hex())
+			profiles = append(profiles, val)
 		}
 	}
 
@@ -65,6 +66,6 @@ func (job *AwsDataRetrieveJob) Run() {
 	}
 
 	newSeqValue = seqValue + 1
-	job.GetAwsUnusedLoadBalancers(awsProfiles, newSeqValue)
-	job.GetAwsUnusedIPAddresses(awsProfiles, newSeqValue)
+	job.GetAwsUnusedLoadBalancers(profiles, newSeqValue)
+	job.GetAwsUnusedIPAddresses(profiles, newSeqValue)
 }
