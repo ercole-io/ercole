@@ -26,7 +26,7 @@ import (
 	"github.com/ercole-io/ercole/v2/model"
 )
 
-func (job *AwsRetrieveJob) RetrieveObjectStorageOptimization() error {
+func (job *AwsDataRetrieveJob) RetrieveObjectStorageOptimization() error {
 	awsProfiles, err := job.Database.GetAwsProfiles(false)
 	if err != nil {
 		return err
@@ -45,7 +45,7 @@ func (job *AwsRetrieveJob) RetrieveObjectStorageOptimization() error {
 	return <-c
 }
 
-func (job *AwsRetrieveJob) RetrieveBuckets(profile model.AwsProfile) error {
+func (job *AwsDataRetrieveJob) RetrieveBuckets(profile model.AwsProfile) error {
 	sess, err := session.NewSession(&aws.Config{
 		Region:      aws.String(profile.Region),
 		Credentials: credentials.NewStaticCredentials(profile.AccessKeyId, *profile.SecretAccessKey, ""),
@@ -75,7 +75,7 @@ func (job *AwsRetrieveJob) RetrieveBuckets(profile model.AwsProfile) error {
 	return <-c
 }
 
-func (job *AwsRetrieveJob) RetrieveBucketLifecycleConfiguration(bucketName string, accessKeyId string, svc *s3.S3) error {
+func (job *AwsDataRetrieveJob) RetrieveBucketLifecycleConfiguration(bucketName string, accessKeyId string, svc *s3.S3) error {
 	inputBucket := s3.GetBucketLifecycleConfigurationInput{
 		Bucket: aws.String(bucketName),
 	}
@@ -122,7 +122,7 @@ func (job *AwsRetrieveJob) RetrieveBucketLifecycleConfiguration(bucketName strin
 	return nil
 }
 
-func (job *AwsRetrieveJob) sumSize(contents []*s3.Object, c chan int64) {
+func (job *AwsDataRetrieveJob) sumSize(contents []*s3.Object, c chan int64) {
 	var sum int64
 
 	for _, cnt := range contents {

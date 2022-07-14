@@ -59,7 +59,7 @@ func (j *Job) Init() {
 		jobrunner.Now(ociRemoveOldDataObjectsJob)
 	}
 
-	awsRetrieveJob := AwsRetrieveJob{Database: j.Database, Config: j.Config, Log: j.Log}
+	awsRetrieveJob := AwsDataRetrieveJob{Database: j.Database, Config: j.Config, Log: j.Log}
 	if err := jobrunner.Schedule(j.Config.ThunderService.AwsRetrieveJob.Crontab, &awsRetrieveJob); err != nil {
 		j.Log.Errorf("Something went wrong scheduling AwsRetrieveJob: %v", err)
 	}

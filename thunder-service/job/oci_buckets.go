@@ -39,7 +39,7 @@ func (job *OciDataRetrieveJob) GetOciObjectStorageOptimization(profiles []string
 	for _, profileId := range profiles {
 		customConfigProvider, tenancyOCID, err := job.getOciCustomConfigProviderAndTenancy(profileId)
 		if err != nil {
-			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+			recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 			errors = append(errors, recError)
 
 			continue
@@ -47,7 +47,7 @@ func (job *OciDataRetrieveJob) GetOciObjectStorageOptimization(profiles []string
 
 		listCompartments, err = job.getOciProfileCompartments(tenancyOCID, customConfigProvider)
 		if err != nil {
-			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+			recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 			errors = append(errors, recError)
 
 			continue
@@ -55,7 +55,7 @@ func (job *OciDataRetrieveJob) GetOciObjectStorageOptimization(profiles []string
 
 		osClient, err := objectstorage.NewObjectStorageClientWithConfigurationProvider(customConfigProvider)
 		if err != nil {
-			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+			recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 			errors = append(errors, recError)
 
 			continue
@@ -69,7 +69,7 @@ func (job *OciDataRetrieveJob) GetOciObjectStorageOptimization(profiles []string
 			resp1, err := osClient.GetNamespace(context.Background(), req1)
 
 			if err != nil {
-				recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+				recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 				errors = append(errors, recError)
 
 				continue
@@ -82,7 +82,7 @@ func (job *OciDataRetrieveJob) GetOciObjectStorageOptimization(profiles []string
 			resp2, err := osClient.ListBuckets(context.Background(), req2)
 
 			if err != nil {
-				recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+				recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 				errors = append(errors, recError)
 
 				continue
@@ -97,7 +97,7 @@ func (job *OciDataRetrieveJob) GetOciObjectStorageOptimization(profiles []string
 				resp3, err := osClient.GetBucket(context.Background(), req3)
 
 				if err != nil {
-					recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+					recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 					errors = append(errors, recError)
 
 					continue
@@ -107,8 +107,8 @@ func (job *OciDataRetrieveJob) GetOciObjectStorageOptimization(profiles []string
 					recommendation.Details = make([]model.RecDetail, 0)
 					recommendation.SeqValue = seqValue
 					recommendation.ProfileID = profileId
-					recommendation.Category = model.ObjectStorageOptimization
-					recommendation.Suggestion = model.EnableBucketAutoTiering
+					recommendation.Category = model.OciObjectStorageOptimization
+					recommendation.Suggestion = model.OciEnableBucketAutoTiering
 					recommendation.CompartmentID = compartment.CompartmentID
 					recommendation.CompartmentName = compartment.Name
 					recommendation.ResourceID = *resp3.Id

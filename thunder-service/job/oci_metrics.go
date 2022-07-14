@@ -65,7 +65,7 @@ func (job *OciDataRetrieveJob) GetOciComputeInstancesIdle(profiles []string, seq
 	for _, profileId := range profiles {
 		customConfigProvider, tenancyOCID, err := job.getOciCustomConfigProviderAndTenancy(profileId)
 		if err != nil {
-			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+			recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 			errors = append(errors, recError)
 
 			continue
@@ -73,7 +73,7 @@ func (job *OciDataRetrieveJob) GetOciComputeInstancesIdle(profiles []string, seq
 
 		listCompartments, err = job.getOciProfileCompartments(tenancyOCID, customConfigProvider)
 		if err != nil {
-			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+			recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 			errors = append(errors, recError)
 
 			continue
@@ -85,7 +85,7 @@ func (job *OciDataRetrieveJob) GetOciComputeInstancesIdle(profiles []string, seq
 		for _, compartment := range listCompartments {
 			instances, err := job.getOciInstances(customConfigProvider, compartment.CompartmentID, profileId)
 			if err != nil {
-				recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+				recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 				errors = append(errors, recError)
 
 				continue
@@ -103,7 +103,7 @@ func (job *OciDataRetrieveJob) GetOciComputeInstancesIdle(profiles []string, seq
 
 			monClient, err := monitoring.NewMonitoringClientWithConfigurationProvider(customConfigProvider)
 			if err != nil {
-				recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+				recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 				errors = append(errors, recError)
 
 				continue
@@ -121,7 +121,7 @@ func (job *OciDataRetrieveJob) GetOciComputeInstancesIdle(profiles []string, seq
 
 			resp, err := monClient.SummarizeMetricsData(context.Background(), req)
 			if err != nil {
-				recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+				recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 				errors = append(errors, recError)
 
 				continue
@@ -145,13 +145,13 @@ func (job *OciDataRetrieveJob) GetOciComputeInstancesIdle(profiles []string, seq
 				recommendation.SeqValue = seqValue
 
 				if value.Type == "kubernetes" {
-					recommendation.Category = model.UnusedServiceDecommisioning
-					recommendation.Suggestion = model.DeleteKubernetesNodeNotActive
-					recommendation.ObjectType = model.ObjectTypeClusterKubernetes
+					recommendation.Category = model.OciUnusedServiceDecommisioning
+					recommendation.Suggestion = model.OciDeleteKubernetesNodeNotActive
+					recommendation.ObjectType = model.OciObjectTypeClusterKubernetes
 				} else {
-					recommendation.Category = model.ComputeInstanceIdle
-					recommendation.Suggestion = model.DeleteComputeInstanceNotActive
-					recommendation.ObjectType = model.ObjectTypeComputeInstance
+					recommendation.Category = model.OciComputeInstanceIdle
+					recommendation.Suggestion = model.OciDeleteComputeInstanceNotActive
+					recommendation.ObjectType = model.OciObjectTypeComputeInstance
 				}
 
 				recommendation.CompartmentID = compartment.CompartmentID
@@ -228,7 +228,7 @@ func (job *OciDataRetrieveJob) getOciDataForCoumputeInstanceAndServiceDecommisio
 	for _, profileId := range profiles {
 		customConfigProvider, tenancyOCID, err := job.getOciCustomConfigProviderAndTenancy(profileId)
 		if err != nil {
-			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+			recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 			errors = append(errors, recError)
 
 			continue
@@ -236,7 +236,7 @@ func (job *OciDataRetrieveJob) getOciDataForCoumputeInstanceAndServiceDecommisio
 
 		listCompartments, err = job.getOciProfileCompartments(tenancyOCID, customConfigProvider)
 		if err != nil {
-			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+			recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 			errors = append(errors, recError)
 
 			continue
@@ -244,7 +244,7 @@ func (job *OciDataRetrieveJob) getOciDataForCoumputeInstanceAndServiceDecommisio
 
 		monClient, err := monitoring.NewMonitoringClientWithConfigurationProvider(customConfigProvider)
 		if err != nil {
-			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+			recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 			errors = append(errors, recError)
 
 			continue
@@ -254,7 +254,7 @@ func (job *OciDataRetrieveJob) getOciDataForCoumputeInstanceAndServiceDecommisio
 		for _, compartment := range listCompartments {
 			allInstances, err = job.getOciInstancesList(allInstances, compartment, profileId, customConfigProvider, verifyShape)
 			if err != nil {
-				recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+				recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 				errors = append(errors, recError)
 
 				continue
@@ -262,7 +262,7 @@ func (job *OciDataRetrieveJob) getOciDataForCoumputeInstanceAndServiceDecommisio
 
 			allInstancesWithMetrics, err = job.getOciInstancesWithMetrics(allInstances, allInstancesWithMetrics, compartment, profileId, customConfigProvider, verifyShape)
 			if err != nil {
-				recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+				recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 				errors = append(errors, recError)
 
 				continue
@@ -288,7 +288,7 @@ func (job *OciDataRetrieveJob) getOciDataForCoumputeInstanceAndServiceDecommisio
 
 				instancesNotOptimizable, err = job.countEventsOccurence(allInstances, monClient, strQueryAvgCPU, sTime, eTime, instancesNotOptimizable, compartment, profileId, AvgCPUThreshold, percAvgCPU, verifyShape, allInstanceMetrics, "AvgCPU")
 				if err != nil {
-					recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+					recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 					errors = append(errors, recError)
 				}
 
@@ -301,7 +301,7 @@ func (job *OciDataRetrieveJob) getOciDataForCoumputeInstanceAndServiceDecommisio
 
 				instancesNotOptimizable, err = job.countEventsOccurence(allInstances, monClient, strQueryPeakCPU, sTime, eTime, instancesNotOptimizable, compartment, profileId, PeakCPUThreshold, percPeakCPU, verifyShape, allInstanceMetrics, "PeakCPU")
 				if err != nil {
-					recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+					recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 					errors = append(errors, recError)
 				}
 
@@ -313,7 +313,7 @@ func (job *OciDataRetrieveJob) getOciDataForCoumputeInstanceAndServiceDecommisio
 
 				instancesNotOptimizable, err = job.countEventsOccurence(allInstances, monClient, strQueryMemory, sTime, eTime, instancesNotOptimizable, compartment, profileId, MemoryThreshold, percMemoryUtilization, verifyShape, allInstanceMetrics, "AvgMemory")
 				if err != nil {
-					recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+					recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 					errors = append(errors, recError)
 				}
 			}
@@ -351,24 +351,24 @@ func (job *OciDataRetrieveJob) getOciDataForCoumputeInstanceAndServiceDecommisio
 				recClusterName = model.RecDetail{Name: "Oke Cluster Name", Value: allInstances[inst.ResourceID].ClusterName}
 
 				if recommType == "rightsizing" {
-					recommendation.Category = model.SISRightsizing1
-					recommendation.Suggestion = model.ResizeOversizedKubernetesCluster
+					recommendation.Category = model.OciSISRightsizing1
+					recommendation.Suggestion = model.OciResizeOversizedKubernetesCluster
 				} else {
-					recommendation.Category = model.UnusedServiceDecommisioning
-					recommendation.Suggestion = model.DeleteKubernetesNodeNotUsed
+					recommendation.Category = model.OciUnusedServiceDecommisioning
+					recommendation.Suggestion = model.OciDeleteKubernetesNodeNotUsed
 				}
 
-				recommendation.ObjectType = model.ObjectTypeClusterKubernetes
+				recommendation.ObjectType = model.OciObjectTypeClusterKubernetes
 			} else {
 				if recommType == "rightsizing" {
-					recommendation.Category = model.InstanceRightsizing
-					recommendation.Suggestion = model.ResizeOversizedComputeInstance
+					recommendation.Category = model.OciInstanceRightsizing
+					recommendation.Suggestion = model.OciResizeOversizedComputeInstance
 				} else {
-					recommendation.Category = model.ComputeInstanceDecommisioning
-					recommendation.Suggestion = model.DeleteComputeInstanceNotUsed
+					recommendation.Category = model.OciComputeInstanceDecommisioning
+					recommendation.Suggestion = model.OciDeleteComputeInstanceNotUsed
 				}
 
-				recommendation.ObjectType = model.ObjectTypeComputeInstance
+				recommendation.ObjectType = model.OciObjectTypeComputeInstance
 			}
 
 			recommendation.CompartmentID = inst.CompartmentID
@@ -417,13 +417,13 @@ func (job *OciDataRetrieveJob) getOciDataForCoumputeInstanceAndServiceDecommisio
 
 				if in.Type == "kubernetes" {
 					recClusterName = model.RecDetail{Name: "Oke Cluster Name", Value: allInstances[in.ResourceID].ClusterName}
-					recommendation.Category = model.SISRightsizing1
-					recommendation.Suggestion = model.ResizeOversizedKubernetesCluster
-					recommendation.ObjectType = model.ObjectTypeClusterKubernetes
+					recommendation.Category = model.OciSISRightsizing1
+					recommendation.Suggestion = model.OciResizeOversizedKubernetesCluster
+					recommendation.ObjectType = model.OciObjectTypeClusterKubernetes
 				} else {
-					recommendation.Category = model.InstanceWithoutMonitoring
-					recommendation.Suggestion = model.ResizeOversizedComputeInstance
-					recommendation.ObjectType = model.ObjectTypeComputeInstance
+					recommendation.Category = model.OciInstanceWithoutMonitoring
+					recommendation.Suggestion = model.OciResizeOversizedComputeInstance
+					recommendation.ObjectType = model.OciObjectTypeComputeInstance
 				}
 
 				recommendation.CompartmentID = in.CompartmentID
@@ -634,7 +634,7 @@ func (job *OciDataRetrieveJob) GetOciBlockStorageRightsizing(profiles []string, 
 		customConfigProvider, tenancyOCID, err := job.getOciCustomConfigProviderAndTenancy(profileId)
 
 		if err != nil {
-			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+			recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 			errors = append(errors, recError)
 
 			continue
@@ -643,7 +643,7 @@ func (job *OciDataRetrieveJob) GetOciBlockStorageRightsizing(profiles []string, 
 		listCompartments, err = job.getOciProfileCompartments(tenancyOCID, customConfigProvider)
 
 		if err != nil {
-			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+			recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 			errors = append(errors, recError)
 
 			continue
@@ -656,7 +656,7 @@ func (job *OciDataRetrieveJob) GetOciBlockStorageRightsizing(profiles []string, 
 		monClient, err := monitoring.NewMonitoringClientWithConfigurationProvider(customConfigProvider)
 
 		if err != nil {
-			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+			recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 			errors = append(errors, recError)
 			errDb := job.Database.AddOciRecommendationErrors(errors)
 
@@ -674,7 +674,7 @@ func (job *OciDataRetrieveJob) GetOciBlockStorageRightsizing(profiles []string, 
 			coreClient, err := core.NewBlockstorageClientWithConfigurationProvider(customConfigProvider)
 
 			if err != nil {
-				recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+				recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 				errors = append(errors, recError)
 
 				continue
@@ -687,7 +687,7 @@ func (job *OciDataRetrieveJob) GetOciBlockStorageRightsizing(profiles []string, 
 			resp1, err := coreClient.ListVolumes(context.Background(), req)
 
 			if err != nil {
-				recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+				recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 				errors = append(errors, recError)
 
 				continue
@@ -710,7 +710,7 @@ func (job *OciDataRetrieveJob) GetOciBlockStorageRightsizing(profiles []string, 
 				resp, err := job.getMetricResponse(monClient, compartment.CompartmentID, "VolumeReadThroughput[5d].max()")
 
 				if err != nil {
-					recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+					recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 					errors = append(errors, recError)
 
 					continue
@@ -732,7 +732,7 @@ func (job *OciDataRetrieveJob) GetOciBlockStorageRightsizing(profiles []string, 
 				resp, err = job.getMetricResponse(monClient, compartment.CompartmentID, "VolumeWriteThroughput[5d].max()")
 
 				if err != nil {
-					recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+					recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 					errors = append(errors, recError)
 
 					continue
@@ -754,7 +754,7 @@ func (job *OciDataRetrieveJob) GetOciBlockStorageRightsizing(profiles []string, 
 				resp, err = job.getMetricResponse(monClient, compartment.CompartmentID, "VolumeReadOps[5d].max()")
 
 				if err != nil {
-					recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+					recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 					errors = append(errors, recError)
 
 					continue
@@ -776,7 +776,7 @@ func (job *OciDataRetrieveJob) GetOciBlockStorageRightsizing(profiles []string, 
 				resp, err = job.getMetricResponse(monClient, compartment.CompartmentID, "VolumeWriteOps[5d].max()")
 
 				if err != nil {
-					recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+					recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
 					errors = append(errors, recError)
 
 					continue
@@ -801,13 +801,13 @@ func (job *OciDataRetrieveJob) GetOciBlockStorageRightsizing(profiles []string, 
 							recommendation.Details = make([]model.RecDetail, 0)
 							recommendation.SeqValue = seqValue
 							recommendation.ProfileID = profileId
-							recommendation.Category = model.BlockStorageRightsizing
-							recommendation.Suggestion = model.ResizeOversizedBlockStorage
+							recommendation.Category = model.OciBlockStorageRightsizing
+							recommendation.Suggestion = model.OciResizeOversizedBlockStorage
 							recommendation.CompartmentID = compartment.CompartmentID
 							recommendation.CompartmentName = compartment.Name
 							recommendation.ResourceID = v.ResourceID
 							recommendation.Name = v.Name
-							recommendation.ObjectType = model.ObjectTypeBlockStorage
+							recommendation.ObjectType = model.OciObjectTypeBlockStorage
 
 							detail1 := model.RecDetail{Name: "Block Storage Name", Value: v.Name}
 							detail2 := model.RecDetail{Name: "VPU", Value: fmt.Sprintf("%d", v.VpusPerGB)}

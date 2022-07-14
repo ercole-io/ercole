@@ -15,3 +15,17 @@ type AwsRecommendation struct {
 	Details    []map[string]interface{} `json:"details" bson:"details"`
 	CreatedAt  time.Time                `json:"createdAt" bson:"createdAt"`
 }
+
+const (
+	AwsUnusedResource = "Unused Resource"
+)
+
+const (
+	AwsObjectTypeLoadBalancer = "Load Balancer"
+	AwsPublicID               = "Public IP"
+)
+
+const (
+	AwsDeleteLoadBalancerNotActive        = "Delete Load balancer not active"
+	AwsDeletePublicIPAddressNotAssociated = "Delete public IP address not associated"
+)
