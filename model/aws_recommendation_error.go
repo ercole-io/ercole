@@ -13,25 +13,24 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package job
+package model
 
-import (
-	"github.com/ercole-io/ercole/v2/config"
-	"github.com/ercole-io/ercole/v2/logger"
-	db "github.com/ercole-io/ercole/v2/thunder-service/database"
-)
+import "time"
 
-type AwsRetrieveJob struct {
-	// Database contains the database layer
-	Database db.MongoDatabaseInterface
-	// Config contains the dataservice global configuration
-	Config config.Configuration
-	// Log contains logger formatted
-	Log logger.Logger
+type AwsRecommendationError struct {
+	SeqValue  uint64    `json:"seqValue" bson:"seqValue"`
+	ProfileID string    `json:"profileID" bson:"profileID"`
+	CreatedAt time.Time `json:"createdAt" bson:"createdAt"`
+	Error     string    `json:"error" bson:"error"`
 }
 
-func (job *AwsRetrieveJob) Run() {
-	if err := job.RetrieveObjectStorageOptimization(); err != nil {
-		job.Log.Error(err)
+func (are AwsRecommendationError) SetAwsRecommendationError(seqValue uint64, profileID string, createdAt time.Time, strError string) AwsRecommendationError {
+	recError := AwsRecommendationError{
+		SeqValue:  seqValue,
+		ProfileID: profileID,
+		CreatedAt: createdAt,
+		Error:     strError,
 	}
+
+	return recError
 }
