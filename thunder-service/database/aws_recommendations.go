@@ -45,6 +45,46 @@ func (md *MongoDatabase) AddAwsObjects(m []interface{}, collection string) error
 	return nil
 }
 
+func (md *MongoDatabase) GetAwsRecommendations(profileIDs []string) ([]model.AwsRecommendation, error) {
+	ctx := context.TODO()
+
+	findOptions := options.Find()
+	findOptions.SetSort(bson.M{"seqValue": -1})
+
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(AwsRecommendation_collection).Find(ctx, bson.D{}, findOptions)
+	if err != nil {
+		return nil, utils.NewError(err, "DB ERROR")
+	}
+
+	awsRecommendations := make([]model.AwsRecommendation, 0)
+	if err := cur.All(context.TODO(), &awsRecommendations); err != nil {
+		return nil, utils.NewError(err, "DB ERROR")
+	}
+
+	if err := cur.Err(); err != nil {
+		return nil, utils.NewError(err, "DB ERROR")
+	}
+
+	awsRecommendation1 := make([]model.AwsRecommendation, 0)
+
+	if len(awsRecommendations) > 0 {
+		inCondition := bson.M{"$in": profileIDs}
+
+		filter := bson.M{"seqValue": awsRecommendations[0].SeqValue, "profileID": inCondition}
+
+		cur1, err1 := md.Client.Database(md.Config.Mongodb.DBName).Collection(AwsRecommendation_collection).Find(ctx, filter)
+		if err1 != nil {
+			return nil, utils.NewError(err, "DB ERROR")
+		}
+
+		if err := cur1.All(context.TODO(), &awsRecommendation1); err != nil {
+			return nil, utils.NewError(err, "DB ERROR")
+		}
+	}
+
+	return awsRecommendation1, nil
+}
+
 func (md *MongoDatabase) GetLastAwsSeqValue() (uint64, error) {
 	ctx := context.TODO()
 
