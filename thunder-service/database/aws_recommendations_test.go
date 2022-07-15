@@ -172,3 +172,76 @@ func (m *MongodbSuite) TestGetLastAwsSeqValue_Success() {
 
 	assert.Equal(m.T(), expected, result)
 }
+
+func (m *MongodbSuite) TestGetAwsRecommendations_Success() {
+	var recs []interface{}
+	var results []model.AwsRecommendation
+	var profiles = []string{"TestProfile1", "TestProfile4", "TestProfile5", "TestProfile6"}
+
+	recs = append(recs, recAws1, recAws2, recAws3, recAws4, recAws5, recAws6)
+	err := m.db.AddAwsObjects(recs, "aws_recommendations")
+	require.NoError(m.T(), err)
+	defer m.db.Client.Database(m.dbname).Collection("aws_recommendations").DeleteMany(context.TODO(), bson.M{})
+	results, err = m.db.GetAwsRecommendations(profiles)
+	require.NoError(m.T(), err)
+
+	expected := []model.AwsRecommendation{
+		{
+			SeqValue:   999,
+			ProfileID:  "TestProfile1",
+			Category:   "TestCategory1",
+			Suggestion: "Suggestion1",
+			Name:       "Name1",
+			ResourceID: "ResourceID1",
+			ObjectType: "ObjectType1",
+			Details: []map[string]interface{}{
+				{"NameA": "ValueA"},
+				{"NameB": "ValueA"},
+			},
+			CreatedAt: time.Date(2022, 5, 26, 0, 0, 1, 0, time.UTC),
+		},
+		{
+			SeqValue:   999,
+			ProfileID:  "TestProfile4",
+			Category:   "TestCategory4",
+			Suggestion: "Suggestion4",
+			Name:       "Name4",
+			ResourceID: "ResourceID4",
+			ObjectType: "ObjectType4",
+			Details: []map[string]interface{}{
+				{"NameG": "ValueG"},
+				{"NameH": "ValueH"},
+			},
+			CreatedAt: time.Date(2022, 5, 26, 0, 0, 4, 0, time.UTC),
+		},
+		{
+			SeqValue:   999,
+			ProfileID:  "TestProfile5",
+			Category:   "TestCategory5",
+			Suggestion: "Suggestion5",
+			Name:       "Name5",
+			ResourceID: "ResourceID5",
+			ObjectType: "ObjectType5",
+			Details: []map[string]interface{}{
+				{"NameI": "ValueI"},
+				{"NameL": "ValueL"},
+				{"NameM": "ValueM"},
+			},
+			CreatedAt: time.Date(2022, 5, 20, 0, 0, 5, 0, time.UTC),
+		},
+		{
+			SeqValue:   999,
+			ProfileID:  "TestProfile6",
+			Category:   "TestCategory6",
+			Suggestion: "Suggestion6",
+			Name:       "Name6",
+			ResourceID: "ResourceID6",
+			ObjectType: "ObjectType6",
+			Details: []map[string]interface{}{
+				{"NameN": "ValueN"},
+			},
+			CreatedAt: time.Date(2022, 4, 26, 0, 0, 6, 0, time.UTC),
+		},
+	}
+	assert.ElementsMatch(m.T(), expected, results)
+}

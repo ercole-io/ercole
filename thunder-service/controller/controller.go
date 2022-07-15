@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -56,6 +56,8 @@ type ThunderControllerInterface interface {
 	DeleteAwsProfile(w http.ResponseWriter, r *http.Request)
 	// SelectAwsProfile define if a profile is active or not to retrieve recommendations associated to it
 	SelectAwsProfile(w http.ResponseWriter, r *http.Request)
+	// GetAwsRecommendations get recommendations saved from Amazon Web Services Infrastructure
+	GetAwsRecommendations(w http.ResponseWriter, r *http.Request)
 }
 
 // ThunderController is the struct used to handle the requests from agents and contains the concrete implementation of ThunderControllerInterface

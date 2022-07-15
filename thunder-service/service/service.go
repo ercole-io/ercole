@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -46,6 +46,7 @@ type ThunderServiceInterface interface {
 	GetAwsProfiles() ([]model.AwsProfile, error)
 	DeleteAwsProfile(id primitive.ObjectID) error
 	SelectAwsProfile(profileId string, selected bool) error
+	GetAwsRecommendations() ([]model.AwsRecommendation, error)
 }
 
 type ThunderService struct {
