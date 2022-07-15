@@ -54,4 +54,5 @@ func (ctrl *ThunderController) setupProtectedRoutes(router *mux.Router) {
 	router.HandleFunc("/aws/configurations/{id}", ctrl.UpdateAwsProfile).Methods("PUT")
 	router.HandleFunc("/aws/configurations/{id}", ctrl.DeleteAwsProfile).Methods("DELETE")
 	router.HandleFunc("/aws/profile-selection/profileid/{profileid}/selected/{selected}", ctrl.SelectAwsProfile).Methods("PUT")
+	router.HandleFunc("/aws/aws-recommendations", ctrl.GetAwsRecommendations).Methods("GET")
 }

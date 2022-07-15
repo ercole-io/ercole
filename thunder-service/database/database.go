@@ -61,9 +61,11 @@ type MongoDatabaseInterface interface {
 	DeleteAwsProfile(id primitive.ObjectID) error
 	UpdateAwsProfile(profile model.AwsProfile) error
 	SelectAwsProfile(profileId string, selected bool) error
+	GetSelectedAwsProfiles() ([]string, error)
 	AddAwsObject(m interface{}, collection string) error
 	AddAwsObjects(m []interface{}, collection string) error
 	GetLastAwsSeqValue() (uint64, error)
+	GetAwsRecommendations(profileIDs []string) ([]model.AwsRecommendation, error)
 }
 
 // MongoDatabase is a implementation
