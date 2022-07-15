@@ -82,7 +82,7 @@ func (job *AwsDataRetrieveJob) GetAwsUnusedLoadBalancers(profiles []model.AwsPro
 						recommendation.ProfileID = profile.ID.Hex()
 						recommendation.Category = model.AwsUnusedResource
 						recommendation.Suggestion = model.AwsDeleteLoadBalancerNotActive
-						recommendation.Name = ""
+						recommendation.Name = *l.LoadBalancerName
 						recommendation.ResourceID = *p.InstanceId
 						recommendation.ObjectType = model.AwsObjectTypeLoadBalancer
 						recommendation.Details = []map[string]interface{}{
@@ -109,12 +109,13 @@ func (job *AwsDataRetrieveJob) GetAwsUnusedLoadBalancers(profiles []model.AwsPro
 		}
 
 		for _, l := range resultelbv2Svc.LoadBalancers {
-			if *l.State.Code == "failed" {
+			//if *l.State.Code == "failed" {
+			if *l.State.Code == "active" {
 				recommendation.SeqValue = seqValue
 				recommendation.ProfileID = profile.ID.Hex()
 				recommendation.Category = model.AwsUnusedResource
 				recommendation.Suggestion = model.AwsDeleteLoadBalancerNotActive
-				recommendation.Name = ""
+				recommendation.Name = *l.LoadBalancerName
 				recommendation.ResourceID = *l.VpcId
 				recommendation.ObjectType = model.AwsObjectTypeLoadBalancer
 				recommendation.Details = []map[string]interface{}{
