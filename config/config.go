@@ -165,7 +165,7 @@ type ThunderService struct {
 	OciDataRetrieveJob OciDataRetrieveJob
 	// OciRemoveOldDataObjectsJob job to remove old data objects
 	OciRemoveOldDataObjectsJob OciRemoveOldDataObjectsJob
-	AwsRetrieveJob             AwsRetrieveJob
+	AwsDataRetrieveJob         AwsDataRetrieveJob
 }
 
 // Mongodb contains configuration about the database connection, some data logic and migration
@@ -228,7 +228,7 @@ type OciRemoveOldDataObjectsJob struct {
 	RunAtStartup bool
 }
 
-type AwsRetrieveJob struct {
+type AwsDataRetrieveJob struct {
 	// Crontab contains the crontab string used to schedule the cleaning
 	Crontab string
 	// DaysThreshold contains the threshdold of the archived host cleaning

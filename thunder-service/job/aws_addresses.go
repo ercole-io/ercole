@@ -24,72 +24,55 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/thunder-service/database"
 )
 
-func (job *AwsDataRetrieveJob) GetAwsUnusedIPAddresses(profiles []model.AwsProfile, seqValue uint64) {
-	var are model.AwsRecommendationError
-
+func (job *AwsDataRetrieveJob) FetchAwsUnusedIPAddresses(profile model.AwsProfile, seqValue uint64) error {
 	var recommendation model.AwsRecommendation
 
 	listRec := make([]interface{}, 0)
-	errors := make([]interface{}, 0)
 
-	for _, profile := range profiles {
-		sess, err := session.NewSession(&aws.Config{
-			Region:      aws.String(profile.Region),
-			Credentials: credentials.NewStaticCredentials(profile.AccessKeyId, *profile.SecretAccessKey, ""),
-		})
-		if err != nil {
-			recError := are.SetAwsRecommendationError(seqValue, "", time.Now().UTC(), err.Error())
-			errors = append(errors, recError)
+	sess, err := session.NewSession(&aws.Config{
+		Region:      aws.String(profile.Region),
+		Credentials: credentials.NewStaticCredentials(profile.AccessKeyId, *profile.SecretAccessKey, ""),
+	})
+	if err != nil {
+		return err
+	}
 
-			continue
-		}
+	ec2Svc := ec2.New(sess)
 
-		ec2Svc := ec2.New(sess)
-		resultec2Svc, err := ec2Svc.DescribeAddresses(nil)
+	resultec2Svc, err := ec2Svc.DescribeAddresses(nil)
+	if err != nil {
+		return err
+	}
 
-		if err != nil {
-			recError := are.SetAwsRecommendationError(seqValue, "", time.Now().UTC(), err.Error())
-			errors = append(errors, recError)
-
-			continue
-		}
-
-		for _, w := range resultec2Svc.Addresses {
-			if *w.AssociationId != "" {
-				recommendation.SeqValue = seqValue
-				recommendation.ProfileID = profile.ID.Hex()
-				recommendation.Category = model.AwsUnusedResource
-				recommendation.Suggestion = model.AwsDeletePublicIPAddressNotAssociated
-				recommendation.Name = *w.PublicIp
-				recommendation.ResourceID = *w.AllocationId
-				recommendation.ObjectType = model.AwsPublicID
-				recommendation.Details = []map[string]interface{}{
-					{"Resource Id": *w.AllocationId},
-					{"Resource Type": "Public IP"},
-					{"Resource Status": "Not associated"},
-				}
-				recommendation.CreatedAt = time.Now().UTC()
-
-				listRec = append(listRec, recommendation)
+	for _, w := range resultec2Svc.Addresses {
+		if *w.AssociationId == "" {
+			recommendation.SeqValue = seqValue
+			recommendation.ProfileID = profile.ID.Hex()
+			recommendation.Category = model.AwsUnusedResource
+			recommendation.Suggestion = model.AwsDeletePublicIPAddressNotAssociated
+			recommendation.Name = *w.PublicIp
+			recommendation.ResourceID = *w.AllocationId
+			recommendation.ObjectType = model.AwsPublicID
+			recommendation.Details = []map[string]interface{}{
+				{"RESOURCE_ID": *w.AllocationId},
+				{"RESOURCE_TYPE": "Public IP"},
+				{"RESOURCE_STATUS": "Not associated"},
 			}
+			recommendation.CreatedAt = time.Now().UTC()
+
+			listRec = append(listRec, recommendation)
 		}
 	}
 
 	if len(listRec) > 0 {
-		errDb := job.Database.AddAwsObjects(listRec, "aws_recommendations")
-
+		errDb := job.Database.AddAwsObjects(listRec, database.AwsRecommendationCollection)
 		if errDb != nil {
-			job.Log.Error(errDb)
+			return errDb
 		}
 	}
 
-	if len(errors) > 0 {
-		errDb := job.Database.AddAwsObjects(errors, "aws_recommendations_errors")
-
-		if errDb != nil {
-			job.Log.Error(errDb)
-		}
-	}
+	return nil
 }
