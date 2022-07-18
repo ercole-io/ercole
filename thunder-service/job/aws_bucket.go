@@ -24,28 +24,11 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/thunder-service/database"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (job *AwsDataRetrieveJob) RetrieveObjectStorageOptimization() error {
-	awsProfiles, err := job.Database.GetAwsProfiles(false)
-	if err != nil {
-		return err
-	}
-
-	c := make(chan error)
-
-	for _, profile := range awsProfiles {
-		go func(profile model.AwsProfile) {
-			if err := job.RetrieveBuckets(profile); err != nil {
-				c <- err
-			}
-		}(profile)
-	}
-
-	return <-c
-}
-
-func (job *AwsDataRetrieveJob) RetrieveBuckets(profile model.AwsProfile) error {
+func (job *AwsDataRetrieveJob) FetchObjectStorageOptimization(profile model.AwsProfile, seq uint64) error {
 	sess, err := session.NewSession(&aws.Config{
 		Region:      aws.String(profile.Region),
 		Credentials: credentials.NewStaticCredentials(profile.AccessKeyId, *profile.SecretAccessKey, ""),
@@ -65,17 +48,17 @@ func (job *AwsDataRetrieveJob) RetrieveBuckets(profile model.AwsProfile) error {
 	c := make(chan error)
 
 	for _, v := range result.Buckets {
-		go func(name string, accessKeyId string) {
-			if err := job.RetrieveBucketLifecycleConfiguration(name, accessKeyId, svc); err != nil {
+		go func(name string, profileID primitive.ObjectID, seq uint64) {
+			if err := job.FetchBucketLifecycleConfiguration(name, profile.ID, seq, svc); err != nil {
 				c <- err
 			}
-		}(*v.Name, profile.AccessKeyId)
+		}(*v.Name, profile.ID, seq)
 	}
 
 	return <-c
 }
 
-func (job *AwsDataRetrieveJob) RetrieveBucketLifecycleConfiguration(bucketName string, accessKeyId string, svc *s3.S3) error {
+func (job *AwsDataRetrieveJob) FetchBucketLifecycleConfiguration(bucketName string, profileID primitive.ObjectID, seqValue uint64, svc *s3.S3) error {
 	inputBucket := s3.GetBucketLifecycleConfigurationInput{
 		Bucket: aws.String(bucketName),
 	}
@@ -98,7 +81,11 @@ func (job *AwsDataRetrieveJob) RetrieveBucketLifecycleConfiguration(bucketName s
 				objSum := <-c + <-c
 
 				awsRecommendation := model.AwsRecommendation{
-					ProfileID: accessKeyId,
+					SeqValue:   seqValue,
+					ProfileID:  profileID.Hex(),
+					Category:   model.AwsObjectStorageOptimization,
+					Suggestion: model.AwsObjectStorageOptimizationSuggestion,
+					ObjectType: model.AwsObjectStorageOptimizationType,
 					Details: []map[string]interface{}{
 						{"OPTIMIZATION": "ENABLE AUTO-TIERING"},
 						{"BUCKET_NAME": bucketName},
@@ -106,9 +93,11 @@ func (job *AwsDataRetrieveJob) RetrieveBucketLifecycleConfiguration(bucketName s
 						{"SIZE": objSum},
 					},
 					CreatedAt: time.Now(),
+					Errors: []map[string]string{
+						{aerr.Code(): aerr.Error()},
+					},
 				}
-				if errDb := job.Database.AddAwsObject(awsRecommendation, "aws_recommendations"); errDb != nil {
-					job.Log.Error(errDb)
+				if errDb := job.Database.AddAwsObject(awsRecommendation, database.AwsRecommendationCollection); errDb != nil {
 					return errDb
 				}
 			default:

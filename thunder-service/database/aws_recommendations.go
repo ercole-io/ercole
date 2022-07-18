@@ -25,7 +25,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const AwsRecommendation_collection = "aws_recommendations"
+const AwsRecommendationCollection = "aws_recommendations"
 
 func (md *MongoDatabase) AddAwsObject(m interface{}, collection string) error {
 	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(collection).InsertOne(context.TODO(), m)
@@ -51,7 +51,7 @@ func (md *MongoDatabase) GetAwsRecommendations(profileIDs []string) ([]model.Aws
 	findOptions := options.Find()
 	findOptions.SetSort(bson.M{"seqValue": -1})
 
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(AwsRecommendation_collection).Find(ctx, bson.D{}, findOptions)
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(AwsRecommendationCollection).Find(ctx, bson.D{}, findOptions)
 	if err != nil {
 		return nil, utils.NewError(err, "DB ERROR")
 	}
@@ -72,7 +72,7 @@ func (md *MongoDatabase) GetAwsRecommendations(profileIDs []string) ([]model.Aws
 
 		filter := bson.M{"seqValue": awsRecommendations[0].SeqValue, "profileID": inCondition}
 
-		cur1, err1 := md.Client.Database(md.Config.Mongodb.DBName).Collection(AwsRecommendation_collection).Find(ctx, filter)
+		cur1, err1 := md.Client.Database(md.Config.Mongodb.DBName).Collection(AwsRecommendationCollection).Find(ctx, filter)
 		if err1 != nil {
 			return nil, utils.NewError(err, "DB ERROR")
 		}
@@ -91,7 +91,7 @@ func (md *MongoDatabase) GetLastAwsSeqValue() (uint64, error) {
 	findOptions := options.Find()
 	findOptions.SetSort(bson.M{"seqValue": -1})
 
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(AwsRecommendation_collection).Find(ctx, bson.D{}, findOptions)
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(AwsRecommendationCollection).Find(ctx, bson.D{}, findOptions)
 	if err != nil {
 		return math.MaxUint64, utils.NewError(err, "DB ERROR")
 	}
