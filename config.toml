@@ -134,6 +134,10 @@ Crontab = "@daily"
 DaysThreshold = 1
 RunAtStartup = false
 
+[ThunderService.AwsDataRetrieveJob]
+Crontab = "@daily"
+DaysThreshold = 1
+RunAtStartup = false
 
 [Mongodb]
 URI = "mongodb://localhost:27017/ercole"
