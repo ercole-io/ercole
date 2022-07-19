@@ -216,6 +216,8 @@ type APIServiceInterface interface {
 	SearchPostgreSqlInstances(filter dto.SearchPostgreSqlInstancesFilter) (*dto.PostgreSqlInstanceResponse, error)
 	// SearchOracleDatabases search databases
 	SearchPostgreSqlInstancesAsXLSX(filter dto.SearchPostgreSqlInstancesFilter) (*excelize.File, error)
+
+	GetDatabaseConnectionStatus() bool
 }
 
 // APIService is the concrete implementation of APIServiceInterface.
