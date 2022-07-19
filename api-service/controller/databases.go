@@ -263,3 +263,13 @@ func (ctrl *APIController) GetUsedLicensesPerClusterAsXLSX(w http.ResponseWriter
 
 	utils.WriteXLSXResponse(w, xlsx)
 }
+
+func (ctrl *APIController) GetDatabaseConnectionStatus(w http.ResponseWriter, r *http.Request) {
+	status := ctrl.Service.GetDatabaseConnectionStatus()
+
+	response := map[string]bool{
+		"connected": status,
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, response)
+}
