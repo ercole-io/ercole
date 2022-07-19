@@ -69,6 +69,12 @@ func (job *AwsDataRetrieveJob) Run() {
 				c <- err
 			}
 		}(profile, seqValue)
+
+		go func(profile model.AwsProfile, seq uint64) {
+			if err := job.FetchAwsNotActiveInstances(profile, seq); err != nil {
+				c <- err
+			}
+		}(profile, seqValue)
 	}
 
 	job.Log.Error(<-c)

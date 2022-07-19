@@ -33,10 +33,13 @@ type AwsRecommendation struct {
 
 const (
 	AwsUnusedResource                      = "Unused Resource"
+	AwsNotActiveResource                   = "Not Active Resource"
 	AwsObjectTypeLoadBalancer              = "Load Balancer"
 	AwsPublicID                            = "Public IP"
+	AwsComputeInstance                     = "Compute Instance"
 	AwsDeleteLoadBalancerNotActive         = "Delete Load balancer not active"
 	AwsDeletePublicIPAddressNotAssociated  = "Delete public IP address not associated"
+	AwsDeleteComputeInstanceNotActive      = "Delete Compute Instance not active"
 	AwsObjectStorageOptimization           = "Object Storage Optimization"
 	AwsObjectStorageOptimizationSuggestion = "Enable bucket auto tiering"
 	AwsObjectStorageOptimizationType       = "Object Storage"
