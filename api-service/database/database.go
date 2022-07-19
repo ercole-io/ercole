@@ -36,6 +36,7 @@ import (
 type MongoDatabaseInterface interface {
 	// Init initializes the connection to the database
 	Init()
+	CheckStatusMongodb() error
 	// SearchHosts search hosts
 	SearchHosts(mode string, filters dto.SearchHostsFilters) ([]map[string]interface{}, error)
 	GetHostDataSummaries(filters dto.SearchHostsFilters) ([]dto.HostDataSummary, error)
@@ -238,4 +239,25 @@ func (md *MongoDatabase) ConnectToMongodb() {
 	if err != nil {
 		md.Log.Warn(err)
 	}
+}
+
+func (md *MongoDatabase) CheckStatusMongodb() error {
+	var err error
+
+	clientOptions := options.Client().ApplyURI(md.Config.Mongodb.URI)
+
+	md.Client, err = mongo.Connect(context.TODO(), clientOptions)
+	if err != nil {
+		return err
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	err = md.Client.Ping(ctx, nil)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
