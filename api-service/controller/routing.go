@@ -137,6 +137,8 @@ func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 	router.HandleFunc("/alerts", ctrl.SearchAlerts).Methods("GET")
 	router.HandleFunc("/alerts/ack", ctrl.AckAlerts).Methods("POST")
 
+	router.HandleFunc("/database/connection/status", ctrl.GetDatabaseConnectionStatus).Methods("GET")
+
 	ctrl.setupSettingsRoutes(router.PathPrefix("/settings").Subrouter())
 	ctrl.setupFrontendAPIRoutes(router.PathPrefix("/frontend").Subrouter())
 }

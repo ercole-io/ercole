@@ -30,6 +30,11 @@ import (
 	"github.com/ercole-io/ercole/v2/utils/exutils"
 )
 
+func (as *APIService) GetDatabaseConnectionStatus() bool {
+	err := as.Database.CheckStatusMongodb()
+	return err == nil
+}
+
 func (as *APIService) SearchDatabases(filter dto.GlobalFilter) ([]dto.Database, error) {
 	type getter func(filter dto.GlobalFilter) ([]dto.Database, error)
 
