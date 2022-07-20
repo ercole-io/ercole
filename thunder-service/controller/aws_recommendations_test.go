@@ -26,6 +26,7 @@ import (
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/thunder-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/golang/mock/gomock"
 	"github.com/gorilla/mux"
@@ -146,4 +147,41 @@ func TestGetAwsRecommendations_InternalServerError(t *testing.T) {
 
 	assert.Equal(t, "MockError", feErr.Error)
 	assert.Equal(t, "Internal Server Error", feErr.Message)
+}
+
+func TestGetAwsRecommendationsErrors_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockThunderServiceInterface(mockCtrl)
+	ac := ThunderController{
+		TimeNow: utils.Btc(utils.P("2022-05-30T12:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     logger.NewLogger("TEST"),
+	}
+
+	recs := []model.AwsRecommendation{
+		{
+			SeqValue:  998,
+			Category:  "",
+			Errors:    []map[string]string{{"error": "error details"}},
+			CreatedAt: time.Date(2022, 5, 30, 0, 0, 1, 0, time.UTC),
+		},
+	}
+
+	as.EXPECT().GetAwsRecommendationsBySeqValue(uint64(998)).Return(recs, nil)
+
+	expectedRes := dto.ToAwsRecommendationsErrorsDto(recs)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.GetAwsRecommendationsErrors)
+
+	req, err := http.NewRequest("GET", "/aws/aws-recommendation-errors/{seqnum}", nil)
+	require.NoError(t, err)
+	req = mux.SetURLVars(req, map[string]string{"seqnum": "998"})
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusOK, rr.Code)
+	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
 }

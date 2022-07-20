@@ -19,8 +19,11 @@ package controller
 import (
 	"errors"
 	"net/http"
+	"strconv"
 
+	"github.com/ercole-io/ercole/v2/thunder-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/gorilla/mux"
 )
 
 //GetAwsRecommendations get recommendation related to cloud from Ercole
@@ -58,4 +61,32 @@ func (ctrl *ThunderController) GetAwsRecommendations(w http.ResponseWriter, r *h
 	}
 
 	utils.WriteJSONResponse(w, http.StatusPartialContent, response)
+}
+
+func (ctrl *ThunderController) GetAwsRecommendationsErrors(w http.ResponseWriter, r *http.Request) {
+	if seqValue, ok := mux.Vars(r)["seqnum"]; ok {
+		seqValue, err := strconv.ParseUint(seqValue, 10, 64)
+		if err != nil {
+			utils.WriteJSONResponse(w, http.StatusBadRequest, err)
+			return
+		}
+
+		recommendations, err := ctrl.Service.GetAwsRecommendationsBySeqValue(seqValue)
+		if err != nil {
+			utils.WriteJSONResponse(w, http.StatusUnprocessableEntity, err)
+			return
+		}
+
+		utils.WriteJSONResponse(w, http.StatusOK, dto.ToAwsRecommendationsErrorsDto(recommendations))
+
+		return
+	}
+
+	recommendations, err := ctrl.Service.GetLastAwsRecommendations()
+	if err != nil {
+		utils.WriteJSONResponse(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, dto.ToAwsRecommendationsErrorsDto(recommendations))
 }
