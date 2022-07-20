@@ -58,6 +58,8 @@ type ThunderControllerInterface interface {
 	SelectAwsProfile(w http.ResponseWriter, r *http.Request)
 	// GetAwsRecommendations get recommendations saved from Amazon Web Services Infrastructure
 	GetAwsRecommendations(w http.ResponseWriter, r *http.Request)
+	// ForceGetAwsRecommendations force retrieving recommendations from Amazon Web Services Infrastructure
+	ForceGetAwsRecommendations(w http.ResponseWriter, r *http.Request)
 }
 
 // ThunderController is the struct used to handle the requests from agents and contains the concrete implementation of ThunderControllerInterface

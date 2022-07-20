@@ -16,7 +16,11 @@
 // Package service is a package that provides methods for querying data
 package service
 
-import "github.com/ercole-io/ercole/v2/model"
+import (
+	"github.com/ercole-io/ercole/v2/logger"
+	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/thunder-service/job"
+)
 
 func (as *ThunderService) GetAwsRecommendations() ([]model.AwsRecommendation, error) {
 	selectedProfiles, err := as.Database.GetSelectedAwsProfiles()
@@ -47,4 +51,17 @@ func (ts *ThunderService) GetLastAwsRecommendations() ([]model.AwsRecommendation
 
 func (ts *ThunderService) GetAwsRecommendationsBySeqValue(seqValue uint64) ([]model.AwsRecommendation, error) {
 	return ts.Database.GetAwsRecommendationsBySeqValue(seqValue)
+}
+
+func (as *ThunderService) ForceGetAwsRecommendations() error {
+	log := logger.NewLogger("THUN", logger.LogVerbosely(true))
+
+	j := &job.AwsDataRetrieveJob{
+		Database: as.Database,
+		Config:   as.Config,
+		Log:      log,
+	}
+	j.Run()
+
+	return nil
 }
