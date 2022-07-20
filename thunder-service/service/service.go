@@ -47,8 +47,6 @@ type ThunderServiceInterface interface {
 	DeleteAwsProfile(id primitive.ObjectID) error
 	SelectAwsProfile(profileId string, selected bool) error
 	GetAwsRecommendations() ([]model.AwsRecommendation, error)
-	GetLastAwsRecommendations() ([]model.AwsRecommendation, error)
-	GetAwsRecommendationsBySeqValue(seqValue uint64) ([]model.AwsRecommendation, error)
 	ForceGetAwsRecommendations() error
 }
 
