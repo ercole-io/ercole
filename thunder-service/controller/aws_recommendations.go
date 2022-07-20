@@ -90,3 +90,17 @@ func (ctrl *ThunderController) GetAwsRecommendationsErrors(w http.ResponseWriter
 
 	utils.WriteJSONResponse(w, http.StatusOK, dto.ToAwsRecommendationsErrorsDto(recommendations))
 }
+
+func (ctrl *ThunderController) ForceGetAwsRecommendations(w http.ResponseWriter, r *http.Request) {
+	err := ctrl.Service.ForceGetAwsRecommendations()
+
+	if errors.Is(err, utils.ErrClusterNotFound) {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
+		return
+	} else if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, nil)
+}
