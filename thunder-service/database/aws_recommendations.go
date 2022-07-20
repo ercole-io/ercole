@@ -45,7 +45,7 @@ func (md *MongoDatabase) AddAwsObjects(m []interface{}, collection string) error
 	return nil
 }
 
-func (md *MongoDatabase) GetAwsRecommendations(profileIDs []string) ([]model.AwsRecommendation, error) {
+func (md *MongoDatabase) GetAwsRecommendationsByProfiles(profileIDs []string) ([]model.AwsRecommendation, error) {
 	ctx := context.TODO()
 
 	findOptions := options.Find()
@@ -113,4 +113,24 @@ func (md *MongoDatabase) GetLastAwsSeqValue() (uint64, error) {
 	}
 
 	return retVal, nil
+}
+
+func (md *MongoDatabase) GetAwsRecommendationsBySeqValue(seqValue uint64) ([]model.AwsRecommendation, error) {
+	ctx := context.TODO()
+
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(AwsRecommendationCollection).Find(ctx, bson.M{"seqValue": seqValue})
+	if err != nil {
+		return nil, err
+	}
+
+	awsRecommendations := make([]model.AwsRecommendation, 0)
+	if err := cur.All(context.TODO(), &awsRecommendations); err != nil {
+		return nil, err
+	}
+
+	if err := cur.Err(); err != nil {
+		return nil, err
+	}
+
+	return awsRecommendations, nil
 }
