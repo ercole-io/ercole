@@ -47,6 +47,7 @@ type ThunderServiceInterface interface {
 	DeleteAwsProfile(id primitive.ObjectID) error
 	SelectAwsProfile(profileId string, selected bool) error
 	GetAwsRecommendations() ([]model.AwsRecommendation, error)
+	ForceGetAwsRecommendations() error
 }
 
 type ThunderService struct {

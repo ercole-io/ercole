@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -55,4 +55,5 @@ func (ctrl *ThunderController) setupProtectedRoutes(router *mux.Router) {
 	router.HandleFunc("/aws/configurations/{id}", ctrl.DeleteAwsProfile).Methods("DELETE")
 	router.HandleFunc("/aws/profile-selection/profileid/{profileid}/selected/{selected}", ctrl.SelectAwsProfile).Methods("PUT")
 	router.HandleFunc("/aws/aws-recommendations", ctrl.GetAwsRecommendations).Methods("GET")
+	router.HandleFunc("/aws/retrieve-last-aws-recommendations", ctrl.ForceGetAwsRecommendations).Methods("GET")
 }
