@@ -26,7 +26,7 @@ func (as *ThunderService) GetAwsRecommendations() ([]model.AwsRecommendation, er
 
 	awsRecommendations := make([]model.AwsRecommendation, 0)
 	if len(selectedProfiles) > 0 {
-		awsRecommendations, err = as.Database.GetAwsRecommendations(selectedProfiles)
+		awsRecommendations, err = as.Database.GetAwsRecommendationsByProfiles(selectedProfiles)
 
 		if err != nil {
 			return nil, err
@@ -34,4 +34,17 @@ func (as *ThunderService) GetAwsRecommendations() ([]model.AwsRecommendation, er
 	}
 
 	return awsRecommendations, err
+}
+
+func (ts *ThunderService) GetLastAwsRecommendations() ([]model.AwsRecommendation, error) {
+	seqValue, err := ts.Database.GetLastAwsSeqValue()
+	if err != nil {
+		return nil, err
+	}
+
+	return ts.Database.GetAwsRecommendationsBySeqValue(seqValue)
+}
+
+func (ts *ThunderService) GetAwsRecommendationsBySeqValue(seqValue uint64) ([]model.AwsRecommendation, error) {
+	return ts.Database.GetAwsRecommendationsBySeqValue(seqValue)
 }

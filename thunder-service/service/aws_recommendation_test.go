@@ -46,7 +46,7 @@ func TestGetAwsRecommendation_DBError(t *testing.T) {
 
 		db.EXPECT().GetSelectedAwsProfiles().Return(strProfiles, nil)
 
-		db.EXPECT().GetAwsRecommendations(strProfiles).
+		db.EXPECT().GetAwsRecommendationsByProfiles(strProfiles).
 			Return(nil, utils.NewError(utils.ErrNotFound, "DB ERROR")).Times(1)
 
 		actual, err := as.GetAwsRecommendations()
@@ -91,7 +91,7 @@ func TestGetAwsRecommendations(t *testing.T) {
 		var strProfiles = []string{"TestProfile1", "TestProfile4"}
 		db.EXPECT().GetSelectedAwsProfiles().Return(strProfiles, nil)
 
-		db.EXPECT().GetAwsRecommendations(strProfiles).
+		db.EXPECT().GetAwsRecommendationsByProfiles(strProfiles).
 			Return(expected, nil).Times(1)
 
 		actual, err := as.GetAwsRecommendations()
@@ -104,12 +104,50 @@ func TestGetAwsRecommendations(t *testing.T) {
 		var strProfiles = []string{"TestProfile1", "TestProfile4"}
 		db.EXPECT().GetSelectedAwsProfiles().Return(strProfiles, nil)
 
-		db.EXPECT().GetAwsRecommendations(strProfiles).
+		db.EXPECT().GetAwsRecommendationsByProfiles(strProfiles).
 			Return(nil, errMock).Times(1)
 
 		actual, err := as.GetAwsRecommendations()
 		require.EqualError(t, err, "MockError")
 
 		assert.Nil(t, actual)
+	})
+}
+
+func TestGetLastAwsRecommendations(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := ThunderService{
+		Config:      config.Configuration{},
+		Database:    db,
+		TimeNow:     utils.Btc(utils.P("2021-11-08T12:02:03Z")),
+		Log:         logger.NewLogger("TEST"),
+		NewObjectID: utils.NewObjectIDForTests(),
+	}
+
+	t.Run("Success", func(t *testing.T) {
+		expected := []model.AwsRecommendation{
+			{
+				SeqValue:   uint64(999),
+				ProfileID:  "",
+				Category:   "",
+				Suggestion: "",
+				Name:       "",
+				ResourceID: "",
+				ObjectType: "",
+				Errors:     []map[string]string{{"error": "error details"}},
+				CreatedAt:  time.Date(2022, 6, 1, 0, 0, 1, 0, time.UTC),
+			},
+		}
+
+		db.EXPECT().GetLastAwsSeqValue().Return(uint64(999), nil)
+
+		db.EXPECT().GetAwsRecommendationsBySeqValue(uint64(999)).Return(expected, nil)
+
+		actual, err := as.GetLastAwsRecommendations()
+		require.NoError(t, err)
+
+		assert.Equal(t, expected, actual)
 	})
 }
