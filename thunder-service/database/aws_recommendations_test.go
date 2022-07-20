@@ -115,6 +115,15 @@ var recAws6 model.AwsRecommendation = model.AwsRecommendation{
 	CreatedAt: time.Date(2022, 4, 26, 0, 0, 6, 0, time.UTC),
 }
 
+var recAws7 model.AwsRecommendation = model.AwsRecommendation{
+	SeqValue:   998,
+	Category:   "TestCategory7",
+	Suggestion: "Suggestion7",
+	Name:       "Name7",
+	Errors:     []map[string]string{{"error": "error details"}},
+	CreatedAt:  time.Date(2022, 5, 26, 0, 0, 1, 0, time.UTC),
+}
+
 func (m *MongodbSuite) TestAddAwsRecommendation_Success() {
 	err := m.db.AddAwsObject(recAws1, "aws_recommendations")
 	require.NoError(m.T(), err)
@@ -182,7 +191,7 @@ func (m *MongodbSuite) TestGetAwsRecommendations_Success() {
 	err := m.db.AddAwsObjects(recs, "aws_recommendations")
 	require.NoError(m.T(), err)
 	defer m.db.Client.Database(m.dbname).Collection("aws_recommendations").DeleteMany(context.TODO(), bson.M{})
-	results, err = m.db.GetAwsRecommendations(profiles)
+	results, err = m.db.GetAwsRecommendationsByProfiles(profiles)
 	require.NoError(m.T(), err)
 
 	expected := []model.AwsRecommendation{
@@ -243,5 +252,19 @@ func (m *MongodbSuite) TestGetAwsRecommendations_Success() {
 			CreatedAt: time.Date(2022, 4, 26, 0, 0, 6, 0, time.UTC),
 		},
 	}
+	assert.ElementsMatch(m.T(), expected, results)
+}
+
+func (m *MongodbSuite) TestGetAwsRecommendationsBySeqValue_Success() {
+	var recs []interface{}
+	var results []model.AwsRecommendation
+
+	recs = append(recs, recAws7)
+	defer m.db.Client.Database(m.dbname).Collection("aws_recommendations").DeleteMany(context.TODO(), bson.M{})
+	err := m.db.AddAwsObjects(recs, "aws_recommendations")
+	require.NoError(m.T(), err)
+	results, err = m.db.GetAwsRecommendationsBySeqValue(998)
+	require.NoError(m.T(), err)
+	expected := []model.AwsRecommendation{recAws7}
 	assert.ElementsMatch(m.T(), expected, results)
 }
