@@ -21,15 +21,16 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (as *ThunderService) AddAwsProfile(profile model.AwsProfile) error {
+func (as *ThunderService) AddAwsProfile(profile model.AwsProfile) (*model.AwsProfile, error) {
 	profile.ID = as.NewObjectID()
-	if err := as.Database.AddAwsObject(profile, "aws_profiles"); err != nil {
-		return err
+
+	err := as.Database.AddAwsProfile(profile)
+	if err != nil {
+		return nil, err
 	}
 
-	return nil
+	return &profile, nil
 }
-
 func (as *ThunderService) UpdateAwsProfile(profile model.AwsProfile) (*model.AwsProfile, error) {
 	if err := as.Database.UpdateAwsProfile(profile); err != nil {
 		return nil, err

@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@ func TestAddAwsProfile_Success(t *testing.T) {
 	returnAgr.ID, err = primitive.ObjectIDFromHex("aaaaaaaaaaaaaaaaaaaaaaaa")
 	require.Nil(t, err)
 
-	as.EXPECT().AddAwsProfile(profile).Return(nil)
+	as.EXPECT().AddAwsProfile(profile).Return(&returnAgr, nil)
 
 	agrBytes, err := json.Marshal(profile)
 	require.NoError(t, err)
