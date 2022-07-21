@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -52,27 +52,31 @@ func TestAddAwsProfile(t *testing.T) {
 			Selected:        false,
 		}
 
-		db.EXPECT().AddAwsObject(expected, "aws_profiles").
-			Return(nil)
+		db.EXPECT().AddAwsProfile(expected).
+			Return(nil).Times(1)
 
 		profile := model.AwsProfile{
 			AccessKeyId:     "TestProfileAdd",
 			Region:          "eu-frankfurt-testAdd",
 			SecretAccessKey: &strSecretAccessKeyTestAdd,
 		}
-		err := as.AddAwsProfile(profile)
+		actual, err := as.AddAwsProfile(profile)
 		require.NoError(t, err)
+
+		assert.Equal(t, &expected, actual)
 	})
 
 	t.Run("Error", func(t *testing.T) {
 		profile := model.AwsProfile{
 			ID: utils.Str2oid("000000000000000000000002"),
 		}
-		db.EXPECT().AddAwsObject(profile, "aws_profiles").
-			Return(errMock)
+		db.EXPECT().AddAwsProfile(profile).
+			Return(errMock).Times(1)
 
-		err := as.AddAwsProfile(profile)
+		actual, err := as.AddAwsProfile(profile)
 		assert.EqualError(t, err, "MockError")
+
+		assert.Nil(t, actual)
 	})
 }
 
