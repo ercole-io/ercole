@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -46,13 +46,13 @@ func (ctrl *ThunderController) AddAwsProfile(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	err := ctrl.Service.AddAwsProfile(profile)
+	profileAdded, err := ctrl.Service.AddAwsProfile(profile)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
-	utils.WriteJSONResponse(w, http.StatusCreated, nil)
+	utils.WriteJSONResponse(w, http.StatusCreated, profileAdded)
 }
 
 func (ctrl *ThunderController) UpdateAwsProfile(w http.ResponseWriter, r *http.Request) {
