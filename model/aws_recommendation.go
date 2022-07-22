@@ -47,4 +47,7 @@ const (
 	AwsObjectStorageOptimizationType       = "Object Storage"
 	AwsDeleteBlockStorageNotUsed           = "Delete Block Storage not used"
 	AwsObjectVolume                        = "Object volume"
+	AwsResizeOversizedBlockStorage         = "Resize oversized Block Storage"
+	AwsBlockStorage                        = "Block Storage"
+	AwsBlockStorageRightsizing             = "Block Storage Rightsizing"
 )
