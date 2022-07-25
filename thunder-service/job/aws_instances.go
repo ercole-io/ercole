@@ -22,6 +22,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/cloudwatch"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/thunder-service/database"
@@ -77,4 +78,81 @@ func (job *AwsDataRetrieveJob) FetchAwsNotActiveInstances(profile model.AwsProfi
 	}
 
 	return nil
+}
+
+func (job *AwsDataRetrieveJob) FetchAwsComputeInstanceRightsizing(profile model.AwsProfile, seqValue uint64) error {
+	sess, err := session.NewSession(&aws.Config{
+		Region:      aws.String(profile.Region),
+		Credentials: credentials.NewStaticCredentials(profile.AccessKeyId, *profile.SecretAccessKey, ""),
+	})
+	if err != nil {
+		return err
+	}
+
+	svc := ec2.New(sess)
+
+	instances, err := svc.DescribeInstances(&ec2.DescribeInstancesInput{})
+	if err != nil {
+		return err
+	}
+
+	optimizableInstances := make([]ec2.Instance, 0)
+	client := cloudwatch.New(sess)
+
+	for _, reservation := range instances.Reservations {
+		for _, v := range reservation.Instances {
+			input := &cloudwatch.GetMetricStatisticsInput{
+				EndTime:    aws.Time(time.Unix(time.Now().Unix(), 0)),
+				StartTime:  aws.Time(time.Unix(time.Now().Add(time.Duration(-168)*time.Hour).Unix(), 0)),
+				MetricName: aws.String("CPUUtilization"),
+				Period:     aws.Int64(3600),
+				Namespace:  aws.String("AWS/EC2"),
+				Statistics: aws.StringSlice([]string{"Average", "Maximum"}),
+				Dimensions: []*cloudwatch.Dimension{{Name: aws.String("InstanceId"), Value: v.InstanceId}},
+			}
+
+			stats, err := client.GetMetricStatistics(input)
+			if err != nil {
+				return err
+			}
+
+			c := make(chan ec2.Instance)
+			datapointsLen := len(stats.Datapoints)
+
+			go job.getAverageStatistic(stats.Datapoints[:datapointsLen/2], v, c)
+			go job.getAverageStatistic(stats.Datapoints[datapointsLen/2:], v, c)
+
+			optimizableInstances = append(optimizableInstances, <-c)
+		}
+	}
+
+	for _, instance := range optimizableInstances {
+		awsRecommendation := model.AwsRecommendation{
+			SeqValue:   seqValue,
+			ProfileID:  profile.ID.Hex(),
+			Category:   model.AwsResizeComputeInstance,
+			ObjectType: model.AwsComputeInstance,
+			ResourceID: *instance.InstanceId,
+			Name:       *instance.KeyName,
+			Suggestion: model.AwsResizeComputeInstance,
+			CreatedAt:  time.Now(),
+			Details: []map[string]interface{}{
+				{"INSTANCE_NAME": instance.KeyName},
+			},
+		}
+
+		if errDb := job.Database.AddAwsObject(awsRecommendation, database.AwsRecommendationCollection); errDb != nil {
+			return errDb
+		}
+	}
+
+	return nil
+}
+
+func (job *AwsDataRetrieveJob) getAverageStatistic(datapoints []*cloudwatch.Datapoint, instance *ec2.Instance, c chan ec2.Instance) {
+	for _, d := range datapoints {
+		if *d.Average > 50 && *d.Maximum > 50 {
+			c <- *instance
+		}
+	}
 }
