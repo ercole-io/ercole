@@ -50,4 +50,5 @@ const (
 	AwsResizeOversizedBlockStorage         = "Resize oversized Block Storage"
 	AwsBlockStorage                        = "Block Storage"
 	AwsBlockStorageRightsizing             = "Block Storage Rightsizing"
+	AwsResizeComputeInstance               = "Resize oversized compute instance"
 )
