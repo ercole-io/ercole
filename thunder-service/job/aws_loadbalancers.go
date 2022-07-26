@@ -74,7 +74,7 @@ func (job *AwsDataRetrieveJob) FetchAwsUnusedLoadBalancers(profile model.AwsProf
 					recommendation.ResourceID = *p.InstanceId
 					recommendation.ObjectType = model.AwsObjectTypeLoadBalancer
 					recommendation.Details = []map[string]interface{}{
-						{"RESOURCE_ID": *p.InstanceId},
+						{"RESOURCE_NAME": *l.LoadBalancerName},
 						{"RESOURCE_TYPE": "Load Balancer"},
 						{"RESOURCE_STATUS": fmt.Sprintf("%v", *p.State)},
 					}
@@ -103,7 +103,7 @@ func (job *AwsDataRetrieveJob) FetchAwsUnusedLoadBalancers(profile model.AwsProf
 			recommendation.ResourceID = *l.VpcId
 			recommendation.ObjectType = model.AwsObjectTypeLoadBalancer
 			recommendation.Details = []map[string]interface{}{
-				{"RESOURCE_ID": *l.VpcId},
+				{"RESOURCE_NAME": *l.LoadBalancerName},
 				{"RESOURCE_TYPE": "Load Balancer"},
 				{"RESOURCE_STATUS": fmt.Sprintf("%v", *l.State.Code)},
 			}
