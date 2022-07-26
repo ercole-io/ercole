@@ -64,12 +64,12 @@ func (job *AwsDataRetrieveJob) FetchAwsNotActiveInstances(profile model.AwsProfi
 				recommendation.ProfileID = profile.ID.Hex()
 				recommendation.Category = model.AwsNotActiveResource
 				recommendation.Suggestion = model.AwsDeleteComputeInstanceNotActive
-				recommendation.Name = *i.InstanceId
-				recommendation.ResourceID = instanceName
+				recommendation.Name = instanceName
+				recommendation.ResourceID = *i.InstanceId
 				recommendation.ObjectType = model.AwsComputeInstance
 				recommendation.Details = []map[string]interface{}{
 					{"INSTANCE_NAME": instanceName},
-					{"INSTANCE_TYPE": *i.InstanceType},
+					{"INSTANCE_TYPE": ""},
 					{"STATUS": "stopped"},
 				}
 				recommendation.CreatedAt = time.Now().UTC()
