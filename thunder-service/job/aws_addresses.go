@@ -49,11 +49,11 @@ func (job *AwsDataRetrieveJob) FetchAwsUnusedIPAddresses(profile model.AwsProfil
 
 	for _, w := range resultec2Svc.Addresses {
 		if *w.AssociationId == "" {
-			var instanceName string
+			var objectName string
 
 			for _, name := range w.Tags {
 				if *name.Key == "Name" {
-					instanceName = *name.Value
+					objectName = *name.Value
 					break
 				}
 			}
@@ -62,11 +62,11 @@ func (job *AwsDataRetrieveJob) FetchAwsUnusedIPAddresses(profile model.AwsProfil
 			recommendation.ProfileID = profile.ID.Hex()
 			recommendation.Category = model.AwsUnusedResource
 			recommendation.Suggestion = model.AwsDeletePublicIPAddressNotAssociated
-			recommendation.Name = instanceName
+			recommendation.Name = objectName
 			recommendation.ResourceID = *w.AllocationId
 			recommendation.ObjectType = model.AwsPublicID
 			recommendation.Details = []map[string]interface{}{
-				{"RESOURCE_NAME": instanceName},
+				{"RESOURCE_NAME": objectName},
 				{"RESOURCE_TYPE": "Public IP"},
 				{"RESOURCE_STATUS": "Not associated"},
 			}

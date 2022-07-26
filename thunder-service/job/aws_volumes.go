@@ -50,15 +50,24 @@ func (job *AwsDataRetrieveJob) FetchAwsVolumesNotUsed(profile model.AwsProfile, 
 
 	for _, w := range resultec2Svc.Volumes {
 		if len(w.Attachments) == 0 {
+			var objectName string
+
+			for _, name := range w.Tags {
+				if *name.Key == "Name" {
+					objectName = *name.Value
+					break
+				}
+			}
+
 			recommendation.SeqValue = seqValue
 			recommendation.ProfileID = profile.ID.Hex()
 			recommendation.Category = model.AwsUnusedResource
 			recommendation.Suggestion = model.AwsDeleteBlockStorageNotUsed
-			recommendation.Name = *w.VolumeId
+			recommendation.Name = objectName
 			recommendation.ResourceID = *w.VolumeId
 			recommendation.ObjectType = model.AwsObjectVolume
 			recommendation.Details = []map[string]interface{}{
-				{"BLOCK_STORAGE_NAME": *w.VolumeId},
+				{"BLOCK_STORAGE_NAME": objectName},
 				{"SIZE": *w.Size},
 				{"ATTACCHED": "No"},
 			}
@@ -129,15 +138,24 @@ func (job *AwsDataRetrieveJob) FetchAwsBlockStorageRightsizing(profile model.Aws
 		maxThroughputValue = maxThroughputValue / 1024 / 1024
 
 		if iops < int64(maxIopsValue/2) && throughput < int64(maxThroughputValue/2) {
+			var objectName string
+
+			for _, name := range w.Tags {
+				if *name.Key == "Name" {
+					objectName = *name.Value
+					break
+				}
+			}
+
 			recommendation.SeqValue = seqValue
 			recommendation.ProfileID = profile.ID.Hex()
 			recommendation.Category = model.AwsBlockStorageRightsizing
 			recommendation.Suggestion = model.AwsResizeOversizedBlockStorage
-			recommendation.Name = *w.VolumeId
+			recommendation.Name = objectName
 			recommendation.ResourceID = *w.VolumeId
 			recommendation.ObjectType = model.AwsBlockStorage
 			recommendation.Details = []map[string]interface{}{
-				{"BLOCK_STORAGE_NAME": *w.VolumeId},
+				{"BLOCK_STORAGE_NAME": objectName},
 				{"SIZE": *w.Size},
 				{"TARGET": "THROUGHTPUT/IOPS"},
 				{"THROUGHPUT_R/W_MAX_5DD ": maxThroughputValue},
