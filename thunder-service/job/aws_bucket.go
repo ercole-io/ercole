@@ -86,6 +86,7 @@ func (job *AwsDataRetrieveJob) FetchBucketLifecycleConfiguration(bucketName stri
 					Category:   model.AwsObjectStorageOptimization,
 					Suggestion: model.AwsObjectStorageOptimizationSuggestion,
 					ObjectType: model.AwsObjectStorageOptimizationType,
+					Name:       bucketName,
 					Details: []map[string]interface{}{
 						{"OPTIMIZATION": "ENABLE AUTO-TIERING"},
 						{"BUCKET_NAME": bucketName},
