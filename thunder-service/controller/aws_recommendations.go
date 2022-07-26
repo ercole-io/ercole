@@ -48,7 +48,7 @@ func (ctrl *ThunderController) GetAwsRecommendations(w http.ResponseWriter, r *h
 
 	if err == nil {
 		response := map[string]interface{}{
-			"recommendations": recommendations,
+			"recommendations": dto.ToAwsRecommendationsDto(recommendations),
 		}
 		utils.WriteJSONResponse(w, http.StatusOK, response)
 
@@ -56,7 +56,7 @@ func (ctrl *ThunderController) GetAwsRecommendations(w http.ResponseWriter, r *h
 	}
 
 	response := map[string]interface{}{
-		"recommendations": recommendations,
+		"recommendations": dto.ToAwsRecommendationsDto(recommendations),
 		"error":           err.Error(),
 	}
 

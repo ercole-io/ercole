@@ -78,7 +78,7 @@ func TestGetAwsRecommendations_Success(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusOK, rr.Code)
-	assert.JSONEq(t, utils.ToJSON(map[string]interface{}{"recommendations": expectedRes}), rr.Body.String())
+	assert.JSONEq(t, utils.ToJSON(map[string]interface{}{"recommendations": dto.ToAwsRecommendationsDto(expectedRes)}), rr.Body.String())
 }
 
 func TestGetAwsRecommendations_ClusterNotFoundError(t *testing.T) {
