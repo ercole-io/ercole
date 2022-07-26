@@ -51,11 +51,11 @@ func (job *AwsDataRetrieveJob) FetchAwsNotActiveInstances(profile model.AwsProfi
 	for _, w := range resultec2Svc.Reservations {
 		for _, i := range w.Instances {
 			if *i.State.Name == "stopped" {
-				var instanceName string
+				var objectName string
 
 				for _, name := range i.Tags {
 					if *name.Key == "Name" {
-						instanceName = *name.Value
+						objectName = *name.Value
 						break
 					}
 				}
@@ -64,11 +64,11 @@ func (job *AwsDataRetrieveJob) FetchAwsNotActiveInstances(profile model.AwsProfi
 				recommendation.ProfileID = profile.ID.Hex()
 				recommendation.Category = model.AwsNotActiveResource
 				recommendation.Suggestion = model.AwsDeleteComputeInstanceNotActive
-				recommendation.Name = instanceName
+				recommendation.Name = objectName
 				recommendation.ResourceID = *i.InstanceId
 				recommendation.ObjectType = model.AwsComputeInstance
 				recommendation.Details = []map[string]interface{}{
-					{"INSTANCE_NAME": instanceName},
+					{"INSTANCE_NAME": objectName},
 					{"INSTANCE_TYPE": ""},
 					{"STATUS": "stopped"},
 				}
