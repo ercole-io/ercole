@@ -61,7 +61,7 @@ func (job *AwsDataRetrieveJob) FetchAwsNotActiveInstances(profile model.AwsProfi
 				}
 
 				recommendation.SeqValue = seqValue
-				recommendation.ProfileID = profile.ID.Hex()
+				recommendation.ProfileID = profile.ID
 				recommendation.Category = model.AwsNotActiveResource
 				recommendation.Suggestion = model.AwsDeleteComputeInstanceNotActive
 				recommendation.Name = objectName
@@ -147,7 +147,7 @@ func (job *AwsDataRetrieveJob) FetchAwsComputeInstanceRightsizing(profile model.
 
 		awsRecommendation := model.AwsRecommendation{
 			SeqValue:   seqValue,
-			ProfileID:  profile.ID.Hex(),
+			ProfileID:  profile.ID,
 			Category:   model.AwsResizeComputeInstance,
 			ObjectType: model.AwsComputeInstance,
 			ResourceID: *instance.InstanceId,

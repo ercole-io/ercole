@@ -67,7 +67,7 @@ func (job *AwsDataRetrieveJob) FetchAwsUnusedLoadBalancers(profile model.AwsProf
 			for _, p := range resultelbSvc.InstanceStates {
 				if *p.State == "OutOfService" {
 					recommendation.SeqValue = seqValue
-					recommendation.ProfileID = profile.ID.Hex()
+					recommendation.ProfileID = profile.ID
 					recommendation.Category = model.AwsUnusedResource
 					recommendation.Suggestion = model.AwsDeleteLoadBalancerNotActive
 					recommendation.Name = *l.LoadBalancerName
@@ -96,7 +96,7 @@ func (job *AwsDataRetrieveJob) FetchAwsUnusedLoadBalancers(profile model.AwsProf
 	for _, l := range resultelbv2Svc.LoadBalancers {
 		if *l.State.Code == "failed" {
 			recommendation.SeqValue = seqValue
-			recommendation.ProfileID = profile.ID.Hex()
+			recommendation.ProfileID = profile.ID
 			recommendation.Category = model.AwsUnusedResource
 			recommendation.Suggestion = model.AwsDeleteLoadBalancerNotActive
 			recommendation.Name = *l.LoadBalancerName

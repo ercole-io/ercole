@@ -22,24 +22,26 @@ import (
 )
 
 type AwsRecommendationDto struct {
-	SeqValue   uint64                   `json:"seqValue"`
-	Category   string                   `json:"category"`
-	Suggestion string                   `json:"suggestion"`
-	Name       string                   `json:"name"`
-	ObjectType string                   `json:"objectType"`
-	Details    []map[string]interface{} `json:"details"`
-	CreatedAt  time.Time                `json:"createdAt"`
+	SeqValue    uint64                   `json:"seqValue"`
+	Category    string                   `json:"category"`
+	Suggestion  string                   `json:"suggestion"`
+	Name        string                   `json:"name"`
+	ObjectType  string                   `json:"objectType"`
+	Details     []map[string]interface{} `json:"details"`
+	CreatedAt   time.Time                `json:"createdAt"`
+	ProfileName string                   `json:"profileName"`
 }
 
 func ToAwsRecommendationDto(model model.AwsRecommendation) AwsRecommendationDto {
 	return AwsRecommendationDto{
-		SeqValue:   model.SeqValue,
-		Category:   model.Category,
-		Suggestion: model.Suggestion,
-		Name:       model.Name,
-		ObjectType: model.ObjectType,
-		Details:    model.Details,
-		CreatedAt:  model.CreatedAt,
+		SeqValue:    model.SeqValue,
+		Category:    model.Category,
+		Suggestion:  model.Suggestion,
+		Name:        model.Name,
+		ObjectType:  model.ObjectType,
+		Details:     model.Details,
+		CreatedAt:   model.CreatedAt,
+		ProfileName: model.ProfileName,
 	}
 }
 
