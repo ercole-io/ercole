@@ -82,7 +82,7 @@ func (job *AwsDataRetrieveJob) FetchBucketLifecycleConfiguration(bucketName stri
 
 				awsRecommendation := model.AwsRecommendation{
 					SeqValue:   seqValue,
-					ProfileID:  profileID.Hex(),
+					ProfileID:  profileID,
 					Category:   model.AwsObjectStorageOptimization,
 					Suggestion: model.AwsObjectStorageOptimizationSuggestion,
 					ObjectType: model.AwsObjectStorageOptimizationType,

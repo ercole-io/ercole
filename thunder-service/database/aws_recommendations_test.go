@@ -23,11 +23,25 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
+
+var profileId1 = primitive.NewObjectID()
+
+var privateKeyTest = "privateKey"
+
+var awsProfile4 = model.AwsProfile{
+	ID:              profileId1,
+	AccessKeyId:     "accessKey4",
+	SecretAccessKey: &privateKeyTest,
+	Region:          "region4",
+	Selected:        true,
+	Name:            "profile4",
+}
 
 var recAws1 model.AwsRecommendation = model.AwsRecommendation{
 	SeqValue:   999,
-	ProfileID:  "TestProfile1",
+	ProfileID:  profileId1,
 	Category:   "TestCategory1",
 	Suggestion: "Suggestion1",
 	Name:       "Name1",
@@ -37,91 +51,8 @@ var recAws1 model.AwsRecommendation = model.AwsRecommendation{
 		{"NameA": "ValueA"},
 		{"NameB": "ValueA"},
 	},
-	CreatedAt: time.Date(2022, 5, 26, 0, 0, 1, 0, time.UTC),
-}
-
-var recAws2 model.AwsRecommendation = model.AwsRecommendation{
-	SeqValue:   888,
-	ProfileID:  "TestProfile2",
-	Category:   "TestCategory2",
-	Suggestion: "Suggestion2",
-	Name:       "Name2",
-	ResourceID: "ResourceID2",
-	ObjectType: "ObjectType2",
-	Details: []map[string]interface{}{
-		{"NameC": "ValueC"},
-	},
-	CreatedAt: time.Date(2022, 5, 26, 0, 0, 2, 0, time.UTC),
-}
-
-var recAws3 model.AwsRecommendation = model.AwsRecommendation{
-	SeqValue:   777,
-	ProfileID:  "TestProfile3",
-	Category:   "TestCategory3",
-	Suggestion: "Suggestion3",
-	Name:       "Name3",
-	ResourceID: "ResourceID3",
-	ObjectType: "ObjectType3",
-	Details: []map[string]interface{}{
-		{"NameD": "ValueD"},
-		{"NameE": "ValueE"},
-		{"NameF": "ValueF"},
-	},
-	CreatedAt: time.Date(2022, 5, 26, 0, 0, 3, 0, time.UTC),
-}
-
-var recAws4 model.AwsRecommendation = model.AwsRecommendation{
-	SeqValue:   999,
-	ProfileID:  "TestProfile4",
-	Category:   "TestCategory4",
-	Suggestion: "Suggestion4",
-	Name:       "Name4",
-	ResourceID: "ResourceID4",
-	ObjectType: "ObjectType4",
-	Details: []map[string]interface{}{
-		{"NameG": "ValueG"},
-		{"NameH": "ValueH"},
-	},
-	CreatedAt: time.Date(2022, 5, 26, 0, 0, 4, 0, time.UTC),
-}
-
-var recAws5 model.AwsRecommendation = model.AwsRecommendation{
-	SeqValue:   999,
-	ProfileID:  "TestProfile5",
-	Category:   "TestCategory5",
-	Suggestion: "Suggestion5",
-	Name:       "Name5",
-	ResourceID: "ResourceID5",
-	ObjectType: "ObjectType5",
-	Details: []map[string]interface{}{
-		{"NameI": "ValueI"},
-		{"NameL": "ValueL"},
-		{"NameM": "ValueM"},
-	},
-	CreatedAt: time.Date(2022, 5, 20, 0, 0, 5, 0, time.UTC),
-}
-
-var recAws6 model.AwsRecommendation = model.AwsRecommendation{
-	SeqValue:   999,
-	ProfileID:  "TestProfile6",
-	Category:   "TestCategory6",
-	Suggestion: "Suggestion6",
-	Name:       "Name6",
-	ResourceID: "ResourceID6",
-	ObjectType: "ObjectType6",
-	Details: []map[string]interface{}{
-		{"NameN": "ValueN"},
-	},
-	CreatedAt: time.Date(2022, 4, 26, 0, 0, 6, 0, time.UTC),
-}
-
-var recAws7 model.AwsRecommendation = model.AwsRecommendation{
-	SeqValue:   998,
-	Category:   "TestCategory7",
-	Suggestion: "Suggestion7",
-	Name:       "Name7",
-	Errors:     []map[string]string{{"error": "error details"}},
-	CreatedAt:  time.Date(2022, 5, 26, 0, 0, 1, 0, time.UTC),
+	CreatedAt:   time.Date(2022, 5, 26, 0, 0, 1, 0, time.UTC),
+	ProfileName: "profile4",
 }
 
 func (m *MongodbSuite) TestAddAwsRecommendation_Success() {
@@ -139,37 +70,11 @@ func (m *MongodbSuite) TestAddAwsRecommendation_Success() {
 	assert.Equal(m.T(), recAws1, out)
 }
 
-func (m *MongodbSuite) TestAwsOciRecommendations_Success() {
-	var recs []interface{}
-
-	recs = append(recs, recAws1, recAws2, recAws3)
-	err := m.db.AddAwsObjects(recs, "aws_recommendations")
-	require.NoError(m.T(), err)
-	defer m.db.Client.Database(m.dbname).Collection("aws_recommendations").DeleteMany(context.TODO(), bson.M{})
-	val, err := m.db.Client.Database(m.dbname).Collection("aws_recommendations").Find(context.TODO(), bson.M{})
-	require.NoError(m.T(), err)
-
-	var results []interface{}
-
-	ctx := context.TODO()
-	defer val.Close(ctx)
-
-	for val.Next(ctx) {
-		var out model.AwsRecommendation
-		err := val.Decode(&out)
-		require.NoError(m.T(), err)
-		results = append(results, out)
-	}
-	require.NoError(m.T(), val.Err())
-
-	assert.Equal(m.T(), recs, results)
-}
-
 func (m *MongodbSuite) TestGetLastAwsSeqValue_Success() {
 	var recs []interface{}
 	var result uint64
 
-	recs = append(recs, recAws1, recAws2, recAws3, recAws4, recAws5, recAws6)
+	recs = append(recs, recAws1)
 	err := m.db.AddAwsObjects(recs, "aws_recommendations")
 	require.NoError(m.T(), err)
 	defer m.db.Client.Database(m.dbname).Collection("aws_recommendations").DeleteMany(context.TODO(), bson.M{})
@@ -183,88 +88,37 @@ func (m *MongodbSuite) TestGetLastAwsSeqValue_Success() {
 }
 
 func (m *MongodbSuite) TestGetAwsRecommendations_Success() {
-	var recs []interface{}
 	var results []model.AwsRecommendation
-	var profiles = []string{"TestProfile1", "TestProfile4", "TestProfile5", "TestProfile6"}
 
-	recs = append(recs, recAws1, recAws2, recAws3, recAws4, recAws5, recAws6)
-	err := m.db.AddAwsObjects(recs, "aws_recommendations")
-	require.NoError(m.T(), err)
 	defer m.db.Client.Database(m.dbname).Collection("aws_recommendations").DeleteMany(context.TODO(), bson.M{})
-	results, err = m.db.GetAwsRecommendationsByProfiles(profiles)
+	err := m.db.AddAwsObject(recAws1, "aws_recommendations")
 	require.NoError(m.T(), err)
 
-	expected := []model.AwsRecommendation{
-		{
-			SeqValue:   999,
-			ProfileID:  "TestProfile1",
-			Category:   "TestCategory1",
-			Suggestion: "Suggestion1",
-			Name:       "Name1",
-			ResourceID: "ResourceID1",
-			ObjectType: "ObjectType1",
-			Details: []map[string]interface{}{
-				{"NameA": "ValueA"},
-				{"NameB": "ValueA"},
-			},
-			CreatedAt: time.Date(2022, 5, 26, 0, 0, 1, 0, time.UTC),
-		},
-		{
-			SeqValue:   999,
-			ProfileID:  "TestProfile4",
-			Category:   "TestCategory4",
-			Suggestion: "Suggestion4",
-			Name:       "Name4",
-			ResourceID: "ResourceID4",
-			ObjectType: "ObjectType4",
-			Details: []map[string]interface{}{
-				{"NameG": "ValueG"},
-				{"NameH": "ValueH"},
-			},
-			CreatedAt: time.Date(2022, 5, 26, 0, 0, 4, 0, time.UTC),
-		},
-		{
-			SeqValue:   999,
-			ProfileID:  "TestProfile5",
-			Category:   "TestCategory5",
-			Suggestion: "Suggestion5",
-			Name:       "Name5",
-			ResourceID: "ResourceID5",
-			ObjectType: "ObjectType5",
-			Details: []map[string]interface{}{
-				{"NameI": "ValueI"},
-				{"NameL": "ValueL"},
-				{"NameM": "ValueM"},
-			},
-			CreatedAt: time.Date(2022, 5, 20, 0, 0, 5, 0, time.UTC),
-		},
-		{
-			SeqValue:   999,
-			ProfileID:  "TestProfile6",
-			Category:   "TestCategory6",
-			Suggestion: "Suggestion6",
-			Name:       "Name6",
-			ResourceID: "ResourceID6",
-			ObjectType: "ObjectType6",
-			Details: []map[string]interface{}{
-				{"NameN": "ValueN"},
-			},
-			CreatedAt: time.Date(2022, 4, 26, 0, 0, 6, 0, time.UTC),
-		},
-	}
+	defer m.db.Client.Database(m.dbname).Collection("aws_profiles").DeleteMany(context.TODO(), bson.M{})
+	err = m.db.AddAwsProfile(awsProfile4)
+	require.NoError(m.T(), err)
+
+	results, err = m.db.GetAwsRecommendationsByProfiles([]primitive.ObjectID{profileId1})
+	require.NoError(m.T(), err)
+
+	expected := []model.AwsRecommendation{recAws1}
 	assert.ElementsMatch(m.T(), expected, results)
 }
 
 func (m *MongodbSuite) TestGetAwsRecommendationsBySeqValue_Success() {
-	var recs []interface{}
 	var results []model.AwsRecommendation
 
-	recs = append(recs, recAws7)
 	defer m.db.Client.Database(m.dbname).Collection("aws_recommendations").DeleteMany(context.TODO(), bson.M{})
-	err := m.db.AddAwsObjects(recs, "aws_recommendations")
+	err := m.db.AddAwsObject(recAws1, "aws_recommendations")
 	require.NoError(m.T(), err)
-	results, err = m.db.GetAwsRecommendationsBySeqValue(998)
+
+	defer m.db.Client.Database(m.dbname).Collection("aws_profiles").DeleteMany(context.TODO(), bson.M{})
+	err = m.db.AddAwsProfile(awsProfile4)
 	require.NoError(m.T(), err)
-	expected := []model.AwsRecommendation{recAws7}
+
+	results, err = m.db.GetAwsRecommendationsBySeqValue(999)
+	require.NoError(m.T(), err)
+
+	expected := []model.AwsRecommendation{recAws1}
 	assert.ElementsMatch(m.T(), expected, results)
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -252,7 +252,7 @@ func (m *MongodbSuite) TestGetSelectedAwsAwsProfiles_Success() {
 	err = m.db.SelectAwsProfile(awsProfile1.ID.Hex(), true)
 	require.NoError(m.T(), err)
 
-	expected := []string{"5dd40bfb12f54dfda7b1c291", "5dd40bfb12f54dfda2b2c293"}
+	expected := []primitive.ObjectID{utils.Str2oid("5dd40bfb12f54dfda7b1c291"), utils.Str2oid("5dd40bfb12f54dfda2b2c293")}
 
 	selectedProfiles, err := m.db.GetSelectedAwsProfiles()
 	require.NoError(m.T(), err)

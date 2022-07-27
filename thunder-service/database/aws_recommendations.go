@@ -22,6 +22,7 @@ import (
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -45,44 +46,59 @@ func (md *MongoDatabase) AddAwsObjects(m []interface{}, collection string) error
 	return nil
 }
 
-func (md *MongoDatabase) GetAwsRecommendationsByProfiles(profileIDs []string) ([]model.AwsRecommendation, error) {
+func (md *MongoDatabase) GetAwsRecommendationsByProfiles(profileIDs []primitive.ObjectID) ([]model.AwsRecommendation, error) {
 	ctx := context.TODO()
 
-	findOptions := options.Find()
-	findOptions.SetSort(bson.M{"seqValue": -1})
+	seqValue, err := md.GetLastAwsSeqValue()
+	if err != nil {
+		return nil, err
+	}
 
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(AwsRecommendationCollection).Find(ctx, bson.D{}, findOptions)
+	result := make([]model.AwsRecommendation, 0)
+
+	filter := bson.A{
+		bson.M{"$sort": bson.M{"seqValue": -1}},
+		bson.M{"$match": bson.M{
+			"profileID": bson.M{"$in": profileIDs},
+			"seqValue":  seqValue,
+		}},
+		bson.M{
+			"$lookup": bson.M{
+				"from":         "aws_profiles",
+				"localField":   "profileID",
+				"foreignField": "_id",
+				"as":           "profile",
+			},
+		},
+		bson.M{
+			"$unwind": bson.M{
+				"path": "$profile",
+			}},
+		bson.M{"$project": bson.M{
+			"seqValue":    1,
+			"profileID":   1,
+			"category":    1,
+			"suggestion":  1,
+			"name":        1,
+			"resourceID":  1,
+			"objectType":  1,
+			"details":     1,
+			"errors":      1,
+			"createdAt":   1,
+			"profileName": "$profile.name",
+		}},
+	}
+
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(AwsRecommendationCollection).Aggregate(ctx, filter)
 	if err != nil {
 		return nil, utils.NewError(err, "DB ERROR")
 	}
 
-	awsRecommendations := make([]model.AwsRecommendation, 0)
-	if err := cur.All(context.TODO(), &awsRecommendations); err != nil {
+	if err := cur.All(ctx, &result); err != nil {
 		return nil, utils.NewError(err, "DB ERROR")
 	}
 
-	if err := cur.Err(); err != nil {
-		return nil, utils.NewError(err, "DB ERROR")
-	}
-
-	awsRecommendation1 := make([]model.AwsRecommendation, 0)
-
-	if len(awsRecommendations) > 0 {
-		inCondition := bson.M{"$in": profileIDs}
-
-		filter := bson.M{"seqValue": awsRecommendations[0].SeqValue, "profileID": inCondition}
-
-		cur1, err1 := md.Client.Database(md.Config.Mongodb.DBName).Collection(AwsRecommendationCollection).Find(ctx, filter)
-		if err1 != nil {
-			return nil, utils.NewError(err, "DB ERROR")
-		}
-
-		if err := cur1.All(context.TODO(), &awsRecommendation1); err != nil {
-			return nil, utils.NewError(err, "DB ERROR")
-		}
-	}
-
-	return awsRecommendation1, nil
+	return result, nil
 }
 
 func (md *MongoDatabase) GetLastAwsSeqValue() (uint64, error) {
@@ -118,7 +134,37 @@ func (md *MongoDatabase) GetLastAwsSeqValue() (uint64, error) {
 func (md *MongoDatabase) GetAwsRecommendationsBySeqValue(seqValue uint64) ([]model.AwsRecommendation, error) {
 	ctx := context.TODO()
 
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(AwsRecommendationCollection).Find(ctx, bson.M{"seqValue": seqValue})
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(AwsRecommendationCollection).
+		Aggregate(ctx, bson.A{
+			bson.M{"$match": bson.M{
+				"seqValue": seqValue,
+			}},
+			bson.M{
+				"$lookup": bson.M{
+					"from":         "aws_profiles",
+					"localField":   "profileID",
+					"foreignField": "_id",
+					"as":           "profile",
+				},
+			},
+			bson.M{
+				"$unwind": bson.M{
+					"path": "$profile",
+				}},
+			bson.M{"$project": bson.M{
+				"seqValue":    1,
+				"profileID":   1,
+				"category":    1,
+				"suggestion":  1,
+				"name":        1,
+				"resourceID":  1,
+				"objectType":  1,
+				"details":     1,
+				"errors":      1,
+				"createdAt":   1,
+				"profileName": "$profile.name",
+			}},
+		})
 	if err != nil {
 		return nil, err
 	}
