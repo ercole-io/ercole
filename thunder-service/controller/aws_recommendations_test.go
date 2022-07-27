@@ -32,6 +32,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func TestGetAwsRecommendations_Success(t *testing.T) {
@@ -47,7 +48,7 @@ func TestGetAwsRecommendations_Success(t *testing.T) {
 
 	recommendation := model.AwsRecommendation{
 		SeqValue:   999,
-		ProfileID:  "ProfileIDTest",
+		ProfileID:  primitive.NewObjectID(),
 		Category:   "",
 		Suggestion: "",
 		Name:       "",

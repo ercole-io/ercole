@@ -26,6 +26,7 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func TestGetAwsRecommendation_DBError(t *testing.T) {
@@ -42,7 +43,7 @@ func TestGetAwsRecommendation_DBError(t *testing.T) {
 
 	t.Run("DB Error", func(t *testing.T) {
 		var expectedRes []model.AwsRecommendation
-		var strProfiles = []string{"TestProfile1", "TestProfile4"}
+		var strProfiles = []primitive.ObjectID{primitive.NilObjectID}
 
 		db.EXPECT().GetSelectedAwsProfiles().Return(strProfiles, nil)
 
@@ -73,7 +74,7 @@ func TestGetAwsRecommendations(t *testing.T) {
 		expected := []model.AwsRecommendation{
 			{
 				SeqValue:   0,
-				ProfileID:  "",
+				ProfileID:  primitive.NilObjectID,
 				Category:   "",
 				Suggestion: "",
 				Name:       "",
@@ -88,11 +89,11 @@ func TestGetAwsRecommendations(t *testing.T) {
 				CreatedAt: time.Date(2022, 6, 1, 0, 0, 1, 0, time.UTC),
 			},
 		}
-		var strProfiles = []string{"TestProfile1", "TestProfile4"}
+		var strProfiles = []primitive.ObjectID{primitive.NilObjectID}
 		db.EXPECT().GetSelectedAwsProfiles().Return(strProfiles, nil)
 
 		db.EXPECT().GetAwsRecommendationsByProfiles(strProfiles).
-			Return(expected, nil).Times(1)
+			Return(expected, nil)
 
 		actual, err := as.GetAwsRecommendations()
 		require.NoError(t, err)
@@ -101,11 +102,11 @@ func TestGetAwsRecommendations(t *testing.T) {
 	})
 
 	t.Run("Error", func(t *testing.T) {
-		var strProfiles = []string{"TestProfile1", "TestProfile4"}
+		var strProfiles = []primitive.ObjectID{primitive.NilObjectID}
 		db.EXPECT().GetSelectedAwsProfiles().Return(strProfiles, nil)
 
 		db.EXPECT().GetAwsRecommendationsByProfiles(strProfiles).
-			Return(nil, errMock).Times(1)
+			Return(nil, errMock)
 
 		actual, err := as.GetAwsRecommendations()
 		require.EqualError(t, err, "MockError")
@@ -130,7 +131,7 @@ func TestGetLastAwsRecommendations(t *testing.T) {
 		expected := []model.AwsRecommendation{
 			{
 				SeqValue:   uint64(999),
-				ProfileID:  "",
+				ProfileID:  primitive.NilObjectID,
 				Category:   "",
 				Suggestion: "",
 				Name:       "",
