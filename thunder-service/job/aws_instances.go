@@ -136,17 +136,26 @@ func (job *AwsDataRetrieveJob) FetchAwsComputeInstanceRightsizing(profile model.
 	}
 
 	for _, instance := range optimizableInstances {
+		var objectName string
+
+		for _, name := range instance.Tags {
+			if *name.Key == "Name" {
+				objectName = *name.Value
+				break
+			}
+		}
+
 		awsRecommendation := model.AwsRecommendation{
 			SeqValue:   seqValue,
 			ProfileID:  profile.ID.Hex(),
 			Category:   model.AwsResizeComputeInstance,
 			ObjectType: model.AwsComputeInstance,
 			ResourceID: *instance.InstanceId,
-			Name:       *instance.KeyName,
+			Name:       objectName,
 			Suggestion: model.AwsResizeComputeInstance,
 			CreatedAt:  time.Now(),
 			Details: []map[string]interface{}{
-				{"INSTANCE_NAME": instance.KeyName},
+				{"INSTANCE_NAME": objectName},
 			},
 		}
 
