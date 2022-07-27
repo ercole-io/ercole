@@ -60,7 +60,7 @@ func (job *AwsDataRetrieveJob) FetchAwsVolumesNotUsed(profile model.AwsProfile, 
 			}
 
 			recommendation.SeqValue = seqValue
-			recommendation.ProfileID = profile.ID.Hex()
+			recommendation.ProfileID = profile.ID
 			recommendation.Category = model.AwsUnusedResource
 			recommendation.Suggestion = model.AwsDeleteBlockStorageNotUsed
 			recommendation.Name = objectName
@@ -148,7 +148,7 @@ func (job *AwsDataRetrieveJob) FetchAwsBlockStorageRightsizing(profile model.Aws
 			}
 
 			recommendation.SeqValue = seqValue
-			recommendation.ProfileID = profile.ID.Hex()
+			recommendation.ProfileID = profile.ID
 			recommendation.Category = model.AwsBlockStorageRightsizing
 			recommendation.Suggestion = model.AwsResizeOversizedBlockStorage
 			recommendation.Name = objectName

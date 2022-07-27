@@ -59,7 +59,7 @@ func (job *AwsDataRetrieveJob) FetchAwsUnusedIPAddresses(profile model.AwsProfil
 			}
 
 			recommendation.SeqValue = seqValue
-			recommendation.ProfileID = profile.ID.Hex()
+			recommendation.ProfileID = profile.ID
 			recommendation.Category = model.AwsUnusedResource
 			recommendation.Suggestion = model.AwsDeletePublicIPAddressNotAssociated
 			recommendation.Name = objectName

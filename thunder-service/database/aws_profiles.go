@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -156,7 +156,7 @@ func (md *MongoDatabase) SelectAwsProfile(profileId string, selected bool) error
 	return nil
 }
 
-func (md *MongoDatabase) GetSelectedAwsProfiles() ([]string, error) {
+func (md *MongoDatabase) GetSelectedAwsProfiles() ([]primitive.ObjectID, error) {
 	ctx := context.TODO()
 
 	opts := options.Find()
@@ -171,7 +171,7 @@ func (md *MongoDatabase) GetSelectedAwsProfiles() ([]string, error) {
 
 	var selected []profileId
 
-	var selectedProfiles []string
+	var selectedProfiles []primitive.ObjectID
 
 	if err := cur.All(context.TODO(), &selected); err != nil {
 		return nil, utils.NewError(err, "DB ERROR")
@@ -182,7 +182,7 @@ func (md *MongoDatabase) GetSelectedAwsProfiles() ([]string, error) {
 	}
 
 	for _, s := range selected {
-		selectedProfiles = append(selectedProfiles, s.ID.Hex())
+		selectedProfiles = append(selectedProfiles, s.ID)
 	}
 
 	return selectedProfiles, nil

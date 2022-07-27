@@ -61,11 +61,11 @@ type MongoDatabaseInterface interface {
 	DeleteAwsProfile(id primitive.ObjectID) error
 	UpdateAwsProfile(profile model.AwsProfile) error
 	SelectAwsProfile(profileId string, selected bool) error
-	GetSelectedAwsProfiles() ([]string, error)
+	GetSelectedAwsProfiles() ([]primitive.ObjectID, error)
 	AddAwsObject(m interface{}, collection string) error
 	AddAwsObjects(m []interface{}, collection string) error
 	GetLastAwsSeqValue() (uint64, error)
-	GetAwsRecommendationsByProfiles(profileIDs []string) ([]model.AwsRecommendation, error)
+	GetAwsRecommendationsByProfiles(profileIDs []primitive.ObjectID) ([]model.AwsRecommendation, error)
 	GetAwsRecommendationsBySeqValue(seqValue uint64) ([]model.AwsRecommendation, error)
 }
 

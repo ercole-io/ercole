@@ -52,7 +52,7 @@ func (job *AwsDataRetrieveJob) FetchAwsUnusedDatabaseInstance(profile model.AwsP
 			*w.DBInstanceStatus == "incompatible-parameters" ||
 			*w.DBInstanceStatus == "restore-error" {
 			recommendation.SeqValue = seqValue
-			recommendation.ProfileID = profile.ID.Hex()
+			recommendation.ProfileID = profile.ID
 			recommendation.Category = model.AwsUnusedResource
 			recommendation.Suggestion = model.AwsDeleteDatabaseInstanceNotActive
 			recommendation.Name = *w.DBInstanceIdentifier
