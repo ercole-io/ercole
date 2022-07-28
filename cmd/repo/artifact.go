@@ -128,6 +128,8 @@ func (artifact *ArtifactInfo) SetInfoFromFileName(filename string) error {
 		artifact.Name = "ercole-agent" + data["dist"]
 		artifact.Version = data["version"]
 		artifact.Arch = data["arch"]
+		artifact.OperatingSystemFamily = "deb"
+		artifact.OperatingSystem = "deb"
 
 	case agentWinRegex.MatchString(filename):
 		data := utils.FindNamedMatches(agentWinRegex, filename)
