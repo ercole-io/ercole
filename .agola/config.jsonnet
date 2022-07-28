@@ -134,16 +134,16 @@ steps: [
           cd dist
           GH_REPO="https://api.github.com/repos/${GITHUB_USER}/ercole/releases"
           if [ ${AGOLA_GIT_TAG} ];
-            then GH_TAGS="$GH_REPO/tags/$AGOLA_GIT_TAG" ;
-          else
-            GH_TAGS="$GH_REPO/latest" ; fi
-          response=$(curl -sH "Authorization: token ${GITHUB_TOKEN}" $GH_TAGS)
-          eval $(echo "$response" | grep -m 1 "id.:" | grep -w id | tr : = | tr -cd '[[:alnum:]]=')
-          for filename in *; do
-            REPO_ASSET="https://uploads.github.com/repos/${GITHUB_USER}/ercole/releases/$id/assets?name=$(basename $filename)"
-            curl -H POST -H "Authorization: token ${GITHUB_TOKEN}" -H "Content-Type: application/octet-stream" --data-binary @"$filename" $REPO_ASSET
-            echo $REPO_ASSET
-          done
+            then
+              GH_TAGS="$GH_REPO/tags/$AGOLA_GIT_TAG" ;
+              response=$(curl -sH "Authorization: token ${GITHUB_TOKEN}" $GH_TAGS) ;
+              eval $(echo "$response" | grep -m 1 "id.:" | grep -w id | tr : = | tr -cd '[[:alnum:]]=') ; 
+              for filename in *; do
+                REPO_ASSET="https://uploads.github.com/repos/${GITHUB_USER}/ercole/releases/$id/assets?name=$(basename $filename)" ;
+                curl -H POST -H "Authorization: token ${GITHUB_TOKEN}" -H "Content-Type: application/octet-stream" --data-binary @"$filename" $REPO_ASSET ;
+                echo $REPO_ASSET ;
+              done
+          fi
       |||,
     },
   ],
