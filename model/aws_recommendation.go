@@ -54,4 +54,6 @@ const (
 	AwsBlockStorage                        = "Block Storage"
 	AwsBlockStorageRightsizing             = "Block Storage Rightsizing"
 	AwsResizeComputeInstance               = "Resize oversized compute instance"
+	AwsDeleteComputeInstanceNotUsed        = "Delete Compute Instance not used"
+	AwsComputeInstanceNotUsed              = "Compute Instance not used"
 )

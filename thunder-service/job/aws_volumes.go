@@ -129,12 +129,12 @@ func (job *AwsDataRetrieveJob) FetchAwsBlockStorageRightsizing(profile model.Aws
 			throughput = 0
 		}
 
-		iopsVolumeReadOps := GetIOPSthroughputMetricStatistics(sess, volumeId, "VolumeReadOps", "Count", timePast, timeNow)
-		iopsVolumeWriteOps := GetIOPSthroughputMetricStatistics(sess, volumeId, "VolumeWriteOps", "Count", timePast, timeNow)
-		throughputVolumeReadBytes := GetIOPSthroughputMetricStatistics(sess, volumeId, "VolumeReadBytes", "Bytes", timePast, timeNow)
-		throughputiopVolumeWriteBytes := GetIOPSthroughputMetricStatistics(sess, volumeId, "VolumeWriteBytes", "Bytes", timePast, timeNow)
-		maxIopsValue := GetMaximum(iopsVolumeReadOps, iopsVolumeWriteOps)
-		maxThroughputValue := GetMaximum(throughputVolumeReadBytes, throughputiopVolumeWriteBytes)
+		iopsVolumeReadOps := getIOPSthroughputMetricStatistics(sess, volumeId, "VolumeReadOps", "Count", timePast, timeNow)
+		iopsVolumeWriteOps := getIOPSthroughputMetricStatistics(sess, volumeId, "VolumeWriteOps", "Count", timePast, timeNow)
+		throughputVolumeReadBytes := getIOPSthroughputMetricStatistics(sess, volumeId, "VolumeReadBytes", "Bytes", timePast, timeNow)
+		throughputiopVolumeWriteBytes := getIOPSthroughputMetricStatistics(sess, volumeId, "VolumeWriteBytes", "Bytes", timePast, timeNow)
+		maxIopsValue := getMaximum(iopsVolumeReadOps, iopsVolumeWriteOps)
+		maxThroughputValue := getMaximum(throughputVolumeReadBytes, throughputiopVolumeWriteBytes)
 		maxThroughputValue = maxThroughputValue / 1024 / 1024
 
 		if iops < int64(maxIopsValue/2) && throughput < int64(maxThroughputValue/2) {
@@ -158,7 +158,7 @@ func (job *AwsDataRetrieveJob) FetchAwsBlockStorageRightsizing(profile model.Aws
 				{"BLOCK_STORAGE_NAME": objectName},
 				{"SIZE": *w.Size},
 				{"TARGET": "THROUGHTPUT/IOPS"},
-				{"THROUGHPUT_R/W_MAX_5DD ": maxThroughputValue},
+				{"THROUGHPUT_R/W_MAX_5DD": maxThroughputValue},
 				{"OPS_MAX_5DD": maxIopsValue},
 			}
 
@@ -178,7 +178,7 @@ func (job *AwsDataRetrieveJob) FetchAwsBlockStorageRightsizing(profile model.Aws
 	return nil
 }
 
-func GetIOPSthroughputMetricStatistics(sess *session.Session, volumeId string, metric string, unit string, startTime time.Time, endTime time.Time) *cloudwatch.GetMetricStatisticsOutput {
+func getIOPSthroughputMetricStatistics(sess *session.Session, volumeId string, metric string, unit string, startTime time.Time, endTime time.Time) *cloudwatch.GetMetricStatisticsOutput {
 	svc := cloudwatch.New(sess)
 
 	params := &cloudwatch.GetMetricStatisticsInput{
@@ -207,7 +207,7 @@ func GetIOPSthroughputMetricStatistics(sess *session.Session, volumeId string, m
 	return resp
 }
 
-func GetMaximum(read *cloudwatch.GetMetricStatisticsOutput, write *cloudwatch.GetMetricStatisticsOutput) float64 {
+func getMaximum(read *cloudwatch.GetMetricStatisticsOutput, write *cloudwatch.GetMetricStatisticsOutput) float64 {
 	type ReadWrite struct {
 		read  float64
 		write float64
