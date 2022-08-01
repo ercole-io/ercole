@@ -105,11 +105,23 @@ func (job *AwsDataRetrieveJob) FetchAwsComputeInstanceRightsizing(profile model.
 		return err
 	}
 
+	instanceTypes, err := svc.DescribeInstanceTypes(&ec2.DescribeInstanceTypesInput{})
+	if err != nil {
+		return err
+	}
+
 	optimizableInstances := make([]ec2.Instance, 0)
 	client := cloudwatch.New(sess)
 
 	for _, reservation := range instances.Reservations {
 		for _, v := range reservation.Instances {
+			c := make(chan ec2.Instance)
+
+			instanceTypesLen := len(instanceTypes.InstanceTypes)
+
+			go job.checkInstanceTypeCPU(instanceTypes.InstanceTypes[:instanceTypesLen/2], v, c)
+			go job.checkInstanceTypeCPU(instanceTypes.InstanceTypes[instanceTypesLen/2:], v, c)
+
 			input := &cloudwatch.GetMetricStatisticsInput{
 				EndTime:    aws.Time(time.Unix(time.Now().Unix(), 0)),
 				StartTime:  aws.Time(time.Unix(time.Now().Add(time.Duration(-168)*time.Hour).Unix(), 0)),
@@ -125,7 +137,6 @@ func (job *AwsDataRetrieveJob) FetchAwsComputeInstanceRightsizing(profile model.
 				return err
 			}
 
-			c := make(chan ec2.Instance)
 			datapointsLen := len(stats.Datapoints)
 
 			go job.getAverageStatistic(stats.Datapoints[:datapointsLen/2], v, c)
@@ -170,6 +181,14 @@ func (job *AwsDataRetrieveJob) FetchAwsComputeInstanceRightsizing(profile model.
 func (job *AwsDataRetrieveJob) getAverageStatistic(datapoints []*cloudwatch.Datapoint, instance *ec2.Instance, c chan ec2.Instance) {
 	for _, d := range datapoints {
 		if *d.Average > 50 && *d.Maximum > 50 {
+			c <- *instance
+		}
+	}
+}
+
+func (job *AwsDataRetrieveJob) checkInstanceTypeCPU(list []*ec2.InstanceTypeInfo, instance *ec2.Instance, c chan ec2.Instance) {
+	for _, v := range list {
+		if v.InstanceType == instance.InstanceType && v.VCpuInfo.DefaultVCpus == aws.Int64(1) {
 			c <- *instance
 		}
 	}
