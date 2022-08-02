@@ -129,10 +129,10 @@ func (job *AwsDataRetrieveJob) FetchAwsBlockStorageRightsizing(profile model.Aws
 			throughput = 0
 		}
 
-		iopsVolumeReadOps := getIOPSthroughputMetricStatistics(sess, volumeId, "VolumeReadOps", "Count", timePast, timeNow)
-		iopsVolumeWriteOps := getIOPSthroughputMetricStatistics(sess, volumeId, "VolumeWriteOps", "Count", timePast, timeNow)
-		throughputVolumeReadBytes := getIOPSthroughputMetricStatistics(sess, volumeId, "VolumeReadBytes", "Bytes", timePast, timeNow)
-		throughputiopVolumeWriteBytes := getIOPSthroughputMetricStatistics(sess, volumeId, "VolumeWriteBytes", "Bytes", timePast, timeNow)
+		iopsVolumeReadOps := GetMetricStatistics(sess, "VolumeId", volumeId, "VolumeReadOps", "AWS/EBS", 432000, "Maximum", "Count", timePast, timeNow)
+		iopsVolumeWriteOps := GetMetricStatistics(sess, "VolumeId", volumeId, "VolumeWriteOps", "AWS/EBS", 432000, "Maximum", "Count", timePast, timeNow)
+		throughputVolumeReadBytes := GetMetricStatistics(sess, "VolumeId", volumeId, "VolumeReadBytes", "AWS/EBS", 432000, "Maximum", "Bytes", timePast, timeNow)
+		throughputiopVolumeWriteBytes := GetMetricStatistics(sess, "VolumeId", volumeId, "VolumeWriteBytes", "AWS/EBS", 432000, "Maximum", "Bytes", timePast, timeNow)
 		maxIopsValue := getMaximum(iopsVolumeReadOps, iopsVolumeWriteOps)
 		maxThroughputValue := getMaximum(throughputVolumeReadBytes, throughputiopVolumeWriteBytes)
 		maxThroughputValue = maxThroughputValue / 1024 / 1024
@@ -176,35 +176,6 @@ func (job *AwsDataRetrieveJob) FetchAwsBlockStorageRightsizing(profile model.Aws
 	}
 
 	return nil
-}
-
-func getIOPSthroughputMetricStatistics(sess *session.Session, volumeId string, metric string, unit string, startTime time.Time, endTime time.Time) *cloudwatch.GetMetricStatisticsOutput {
-	svc := cloudwatch.New(sess)
-
-	params := &cloudwatch.GetMetricStatisticsInput{
-		EndTime:    aws.Time(endTime),
-		MetricName: aws.String(metric),
-		Namespace:  aws.String("AWS/EBS"),
-		Period:     aws.Int64(432000),
-		StartTime:  aws.Time(startTime),
-		Statistics: []*string{
-			aws.String("Maximum"),
-		},
-		Dimensions: []*cloudwatch.Dimension{
-			{
-				Name:  aws.String("VolumeId"),
-				Value: aws.String(volumeId),
-			},
-		},
-		Unit: aws.String(unit),
-	}
-	resp, err := svc.GetMetricStatistics(params)
-
-	if err != nil {
-		return nil
-	}
-
-	return resp
 }
 
 func getMaximum(read *cloudwatch.GetMetricStatisticsOutput, write *cloudwatch.GetMetricStatisticsOutput) float64 {
