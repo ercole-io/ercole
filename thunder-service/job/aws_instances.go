@@ -22,7 +22,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/cloudwatch"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/thunder-service/database"
@@ -121,7 +120,7 @@ func (job *AwsDataRetrieveJob) FetchAwsComputeInstanceRightsizing(profile model.
 		for _, i := range w.Instances {
 			var average, maximum float64
 
-			averageCPU := getCPUMetricStatistics(sess, *i.InstanceId, "CPUUtilization", 3600, "Average", "Percent", timePast, timeNow)
+			averageCPU := GetMetricStatistics(sess, "InstanceId", *i.InstanceId, "CPUUtilization", "AWS/EC2", 3600, "Average", "Percent", timePast, timeNow)
 			countAverageCPU := 0
 
 			for _, op := range averageCPU.Datapoints {
@@ -132,7 +131,7 @@ func (job *AwsDataRetrieveJob) FetchAwsComputeInstanceRightsizing(profile model.
 				}
 			}
 
-			maxCPU := getCPUMetricStatistics(sess, *i.InstanceId, "CPUUtilization", 3600, "Maximum", "Percent", timePast, timeNow)
+			maxCPU := GetMetricStatistics(sess, "InstanceId", *i.InstanceId, "CPUUtilization", "AWS/EC2", 3600, "Maximum", "Percent", timePast, timeNow)
 			countMaxCPU := 0
 
 			for _, op := range maxCPU.Datapoints {
@@ -233,7 +232,7 @@ func (job *AwsDataRetrieveJob) FetchAwsInstanceDecommissioning2(profile model.Aw
 		for _, i := range w.Instances {
 			var average, maximum float64
 
-			averageCPU := getCPUMetricStatistics(sess, *i.InstanceId, "CPUUtilization", 86400, "Average", "Percent", timePast, timeNow)
+			averageCPU := GetMetricStatistics(sess, "InstanceId", *i.InstanceId, "CPUUtilization", "AWS/EC2", 86400, "Average", "Percent", timePast, timeNow)
 			countAverageCPU := 0
 
 			for _, op := range averageCPU.Datapoints {
@@ -244,7 +243,7 @@ func (job *AwsDataRetrieveJob) FetchAwsInstanceDecommissioning2(profile model.Aw
 				}
 			}
 
-			maxCPU := getCPUMetricStatistics(sess, *i.InstanceId, "CPUUtilization", 3600, "Maximum", "Percent", timePast, timeNow)
+			maxCPU := GetMetricStatistics(sess, "InstanceId", *i.InstanceId, "CPUUtilization", "AWS/EC2", 3600, "Maximum", "Percent", timePast, timeNow)
 			countMaxCPU := 0
 
 			for _, op := range maxCPU.Datapoints {
@@ -306,33 +305,4 @@ func (job *AwsDataRetrieveJob) FetchAwsInstanceDecommissioning2(profile model.Aw
 	}
 
 	return nil
-}
-
-func getCPUMetricStatistics(sess *session.Session, instanceID string, metric string, period int64, statistics string, unit string, startTime time.Time, endTime time.Time) *cloudwatch.GetMetricStatisticsOutput {
-	svc := cloudwatch.New(sess)
-
-	params := &cloudwatch.GetMetricStatisticsInput{
-		EndTime:    aws.Time(endTime),
-		MetricName: aws.String(metric),
-		Namespace:  aws.String("AWS/EC2"),
-		Period:     aws.Int64(period),
-		StartTime:  aws.Time(startTime),
-		Statistics: []*string{
-			aws.String(statistics),
-		},
-		Dimensions: []*cloudwatch.Dimension{
-			{
-				Name:  aws.String("InstanceId"),
-				Value: aws.String(instanceID),
-			},
-		},
-		Unit: aws.String(unit),
-	}
-	resp, err := svc.GetMetricStatistics(params)
-
-	if err != nil {
-		return nil
-	}
-
-	return resp
 }
