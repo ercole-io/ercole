@@ -140,7 +140,6 @@ func (job *AwsDataRetrieveJob) FetchAwsUnusedServiceDecommissioning3DB(profile m
 
 		isKoCPU := false
 		for _, v := range instanceTypes.InstanceTypes {
-
 			if *v.InstanceType == shape && *v.VCpuInfo.DefaultVCpus == 1 {
 				isKoCPU = true
 			}
@@ -149,7 +148,6 @@ func (job *AwsDataRetrieveJob) FetchAwsUnusedServiceDecommissioning3DB(profile m
 		}
 
 		if countAverageCPU <= 3 && countMaxCPU <= 3 && !isKoCPU {
-
 			lenDatapoints := len(maxCPU.Datapoints)
 
 			if lenDatapoints > 0 {
