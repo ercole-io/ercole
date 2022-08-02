@@ -21,17 +21,16 @@ import (
 )
 
 type AwsRecommendation struct {
-	SeqValue    uint64                   `json:"seqValue" bson:"seqValue"`
-	ProfileID   primitive.ObjectID       `json:"profileID" bson:"profileID"`
-	ProfileName string                   `json:"profileName" bson:"profileName"`
-	Category    string                   `json:"category" bson:"category"`
-	Suggestion  string                   `json:"suggestion" bson:"suggestion"`
-	Name        string                   `json:"name" bson:"name"`
-	ResourceID  string                   `json:"resourceID" bson:"resourceID"`
-	ObjectType  string                   `json:"objectType" bson:"objectType"`
-	Details     []map[string]interface{} `json:"details" bson:"details"`
-	Errors      []map[string]string      `json:"errors" bson:"errors"`
-	CreatedAt   time.Time                `json:"createdAt" bson:"createdAt"`
+	SeqValue   uint64                   `json:"seqValue" bson:"seqValue"`
+	ProfileID  primitive.ObjectID       `json:"profileID" bson:"profileID"`
+	Category   string                   `json:"category" bson:"category"`
+	Suggestion string                   `json:"suggestion" bson:"suggestion"`
+	Name       string                   `json:"name" bson:"name"`
+	ResourceID string                   `json:"resourceID" bson:"resourceID"`
+	ObjectType string                   `json:"objectType" bson:"objectType"`
+	Details    []map[string]interface{} `json:"details" bson:"details"`
+	Errors     []map[string]string      `json:"errors" bson:"errors"`
+	CreatedAt  time.Time                `json:"createdAt" bson:"createdAt"`
 }
 
 const (
@@ -39,11 +38,13 @@ const (
 	AwsNotActiveResource                   = "Not Active Resource"
 	AwsObjectTypeLoadBalancer              = "Load Balancer"
 	AwsPublicID                            = "Public IP"
-	AwsDatabaseInstance                    = "Databse Instance"
+	AwsDatabaseInstance                    = "Database Instance"
+	AwsOversizedDatabase                   = "Oversized Database"
 	AwsComputeInstance                     = "Compute Instance"
 	AwsDeleteLoadBalancerNotActive         = "Delete Load balancer not active"
 	AwsDeletePublicIPAddressNotAssociated  = "Delete public IP address not associated"
 	AwsDeleteDatabaseInstanceNotActive     = "Delete Database instance not active"
+	AwsResizeOversizedDatabaseInstance     = "Resize oversized Database instance"
 	AwsDeleteComputeInstanceNotActive      = "Delete Compute Instance not active"
 	AwsObjectStorageOptimization           = "Object Storage Optimization"
 	AwsObjectStorageOptimizationSuggestion = "Enable bucket auto tiering"
