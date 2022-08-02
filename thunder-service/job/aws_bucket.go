@@ -102,10 +102,10 @@ func (job *AwsDataRetrieveJob) FetchBucketLifecycleConfiguration(bucketName stri
 					return errDb
 				}
 			default:
-				job.Log.Warn(err)
+				return aerr
 			}
 		} else {
-			job.Log.Warn(err)
+			return err
 		}
 	}
 
