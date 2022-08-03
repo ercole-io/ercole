@@ -58,4 +58,5 @@ func (ctrl *ThunderController) setupProtectedRoutes(router *mux.Router) {
 	router.HandleFunc("/aws/aws-recommendation-errors", ctrl.GetAwsRecommendationsErrors).Methods("GET")
 	router.HandleFunc("/aws/aws-recommendation-errors/{seqnum}", ctrl.GetAwsRecommendationsErrors).Methods("GET")
 	router.HandleFunc("/aws/retrieve-last-aws-recommendations", ctrl.ForceGetAwsRecommendations).Methods("GET")
+	router.HandleFunc("/aws/aws-objects", ctrl.GetAwsObjects).Methods("GET")
 }
