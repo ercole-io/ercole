@@ -67,6 +67,7 @@ type MongoDatabaseInterface interface {
 	GetLastAwsSeqValue() (uint64, error)
 	GetAwsRecommendationsByProfiles(profileIDs []primitive.ObjectID) ([]model.AwsRecommendation, error)
 	GetAwsRecommendationsBySeqValue(seqValue uint64) ([]model.AwsRecommendation, error)
+	GetAwsObjectsBySeqValue(seqValue uint64) ([]model.AwsObject, error)
 }
 
 // MongoDatabase is a implementation
