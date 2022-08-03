@@ -1,0 +1,180 @@
+{
+    "agentVersion": "latest",
+    "dismissedAt": null,
+    "archived": false,
+    "clusterMembershipStatus": {
+        "hacmp": false,
+        "oracleClusterware": false,
+        "sunCluster": false,
+        "veritasClusterServer": false
+    },
+    "clusters": null,
+    "createdAt": {
+        "$date": {
+            "$numberLong": "1590053574830"
+        }
+    },
+    "environment": "TST",
+    "features": {
+        "oracle": {
+            "database": {
+                "unlistedRunningDatabases": [],
+                "databases": [
+                    {
+                        "addms": [],
+                        "asm": false,
+                        "allocable": {
+                            "$numberDouble": "129.0"
+                        },
+                        "archivelog": false,
+                        "backups": [],
+                        "blockSize": {
+                            "$numberInt": "8192"
+                        },
+                        "cpuCount": {
+                            "$numberInt": "2"
+                        },
+                        "charset": "AL32UTF8",
+                        "dbTime": {
+                            "$numberDouble": "184.81"
+                        },
+                        "dailyCPUUsage": {
+                            "$numberDouble": "3.4"
+                        },
+                        "datafileSize": {
+                            "$numberDouble": "8.0"
+                        },
+                        "dataguard": false,
+                        "elapsed": {
+                            "$numberDouble": "12059.18"
+                        },
+                        "featureUsageStats": [],
+                        "instanceNumber": {
+                            "$numberInt": "1"
+                        },
+                        "instanceName": "pippodb1",
+                        "isCDB": false,
+                        "licenses": [],
+                        "memoryTarget": {
+                            "$numberDouble": "1.484"
+                        },
+                        "nCharset": "AL16UTF16",
+                        "name": "pippodb",
+                        "pdbs": [],
+                        "pgaTarget": {
+                            "$numberDouble": "0.0"
+                        },
+                        "psus": [],
+                        "patches": [
+                            {
+                                "version": "11.2.0.4.0",
+                                "patchID": {
+                                    "$numberInt": "0"
+                                },
+                                "action": "APPLY",
+                                "description": "Patchset 11.2.0.2.0",
+                                "date": "2013-08-24"
+                            }
+                        ],
+                        "platform": "Linux x86 64-bit",
+                        "sgaMaxSize": {
+                            "$numberDouble": "1.484"
+                        },
+                        "sgaTarget": {
+                            "$numberDouble": "0.0"
+                        },
+                        "schemas": [],
+                        "segmentAdvisors": [],
+                        "segmentsSize": {
+                            "$numberDouble": "50.0"
+                        },
+                        "services": [],
+                        "status": "OPEN",
+                        "tablespaces": [],
+                        "uniqueName": "pippodb",
+                        "version": "12.2.0.1.0 Enterprise Edition",
+                        "work": {
+                            "$numberDouble": "1.0"
+                        }
+                    }
+                ]
+            },
+            "exadata": null
+        }
+    },
+    "filesystems": [
+        {
+            "availableSpace": {
+                "$numberLong": "5798205849"
+            },
+            "filesystem": "/dev/mapper/cl_itl--csllab--112-root",
+            "mountedOn": "/",
+            "size": {
+                "$numberLong": "13958643712"
+            },
+            "type": "ext4",
+            "usedSpace": {
+                "$numberLong": "7194070220"
+            }
+        },
+        {
+            "availableSpace": {
+                "$numberLong": "335544320"
+            },
+            "filesystem": "/dev/sda1",
+            "mountedOn": "/boot",
+            "size": {
+                "$numberLong": "511705088"
+            },
+            "type": "ext4",
+            "usedSpace": {
+                "$numberLong": "139460608"
+            }
+        }
+    ],
+    "hostname": "newdb",
+    "info": {
+        "cpuCores": {
+            "$numberInt": "1"
+        },
+        "cpuFrequency": "2.53GHz",
+        "cpuModel": "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
+        "cpuSockets": {
+            "$numberInt": "2"
+        },
+        "cpuThreads": {
+            "$numberInt": "2"
+        },
+        "coresPerSocket": {
+            "$numberInt": "1"
+        },
+        "hardwareAbstraction": "VIRT",
+        "hardwareAbstractionTechnology": "VMWARE",
+        "hostname": "newdb",
+        "kernel": "Linux",
+        "kernelVersion": "3.10.0-514.el7.x86_64",
+        "memoryTotal": {
+            "$numberDouble": "3.0"
+        },
+        "os": "Red Hat Enterprise Linux",
+        "osVersion": "7.6",
+        "swapTotal": {
+            "$numberDouble": "1.0"
+        },
+        "threadsPerCore": {
+            "$numberInt": "2"
+        }
+    },
+    "location": "Germany",
+    "schemaVersion": {
+        "$numberDouble": "1.0"
+    },
+    "serverSchemaVersion": {
+        "$numberInt": "1"
+    },
+    "serverVersion": "latest",
+    "tags": [],
+    "_id": {
+        "$oid": "5ec64ac640c089c5aff44e9d"
+    }
+}
