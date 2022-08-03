@@ -50,6 +50,7 @@ type ThunderServiceInterface interface {
 	GetLastAwsRecommendations() ([]model.AwsRecommendation, error)
 	GetAwsRecommendationsBySeqValue(seqValue uint64) ([]model.AwsRecommendation, error)
 	ForceGetAwsRecommendations() error
+	GetLastAwsObjects() ([]model.AwsObject, error)
 }
 
 type ThunderService struct {
