@@ -160,6 +160,8 @@ type APIControllerInterface interface {
 	GetOracleGrantDbaJSON(hostname string, filters *dto.GlobalFilter) ([]dto.OracleGrantDbaDto, error)
 	GetOracleGrantDbaXLSX(hostname string, filters *dto.GlobalFilter) (*excelize.File, error)
 
+	GetOraclePatchList(w http.ResponseWriter, r *http.Request)
+
 	// MYSQL
 
 	SearchMySQLInstances(w http.ResponseWriter, r *http.Request)

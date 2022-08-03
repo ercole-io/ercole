@@ -141,6 +141,8 @@ type MongoDatabaseInterface interface {
 
 	FindGrantDbaByHostname(hostname string, filter dto.GlobalFilter) ([]dto.OracleGrantDbaDto, error)
 
+	GetOraclePatchList() ([]dto.OracleDatabasePatchDto, error)
+
 	// ReplaceHostData adds a new hostdata to the database
 	ReplaceHostData(hostData model.HostDataBE) error
 	// UpdateAlertsStatus change the status of the specified alerts
