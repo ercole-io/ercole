@@ -147,6 +147,8 @@ type APIServiceInterface interface {
 	ListOracleGrantDbaByHostname(hostname string, filter dto.GlobalFilter) ([]dto.OracleGrantDbaDto, error)
 	CreateOracleGrantDbaXlsx(hostname string, filter dto.GlobalFilter) (*excelize.File, error)
 
+	GetOraclePatchList() ([]dto.OracleDatabasePatchDto, error)
+
 	// SQL SERVER DATABASE LICENSES
 	GetSqlServerDatabaseLicenseTypes() ([]model.SqlServerDatabaseLicenseType, error)
 
