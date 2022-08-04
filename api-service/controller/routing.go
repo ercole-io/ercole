@@ -46,6 +46,9 @@ func (ctrl *APIController) GetApiControllerHandler(auth auth.AuthenticationProvi
 }
 
 func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
+	// ERCOLE
+	router.HandleFunc("/version", ctrl.GetVersion).Methods("GET")
+
 	// HOSTS
 	router.HandleFunc("/hosts", ctrl.SearchHosts).Methods("GET")
 	router.HandleFunc("/hosts/count", ctrl.GetHostsCountStats).Methods("GET")
