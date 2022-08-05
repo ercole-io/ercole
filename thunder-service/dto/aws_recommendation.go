@@ -34,13 +34,14 @@ type AwsRecommendationDto struct {
 
 func ToAwsRecommendationDto(model model.AwsRecommendation) AwsRecommendationDto {
 	return AwsRecommendationDto{
-		SeqValue:   model.SeqValue,
-		Category:   model.Category,
-		Suggestion: model.Suggestion,
-		Name:       model.Name,
-		ObjectType: model.ObjectType,
-		Details:    model.Details,
-		CreatedAt:  model.CreatedAt,
+		SeqValue:    model.SeqValue,
+		Category:    model.Category,
+		Suggestion:  model.Suggestion,
+		Name:        model.Name,
+		ObjectType:  model.ObjectType,
+		Details:     model.Details,
+		CreatedAt:   model.CreatedAt,
+		ProfileName: model.ProfileName,
 	}
 }
 
