@@ -51,7 +51,8 @@ var recAws1 model.AwsRecommendation = model.AwsRecommendation{
 		{"NameA": "ValueA"},
 		{"NameB": "ValueA"},
 	},
-	CreatedAt: time.Date(2022, 5, 26, 0, 0, 1, 0, time.UTC),
+	CreatedAt:   time.Date(2022, 5, 26, 0, 0, 1, 0, time.UTC),
+	ProfileName: "profile4",
 }
 
 func (m *MongodbSuite) TestAddAwsRecommendation_Success() {
