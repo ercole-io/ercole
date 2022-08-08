@@ -32,7 +32,6 @@ func (m *MongodbSuite) TestSearchOracleDatabases() {
 	var work float64 = 1
 	enabled := false
 	name := "ECXSERVER"
-	creationdate := utils.P("2019-06-24T17:34:20Z")
 
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 
@@ -227,9 +226,8 @@ func (m *MongodbSuite) TestSearchOracleDatabases() {
 				},
 				Services: []model.OracleDatabaseService{
 					{
-						CreationDate: &creationdate,
-						Enabled:      &enabled,
-						Name:         &name,
+						Enabled: &enabled,
+						Name:    &name,
 					},
 				},
 				Status:     "OPEN",
@@ -332,9 +330,8 @@ func (m *MongodbSuite) TestSearchOracleDatabases() {
 				},
 				Services: []model.OracleDatabaseService{
 					{
-						CreationDate: &creationdate,
-						Enabled:      &enabled,
-						Name:         &name,
+						Enabled: &enabled,
+						Name:    &name,
 					},
 				},
 				Status:     "OPEN",
@@ -466,9 +463,8 @@ func (m *MongodbSuite) TestSearchOracleDatabases() {
 				},
 				Services: []model.OracleDatabaseService{
 					{
-						CreationDate: &creationdate,
-						Enabled:      &enabled,
-						Name:         &name,
+						Enabled: &enabled,
+						Name:    &name,
 					},
 				},
 				Status:     "OPEN",
