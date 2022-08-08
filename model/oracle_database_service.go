@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,17 +15,12 @@
 
 package model
 
-import (
-	"time"
-)
-
 // OracleDatabaseService holds information about an Oracle database service
 type OracleDatabaseService struct {
-	Name            *string    `json:"name" bson:"name,omitempty"`
-	CreationDate    *time.Time `json:"creationDate" bson:"creationDate,omitempty"`
-	FailoverMethod  *string    `json:"failoverMethod" bson:"failoverMethod,omitempty"`
-	FailoverType    *string    `json:"failoverType" bson:"failoverType,omitempty"`
-	FailoverRetries *int       `json:"failoverRetries" bson:"failoverRetries,omitempty"`
-	FailoverDelay   *int       `json:"failoverDelay" bson:"failoverDelay,omitempty"`
-	Enabled         *bool      `json:"enabled" bson:"enabled,omitempty"`
+	Name            *string `json:"name" bson:"name,omitempty"`
+	FailoverMethod  *string `json:"failoverMethod" bson:"failoverMethod,omitempty"`
+	FailoverType    *string `json:"failoverType" bson:"failoverType,omitempty"`
+	FailoverRetries *int    `json:"failoverRetries" bson:"failoverRetries,omitempty"`
+	FailoverDelay   *int    `json:"failoverDelay" bson:"failoverDelay,omitempty"`
+	Enabled         *bool   `json:"enabled" bson:"enabled,omitempty"`
 }
