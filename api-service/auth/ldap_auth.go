@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,20 +18,21 @@ package auth
 import (
 	"bytes"
 	"crypto/rsa"
+	"crypto/tls"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
-
-	"github.com/jtblin/go-ldap-client"
 
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/go-ldap/ldap"
 )
 
 // LDAPAuthenticationProvider is the concrete implementation of AuthenticationProvider that provide a LDAP user authentication.
@@ -46,7 +47,7 @@ type LDAPAuthenticationProvider struct {
 	privateKey *rsa.PrivateKey
 	// publicKey contains the public key used to check the JWT tokens
 	publicKey *rsa.PublicKey
-	Client    *ldap.LDAPClient
+	Client    *ldap.Conn
 }
 
 // Init initializes the service and database
@@ -61,32 +62,54 @@ func (ap *LDAPAuthenticationProvider) Init() {
 		ap.Log.Panic(err)
 	}
 
-	ap.Client = &ldap.LDAPClient{
-		Base:         ap.Config.LDAPBase,
-		Host:         ap.Config.Host,
-		Port:         ap.Config.Port,
-		UseSSL:       ap.Config.LDAPUseSSL,
-		BindDN:       ap.Config.LDAPBindDN,
-		BindPassword: ap.Config.LDAPBindPassword,
-		UserFilter:   ap.Config.LDAPUserFilter,
-		GroupFilter:  ap.Config.LDAPGroupFilter,
-		Attributes:   []string{"givenName", "sn", "mail", "uid"},
+	l, err := ldap.DialURL(fmt.Sprintf("%s%s%s%s", "ldap://", ap.Config.Host, ":", strconv.Itoa(ap.Config.Port)))
+	if err != nil {
+		ap.Log.Fatalf("Error dialing LDAP url: %v", err)
 	}
 
-	if err := ap.Client.Connect(); err != nil {
-		ap.Log.Fatalf("Error connecting LDAP: %v", err)
+	err = l.StartTLS(&tls.Config{InsecureSkipVerify: true})
+	if err != nil {
+		ap.Log.Fatalf("Error reconnecting with TLS: %v", err)
 	}
+
+	err = l.Bind(ap.Config.LDAPBindDN, ap.Config.LDAPBindPassword)
+	if err != nil {
+		ap.Log.Fatalf("Error binding: %v", err)
+	}
+
+	ap.Client = l
 }
 
 // GetUserInfoIfCredentialsAreCorrect return the informations about the user if the provided credentials are correct, otherwise return nil
 func (ap *LDAPAuthenticationProvider) GetUserInfoIfCredentialsAreCorrect(username string, password string) (map[string]interface{}, error) {
-	ok, _, err := ap.Client.Authenticate(username, password)
-	if err != nil {
-		return nil, utils.NewError(err, "AUTH")
+	filter := fmt.Sprintf(ap.Config.LDAPUserFilter, ldap.EscapeFilter(username))
+	searchRequest := ldap.NewSearchRequest(
+		"dc=planetexpress,dc=com",
+		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
+		fmt.Sprintf("(&(objectClass=*)%s)", filter),
+		[]string{"givenName", "sn", "mail", "uid"},
+		nil,
+	)
+
+	sr, err := ap.Client.Search(searchRequest)
+	if err != nil || len(sr.Entries) != 1 {
+		if len(sr.Entries) != 1 {
+			return nil, utils.NewError(errors.New("User does not exist or too many entries returned"), "SEARCH")
+		} else {
+			return nil, utils.NewError(err, "SEARCH")
+		}
 	}
 
-	if !ok {
-		return nil, nil
+	userdn := sr.Entries[0].DN
+
+	err = ap.Client.Bind(userdn, password)
+	if err != nil {
+		return nil, utils.NewError(err, "BIND")
+	}
+
+	err = ap.Client.Bind(ap.Config.LDAPBindDN, ap.Config.LDAPBindPassword)
+	if err != nil {
+		return nil, utils.NewError(err, "REBIND")
 	}
 
 	return map[string]interface{}{
