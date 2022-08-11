@@ -10,8 +10,6 @@ TokenValidityTimeout = 360
 Host = "127.0.0.1"
 Port = 10389
 LDAPBase = "dc=planetexpress,dc=com"
-LDAPUseSSL = false
 LDAPBindDN = "cn=admin,dc=planetexpress,dc=com"
 LDAPBindPassword = "GoodNewsEveryone"
 LDAPUserFilter = "(uid=%s)"
-LDAPGroupFilter = "(memberUid=%s)" # I don't known what are UserFilter/GroupFilter..
