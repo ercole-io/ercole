@@ -18,15 +18,39 @@ package controller
 import (
 	"net/http"
 
+	"github.com/360EntSecGroup-Skylar/excelize"
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/golang/gddo/httputil"
 )
 
 func (ctrl *APIController) GetOraclePatchList(w http.ResponseWriter, r *http.Request) {
-	patchList, err := ctrl.Service.GetOraclePatchList()
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
-		return
-	}
+	choice := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
 
-	utils.WriteJSONResponse(w, http.StatusOK, patchList)
+	switch choice {
+	case "application/json":
+		result, err := ctrl.GetOraclePatchListJSON()
+		if err != nil {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+			return
+		}
+
+		utils.WriteJSONResponse(w, http.StatusOK, result)
+	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+		result, err := ctrl.GetOraclePatchListXLSX()
+		if err != nil {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+			return
+		}
+
+		utils.WriteXLSXResponse(w, result)
+	}
+}
+
+func (ctrl *APIController) GetOraclePatchListJSON() ([]dto.OracleDatabasePatchDto, error) {
+	return ctrl.Service.GetOraclePatchList()
+}
+
+func (ctrl *APIController) GetOraclePatchListXLSX() (*excelize.File, error) {
+	return ctrl.Service.CreateGetOraclePatchListXLSX()
 }
