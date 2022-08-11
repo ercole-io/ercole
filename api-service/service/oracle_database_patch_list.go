@@ -15,7 +15,11 @@
 
 package service
 
-import "github.com/ercole-io/ercole/v2/api-service/dto"
+import (
+	"github.com/360EntSecGroup-Skylar/excelize"
+	"github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/utils/exutils"
+)
 
 func (as *APIService) GetOraclePatchList() ([]dto.OracleDatabasePatchDto, error) {
 	result, err := as.Database.GetOraclePatchList()
@@ -24,4 +28,42 @@ func (as *APIService) GetOraclePatchList() ([]dto.OracleDatabasePatchDto, error)
 	}
 
 	return result, nil
+}
+
+func (as *APIService) CreateGetOraclePatchListXLSX() (*excelize.File, error) {
+	result, err := as.Database.GetOraclePatchList()
+	if err != nil {
+		return nil, err
+	}
+
+	sheet := "Patch"
+	headers := []string{
+		"Hostname",
+		"DB Name",
+		"Patch Action",
+		"Patch Date",
+		"Patch Description",
+		"Patch ID",
+		"Patch Version",
+	}
+
+	sheets, err := exutils.NewXLSX(as.Config, sheet, headers...)
+	if err != nil {
+		return nil, err
+	}
+
+	axisHelp := exutils.NewAxisHelper(1)
+
+	for _, val := range result {
+		nextAxis := axisHelp.NewRow()
+		sheets.SetCellValue(sheet, nextAxis(), val.Hostname)
+		sheets.SetCellValue(sheet, nextAxis(), val.Databasename)
+		sheets.SetCellValue(sheet, nextAxis(), val.OracleDatabasePatch.Action)
+		sheets.SetCellValue(sheet, nextAxis(), val.OracleDatabasePatch.Date)
+		sheets.SetCellValue(sheet, nextAxis(), val.OracleDatabasePatch.Description)
+		sheets.SetCellValue(sheet, nextAxis(), val.OracleDatabasePatch.PatchID)
+		sheets.SetCellValue(sheet, nextAxis(), val.OracleDatabasePatch.Version)
+	}
+
+	return sheets, err
 }
