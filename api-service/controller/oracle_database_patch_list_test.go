@@ -20,11 +20,13 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/ercole-io/ercole/v2/utils/exutils"
 	gomock "github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -69,4 +71,53 @@ func TestGetOraclePatchList_Success(t *testing.T) {
 	expectedRes := result
 	require.Equal(t, http.StatusOK, rr.Code)
 	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
+}
+
+func TestGetOraclePatchListXLSX_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		Log: logger.NewLogger("TEST"),
+	}
+
+	sheet := "Patch"
+	headers := []string{
+		"Hostname",
+		"DB Name",
+		"Patch Action",
+		"Patch Date",
+		"Patch Description",
+		"Patch ID",
+		"Patch Version",
+	}
+
+	expectedRes, _ := exutils.NewXLSX(ac.Config, sheet, headers...)
+
+	as.EXPECT().CreateGetOraclePatchListXLSX().Return(expectedRes, nil)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.GetOraclePatchList)
+	req, err := http.NewRequest("GET", "/patch-list", nil)
+	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusOK, rr.Code)
+	sp, err := excelize.OpenReader(rr.Body)
+	require.NoError(t, err)
+
+	assert.Equal(t, "Hostname", sp.GetCellValue("Patch", "A1"))
+	assert.Equal(t, "DB Name", sp.GetCellValue("Patch", "B1"))
+	assert.Equal(t, "Patch Action", sp.GetCellValue("Patch", "C1"))
+	assert.Equal(t, "Patch Date", sp.GetCellValue("Patch", "D1"))
+	assert.Equal(t, "Patch Description", sp.GetCellValue("Patch", "E1"))
+	assert.Equal(t, "Patch ID", sp.GetCellValue("Patch", "F1"))
+	assert.Equal(t, "Patch Version", sp.GetCellValue("Patch", "G1"))
 }
