@@ -48,7 +48,27 @@
                         "elapsed": {
                             "$numberDouble": "12059.18"
                         },
-                        "featureUsageStats": [],
+                        "featureUsageStats": [
+                            {
+                                "currentlyUsed": false,
+                                "detectedUsages": {
+                                    "$numberLong": "91"
+                                },
+                                "extraFeatureInfo": "",
+                                "feature": "ADDM",
+                                "firstUsageDate": {
+                                    "$date": {
+                                        "$numberLong": "1588601386608"
+                                    }
+                                },
+                                "lastUsageDate": {
+                                    "$date": {
+                                        "$numberLong": "1588669465000"
+                                    }
+                                },
+                                "product": "Diagnostics Pack"
+                            }
+                        ],
                         "instanceNumber": {
                             "$numberInt": "1"
                         },
