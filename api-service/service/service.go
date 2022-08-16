@@ -149,6 +149,8 @@ type APIServiceInterface interface {
 
 	GetOraclePatchList() ([]dto.OracleDatabasePatchDto, error)
 	CreateGetOraclePatchListXLSX() (*excelize.File, error)
+	GetOracleOptionList() ([]dto.OracleDatabaseFeatureUsageStatDto, error)
+	CreateGetOracleOptionListXLSX() (*excelize.File, error)
 
 	// SQL SERVER DATABASE LICENSES
 	GetSqlServerDatabaseLicenseTypes() ([]model.SqlServerDatabaseLicenseType, error)
