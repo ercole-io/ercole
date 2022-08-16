@@ -6,7 +6,7 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ercole-io_ercole&metric=alert_status)](https://sonarcloud.io/dashboard?id=ercole-io_ercole)
 [![API Documentation](https://img.shields.io/badge/API%20Documentation-read%20and%20try-brightgreen)](https://mrin9.github.io/OpenAPI-Viewer/#/load/https%3A%2F%2Fraw.githubusercontent.com%2Fercole-io%2Fercole%2Fmaster%2Fswagger.yml)
  
-Ercole is a open-source software for proactive software asset management:
+Ercole is an open-source software for proactive software asset management:
  
 Ercole is made by multiple services:
 * Alert: generate alerts, send notifications. Expose data for 3rd party usage (i.e. prometheus)
@@ -16,7 +16,6 @@ Ercole is made by multiple services:
 * Repo: provides a yum repository (proxy?) for the agent binaries
 
 Documentation about Ercole available [here](https://ercole.io).
-Documentation about this new version of Ercole [here](https://ercole.io/architecture.html#future-versions)
 
 # Main functionalities
 
