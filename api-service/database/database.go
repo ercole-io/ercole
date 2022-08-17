@@ -170,6 +170,8 @@ type MongoDatabaseInterface interface {
 	// ExistNotInClusterHost return true if the host specified by hostname exist and it is not in cluster, otherwise false
 	ExistNotInClusterHost(hostname string) (bool, error)
 
+	FindAllOracleDatabaseTablespaces(filter dto.GlobalFilter) ([]dto.OracleDatabaseTablespace, error)
+
 	// MYSQL
 
 	SearchMySQLInstances(filter dto.GlobalFilter) ([]dto.MySQLInstance, error)
