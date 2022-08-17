@@ -152,6 +152,10 @@ type APIServiceInterface interface {
 	GetOracleOptionList() ([]dto.OracleDatabaseFeatureUsageStatDto, error)
 	CreateGetOracleOptionListXLSX() (*excelize.File, error)
 
+	// ORACLE DATABASE TABLESPACE
+	ListOracleDatabaseTablespaces(filter dto.GlobalFilter) ([]dto.OracleDatabaseTablespace, error)
+	CreateOracleDatabaseTablespacesXlsx(filter dto.GlobalFilter) (*excelize.File, error)
+
 	// SQL SERVER DATABASE LICENSES
 	GetSqlServerDatabaseLicenseTypes() ([]model.SqlServerDatabaseLicenseType, error)
 
