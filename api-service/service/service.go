@@ -162,6 +162,10 @@ type APIServiceInterface interface {
 	ListOracleDatabaseTablespaces(filter dto.GlobalFilter) ([]dto.OracleDatabaseTablespace, error)
 	CreateOracleDatabaseTablespacesXlsx(filter dto.GlobalFilter) (*excelize.File, error)
 
+	// ORACLE DATABASE SCHEMA
+	ListOracleDatabaseSchemas(filter dto.GlobalFilter) ([]dto.OracleDatabaseSchema, error)
+	CreateOracleDatabaseSchemasXlsx(filter dto.GlobalFilter) (*excelize.File, error)
+
 	// SQL SERVER DATABASE LICENSES
 	GetSqlServerDatabaseLicenseTypes() ([]model.SqlServerDatabaseLicenseType, error)
 

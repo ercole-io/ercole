@@ -172,6 +172,7 @@ type MongoDatabaseInterface interface {
 	ExistNotInClusterHost(hostname string) (bool, error)
 
 	FindAllOracleDatabaseTablespaces(filter dto.GlobalFilter) ([]dto.OracleDatabaseTablespace, error)
+	FindAllOracleDatabaseSchemas(filter dto.GlobalFilter) ([]dto.OracleDatabaseSchema, error)
 
 	// MYSQL
 
