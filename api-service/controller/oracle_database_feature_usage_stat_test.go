@@ -88,7 +88,7 @@ func TestGetOracleOptionListXLSX_Success(t *testing.T) {
 		Log: logger.NewLogger("TEST"),
 	}
 
-	sheet := "Patch"
+	sheet := "Options"
 	headers := []string{
 		"Hostname",
 		"DB Name",
@@ -117,13 +117,13 @@ func TestGetOracleOptionListXLSX_Success(t *testing.T) {
 	sp, err := excelize.OpenReader(rr.Body)
 	require.NoError(t, err)
 
-	assert.Equal(t, "Hostname", sp.GetCellValue("Patch", "A1"))
-	assert.Equal(t, "DB Name", sp.GetCellValue("Patch", "B1"))
-	assert.Equal(t, "First", sp.GetCellValue("Patch", "C1"))
-	assert.Equal(t, "Last", sp.GetCellValue("Patch", "D1"))
-	assert.Equal(t, "Detected", sp.GetCellValue("Patch", "E1"))
-	assert.Equal(t, "Prod", sp.GetCellValue("Patch", "F1"))
-	assert.Equal(t, "Currently", sp.GetCellValue("Patch", "G1"))
-	assert.Equal(t, "Extra", sp.GetCellValue("Patch", "H1"))
-	assert.Equal(t, "Feature", sp.GetCellValue("Patch", "I1"))
+	assert.Equal(t, "Hostname", sp.GetCellValue("Options", "A1"))
+	assert.Equal(t, "DB Name", sp.GetCellValue("Options", "B1"))
+	assert.Equal(t, "First", sp.GetCellValue("Options", "C1"))
+	assert.Equal(t, "Last", sp.GetCellValue("Options", "D1"))
+	assert.Equal(t, "Detected", sp.GetCellValue("Options", "E1"))
+	assert.Equal(t, "Prod", sp.GetCellValue("Options", "F1"))
+	assert.Equal(t, "Currently", sp.GetCellValue("Options", "G1"))
+	assert.Equal(t, "Extra", sp.GetCellValue("Options", "H1"))
+	assert.Equal(t, "Feature", sp.GetCellValue("Options", "I1"))
 }
