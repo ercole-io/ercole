@@ -36,7 +36,7 @@ func (as *APIService) CreateGetOracleOptionListXLSX() (*excelize.File, error) {
 		return nil, err
 	}
 
-	sheet := "Patch"
+	sheet := "Options"
 	headers := []string{
 		"Hostname",
 		"DB Name",
