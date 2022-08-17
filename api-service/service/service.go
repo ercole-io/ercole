@@ -147,10 +147,16 @@ type APIServiceInterface interface {
 	ListOracleGrantDbaByHostname(hostname string, filter dto.GlobalFilter) ([]dto.OracleGrantDbaDto, error)
 	CreateOracleGrantDbaXlsx(hostname string, filter dto.GlobalFilter) (*excelize.File, error)
 
+	// ORACLE DATABASE PATCH
 	GetOraclePatchList() ([]dto.OracleDatabasePatchDto, error)
 	CreateGetOraclePatchListXLSX() (*excelize.File, error)
+
+	// ORACLE DATABASE OPTION
 	GetOracleOptionList() ([]dto.OracleDatabaseFeatureUsageStatDto, error)
 	CreateGetOracleOptionListXLSX() (*excelize.File, error)
+
+	// ORACLE DATABASE CHANGES
+	GetOracleChanges() ([]dto.OracleChangesDto, error)
 
 	// ORACLE DATABASE TABLESPACE
 	ListOracleDatabaseTablespaces(filter dto.GlobalFilter) ([]dto.OracleDatabaseTablespace, error)
