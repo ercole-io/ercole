@@ -166,6 +166,10 @@ type APIServiceInterface interface {
 	ListOracleDatabaseSchemas(filter dto.GlobalFilter) ([]dto.OracleDatabaseSchema, error)
 	CreateOracleDatabaseSchemasXlsx(filter dto.GlobalFilter) (*excelize.File, error)
 
+	// ORACLE DATABASE PLUGGABLE DBS
+	ListOracleDatabasePdbs(filter dto.GlobalFilter) ([]dto.OracleDatabasePluggableDatabase, error)
+	CreateOracleDatabasePdbsXlsx(filter dto.GlobalFilter) (*excelize.File, error)
+
 	// SQL SERVER DATABASE LICENSES
 	GetSqlServerDatabaseLicenseTypes() ([]model.SqlServerDatabaseLicenseType, error)
 
