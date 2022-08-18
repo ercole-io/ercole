@@ -163,6 +163,7 @@ type APIControllerInterface interface {
 	GetOraclePatchList(w http.ResponseWriter, r *http.Request)
 	GetOracleOptionList(w http.ResponseWriter, r *http.Request)
 	GetOracleChanges(w http.ResponseWriter, r *http.Request)
+	GetOracleBackupList(w http.ResponseWriter, r *http.Request)
 
 	// MYSQL
 
