@@ -120,7 +120,12 @@
                         "segmentsSize": {
                             "$numberDouble": "50.0"
                         },
-                        "services": [],
+                        "services": [
+                            {
+                                "name": "ECXSERVER",
+                                "enabled": false
+                            }
+                        ],
                         "status": "OPEN",
                         "tablespaces": [],
                         "uniqueName": "pippodb",

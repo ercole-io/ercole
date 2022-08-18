@@ -174,6 +174,10 @@ type APIServiceInterface interface {
 	GetOracleBackupList() ([]dto.OracleDatabaseBackupDto, error)
 	CreateGetOracleBackupListXLSX() (*excelize.File, error)
 
+	// ORACLE DATABASE SERVICE
+	GetOracleServiceList() ([]dto.OracleDatabaseServiceDto, error)
+	CreateGetOracleServiceListXLSX() (*excelize.File, error)
+
 	// SQL SERVER DATABASE LICENSES
 	GetSqlServerDatabaseLicenseTypes() ([]model.SqlServerDatabaseLicenseType, error)
 

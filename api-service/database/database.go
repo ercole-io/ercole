@@ -145,6 +145,7 @@ type MongoDatabaseInterface interface {
 	GetOracleOptionList() ([]dto.OracleDatabaseFeatureUsageStatDto, error)
 	GetOracleChanges() ([]dto.OracleChangesDto, error)
 	GetOracleBackupList() ([]dto.OracleDatabaseBackupDto, error)
+	GetOracleServiceList() ([]dto.OracleDatabaseServiceDto, error)
 
 	// ReplaceHostData adds a new hostdata to the database
 	ReplaceHostData(hostData model.HostDataBE) error
