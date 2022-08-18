@@ -170,6 +170,10 @@ type APIServiceInterface interface {
 	ListOracleDatabasePdbs(filter dto.GlobalFilter) ([]dto.OracleDatabasePluggableDatabase, error)
 	CreateOracleDatabasePdbsXlsx(filter dto.GlobalFilter) (*excelize.File, error)
 
+	// ORACLE DATABASE BACKUP
+	GetOracleBackupList() ([]dto.OracleDatabaseBackupDto, error)
+	CreateGetOracleBackupListXLSX() (*excelize.File, error)
+
 	// SQL SERVER DATABASE LICENSES
 	GetSqlServerDatabaseLicenseTypes() ([]model.SqlServerDatabaseLicenseType, error)
 

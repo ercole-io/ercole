@@ -27,7 +27,19 @@
                             "$numberDouble": "129.0"
                         },
                         "archivelog": false,
-                        "backups": [],
+                        "backups": [
+                            {
+                                "avgBckSize": {
+                                    "$numberDouble": "13.0"
+                                },
+                                "backupType": "Archivelog",
+                                "hour": "01:30",
+                                "retention": "1 NUMBERS",
+                                "weekDays": [
+                                    "Wednesday"
+                                ]
+                            }
+                        ],
                         "blockSize": {
                             "$numberInt": "8192"
                         },
