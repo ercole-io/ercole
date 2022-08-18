@@ -102,6 +102,7 @@ func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 	router.HandleFunc("/hosts/technologies/oracle/databases/change-list", ctrl.GetOracleChanges).Methods("GET")
 	router.HandleFunc("/hosts/technologies/oracle/databases/schemas", ctrl.ListOracleDatabaseSchemas).Methods("GET")
 	router.HandleFunc("/hosts/technologies/oracle/databases/pdbs", ctrl.ListOracleDatabasePdbs).Methods("GET")
+	router.HandleFunc("/hosts/technologies/oracle/databases/backup-list", ctrl.GetOracleBackupList).Methods("GET")
 
 	router.HandleFunc("/hosts/technologies/oracle/exadata", ctrl.SearchOracleExadata).Methods("GET")
 	router.HandleFunc("/hosts/technologies/oracle/exadata/total-memory-size", ctrl.GetTotalOracleExadataMemorySizeStats).Methods("GET")
