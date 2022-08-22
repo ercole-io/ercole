@@ -25,6 +25,7 @@ import (
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -37,6 +38,8 @@ type MongoDatabaseInterface interface {
 	// Init initializes the connection to the database
 	Init()
 	CheckStatusMongodb() error
+	FindConfig() (*config.Configuration, error)
+	ChangeConfig(config config.Configuration) error
 	// SearchHosts search hosts
 	SearchHosts(mode string, filters dto.SearchHostsFilters) ([]map[string]interface{}, error)
 	GetHostDataSummaries(filters dto.SearchHostsFilters) ([]dto.HostDataSummary, error)
@@ -229,6 +232,10 @@ func (md *MongoDatabase) Init() {
 	md.ConnectToMongodb()
 
 	md.Log.Debug("MongoDatabase is connected to MongoDB! ", utils.HideMongoDBPassword(md.Config.Mongodb.URI))
+
+	if err := md.MigrateConfig(); err != nil {
+		md.Log.Error(err)
+	}
 }
 
 // ConnectToMongodb connects to the MongoDB and return the connection
@@ -270,4 +277,35 @@ func (md *MongoDatabase) CheckStatusMongodb() error {
 	}
 
 	return nil
+}
+
+func (md *MongoDatabase) MigrateConfig() error {
+	ctx := context.TODO()
+
+	collections, err := md.Client.Database(md.Config.Mongodb.DBName).ListCollectionNames(ctx, bson.D{})
+	if err != nil {
+		return err
+	}
+
+	if utils.Contains(collections, "config") {
+		return nil
+	}
+
+	_, err = md.Client.Database(md.Config.Mongodb.DBName).Collection("config").InsertOne(ctx, md.Config)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (md *MongoDatabase) ReadConfig() (*config.Configuration, error) {
+	ctx := context.TODO()
+
+	conf := config.Configuration{}
+	if err := md.Client.Database(md.Config.Mongodb.DBName).Collection("config").FindOne(ctx, bson.D{}).Decode(&conf); err != nil {
+		return nil, err
+	}
+
+	return &conf, nil
 }

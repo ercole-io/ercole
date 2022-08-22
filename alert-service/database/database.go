@@ -20,6 +20,7 @@ import (
 	"context"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -61,6 +62,10 @@ func (md *MongoDatabase) Init() {
 	md.ConnectToMongodb()
 
 	md.Log.Debug("MongoDatabase is connected to MongoDB! ", utils.HideMongoDBPassword(md.Config.Mongodb.URI))
+
+	if err := md.MigrateConfig(); err != nil {
+		md.Log.Error(err)
+	}
 }
 
 // ConnectToMongodb connects to the MongoDB and return the connection
@@ -81,4 +86,35 @@ func (md *MongoDatabase) ConnectToMongodb() {
 	if err != nil {
 		md.Log.Warn(err)
 	}
+}
+
+func (md *MongoDatabase) MigrateConfig() error {
+	ctx := context.TODO()
+
+	collections, err := md.Client.Database(md.Config.Mongodb.DBName).ListCollectionNames(ctx, bson.D{})
+	if err != nil {
+		return err
+	}
+
+	if utils.Contains(collections, "config") {
+		return nil
+	}
+
+	_, err = md.Client.Database(md.Config.Mongodb.DBName).Collection("config").InsertOne(ctx, md.Config)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (md *MongoDatabase) ReadConfig() (*config.Configuration, error) {
+	ctx := context.TODO()
+
+	conf := config.Configuration{}
+	if err := md.Client.Database(md.Config.Mongodb.DBName).Collection("config").FindOne(ctx, bson.D{}).Decode(&conf); err != nil {
+		return nil, err
+	}
+
+	return &conf, nil
 }

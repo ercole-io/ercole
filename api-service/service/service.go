@@ -249,6 +249,8 @@ type APIServiceInterface interface {
 	SearchPostgreSqlInstancesAsXLSX(filter dto.SearchPostgreSqlInstancesFilter) (*excelize.File, error)
 
 	GetDatabaseConnectionStatus() bool
+	GetConfig() (*config.Configuration, error)
+	ChangeConfig(config config.Configuration) error
 }
 
 // APIService is the concrete implementation of APIServiceInterface.
