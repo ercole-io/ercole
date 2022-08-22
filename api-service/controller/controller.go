@@ -184,6 +184,9 @@ type APIControllerInterface interface {
 	UpdateMySQLContract(w http.ResponseWriter, r *http.Request)
 	GetMySQLContracts(w http.ResponseWriter, r *http.Request)
 	DeleteMySQLContract(w http.ResponseWriter, r *http.Request)
+
+	GetConfig(w http.ResponseWriter, r *http.Request)
+	ChangeConfig(w http.ResponseWriter, r *http.Request)
 }
 
 // APIController is the struct used to handle the requests from agents and contains the concrete implementation of APIControllerInterface
