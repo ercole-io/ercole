@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -45,22 +45,14 @@ type FreshnessCheckJob struct {
 	NewObjectID func() primitive.ObjectID
 }
 
-// Run throws NO_DATA alert for each hosts that haven't sent a hostdata withing the FreshnessCheck.DaysThreshold
+// Run throws NO_DATA alert for each hosts that haven't sent a hostdata withing the host.Period (hours)
 func (job *FreshnessCheckJob) Run() {
-	if job.Config.DataService.FreshnessCheckJob.DaysThreshold <= 0 {
-		job.Log.Errorf("AlertService.FreshnessCheckJob.DaysThreshold must be higher than 0, but it's set to %v. Job failed.",
-			job.Config.DataService.FreshnessCheckJob.DaysThreshold)
-
-		return
-	}
-
 	if err := job.Database.DeleteAllNoDataAlerts(); err != nil {
 		job.Log.Error(err)
 		return
 	}
 
-	hosts, err := job.Database.FindOldCurrentHostdata(
-		job.TimeNow().AddDate(0, 0, -job.Config.DataService.FreshnessCheckJob.DaysThreshold))
+	hosts, err := job.Database.GetActiveHostdata()
 
 	if err != nil {
 		job.Log.Error(err)
@@ -68,27 +60,43 @@ func (job *FreshnessCheckJob) Run() {
 	}
 
 	for _, host := range hosts {
-		elapsed := job.TimeNow().Sub(host.CreatedAt)
-		elapsedDays := int(elapsed.Truncate(time.Hour*24).Hours() / 24)
+		var period time.Duration
 
-		alert := model.Alert{
-			ID:                      job.NewObjectID(),
-			AlertAffectedTechnology: nil,
-			AlertCategory:           model.AlertCategoryAgent,
-			AlertCode:               model.AlertCodeNoData,
-			AlertSeverity:           model.AlertSeverityCritical,
-			AlertStatus:             model.AlertStatusNew,
-			Date:                    job.TimeNow(),
-			Description:             fmt.Sprintf("No data received from the host %s in the last %d day(s)", host.Hostname, elapsedDays),
-			OtherInfo: map[string]interface{}{
-				"hostname": host.Hostname,
-			},
+		if host.Period <= 0 {
+			period = 24
+		} else {
+			period = time.Duration(host.Period)
 		}
 
-		err := job.AlertSvcClient.ThrowNewAlert(alert)
+		isOld, err := job.Database.FindOldCurrentHostdata(host.Hostname, job.TimeNow().Add(-(period)*time.Hour))
 		if err != nil {
 			job.Log.Error(err)
 			continue
+		}
+
+		if isOld {
+			elapsed := job.TimeNow().Sub(host.CreatedAt)
+			elapsedDays := int(elapsed.Truncate(time.Hour*24).Hours() / 24)
+
+			alert := model.Alert{
+				ID:                      job.NewObjectID(),
+				AlertAffectedTechnology: nil,
+				AlertCategory:           model.AlertCategoryAgent,
+				AlertCode:               model.AlertCodeNoData,
+				AlertSeverity:           model.AlertSeverityCritical,
+				AlertStatus:             model.AlertStatusNew,
+				Date:                    job.TimeNow(),
+				Description:             fmt.Sprintf("No data received from the host %s in the last %d day(s)", host.Hostname, elapsedDays),
+				OtherInfo: map[string]interface{}{
+					"hostname": host.Hostname,
+				},
+			}
+
+			errAlert := job.AlertSvcClient.ThrowNewAlert(alert)
+			if errAlert != nil {
+				job.Log.Error(errAlert)
+				continue
+			}
 		}
 	}
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -182,8 +182,6 @@ type Mongodb struct {
 type FreshnessCheckJob struct {
 	// Crontab contains the crontab string used to schedule the freshness check
 	Crontab string
-	// DaysThreshold contains the threshdold of the freshness check
-	DaysThreshold int
 	// RunAtStartup contains true if the job should run when the service start, otherwise false
 	RunAtStartup bool
 }

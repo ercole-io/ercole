@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -93,8 +93,9 @@ func (md *MongoDatabase) FindOldCurrentHostnames(t time.Time) ([]string, error) 
 }
 
 // FindOldCurrentHosts return the list of current hosts that haven't sent hostdata after time t
-func (md *MongoDatabase) FindOldCurrentHostdata(t time.Time) ([]model.HostDataBE, error) {
+func (md *MongoDatabase) FindOldCurrentHostdata(hostName string, t time.Time) (bool, error) {
 	filter := bson.M{
+		"hostname":    hostName,
 		"dismissedAt": nil,
 		"archived":    false,
 		"createdAt":   mu.QOLessThan(t),
@@ -104,10 +105,30 @@ func (md *MongoDatabase) FindOldCurrentHostdata(t time.Time) ([]model.HostDataBE
 		Find(context.TODO(), filter)
 
 	if err != nil {
+		return false, utils.NewError(err, "DB ERROR")
+	}
+
+	hasNext := cur.Next(context.TODO())
+	if !hasNext {
+		return false, nil
+	}
+
+	return true, nil
+}
+
+func (md *MongoDatabase) GetActiveHostdata() ([]model.HostDataBE, error) {
+	filter := bson.M{
+		"dismissedAt": nil,
+		"archived":    false,
+	}
+
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").
+		Find(context.TODO(), filter)
+
+	if err != nil {
 		return nil, utils.NewError(err, "DB ERROR")
 	}
 
-	//Decode the documents
 	hosts := make([]model.HostDataBE, 0)
 
 	for cur.Next(context.TODO()) {
@@ -120,7 +141,6 @@ func (md *MongoDatabase) FindOldCurrentHostdata(t time.Time) ([]model.HostDataBE
 		hosts = append(hosts, host)
 	}
 
-	//Return it
 	return hosts, nil
 }
 
