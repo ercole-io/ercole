@@ -41,15 +41,15 @@ type Configuration struct {
 	// APIService contains configuration about the api service
 	APIService APIService
 	// RepoService contains configuration about the repo service
-	RepoService RepoService
+	RepoService RepoService `bson:"-" json:"-"`
 	// ChartService contains configuration about the chart service
 	ChartService ChartService
 	// ThunderService contains configuration about the thunder service
 	ThunderService ThunderService
 	// Mongodb contains configuration about database connection, some data logic and migration
-	Mongodb Mongodb
+	Mongodb Mongodb `bson:"-" json:"-"`
 	// Version contains the version of the server
-	Version string
+	Version string `json:"-"`
 	// ResourceFilePath contains the directory of the resources
 	ResourceFilePath string
 }

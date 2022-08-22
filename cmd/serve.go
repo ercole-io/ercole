@@ -167,6 +167,10 @@ func serveDataService(config config.Configuration, wg *sync.WaitGroup) {
 	}
 	db.Init()
 
+	if configDB, err := db.ReadConfig(); err == nil && configDB != nil {
+		config = *configDB
+	}
+
 	service := &dataservice_service.HostDataService{
 		Config:         config,
 		ServerVersion:  config.Version,
@@ -219,6 +223,10 @@ func serveAlertService(config config.Configuration, wg *sync.WaitGroup) {
 	}
 	db.Init()
 
+	if configDB, err := db.ReadConfig(); err == nil && configDB != nil {
+		config = *configDB
+	}
+
 	emailer := &alertservice_emailer.SMTPEmailer{
 		Config: config,
 	}
@@ -268,6 +276,10 @@ func serveAPIService(config config.Configuration, wg *sync.WaitGroup) {
 	}
 	db.Init()
 
+	if configDB, err := db.ReadConfig(); err == nil && configDB != nil {
+		config = *configDB
+	}
+
 	service := &apiservice_service.APIService{
 		Config:         config,
 		Version:        serverVersion,
@@ -315,6 +327,10 @@ func serveChartService(config config.Configuration, wg *sync.WaitGroup) {
 		OperatingSystemAggregationRules: config.APIService.OperatingSystemAggregationRules,
 	}
 	db.Init()
+
+	if configDB, err := db.ReadConfig(); err == nil && configDB != nil {
+		config = *configDB
+	}
 
 	service := &chartservice_service.ChartService{
 		Config:       config,
@@ -381,6 +397,10 @@ func serveThunderService(config config.Configuration, wg *sync.WaitGroup) {
 		Log:     log,
 	}
 	db.Init()
+
+	if configDB, err := db.ReadConfig(); err == nil && configDB != nil {
+		config = *configDB
+	}
 
 	service := &thunderservice_service.ThunderService{
 		Config:   config,
