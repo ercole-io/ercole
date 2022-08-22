@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,12 +18,9 @@ package job
 import (
 	"fmt"
 	"testing"
-	"time"
 
 	"github.com/golang/mock/gomock"
-	"github.com/stretchr/testify/assert"
 
-	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
@@ -37,16 +34,22 @@ func TestFreshnessCheckJobRun_SuccessNoOldCurrentHosts(t *testing.T) {
 		TimeNow:        utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Database:       db,
 		AlertSvcClient: nil,
-		Config:         config.Configuration{DataService: config.DataService{FreshnessCheckJob: config.FreshnessCheckJob{DaysThreshold: 10}}},
 		Log:            logger.NewLogger("TEST"),
 		NewObjectID:    utils.NewObjectIDForTests(),
 	}
 
+	pippo := []model.HostDataBE{
+		{
+			Hostname:  "pippohost",
+			CreatedAt: utils.P("2019-10-05T14:02:03Z"),
+		},
+	}
+
 	db.EXPECT().DeleteAllNoDataAlerts().Return(nil).Times(1)
 
-	db.EXPECT().FindOldCurrentHostdata(gomock.Any()).Return([]model.HostDataBE{}, nil).Do(func(tm time.Time) {
-		assert.Equal(t, utils.P("2019-10-26T14:02:03Z"), tm)
-	}).Times(1)
+	db.EXPECT().GetActiveHostdata().Return(pippo, nil)
+
+	db.EXPECT().FindOldCurrentHostdata(pippo[0].Hostname, utils.P("2019-11-04T14:02:03Z")).Return(false, nil)
 
 	fcj.Run()
 }
@@ -62,7 +65,6 @@ func TestFreshnessCheckJobRun_SuccessTwoOldCurrentHosts(t *testing.T) {
 		TimeNow:        now,
 		Database:       db,
 		AlertSvcClient: asc,
-		Config:         config.Configuration{DataService: config.DataService{FreshnessCheckJob: config.FreshnessCheckJob{DaysThreshold: 10}}},
 		Log:            logger.NewLogger("TEST"),
 		NewObjectID:    utils.NewObjectIDForTests(),
 	}
@@ -78,8 +80,24 @@ func TestFreshnessCheckJobRun_SuccessTwoOldCurrentHosts(t *testing.T) {
 		CreatedAt: utils.P("2019-10-15T14:02:03Z"),
 	}
 
-	db.EXPECT().FindOldCurrentHostdata(utils.P("2019-10-26T14:02:03Z")).
-		Return([]model.HostDataBE{pippo, pluto}, nil)
+	hosts := []model.HostDataBE{
+		{
+			Hostname:  pippo.Hostname,
+			CreatedAt: pippo.CreatedAt,
+		},
+		{
+			Hostname:  pluto.Hostname,
+			CreatedAt: pluto.CreatedAt,
+		},
+	}
+
+	db.EXPECT().GetActiveHostdata().Return(hosts, nil)
+
+	db.EXPECT().FindOldCurrentHostdata(pippo.Hostname, utils.P("2019-11-04T14:02:03Z")).
+		Return(true, nil)
+
+	db.EXPECT().FindOldCurrentHostdata(pluto.Hostname, utils.P("2019-11-04T14:02:03Z")).
+		Return(true, nil)
 
 	alert1 := model.Alert{
 		ID:                      utils.Str2oid("000000000000000000000001"),
@@ -124,7 +142,6 @@ func TestFreshnessCheckJobRun_DeleteAllNoDataAlertsError(t *testing.T) {
 		TimeNow:        utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Database:       db,
 		AlertSvcClient: nil,
-		Config:         config.Configuration{DataService: config.DataService{FreshnessCheckJob: config.FreshnessCheckJob{DaysThreshold: 10}}},
 		Log:            logger.NewLogger("TEST"),
 		NewObjectID:    utils.NewObjectIDForTests(),
 	}
@@ -142,13 +159,20 @@ func TestFreshnessCheckJobRun_FindOldCurrentHostdataError(t *testing.T) {
 		TimeNow:        utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Database:       db,
 		AlertSvcClient: nil,
-		Config:         config.Configuration{DataService: config.DataService{FreshnessCheckJob: config.FreshnessCheckJob{DaysThreshold: 10}}},
 		Log:            logger.NewLogger("TEST"),
 		NewObjectID:    utils.NewObjectIDForTests(),
 	}
 
+	pippo := []model.HostDataBE{
+		{
+			Hostname:  "pippohost",
+			CreatedAt: utils.P("2019-10-05T14:02:03Z"),
+		},
+	}
+
+	db.EXPECT().GetActiveHostdata().Return(pippo, nil)
 	db.EXPECT().DeleteAllNoDataAlerts().Return(nil).Times(1)
-	db.EXPECT().FindOldCurrentHostdata(gomock.Any()).Return(nil, aerrMock).Times(1)
+	db.EXPECT().FindOldCurrentHostdata(gomock.Any(), gomock.Any()).Return(true, aerrMock).Times(1)
 
 	fcj.Run()
 }
@@ -164,7 +188,6 @@ func TestFreshnessCheckJobRun_ThrowNoDataAlertError(t *testing.T) {
 		TimeNow:        utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Database:       db,
 		AlertSvcClient: asc,
-		Config:         config.Configuration{DataService: config.DataService{FreshnessCheckJob: config.FreshnessCheckJob{DaysThreshold: 10}}},
 		Log:            logger.NewLogger("TEST"),
 		NewObjectID:    utils.NewObjectIDForTests(),
 	}
@@ -180,8 +203,24 @@ func TestFreshnessCheckJobRun_ThrowNoDataAlertError(t *testing.T) {
 		CreatedAt: utils.P("2019-10-15T14:02:03Z"),
 	}
 
-	db.EXPECT().FindOldCurrentHostdata(utils.P("2019-10-26T14:02:03Z")).
-		Return([]model.HostDataBE{pippo, pluto}, nil)
+	hosts := []model.HostDataBE{
+		{
+			Hostname:  pippo.Hostname,
+			CreatedAt: pippo.CreatedAt,
+		},
+		{
+			Hostname:  pluto.Hostname,
+			CreatedAt: pluto.CreatedAt,
+		},
+	}
+
+	db.EXPECT().GetActiveHostdata().Return(hosts, nil)
+
+	db.EXPECT().FindOldCurrentHostdata(pippo.Hostname, utils.P("2019-11-04T14:02:03Z")).
+		Return(true, nil)
+
+	db.EXPECT().FindOldCurrentHostdata(pluto.Hostname, utils.P("2019-11-04T14:02:03Z")).
+		Return(true, nil)
 
 	alert1 := model.Alert{
 		ID:                      utils.Str2oid("000000000000000000000001"),
@@ -216,35 +255,4 @@ func TestFreshnessCheckJobRun_ThrowNoDataAlertError(t *testing.T) {
 	asc.EXPECT().ThrowNewAlert(alert2).Return(aerrMock).Times(1)
 
 	fcj.Run()
-}
-
-func TestFreshnessCheckJobRun_InvalidDaysThresholdValue(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-
-	db := NewMockMongoDatabaseInterface(mockCtrl)
-
-	t.Run("DaysThreshold = 0", func(t *testing.T) {
-		fcj := FreshnessCheckJob{
-			TimeNow:        utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-			Database:       db,
-			AlertSvcClient: nil,
-			Config:         config.Configuration{DataService: config.DataService{FreshnessCheckJob: config.FreshnessCheckJob{DaysThreshold: 0}}},
-			Log:            logger.NewLogger("TEST"),
-			NewObjectID:    utils.NewObjectIDForTests(),
-		}
-		fcj.Run()
-	})
-
-	t.Run("DaysThreshold < 0", func(t *testing.T) {
-		fcj := FreshnessCheckJob{
-			TimeNow:        utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-			Database:       db,
-			AlertSvcClient: nil,
-			Config:         config.Configuration{DataService: config.DataService{FreshnessCheckJob: config.FreshnessCheckJob{DaysThreshold: -42}}},
-			Log:            logger.NewLogger("TEST"),
-			NewObjectID:    utils.NewObjectIDForTests(),
-		}
-		fcj.Run()
-	})
 }

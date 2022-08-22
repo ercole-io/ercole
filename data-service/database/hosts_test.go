@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,7 +17,6 @@ package database
 
 import (
 	"context"
-	"sort"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -169,39 +168,17 @@ func (m *MongodbSuite) TestFindOldCurrentHostdata() {
 	m.InsertHostData(hd2)
 
 	m.T().Run("Should not find any", func(t *testing.T) {
-		hosts, err := m.db.FindOldCurrentHostdata(utils.P("2019-11-18T16:38:58Z"))
+		isOld, err := m.db.FindOldCurrentHostdata("itl-csllab-112.sorint.localpippo", utils.P("2019-11-18T16:38:58Z"))
 		require.NoError(t, err)
-		assert.Empty(t, hosts)
+
+		assert.Equal(m.T(), false, isOld)
 	})
 
-	m.T().Run("Should find one", func(t *testing.T) {
-		hosts, err := m.db.FindOldCurrentHostdata(utils.P("2019-12-04T16:38:58Z"))
+	m.T().Run("Should find host", func(t *testing.T) {
+		isOld, err := m.db.FindOldCurrentHostdata("itl-csllab-112.sorint.localpippo", utils.P("2019-12-04T16:38:58Z"))
 		require.NoError(t, err)
 
-		assert.Len(t, hosts, 1)
-
-		assert.Equal(m.T(), "itl-csllab-112.sorint.localpippo", hosts[0].Hostname)
-		assert.False(m.T(), hosts[0].Archived)
-		assert.Equal(m.T(), utils.P("2019-11-19T16:38:58Z"), hosts[0].CreatedAt)
-	})
-
-	m.T().Run("Should find two", func(t *testing.T) {
-		hosts, err := m.db.FindOldCurrentHostdata(utils.P("2020-01-14T15:38:58Z"))
-		require.NoError(t, err)
-
-		assert.Len(t, hosts, 2)
-
-		sort.Slice(hosts, func(i, j int) bool {
-			return hosts[i].ID.String() < hosts[j].ID.String()
-		})
-
-		assert.Equal(m.T(), "itl-csllab-112.sorint.localpippo", hosts[0].Hostname)
-		assert.False(m.T(), hosts[0].Archived)
-		assert.Equal(m.T(), utils.P("2019-11-19T16:38:58Z"), hosts[0].CreatedAt)
-
-		assert.Equal(m.T(), "itl-csllab-223.sorint.localpippo", hosts[1].Hostname)
-		assert.False(m.T(), hosts[1].Archived)
-		assert.Equal(m.T(), utils.P("2020-01-13T15:38:58Z"), hosts[1].CreatedAt)
+		assert.Equal(m.T(), true, isOld)
 	})
 }
 

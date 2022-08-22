@@ -38,10 +38,10 @@ type MongoDatabaseInterface interface {
 	GetCurrentHostnames() ([]string, error)
 	// FindOldCurrentHostnames return the list of current hosts names that haven't sent hostdata after time t
 	FindOldCurrentHostnames(t time.Time) ([]string, error)
-	// FindOldCurrentHostdata return the list of current hosts that haven't sent hostdata after time t
-	FindOldCurrentHostdata(t time.Time) ([]model.HostDataBE, error)
+	FindOldCurrentHostdata(hostName string, t time.Time) (bool, error)
 	// FindOldArchivedHosts return the list of archived hosts older than t
 	FindOldArchivedHosts(t time.Time) ([]primitive.ObjectID, error)
+	GetActiveHostdata() ([]model.HostDataBE, error)
 	DeleteHostData(id primitive.ObjectID) error
 	HistoricizeLicensesCompliance(licenses []dto.LicenseCompliance) error
 
