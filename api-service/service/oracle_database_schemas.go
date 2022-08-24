@@ -39,6 +39,7 @@ func (as *APIService) CreateOracleDatabaseSchemasXlsx(filter dto.GlobalFilter) (
 	sheet := "Schemas"
 	headers := []string{
 		"Hostname",
+		"DatabaseName",
 		"Indexes",
 		"LOB",
 		"Tables",
@@ -56,6 +57,7 @@ func (as *APIService) CreateOracleDatabaseSchemasXlsx(filter dto.GlobalFilter) (
 	for _, val := range grants {
 		nextAxis := axisHelp.NewRow()
 		sheets.SetCellValue(sheet, nextAxis(), val.Hostname)
+		sheets.SetCellValue(sheet, nextAxis(), val.DatabaseName)
 		sheets.SetCellValue(sheet, nextAxis(), val.Indexes)
 		sheets.SetCellValue(sheet, nextAxis(), val.LOB)
 		sheets.SetCellValue(sheet, nextAxis(), val.Tables)
