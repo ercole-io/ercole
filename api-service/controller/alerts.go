@@ -26,6 +26,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/api-service/dto/filter"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 )
@@ -59,12 +60,12 @@ func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	if pageNumber, err = utils.Str2int(r.URL.Query().Get("page"), -1); err != nil {
+	if pageNumber, err = utils.Str2int(r.URL.Query().Get("page"), 0); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
-	if pageSize, err = utils.Str2int(r.URL.Query().Get("size"), -1); err != nil {
+	if pageSize, err = utils.Str2int(r.URL.Query().Get("size"), 0); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
@@ -112,18 +113,31 @@ func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) 
 func (ctrl *APIController) searchAlertsJSON(w http.ResponseWriter,
 	mode string, search string, sortBy string, sortDesc bool, pageNumber int, pageSize int,
 	location, environment, severity string, status string, from time.Time, to time.Time) {
-	response, err := ctrl.Service.SearchAlerts(mode, search, sortBy, sortDesc, pageNumber, pageSize, location, environment, severity, status, from, to)
+	filters := filter.New()
+	filters.Page = pageNumber
+
+	if pageSize > 0 {
+		filters.Limit = pageSize
+	}
+
+	response, err := ctrl.Service.SearchAlerts(filter.Alert{
+		Mode:        mode,
+		SortBy:      sortBy,
+		SortDesc:    sortDesc,
+		Location:    location,
+		Environment: environment,
+		Severity:    severity,
+		Status:      status,
+		From:        from,
+		To:          to,
+		Filter:      filters,
+	})
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
-	if pageNumber == -1 || pageSize == -1 {
-		utils.WriteJSONResponse(w, http.StatusOK, response)
-	} else {
-		alerts := response[0]
-		utils.WriteJSONResponse(w, http.StatusOK, alerts)
-	}
+	utils.WriteJSONResponse(w, http.StatusOK, response)
 }
 
 // searchAlertsXLSX search alerts using the filters in the request returning it in XLSX format
