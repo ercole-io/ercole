@@ -21,6 +21,7 @@ import (
 	"time"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
+	alert_filter "github.com/ercole-io/ercole/v2/api-service/dto/filter"
 	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
@@ -48,7 +49,7 @@ type MongoDatabaseInterface interface {
 	GetHostData(hostname string, olderThan time.Time) (*model.HostDataBE, error)
 	GetHostDatas(olderThan time.Time) ([]model.HostDataBE, error)
 	// SearchAlerts search alerts
-	SearchAlerts(mode string, keywords []string, sortBy string, sortDesc bool, page, pageSize int, location, environment, severity, status string, from, to time.Time) ([]map[string]interface{}, error)
+	SearchAlerts(alertFilter alert_filter.Alert) (*dto.Pagination, error)
 	// SearchClusters search clusters
 	SearchClusters(mode string, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, error)
 	GetClusters(filter dto.GlobalFilter) ([]dto.Cluster, error)

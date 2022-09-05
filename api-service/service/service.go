@@ -25,6 +25,7 @@ import (
 	alertServiceClient "github.com/ercole-io/ercole/v2/alert-service/client"
 	"github.com/ercole-io/ercole/v2/api-service/database"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
+	alert_filter "github.com/ercole-io/ercole/v2/api-service/dto/filter"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
@@ -45,8 +46,8 @@ type APIServiceInterface interface {
 	// ListManagedTechnologies returns the list of technologies with some stats
 	ListManagedTechnologies(sortBy string, sortDesc bool, location string, environment string, olderThan time.Time) ([]model.TechnologyStatus, error)
 	// SearchAlerts search alerts
-	SearchAlerts(mode string, search string, sortBy string, sortDesc bool, page, pageSize int, location, environment, severity, status string, from, to time.Time) ([]map[string]interface{}, error)
-	SearchAlertsAsXLSX(from time.Time, to time.Time, filter dto.GlobalFilter) (*excelize.File, error)
+	SearchAlerts(alertFilter alert_filter.Alert) (*dto.Pagination, error)
+	SearchAlertsAsXLSX(from, to time.Time, filter dto.GlobalFilter) (*excelize.File, error)
 	// SearchClusters search clusters
 	SearchClusters(mode string, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, error)
 	SearchClustersAsXLSX(filter dto.GlobalFilter) (*excelize.File, error)

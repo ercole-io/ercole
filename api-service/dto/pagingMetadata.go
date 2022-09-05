@@ -15,18 +15,13 @@
 
 package dto
 
-type Pagination struct {
-	Items    interface{} `json:"items"`
-	Count    int         `json:"count"`
-	PageSize int         `json:"pageSize"`
-	Page     int         `json:"page"`
-}
-
-func ToPagination(items interface{}, count int, pageSize int, page int) *Pagination {
-	return &Pagination{
-		Items:    items,
-		Count:    count,
-		PageSize: pageSize,
-		Page:     page,
-	}
+// PagingMetadata contains metadata for pagination listings
+type PagingMetadata struct {
+	Empty         bool `json:"empty"`
+	First         bool `json:"first"`
+	Last          bool `json:"last"`
+	Number        int  `json:"number"`
+	Size          int  `json:"size"`
+	TotalElements int  `json:"totalElements"`
+	TotalPages    int  `json:"totalPages"`
 }
