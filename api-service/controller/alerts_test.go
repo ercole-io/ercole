@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -21,6 +21,8 @@ import (
 	"net/http/httptest"
 	"testing"
 	"time"
+
+	alertFilter "github.com/ercole-io/ercole/v2/api-service/dto/filter"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
 	gomock "github.com/golang/mock/gomock"
@@ -46,8 +48,8 @@ func TestSearchAlerts_JSONSuccessPaged(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	expectedRes := map[string]interface{}{
-		"content": []interface{}{
+	expectedRes := &dto.Pagination{
+		Items: []interface{}{
 			map[string]interface{}{
 				"affectedHosts": 12,
 				"code":          "NEW_SERVER",
@@ -63,24 +65,24 @@ func TestSearchAlerts_JSONSuccessPaged(t *testing.T) {
 				"severity":      "CRITICAL",
 			},
 		},
-		"metadata": map[string]interface{}{
-			"empty":         false,
-			"first":         true,
-			"last":          true,
-			"number":        0,
-			"ize":           20,
-			"totalElements": 25,
-			"totalPages":    1,
-		},
+		Count:    2,
+		PageSize: 2,
+		Page:     1,
 	}
 
-	resFromService := []map[string]interface{}{
-		expectedRes,
+	alertFilter := alertFilter.Alert{
+		Mode:     "aggregated-code-severity",
+		SortBy:   "CreatedAt",
+		SortDesc: true,
+		Filter:   alertFilter.Filter{Limit: 2, Page: 10},
+		Severity: model.AlertSeverityCritical,
+		Status:   model.AlertStatusAck,
+		From:     utils.P("2020-06-10T11:54:59Z"),
+		To:       utils.P("2020-06-17T11:54:59Z"),
 	}
-
 	as.EXPECT().
-		SearchAlerts("aggregated-code-severity", "foo", "CreatedAt", true, 10, 2, "", "", model.AlertSeverityCritical, model.AlertStatusAck, utils.P("2020-06-10T11:54:59Z"), utils.P("2020-06-17T11:54:59Z")).
-		Return(resFromService, nil)
+		SearchAlerts(alertFilter).
+		Return(expectedRes, nil)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchAlerts)
@@ -93,48 +95,7 @@ func TestSearchAlerts_JSONSuccessPaged(t *testing.T) {
 	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
 }
 
-func TestSearchAlerts_JSONSuccessUnpaged(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config:  config.Configuration{},
-		Log:     logger.NewLogger("TEST"),
-	}
 
-	expectedRes := []map[string]interface{}{
-		{
-			"affectedHosts": 12,
-			"code":          "NEW_SERVER",
-			"count":         12,
-			"oldestAlert":   utils.P("2020-05-06T15:40:04.543+02:00"),
-			"severity":      "INFO",
-		},
-		{
-			"affectedHosts": 1,
-			"code":          "NEW_LICENSE",
-			"count":         1,
-			"oldestAlert":   utils.P("2020-05-06T15:40:04.62+02:00"),
-			"severity":      "CRITICAL",
-		},
-	}
-	as.EXPECT().
-		SearchAlerts("aggregated-code-severity",
-			"foo", "CreatedAt", true, -1, -1, "", "", model.AlertSeverityCritical, model.AlertStatusAck, utils.P("2020-06-10T11:54:59Z"), utils.P("2020-06-17T11:54:59Z")).
-		Return(expectedRes, nil)
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchAlerts)
-	req, err := http.NewRequest("GET", "/alerts?mode=aggregated-code-severity&search=foo&sort-by=CreatedAt&sort-desc=true&severity=CRITICAL&status=ACK&from=2020-06-10T11%3A54%3A59Z&to=2020-06-17T11%3A54%3A59Z", nil)
-	require.NoError(t, err)
-
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusOK, rr.Code)
-	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
-}
 
 func TestSearchAlerts_JSONFailUnprocessable1(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
@@ -315,8 +276,15 @@ func TestSearchAlerts_JSONFailInternalServerError(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
+	alertFilter := alertFilter.Alert{
+		Mode:   "all",
+		Filter: alertFilter.New(),
+		From:   utils.MIN_TIME,
+		To:     utils.MAX_TIME,
+	}
+
 	as.EXPECT().
-		SearchAlerts("all", "", "", false, -1, -1, "", "", "", "", utils.MIN_TIME, utils.MAX_TIME).
+		SearchAlerts(alertFilter).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()

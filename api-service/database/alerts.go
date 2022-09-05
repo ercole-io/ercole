@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,34 +18,35 @@ package database
 import (
 	"context"
 	"errors"
-	"time"
 
-	"github.com/amreo/mu"
 	"go.mongodb.org/mongo-driver/bson"
 
+	"github.com/amreo/mu"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
+	alert_filter "github.com/ercole-io/ercole/v2/api-service/dto/filter"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
 const alertsCollection = "alerts"
 
-func (md *MongoDatabase) SearchAlerts(mode string, keywords []string, sortBy string, sortDesc bool,
-	page, pageSize int, location, environment, severity, status string, from, to time.Time,
-) ([]map[string]interface{}, error) {
+func (md *MongoDatabase) SearchAlerts(alertFilter alert_filter.Alert) (*dto.Pagination, error) {
+	offset := int64(alertFilter.Filter.Limit * alertFilter.Filter.Page)
+	limit := int64(alertFilter.Filter.Limit)
+
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(alertsCollection).Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
-			mu.APOptionalStage(status != "", mu.APMatch(bson.M{
-				"alertStatus": status,
+			mu.APOptionalStage(alertFilter.Status != "", mu.APMatch(bson.M{
+				"alertStatus": alertFilter.Status,
 			})),
-			mu.APOptionalStage(severity != "", mu.APMatch(bson.M{
-				"alertSeverity": severity,
+			mu.APOptionalStage(alertFilter.Severity != "", mu.APMatch(bson.M{
+				"alertSeverity": alertFilter.Severity,
 			})),
 			mu.APMatch(bson.M{
 				"date": bson.M{
-					"$gte": from,
-					"$lt":  to,
+					"$gte": alertFilter.From,
+					"$lt":  alertFilter.To,
 				},
 			}),
 			mu.APSearchFilterStage([]interface{}{
@@ -55,12 +56,12 @@ func (md *MongoDatabase) SearchAlerts(mode string, keywords []string, sortBy str
 				"$otherInfo.Hostname",
 				"$otherInfo.Dbname",
 				"$otherInfo.Features",
-			}, keywords),
+			}, alertFilter.Keywords),
 			mu.APSet(bson.M{
 				"hostname": "$otherInfo.hostname",
 			}),
 
-			mu.APOptionalStage(len(location) > 0 || len(environment) > 0,
+			mu.APOptionalStage(len(alertFilter.Location) > 0 || len(alertFilter.Environment) > 0,
 				mu.APLookupPipeline(
 					"hosts",
 					bson.M{"hn": "$otherInfo.hostname"},
@@ -79,29 +80,29 @@ func (md *MongoDatabase) SearchAlerts(mode string, keywords []string, sortBy str
 					),
 				),
 			),
-			mu.APOptionalStage(len(location) > 0 || len(environment) > 0,
+			mu.APOptionalStage(len(alertFilter.Location) > 0 || len(alertFilter.Environment) > 0,
 				bson.M{
 					"$unwind": bson.M{"path": "$host", "preserveNullAndEmptyArrays": true},
 				},
 			),
-			mu.APOptionalStage(len(location) > 0,
+			mu.APOptionalStage(len(alertFilter.Location) > 0,
 				mu.APMatch(bson.M{
 					"$or": bson.A{
-						bson.M{"host.location": location},
+						bson.M{"host.location": alertFilter.Location},
 						bson.M{"host": bson.M{"$exists": false}},
 					},
 				}),
 			),
-			mu.APOptionalStage(len(environment) > 0,
+			mu.APOptionalStage(len(alertFilter.Environment) > 0,
 				mu.APMatch(bson.M{
 					"$or": bson.A{
-						bson.M{"host.environment": environment},
+						bson.M{"host.environment": alertFilter.Environment},
 						bson.M{"host": bson.M{"$exists": false}},
 					},
 				})),
 			mu.APUnset("host"),
 
-			mu.APOptionalStage(mode == "aggregated-code-severity", mu.MAPipeline(
+			mu.APOptionalStage(alertFilter.Mode == "aggregated-code-severity", mu.MAPipeline(
 				mu.APGroup(bson.M{
 					"_id": bson.M{
 						"code":     "$alertCode",
@@ -127,7 +128,7 @@ func (md *MongoDatabase) SearchAlerts(mode string, keywords []string, sortBy str
 				}),
 			)),
 
-			mu.APOptionalStage(mode == "aggregated-category-severity", mu.MAPipeline(
+			mu.APOptionalStage(alertFilter.Mode == "aggregated-category-severity", mu.MAPipeline(
 				mu.APGroup(bson.M{
 					"_id": bson.M{
 						"severity": "$alertSeverity",
@@ -151,8 +152,20 @@ func (md *MongoDatabase) SearchAlerts(mode string, keywords []string, sortBy str
 				}),
 			)),
 
-			mu.APOptionalSortingStage(sortBy, sortDesc),
-			mu.APOptionalPagingStage(page, pageSize),
+			mu.APOptionalSortingStage(alertFilter.SortBy, alertFilter.SortDesc),
+
+			bson.M{
+				"$facet": bson.M{
+					"items":      bson.A{bson.M{"$skip": offset}, bson.M{"$limit": limit}},
+					"totalCount": bson.A{bson.M{"$count": "totalCount"}},
+				},
+			},
+
+			bson.M{
+				"$unwind": bson.M{
+					"path": "$totalCount",
+				},
+			},
 		),
 	)
 	if err != nil {
@@ -171,7 +184,18 @@ func (md *MongoDatabase) SearchAlerts(mode string, keywords []string, sortBy str
 		out = append(out, item)
 	}
 
-	return out, nil
+	var count int32
+
+	lenOut := len(out)
+	if lenOut > 0 {
+		for _, value := range out[lenOut-1]["totalCount"].(map[string]interface{}) {
+			count = value.(int32)
+		}
+
+		return dto.ToPagination((out[lenOut-1]["items"]), int(count), alertFilter.Filter.Limit, alertFilter.Filter.Page), nil
+	}
+
+	return dto.ToPagination(nil, int(count), alertFilter.Filter.Limit, alertFilter.Filter.Page), nil
 }
 
 func (md *MongoDatabase) CountAlertsNODATA(alertsFilter dto.AlertsFilter) (int64, error) {

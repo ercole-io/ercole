@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
+	alertFilter "github.com/ercole-io/ercole/v2/api-service/dto/filter"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/ercole-io/ercole/v2/utils/mongoutils"
@@ -157,148 +158,289 @@ func (m *MongodbSuite) TestSearchAlerts() {
 	}
 
 	m.T().Run("should_be_paging", func(t *testing.T) {
-		out, err := m.db.SearchAlerts("all", []string{}, "", false, 0, 1, "", "", "", "", utils.MIN_TIME, utils.MAX_TIME)
+		filters := alertFilter.Alert{
+			Mode:   "all",
+			Filter: alertFilter.Filter{Limit: 1},
+			From:   utils.MIN_TIME,
+			To:     utils.MAX_TIME,
+		}
+		out, err := m.db.SearchAlerts(filters)
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{
-			map[string]interface{}{
-				"content": []interface{}{alert1},
-				"metadata": map[string]interface{}{
-					"empty":         false,
-					"first":         true,
-					"last":          false,
-					"number":        0,
-					"size":          1,
-					"totalElements": 4,
-					"totalPages":    4,
-				},
-			},
+		var expectedOut map[string]interface{} = map[string]interface{}{
+			"items":    []interface{}{alert1},
+			"count":    4,
+			"pageSize": 1,
+			"page":     0,
 		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
 	m.T().Run("should_be_sorting", func(t *testing.T) {
-		out, err := m.db.SearchAlerts("all", []string{}, "alertSeverity", true, -1, -1, "", "", "", "", utils.MIN_TIME, utils.MAX_TIME)
+		filters := alertFilter.Alert{
+			Filter:   alertFilter.New(),
+			Mode:     "all",
+			SortBy:   "alertSeverity",
+			SortDesc: true,
+			From:     utils.MIN_TIME,
+			To:       utils.MAX_TIME,
+		}
+		out, err := m.db.SearchAlerts(filters)
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{alert2, alert3, alert4, alert1}
+		var expectedOut map[string]interface{} = map[string]interface{}{
+			"items":    []interface{}{alert2, alert3, alert4, alert1},
+			"count":    4,
+			"pageSize": 25,
+			"page":     0,
+		}
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
 	m.T().Run("should_filter_by_location", func(t *testing.T) {
-		out, err := m.db.SearchAlerts("all", []string{}, "", false, -1, -1, "Germany", "", "", "", utils.MIN_TIME, utils.MAX_TIME)
+		filters := alertFilter.Alert{
+			Filter:   alertFilter.New(),
+			Mode:     "all",
+			Location: "Germany",
+			From:     utils.MIN_TIME,
+			To:       utils.MAX_TIME,
+		}
+		out, err := m.db.SearchAlerts(filters)
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{alert1}
+		var expectedOut map[string]interface{} = map[string]interface{}{
+			"items":    []interface{}{alert1},
+			"count":    1,
+			"pageSize": 25,
+			"page":     0,
+		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
 	m.T().Run("should_filter_by_environment", func(t *testing.T) {
-		out, err := m.db.SearchAlerts("all", []string{}, "", false, -1, -1, "", "TST", "", "", utils.MIN_TIME, utils.MAX_TIME)
+		filters := alertFilter.Alert{
+			Mode:        "all",
+			Filter:      alertFilter.New(),
+			Environment: "TST",
+			From:        utils.MIN_TIME,
+			To:          utils.MAX_TIME,
+		}
+		out, err := m.db.SearchAlerts(filters)
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{alert1, alert2, alert3}
+		var expectedOut map[string]interface{} = map[string]interface{}{
+			"items":    []interface{}{alert1, alert2, alert3},
+			"count":    3,
+			"pageSize": 25,
+			"page":     0,
+		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
 	m.T().Run("should_filter_by_status", func(t *testing.T) {
-		out, err := m.db.SearchAlerts("all", []string{}, "", false, -1, -1, "", "", "", model.AlertStatusNew, utils.MIN_TIME, utils.MAX_TIME)
+		filters := alertFilter.Alert{
+			Mode:   "all",
+			Filter: alertFilter.New(),
+			Status: model.AlertStatusNew,
+			From:   utils.MIN_TIME,
+			To:     utils.MAX_TIME,
+		}
+		out, err := m.db.SearchAlerts(filters)
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{alert1}
+		var expectedOut map[string]interface{} = map[string]interface{}{
+			"items":    []interface{}{alert1},
+			"count":    1,
+			"pageSize": 25,
+			"page":     0,
+		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
 	m.T().Run("should_filter_by_severity", func(t *testing.T) {
-		out, err := m.db.SearchAlerts("all", []string{}, "", false, -1, -1, "", "", model.AlertSeverityCritical, "", utils.MIN_TIME, utils.MAX_TIME)
+		filters := alertFilter.Alert{
+			Mode:     "all",
+			Filter:   alertFilter.New(),
+			Severity: model.AlertSeverityCritical,
+			From:     utils.MIN_TIME,
+			To:       utils.MAX_TIME,
+		}
+		out, err := m.db.SearchAlerts(filters)
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{alert1}
+		var expectedOut map[string]interface{} = map[string]interface{}{
+			"items":    []interface{}{alert1},
+			"count":    1,
+			"pageSize": 25,
+			"page":     0,
+		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
 	m.T().Run("should_filter_by_from", func(t *testing.T) {
-		out, err := m.db.SearchAlerts("all", []string{}, "", false, -1, -1, "", "", "", "", utils.P("2020-04-13T08:46:58.38+02:00"), utils.MAX_TIME)
+		filters := alertFilter.Alert{
+			Mode:   "all",
+			Filter: alertFilter.New(),
+			From:   utils.P("2020-04-13T08:46:58.38+02:00"),
+			To:     utils.MAX_TIME,
+		}
+		out, err := m.db.SearchAlerts(filters)
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{alert1}
+		var expectedOut map[string]interface{} = map[string]interface{}{
+			"items":    []interface{}{alert1},
+			"count":    1,
+			"pageSize": 25,
+			"page":     0,
+		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
 	m.T().Run("should_filter_by_to", func(t *testing.T) {
-		out, err := m.db.SearchAlerts("all", []string{}, "", false, -1, -1, "", "", "", "", utils.MIN_TIME, utils.P("2020-04-13T08:46:58.38+02:00"))
+		filters := alertFilter.Alert{
+			Mode:   "all",
+			Filter: alertFilter.New(),
+			From:   utils.MIN_TIME,
+			To:     utils.P("2020-04-13T08:46:58.38+02:00"),
+		}
+		out, err := m.db.SearchAlerts(filters)
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{alert2, alert3, alert4}
+		var expectedOut map[string]interface{} = map[string]interface{}{
+			"items":    []interface{}{alert2, alert3, alert4},
+			"count":    3,
+			"pageSize": 25,
+			"page":     0,
+		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
 	m.T().Run("should_search1", func(t *testing.T) {
-		out, err := m.db.SearchAlerts("all", []string{"foobar"}, "", false, -1, -1, "", "", "", "", utils.MIN_TIME, utils.MAX_TIME)
+		filters := alertFilter.Alert{
+			Mode:     "all",
+			Filter:   alertFilter.New(),
+			Keywords: []string{"foobar"},
+			From:     utils.MIN_TIME,
+			To:       utils.MAX_TIME,
+		}
+		out, err := m.db.SearchAlerts(filters)
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{}
+		var expectedOut map[string]interface{} = map[string]interface{}{
+			"items":    nil,
+			"count":    0,
+			"pageSize": 25,
+			"page":     0,
+		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
 	m.T().Run("should_search2", func(t *testing.T) {
-		out, err := m.db.SearchAlerts("all", []string{"added", model.AlertCodeNewServer, model.AlertSeverityInfo, "rac1_x"}, "", false, -1, -1, "", "", "", "", utils.MIN_TIME, utils.MAX_TIME)
+		filters := alertFilter.Alert{
+			Mode:     "all",
+			Filter:   alertFilter.New(),
+			Keywords: []string{"added", model.AlertCodeNewServer, model.AlertSeverityInfo, "rac1_x"},
+			From:     utils.MIN_TIME,
+			To:       utils.MAX_TIME,
+		}
+		out, err := m.db.SearchAlerts(filters)
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{alert2, alert3}
+		var expectedOut map[string]interface{} = map[string]interface{}{
+			"items":    []interface{}{alert2, alert3},
+			"count":    2,
+			"pageSize": 25,
+			"page":     0,
+		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
 	m.T().Run("should_search3", func(t *testing.T) {
-		out, err := m.db.SearchAlerts("all", []string{"ERCOLE", "Diagnostics Pack"}, "", false, -1, -1, "", "", "", "", utils.MIN_TIME, utils.MAX_TIME)
+		filters := alertFilter.Alert{
+			Mode:     "all",
+			Filter:   alertFilter.New(),
+			Keywords: []string{"ERCOLE", "Diagnostics Pack"},
+			From:     utils.MIN_TIME,
+			To:       utils.MAX_TIME,
+		}
+		out, err := m.db.SearchAlerts(filters)
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{alert1}
+		var expectedOut map[string]interface{} = map[string]interface{}{
+			"items":    []interface{}{alert1},
+			"count":    1,
+			"pageSize": 25,
+			"page":     0,
+		}
 
 		assert.JSONEq(m.T(), utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
 	m.T().Run("should_aggregate_result_code_severity", func(t *testing.T) {
-		out, err := m.db.SearchAlerts("aggregated-code-severity", []string{}, "count", false, -1, -1, "", "", "", "", utils.MIN_TIME, utils.MAX_TIME)
+		filters := alertFilter.Alert{
+			Mode:   "aggregated-code-severity",
+			Filter: alertFilter.New(),
+			SortBy: "count",
+			From:   utils.MIN_TIME,
+			To:     utils.MAX_TIME,
+		}
+		out, err := m.db.SearchAlerts(filters)
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{
-			map[string]interface{}{
-				"category":      "LICENSE",
-				"affectedHosts": 1,
-				"code":          "NEW_OPTION",
-				"count":         1,
-				"oldestAlert":   utils.P("2020-04-15T08:46:58.475+02:00").Local(),
-				"severity":      "CRITICAL",
+		var expectedOut map[string]interface{} = map[string]interface{}{
+			"items": []interface{}{
+				map[string]interface{}{
+					"category":      "LICENSE",
+					"affectedHosts": 1,
+					"code":          "NEW_OPTION",
+					"count":         1,
+					"oldestAlert":   utils.P("2020-04-15T08:46:58.475+02:00").Local(),
+					"severity":      "CRITICAL",
+				},
+				map[string]interface{}{
+					"category":      "ENGINE",
+					"affectedHosts": 2,
+					"code":          "NEW_SERVER",
+					"count":         3,
+					"oldestAlert":   utils.P("2020-04-10T08:46:58.38+02:00").Local(),
+					"severity":      "INFO",
+				},
 			},
-			map[string]interface{}{
-				"category":      "ENGINE",
-				"affectedHosts": 2,
-				"code":          "NEW_SERVER",
-				"count":         3,
-				"oldestAlert":   utils.P("2020-04-10T08:46:58.38+02:00").Local(),
-				"severity":      "INFO",
-			},
+			"count":    2,
+			"pageSize": 25,
+			"page":     0,
 		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
 	m.T().Run("should_aggregate_result_category_severity", func(t *testing.T) {
-		out, err := m.db.SearchAlerts("aggregated-category-severity", []string{}, "count", false, -1, -1, "", "", "", "", utils.MIN_TIME, utils.MAX_TIME)
+		filters := alertFilter.Alert{
+			Mode:   "aggregated-category-severity",
+			Filter: alertFilter.New(),
+			SortBy: "count",
+			From:   utils.MIN_TIME,
+			To:     utils.MAX_TIME,
+		}
+		out, err := m.db.SearchAlerts(filters)
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{
-			map[string]interface{}{
-				"category":      "LICENSE",
-				"affectedHosts": 1,
-				"count":         1,
-				"oldestAlert":   utils.P("2020-04-15T08:46:58.475+02:00").Local(),
-				"severity":      "CRITICAL",
+		var expectedOut map[string]interface{} = map[string]interface{}{
+			"items": []interface{}{
+				map[string]interface{}{
+					"category":      "LICENSE",
+					"affectedHosts": 1,
+					"count":         1,
+					"oldestAlert":   utils.P("2020-04-15T08:46:58.475+02:00").Local(),
+					"severity":      "CRITICAL",
+				},
+				map[string]interface{}{
+					"category":      "ENGINE",
+					"affectedHosts": 2,
+					"count":         3,
+					"oldestAlert":   utils.P("2020-04-10T08:46:58.38+02:00").Local(),
+					"severity":      "INFO",
+				},
 			},
-			map[string]interface{}{
-				"category":      "ENGINE",
-				"affectedHosts": 2,
-				"count":         3,
-				"oldestAlert":   utils.P("2020-04-10T08:46:58.38+02:00").Local(),
-				"severity":      "INFO",
-			},
+			"count":   2,
+			"pageSize": 25,
+			"page":     0,
 		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
