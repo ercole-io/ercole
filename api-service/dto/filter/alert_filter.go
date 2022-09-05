@@ -13,20 +13,20 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package dto
+package filter
 
-type Pagination struct {
-	Items    interface{} `json:"items"`
-	Count    int         `json:"count"`
-	PageSize int         `json:"pageSize"`
-	Page     int         `json:"page"`
-}
+import "time"
 
-func ToPagination(items interface{}, count int, pageSize int, page int) *Pagination {
-	return &Pagination{
-		Items:    items,
-		Count:    count,
-		PageSize: pageSize,
-		Page:     page,
-	}
+type Alert struct {
+	Filter      Filter
+	Mode        string    `json:"mode"`
+	Keywords    []string  `json:"keywords"`
+	SortBy      string    `json:"sortBy"`
+	SortDesc    bool      `json:"sortDesc"`
+	Location    string    `json:"location"`
+	Environment string    `json:"environment"`
+	Severity    string    `json:"severity"`
+	Status      string    `json:"status"`
+	From        time.Time `json:"from"`
+	To          time.Time `json:"to"`
 }
