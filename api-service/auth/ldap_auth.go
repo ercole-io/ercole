@@ -84,7 +84,7 @@ func (ap *LDAPAuthenticationProvider) Init() {
 func (ap *LDAPAuthenticationProvider) GetUserInfoIfCredentialsAreCorrect(username string, password string) (map[string]interface{}, error) {
 	filter := fmt.Sprintf(ap.Config.LDAPUserFilter, ldap.EscapeFilter(username))
 	searchRequest := ldap.NewSearchRequest(
-		"dc=planetexpress,dc=com",
+		ap.Config.LDAPBase,
 		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
 		fmt.Sprintf("(&(objectClass=*)%s)", filter),
 		[]string{"givenName", "sn", "mail", "uid"},
