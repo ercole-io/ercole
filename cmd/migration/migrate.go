@@ -38,7 +38,7 @@ func NewMigrateCmd(conf *config.Configuration) *cobra.Command {
 			err := migration.Migrate(conf.Mongodb)
 			if err != nil && errors.Is(err, utils.ErrConnDB) {
 				log.Warn(err)
-			} else {
+			} else if err != nil {
 				log.Fatal(err)
 			}
 			log.Info("Migrate successfully")
