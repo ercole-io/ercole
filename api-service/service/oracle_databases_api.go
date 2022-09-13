@@ -181,6 +181,14 @@ func (as *APIService) SearchOracleDatabasesAsXLSX(filter dto.SearchOracleDatabas
 		file.SetCellValue("Databases", fmt.Sprintf("P%d", i), val.Dataguard)
 		file.SetCellValue("Databases", fmt.Sprintf("Q%d", i), val.Rac)
 		file.SetCellValue("Databases", fmt.Sprintf("R%d", i), val.Ha)
+
+		if val.IsCDB {
+			file.SetCellValue("Databases", fmt.Sprintf("S%d", i), "True")
+			file.SetCellValue("Databases", fmt.Sprintf("T%d", i), val.PDBs)
+		} else {
+			file.SetCellValue("Databases", fmt.Sprintf("S%d", i), "False")
+			file.SetCellValue("Databases", fmt.Sprintf("T%d", i), "")
+		}
 	}
 
 	return file, nil
