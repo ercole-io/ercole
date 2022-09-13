@@ -44,6 +44,7 @@ func (as *APIService) CreateOracleDatabasePdbsXlsx(filter dto.GlobalFilter) (*ex
 		"SegmentsSize",
 		"DatafileSize",
 		"Allocable",
+		"Charset",
 		"Tablespaces",
 		"Schemas",
 		"Services",
@@ -65,6 +66,7 @@ func (as *APIService) CreateOracleDatabasePdbsXlsx(filter dto.GlobalFilter) (*ex
 		sheets.SetCellValue(sheet, nextAxis(), val.SegmentsSize)
 		sheets.SetCellValue(sheet, nextAxis(), val.DatafileSize)
 		sheets.SetCellValue(sheet, nextAxis(), val.Allocable)
+		sheets.SetCellValue(sheet, nextAxis(), val.Charset)
 		sheets.SetCellValue(sheet, nextAxis(), val.Tablespaces)
 		sheets.SetCellValue(sheet, nextAxis(), val.Schemas)
 		sheets.SetCellValue(sheet, nextAxis(), val.Services)
