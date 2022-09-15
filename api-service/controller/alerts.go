@@ -20,6 +20,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/golang/gddo/httputil"
@@ -60,7 +61,7 @@ func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	if pageNumber, err = utils.Str2int(r.URL.Query().Get("page"), 0); err != nil {
+	if pageNumber, err = utils.Str2int(r.URL.Query().Get("page"), 1); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
@@ -120,8 +121,11 @@ func (ctrl *APIController) searchAlertsJSON(w http.ResponseWriter,
 		filters.Limit = pageSize
 	}
 
+	keywords := strings.Split(search, " ")
+
 	response, err := ctrl.Service.SearchAlerts(filter.Alert{
 		Mode:        mode,
+		Keywords:    keywords,
 		SortBy:      sortBy,
 		SortDesc:    sortDesc,
 		Location:    location,

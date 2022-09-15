@@ -160,7 +160,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 	m.T().Run("should_be_paging", func(t *testing.T) {
 		filters := alertFilter.Alert{
 			Mode:   "all",
-			Filter: alertFilter.Filter{Limit: 1},
+			Filter: alertFilter.Filter{Limit: 1, Page: 1},
 			From:   utils.MIN_TIME,
 			To:     utils.MAX_TIME,
 		}
@@ -170,7 +170,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 			"items":    []interface{}{alert1},
 			"count":    4,
 			"pageSize": 1,
-			"page":     0,
+			"page":     1,
 		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
@@ -191,7 +191,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 			"items":    []interface{}{alert2, alert3, alert4, alert1},
 			"count":    4,
 			"pageSize": 25,
-			"page":     0,
+			"page":     1,
 		}
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
@@ -210,7 +210,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 			"items":    []interface{}{alert1},
 			"count":    1,
 			"pageSize": 25,
-			"page":     0,
+			"page":     1,
 		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
@@ -230,7 +230,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 			"items":    []interface{}{alert1, alert2, alert3},
 			"count":    3,
 			"pageSize": 25,
-			"page":     0,
+			"page":     1,
 		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
@@ -250,7 +250,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 			"items":    []interface{}{alert1},
 			"count":    1,
 			"pageSize": 25,
-			"page":     0,
+			"page":     1,
 		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
@@ -270,7 +270,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 			"items":    []interface{}{alert1},
 			"count":    1,
 			"pageSize": 25,
-			"page":     0,
+			"page":     1,
 		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
@@ -289,7 +289,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 			"items":    []interface{}{alert1},
 			"count":    1,
 			"pageSize": 25,
-			"page":     0,
+			"page":     1,
 		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
@@ -308,7 +308,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 			"items":    []interface{}{alert2, alert3, alert4},
 			"count":    3,
 			"pageSize": 25,
-			"page":     0,
+			"page":     1,
 		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
@@ -328,7 +328,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 			"items":    nil,
 			"count":    0,
 			"pageSize": 25,
-			"page":     0,
+			"page":     1,
 		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
@@ -348,7 +348,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 			"items":    []interface{}{alert2, alert3},
 			"count":    2,
 			"pageSize": 25,
-			"page":     0,
+			"page":     1,
 		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
@@ -368,7 +368,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 			"items":    []interface{}{alert1},
 			"count":    1,
 			"pageSize": 25,
-			"page":     0,
+			"page":     1,
 		}
 
 		assert.JSONEq(m.T(), utils.ToJSON(expectedOut), utils.ToJSON(out))
@@ -405,7 +405,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 			},
 			"count":    2,
 			"pageSize": 25,
-			"page":     0,
+			"page":     1,
 		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
@@ -438,9 +438,9 @@ func (m *MongodbSuite) TestSearchAlerts() {
 					"severity":      "INFO",
 				},
 			},
-			"count":   2,
+			"count":    2,
 			"pageSize": 25,
-			"page":     0,
+			"page":     1,
 		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))

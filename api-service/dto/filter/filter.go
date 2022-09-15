@@ -17,6 +17,8 @@ package filter
 
 const limitDefault = 25
 
+const page = 1
+
 type Filter struct {
 	Page   int     `json:"page"`
 	Limit  int     `json:"limit"`
@@ -26,5 +28,6 @@ type Filter struct {
 func New() Filter {
 	return Filter{
 		Limit: limitDefault,
+		Page:  page,
 	}
 }
