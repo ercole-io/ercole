@@ -31,7 +31,7 @@ import (
 const alertsCollection = "alerts"
 
 func (md *MongoDatabase) SearchAlerts(alertFilter alert_filter.Alert) (*dto.Pagination, error) {
-	offset := int64(alertFilter.Filter.Limit * alertFilter.Filter.Page)
+	offset := int64(alertFilter.Filter.Limit * (alertFilter.Filter.Page - 1))
 	limit := int64(alertFilter.Filter.Limit)
 
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(alertsCollection).Aggregate(
