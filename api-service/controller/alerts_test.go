@@ -79,6 +79,7 @@ func TestSearchAlerts_JSONSuccessPaged(t *testing.T) {
 		Status:   model.AlertStatusAck,
 		From:     utils.P("2020-06-10T11:54:59Z"),
 		To:       utils.P("2020-06-17T11:54:59Z"),
+		Keywords: []string{"foo"},
 	}
 	as.EXPECT().
 		SearchAlerts(alertFilter).
@@ -94,8 +95,6 @@ func TestSearchAlerts_JSONSuccessPaged(t *testing.T) {
 	require.Equal(t, http.StatusOK, rr.Code)
 	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
 }
-
-
 
 func TestSearchAlerts_JSONFailUnprocessable1(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
@@ -277,10 +276,11 @@ func TestSearchAlerts_JSONFailInternalServerError(t *testing.T) {
 	}
 
 	alertFilter := alertFilter.Alert{
-		Mode:   "all",
-		Filter: alertFilter.New(),
-		From:   utils.MIN_TIME,
-		To:     utils.MAX_TIME,
+		Mode:     "all",
+		Filter:   alertFilter.New(),
+		From:     utils.MIN_TIME,
+		To:       utils.MAX_TIME,
+		Keywords: []string{""},
 	}
 
 	as.EXPECT().
