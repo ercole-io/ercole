@@ -106,12 +106,12 @@ func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) 
 		ctrl.searchAlertsXLSX(w, r, from, to)
 
 	default:
-		ctrl.searchAlertsJSON(w, mode, search, sortBy, sortDesc, pageNumber, pageSize, location, environment, severity, status, from, to)
+		ctrl.searchAlertsJSON(w, r, mode, search, sortBy, sortDesc, pageNumber, pageSize, location, environment, severity, status, from, to)
 	}
 }
 
 // searchAlertsJSON search alerts using the filters in the request returning it in JSON format
-func (ctrl *APIController) searchAlertsJSON(w http.ResponseWriter,
+func (ctrl *APIController) searchAlertsJSON(w http.ResponseWriter, r *http.Request,
 	mode string, search string, sortBy string, sortDesc bool, pageNumber int, pageSize int,
 	location, environment, severity string, status string, from time.Time, to time.Time) {
 	filters := filter.New()
@@ -119,29 +119,46 @@ func (ctrl *APIController) searchAlertsJSON(w http.ResponseWriter,
 
 	if pageSize > 0 {
 		filters.Limit = pageSize
-	}
 
-	keywords := strings.Split(search, " ")
+		keywords := strings.Split(search, " ")
 
-	response, err := ctrl.Service.SearchAlerts(filter.Alert{
-		Mode:        mode,
-		Keywords:    keywords,
-		SortBy:      sortBy,
-		SortDesc:    sortDesc,
-		Location:    location,
-		Environment: environment,
-		Severity:    severity,
-		Status:      status,
-		From:        from,
-		To:          to,
-		Filter:      filters,
-	})
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		response, err := ctrl.Service.SearchAlerts(filter.Alert{
+			Mode:        mode,
+			Keywords:    keywords,
+			SortBy:      sortBy,
+			SortDesc:    sortDesc,
+			Location:    location,
+			Environment: environment,
+			Severity:    severity,
+			Status:      status,
+			From:        from,
+			To:          to,
+			Filter:      filters,
+		})
+		if err != nil {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+			return
+		}
+
+		utils.WriteJSONResponse(w, http.StatusOK, response)
+	} else if pageSize == 0 {
+		filter, err := dto.GetGlobalFilter(r)
+		if err != nil {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+			return
+		}
+
+		response, err := ctrl.Service.GetAlerts(from, to, *filter)
+		if err != nil {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+			return
+		}
+
+		utils.WriteJSONResponse(w, http.StatusOK, response)
+	} else {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, errors.New("Incorrect page size"))
 		return
 	}
-
-	utils.WriteJSONResponse(w, http.StatusOK, response)
 }
 
 // searchAlertsXLSX search alerts using the filters in the request returning it in XLSX format
