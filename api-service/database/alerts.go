@@ -53,6 +53,7 @@ func (md *MongoDatabase) SearchAlerts(alertFilter alert_filter.Alert) (*dto.Pagi
 				"$description",
 				"$alertCode",
 				"$alertSeverity",
+				"$alertCategory",
 				"$otherInfo.Hostname",
 				"$otherInfo.Dbname",
 				"$otherInfo.Features",
