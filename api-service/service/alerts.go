@@ -17,7 +17,6 @@
 package service
 
 import (
-	"reflect"
 	"time"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
@@ -36,19 +35,18 @@ func (as *APIService) SearchAlerts(alertFilter alert_filter.Alert) (*dto.Paginat
 	return as.Database.SearchAlerts(alertFilter)
 }
 
-// SearchAlertsAsXLSX return alerts as xlxs file
-func (as *APIService) SearchAlertsAsXLSX(from, to time.Time, filter dto.GlobalFilter) (*excelize.File, error) {
-	flt := alert_filter.Alert{
-		Filter:      alert_filter.New(),
-		Mode:        "all",
-		Keywords:    []string{},
-		Location:    filter.Location,
-		Environment: filter.Environment,
-		From:        from,
-		To:          to,
+func (as *APIService) GetAlerts(from, to time.Time, filter dto.GlobalFilter) ([]map[string]interface{}, error) {
+	alerts, err := as.Database.GetAlerts(filter.Location, filter.Environment, from, to)
+	if err != nil {
+		return nil, err
 	}
 
-	alerts, err := as.Database.SearchAlerts(flt)
+	return alerts, nil
+}
+
+// SearchAlertsAsXLSX return alerts as xlxs file
+func (as *APIService) SearchAlertsAsXLSX(from, to time.Time, filter dto.GlobalFilter) (*excelize.File, error) {
+	alerts, err := as.Database.GetAlerts(filter.Location, filter.Environment, from, to)
 	if err != nil {
 		return nil, err
 	}
@@ -70,23 +68,14 @@ func (as *APIService) SearchAlertsAsXLSX(from, to time.Time, filter dto.GlobalFi
 
 	axisHelp := exutils.NewAxisHelper(1)
 
-	var items []interface{}
-
-	rv := reflect.ValueOf(alerts.Items)
-	if rv.Kind() == reflect.Slice {
-		for i := 0; i < rv.Len(); i++ {
-			items = append(items, rv.Index(i).Interface())
-		}
-	}
-
-	for _, val := range items {
+	for _, val := range alerts {
 		nextAxis := axisHelp.NewRow()
-		sheets.SetCellValue("Alerts", nextAxis(), val.(map[string]interface{})["alertCategory"])
-		sheets.SetCellValue("Alerts", nextAxis(), val.(map[string]interface{})["date"].(primitive.DateTime).Time().UTC().String())
-		sheets.SetCellValue("Alerts", nextAxis(), val.(map[string]interface{})["alertSeverity"])
-		sheets.SetCellValue("Alerts", nextAxis(), val.(map[string]interface{})["hostname"])
-		sheets.SetCellValue("Alerts", nextAxis(), val.(map[string]interface{})["alertCode"])
-		sheets.SetCellValue("Alerts", nextAxis(), val.(map[string]interface{})["description"])
+		sheets.SetCellValue("Alerts", nextAxis(), val["alertCategory"])
+		sheets.SetCellValue("Alerts", nextAxis(), val["date"].(primitive.DateTime).Time().UTC().String())
+		sheets.SetCellValue("Alerts", nextAxis(), val["alertSeverity"])
+		sheets.SetCellValue("Alerts", nextAxis(), val["hostname"])
+		sheets.SetCellValue("Alerts", nextAxis(), val["alertCode"])
+		sheets.SetCellValue("Alerts", nextAxis(), val["description"])
 	}
 
 	return sheets, nil

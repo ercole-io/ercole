@@ -18,6 +18,7 @@ package database
 import (
 	"context"
 	"errors"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 
@@ -197,6 +198,81 @@ func (md *MongoDatabase) SearchAlerts(alertFilter alert_filter.Alert) (*dto.Pagi
 	}
 
 	return dto.ToPagination(nil, int(count), alertFilter.Filter.Limit, alertFilter.Filter.Page), nil
+}
+
+func (md *MongoDatabase) GetAlerts(location, environment string, from, to time.Time) ([]map[string]interface{}, error) {
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(alertsCollection).Aggregate(
+		context.TODO(),
+		mu.MAPipeline(
+			mu.APMatch(bson.M{
+				"date": bson.M{
+					"$gte": from,
+					"$lt":  to,
+				},
+			}),
+			mu.APSet(bson.M{
+				"hostname": "$otherInfo.hostname",
+			}),
+
+			mu.APOptionalStage(len(location) > 0 || len(environment) > 0,
+				mu.APLookupPipeline(
+					"hosts",
+					bson.M{"hn": "$otherInfo.hostname"},
+					"host",
+					mu.MAPipeline(
+						mu.APMatch(bson.M{
+							"$expr":       bson.M{"$eq": bson.A{"$hostname", "$$hn"}},
+							"dismissedAt": nil,
+							"archived":    false,
+						}),
+						mu.APProject(bson.M{
+							"_id":         0,
+							"location":    1,
+							"environment": 1,
+						}),
+					),
+				),
+			),
+			mu.APOptionalStage(len(location) > 0 || len(environment) > 0,
+				bson.M{
+					"$unwind": bson.M{"path": "$host", "preserveNullAndEmptyArrays": true},
+				},
+			),
+			mu.APOptionalStage(len(location) > 0,
+				mu.APMatch(bson.M{
+					"$or": bson.A{
+						bson.M{"host.location": location},
+						bson.M{"host": bson.M{"$exists": false}},
+					},
+				}),
+			),
+			mu.APOptionalStage(len(environment) > 0,
+				mu.APMatch(bson.M{
+					"$or": bson.A{
+						bson.M{"host.environment": environment},
+						bson.M{"host": bson.M{"$exists": false}},
+					},
+				})),
+			mu.APUnset("host"),
+		),
+	)
+	if err != nil {
+		return nil, utils.NewError(err, "DB ERROR")
+	}
+
+	var out []map[string]interface{} = make([]map[string]interface{}, 0)
+
+	for cur.Next(context.TODO()) {
+		var item map[string]interface{}
+
+		if cur.Decode(&item) != nil {
+			return nil, utils.NewError(err, "Decode ERROR")
+		}
+
+		out = append(out, item)
+	}
+
+	return out, nil
 }
 
 func (md *MongoDatabase) CountAlertsNODATA(alertsFilter dto.AlertsFilter) (int64, error) {

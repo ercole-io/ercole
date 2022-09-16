@@ -277,7 +277,7 @@ func TestSearchAlerts_JSONFailInternalServerError(t *testing.T) {
 
 	alertFilter := alertFilter.Alert{
 		Mode:     "all",
-		Filter:   alertFilter.New(),
+		Filter:   alertFilter.Filter{Limit: 1, Page: 1},
 		From:     utils.MIN_TIME,
 		To:       utils.MAX_TIME,
 		Keywords: []string{""},
@@ -289,7 +289,7 @@ func TestSearchAlerts_JSONFailInternalServerError(t *testing.T) {
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchAlerts)
-	req, err := http.NewRequest("GET", "/alerts", nil)
+	req, err := http.NewRequest("GET", "/alerts?size=1", nil)
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)

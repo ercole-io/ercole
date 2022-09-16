@@ -48,6 +48,7 @@ type APIServiceInterface interface {
 	// SearchAlerts search alerts
 	SearchAlerts(alertFilter alert_filter.Alert) (*dto.Pagination, error)
 	SearchAlertsAsXLSX(from, to time.Time, filter dto.GlobalFilter) (*excelize.File, error)
+	GetAlerts(from, to time.Time, filter dto.GlobalFilter) ([]map[string]interface{}, error)
 	// SearchClusters search clusters
 	SearchClusters(mode string, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, error)
 	SearchClustersAsXLSX(filter dto.GlobalFilter) (*excelize.File, error)
