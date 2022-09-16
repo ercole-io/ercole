@@ -159,7 +159,6 @@ func (ctrl *APIController) searchAlertsJSON(w http.ResponseWriter, r *http.Reque
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, errors.New("Incorrect page size"))
 		return
 	}
-
 }
 
 // searchAlertsXLSX search alerts using the filters in the request returning it in XLSX format
