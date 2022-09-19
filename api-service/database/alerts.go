@@ -18,9 +18,11 @@ package database
 import (
 	"context"
 	"errors"
+	"regexp"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/amreo/mu"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
@@ -51,10 +53,10 @@ func (md *MongoDatabase) SearchAlerts(alertFilter alert_filter.Alert) (*dto.Pagi
 				"alertCode": alertFilter.Code,
 			})),
 			mu.APOptionalStage(alertFilter.Description != "", mu.APMatch(bson.M{
-				"description": alertFilter.Description,
+				"description": primitive.Regex{Pattern: regexp.QuoteMeta(alertFilter.Description), Options: "i"},
 			})),
 			mu.APOptionalStage(alertFilter.Hostname != "", mu.APMatch(bson.M{
-				"otherInfo.hostname": alertFilter.Hostname,
+				"otherInfo.hostname": primitive.Regex{Pattern: regexp.QuoteMeta(alertFilter.Hostname), Options: "i"},
 			})),
 			mu.APMatch(bson.M{
 				"date": bson.M{
