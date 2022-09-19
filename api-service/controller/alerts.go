@@ -34,7 +34,7 @@ import (
 
 // SearchAlerts search alerts using the filters in the request
 func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) {
-	var mode, search, sortBy, location, environment, severity, status string
+	var mode, search, sortBy, location, environment, severity, status, category, code, description, hostname string
 
 	var sortDesc bool
 
@@ -83,6 +83,14 @@ func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	category = r.URL.Query().Get("category")
+
+	code = r.URL.Query().Get("code")
+
+	description = r.URL.Query().Get("description")
+
+	hostname = r.URL.Query().Get("hostname")
+
 	if from, err = utils.Str2time(r.URL.Query().Get("from"), utils.MIN_TIME); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
@@ -106,14 +114,15 @@ func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) 
 		ctrl.searchAlertsXLSX(w, r, from, to)
 
 	default:
-		ctrl.searchAlertsJSON(w, r, mode, search, sortBy, sortDesc, pageNumber, pageSize, location, environment, severity, status, from, to)
+		ctrl.searchAlertsJSON(w, r, mode, search, sortBy, sortDesc, pageNumber, pageSize, location, environment, severity, status, category, code, description, hostname, from, to)
 	}
 }
 
 // searchAlertsJSON search alerts using the filters in the request returning it in JSON format
 func (ctrl *APIController) searchAlertsJSON(w http.ResponseWriter, r *http.Request,
 	mode string, search string, sortBy string, sortDesc bool, pageNumber int, pageSize int,
-	location, environment, severity string, status string, from time.Time, to time.Time) {
+	location, environment, severity, status, category, code, description, hostname string,
+	from time.Time, to time.Time) {
 	filters := filter.New()
 	filters.Page = pageNumber
 
@@ -131,6 +140,10 @@ func (ctrl *APIController) searchAlertsJSON(w http.ResponseWriter, r *http.Reque
 			Environment: environment,
 			Severity:    severity,
 			Status:      status,
+			Category:    category,
+			Code:        code,
+			Description: description,
+			Hostname:    hostname,
 			From:        from,
 			To:          to,
 			Filter:      filters,

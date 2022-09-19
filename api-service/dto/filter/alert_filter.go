@@ -27,6 +27,10 @@ type Alert struct {
 	Environment string    `json:"environment"`
 	Severity    string    `json:"severity"`
 	Status      string    `json:"status"`
+	Category    string    `json:"category"`
+	Code        string    `json:"code"`
+	Description string    `json:"description"`
+	Hostname    string    `json:"hostname"`
 	From        time.Time `json:"from"`
 	To          time.Time `json:"to"`
 }

@@ -44,6 +44,18 @@ func (md *MongoDatabase) SearchAlerts(alertFilter alert_filter.Alert) (*dto.Pagi
 			mu.APOptionalStage(alertFilter.Severity != "", mu.APMatch(bson.M{
 				"alertSeverity": alertFilter.Severity,
 			})),
+			mu.APOptionalStage(alertFilter.Category != "", mu.APMatch(bson.M{
+				"alertCategory": alertFilter.Category,
+			})),
+			mu.APOptionalStage(alertFilter.Code != "", mu.APMatch(bson.M{
+				"alertCode": alertFilter.Code,
+			})),
+			mu.APOptionalStage(alertFilter.Description != "", mu.APMatch(bson.M{
+				"description": alertFilter.Description,
+			})),
+			mu.APOptionalStage(alertFilter.Hostname != "", mu.APMatch(bson.M{
+				"otherInfo.hostname": alertFilter.Hostname,
+			})),
 			mu.APMatch(bson.M{
 				"date": bson.M{
 					"$gte": alertFilter.From,
