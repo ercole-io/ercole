@@ -111,7 +111,7 @@ func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 
-		ctrl.searchAlertsXLSX(w, r, from, to)
+		ctrl.searchAlertsXLSX(w, r, status, from, to)
 
 	default:
 		ctrl.searchAlertsJSON(w, r, mode, search, sortBy, sortDesc, pageNumber, pageSize, location, environment, severity, status, category, code, description, hostname, from, to)
@@ -161,7 +161,7 @@ func (ctrl *APIController) searchAlertsJSON(w http.ResponseWriter, r *http.Reque
 			return
 		}
 
-		response, err := ctrl.Service.GetAlerts(from, to, *filter)
+		response, err := ctrl.Service.GetAlerts(status, from, to, *filter)
 		if err != nil {
 			utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 			return
@@ -175,14 +175,14 @@ func (ctrl *APIController) searchAlertsJSON(w http.ResponseWriter, r *http.Reque
 }
 
 // searchAlertsXLSX search alerts using the filters in the request returning it in XLSX format
-func (ctrl *APIController) searchAlertsXLSX(w http.ResponseWriter, r *http.Request, from time.Time, to time.Time) {
+func (ctrl *APIController) searchAlertsXLSX(w http.ResponseWriter, r *http.Request, status string, from time.Time, to time.Time) {
 	filter, err := dto.GetGlobalFilter(r)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
-	xlsx, err := ctrl.Service.SearchAlertsAsXLSX(from, to, *filter)
+	xlsx, err := ctrl.Service.SearchAlertsAsXLSX(status, from, to, *filter)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return

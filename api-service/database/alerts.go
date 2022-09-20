@@ -214,7 +214,7 @@ func (md *MongoDatabase) SearchAlerts(alertFilter alert_filter.Alert) (*dto.Pagi
 	return dto.ToPagination(nil, int(count), alertFilter.Filter.Limit, alertFilter.Filter.Page), nil
 }
 
-func (md *MongoDatabase) GetAlerts(location, environment string, from, to time.Time) ([]map[string]interface{}, error) {
+func (md *MongoDatabase) GetAlerts(location, environment, status string, from, to time.Time) ([]map[string]interface{}, error) {
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(alertsCollection).Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
@@ -223,6 +223,7 @@ func (md *MongoDatabase) GetAlerts(location, environment string, from, to time.T
 					"$gte": from,
 					"$lt":  to,
 				},
+				"alertStatus": bson.M{"$eq": status},
 			}),
 			mu.APSet(bson.M{
 				"hostname": "$otherInfo.hostname",

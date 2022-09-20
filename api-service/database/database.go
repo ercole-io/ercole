@@ -51,7 +51,7 @@ type MongoDatabaseInterface interface {
 	// SearchAlerts search alerts
 	SearchAlerts(alertFilter alert_filter.Alert) (*dto.Pagination, error)
 	// GetAlerts get alerts
-	GetAlerts(location, environment string, from, to time.Time) ([]map[string]interface{}, error)
+	GetAlerts(location, environment, status string, from, to time.Time) ([]map[string]interface{}, error)
 	// SearchClusters search clusters
 	SearchClusters(mode string, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, error)
 	GetClusters(filter dto.GlobalFilter) ([]dto.Cluster, error)
