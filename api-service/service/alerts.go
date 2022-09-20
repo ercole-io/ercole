@@ -35,8 +35,8 @@ func (as *APIService) SearchAlerts(alertFilter alert_filter.Alert) (*dto.Paginat
 	return as.Database.SearchAlerts(alertFilter)
 }
 
-func (as *APIService) GetAlerts(from, to time.Time, filter dto.GlobalFilter) ([]map[string]interface{}, error) {
-	alerts, err := as.Database.GetAlerts(filter.Location, filter.Environment, from, to)
+func (as *APIService) GetAlerts(status string, from, to time.Time, filter dto.GlobalFilter) ([]map[string]interface{}, error) {
+	alerts, err := as.Database.GetAlerts(filter.Location, filter.Environment, status, from, to)
 	if err != nil {
 		return nil, err
 	}
@@ -45,8 +45,8 @@ func (as *APIService) GetAlerts(from, to time.Time, filter dto.GlobalFilter) ([]
 }
 
 // SearchAlertsAsXLSX return alerts as xlxs file
-func (as *APIService) SearchAlertsAsXLSX(from, to time.Time, filter dto.GlobalFilter) (*excelize.File, error) {
-	alerts, err := as.Database.GetAlerts(filter.Location, filter.Environment, from, to)
+func (as *APIService) SearchAlertsAsXLSX(status string, from, to time.Time, filter dto.GlobalFilter) (*excelize.File, error) {
+	alerts, err := as.Database.GetAlerts(filter.Location, filter.Environment, status, from, to)
 	if err != nil {
 		return nil, err
 	}

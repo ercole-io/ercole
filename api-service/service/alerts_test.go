@@ -254,7 +254,7 @@ func TestSearchAlertsAsXLSX_Success(t *testing.T) {
 		},
 	}
 
-	db.EXPECT().GetAlerts("Italy", "TST", utils.P("2020-06-10T11:54:59Z"), utils.P("2020-06-17T11:54:59Z")).
+	db.EXPECT().GetAlerts("Italy", "TST", "NEW", utils.P("2020-06-10T11:54:59Z"), utils.P("2020-06-17T11:54:59Z")).
 		Return(data, nil).Times(1)
 
 	filter := dto.GlobalFilter{
@@ -266,7 +266,7 @@ func TestSearchAlertsAsXLSX_Success(t *testing.T) {
 	from := utils.P("2020-06-10T11:54:59Z")
 	to := utils.P("2020-06-17T11:54:59Z")
 
-	actual, err := as.SearchAlertsAsXLSX(from, to, filter)
+	actual, err := as.SearchAlertsAsXLSX("NEW", from, to, filter)
 	require.NoError(t, err)
 	assert.Equal(t, "LICENSE", actual.GetCellValue("Alerts", "A2"))
 	assert.Equal(t, "2020-07-23 08:01:13.746 +0000 UTC", actual.GetCellValue("Alerts", "B2"))
