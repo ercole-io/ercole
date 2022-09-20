@@ -320,12 +320,12 @@ func TestSearchAlertsAsXLSX_Success(t *testing.T) {
 	xlsx := excelize.File{}
 
 	as.EXPECT().
-		SearchAlertsAsXLSX(from, to, filter).
+		SearchAlertsAsXLSX("NEW", from, to, filter).
 		Return(&xlsx, nil)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchAlerts)
-	req, err := http.NewRequest("GET", "/alerts?location=Italy&environment=TST&from=2020-06-10T11%3A54%3A59Z&to=2020-06-17T11%3A54%3A59Z", nil)
+	req, err := http.NewRequest("GET", "/alerts?status=NEW&location=Italy&environment=TST&from=2020-06-10T11%3A54%3A59Z&to=2020-06-17T11%3A54%3A59Z", nil)
 	require.NoError(t, err)
 
 	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
@@ -537,12 +537,12 @@ func TestSearchAlertsXLSX_InternalServerError(t *testing.T) {
 	to := utils.P("2020-06-17T11:54:59Z")
 
 	as.EXPECT().
-		SearchAlertsAsXLSX(from, to, filter).
+		SearchAlertsAsXLSX("NEW", from, to, filter).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchAlerts)
-	req, err := http.NewRequest("GET", "/alerts?from=2020-06-10T11%3A54%3A59Z&to=2020-06-17T11%3A54%3A59Z", nil)
+	req, err := http.NewRequest("GET", "/alerts?status=NEW&from=2020-06-10T11%3A54%3A59Z&to=2020-06-17T11%3A54%3A59Z", nil)
 	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
 	require.NoError(t, err)
