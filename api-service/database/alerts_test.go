@@ -472,7 +472,7 @@ func (m *MongodbSuite) TestGetAlerts() {
 		AlertCategory:           model.AlertCategoryEngine,
 		AlertCode:               model.AlertCodeNewServer,
 		AlertSeverity:           model.AlertSeverityInfo,
-		AlertStatus:             model.AlertStatusAck,
+		AlertStatus:             model.AlertStatusNew,
 		Date:                    utils.P("2020-04-10T08:46:58.38+02:00"),
 		Description:             "The server 'rac1_x' was added to ercole",
 		OtherInfo: map[string]interface{}{
@@ -485,7 +485,7 @@ func (m *MongodbSuite) TestGetAlerts() {
 		AlertCategory:           model.AlertCategoryEngine,
 		AlertCode:               model.AlertCodeNewServer,
 		AlertSeverity:           model.AlertSeverityInfo,
-		AlertStatus:             model.AlertStatusAck,
+		AlertStatus:             model.AlertStatusNew,
 		Date:                    utils.P("2020-04-10T08:46:58.38+02:00"),
 		Description:             "The server 'rac1_x' was added to ercole",
 		OtherInfo: map[string]interface{}{
@@ -498,7 +498,7 @@ func (m *MongodbSuite) TestGetAlerts() {
 		AlertCategory:           model.AlertCategoryEngine,
 		AlertCode:               model.AlertCodeNewServer,
 		AlertSeverity:           model.AlertSeverityInfo,
-		AlertStatus:             model.AlertStatusAck,
+		AlertStatus:             model.AlertStatusNew,
 		Date:                    utils.P("2020-04-10T08:46:58.38+02:00"),
 		Description:             "The server 'rac2_x' was added to ercole",
 		OtherInfo: map[string]interface{}{
@@ -535,7 +535,7 @@ func (m *MongodbSuite) TestGetAlerts() {
 		"alertCategory":           model.AlertCategoryEngine,
 		"alertCode":               model.AlertCodeNewServer,
 		"alertSeverity":           model.AlertSeverityInfo,
-		"alertStatus":             model.AlertStatusAck,
+		"alertStatus":             model.AlertStatusNew,
 		"date":                    utils.P("2020-04-10T08:46:58.38+02:00").Local(),
 		"description":             "The server 'rac1_x' was added to ercole",
 		"otherInfo": map[string]interface{}{
@@ -549,7 +549,7 @@ func (m *MongodbSuite) TestGetAlerts() {
 		"alertCategory":           model.AlertCategoryEngine,
 		"alertCode":               model.AlertCodeNewServer,
 		"alertSeverity":           model.AlertSeverityInfo,
-		"alertStatus":             model.AlertStatusAck,
+		"alertStatus":             model.AlertStatusNew,
 		"date":                    utils.P("2020-04-10T08:46:58.38+02:00").Local(),
 		"description":             "The server 'rac1_x' was added to ercole",
 		"otherInfo": map[string]interface{}{
@@ -563,7 +563,7 @@ func (m *MongodbSuite) TestGetAlerts() {
 		"alertCategory":           model.AlertCategoryEngine,
 		"alertCode":               model.AlertCodeNewServer,
 		"alertSeverity":           model.AlertSeverityInfo,
-		"alertStatus":             model.AlertStatusAck,
+		"alertStatus":             model.AlertStatusNew,
 		"date":                    utils.P("2020-04-10T08:46:58.38+02:00").Local(),
 		"description":             "The server 'rac2_x' was added to ercole",
 		"otherInfo": map[string]interface{}{
@@ -573,7 +573,7 @@ func (m *MongodbSuite) TestGetAlerts() {
 	}
 
 	m.T().Run("should_get_alerts", func(t *testing.T) {
-		out, err := m.db.GetAlerts("", "", utils.MIN_TIME, utils.MAX_TIME)
+		out, err := m.db.GetAlerts("", "", "NEW", utils.MIN_TIME, utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut []map[string]interface{} = []map[string]interface{}{
 			alert1, alert2, alert3, alert4,
