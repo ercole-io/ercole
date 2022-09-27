@@ -250,6 +250,13 @@ type APIServiceInterface interface {
 	// SearchOracleDatabases search databases
 	SearchPostgreSqlInstancesAsXLSX(filter dto.SearchPostgreSqlInstancesFilter) (*excelize.File, error)
 
+	// ROLES
+	InsertRole(role model.RoleType) (*model.RoleType, error)
+	UpdateRole(role model.RoleType) (*model.RoleType, error)
+	GetRole(id primitive.ObjectID) (*model.RoleType, error)
+	GetRoles() ([]model.RoleType, error)
+	DeleteRole(id primitive.ObjectID) error
+
 	GetDatabaseConnectionStatus() bool
 	GetConfig() (*config.Configuration, error)
 	ChangeConfig(config config.Configuration) error

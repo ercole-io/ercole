@@ -150,6 +150,13 @@ func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 	router.HandleFunc("/alerts", ctrl.SearchAlerts).Methods("GET")
 	router.HandleFunc("/alerts/ack", ctrl.AckAlerts).Methods("POST")
 
+	// ROLES
+	router.HandleFunc("/roles", ctrl.InsertRole).Methods("POST")
+	router.HandleFunc("/roles/{id}", ctrl.UpdateRole).Methods("PUT")
+	router.HandleFunc("/roles/{id}", ctrl.GetRole).Methods("GET")
+	router.HandleFunc("/roles/{id}", ctrl.DeleteRole).Methods("DELETE")
+	router.HandleFunc("/roles", ctrl.GetRoles).Methods("GET")
+
 	router.HandleFunc("/database/connection/status", ctrl.GetDatabaseConnectionStatus).Methods("GET")
 
 	ctrl.setupSettingsRoutes(router.PathPrefix("/settings").Subrouter())

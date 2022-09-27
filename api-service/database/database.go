@@ -214,6 +214,13 @@ type MongoDatabaseInterface interface {
 
 	// POSTGRESQL
 	SearchPostgreSqlInstances(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) (*dto.PostgreSqlInstanceResponse, error)
+
+	// ROLES
+	InsertRole(role model.RoleType) error
+	GetRole(id primitive.ObjectID) (*model.RoleType, error)
+	UpdateRole(role model.RoleType) error
+	DeleteRole(id primitive.ObjectID) error
+	GetRoles() ([]model.RoleType, error)
 }
 
 // MongoDatabase is a implementation
