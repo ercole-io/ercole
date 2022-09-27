@@ -58,3 +58,7 @@ var ErrHostNotInCluster = errors.New("host not in cluster")
 var ErrInvalidProfileId = errors.New("invalid profile id")
 
 var ErrConnDB = errors.New("Can't connect to the database!")
+
+var ErrRoleNotFound = errors.New("Role not found")
+
+var ErrRoleAlreadyExists = errors.New("Role already exists")
