@@ -192,6 +192,13 @@ type APIControllerInterface interface {
 	GetRoles(w http.ResponseWriter, r *http.Request)
 	DeleteRole(w http.ResponseWriter, r *http.Request)
 
+	// GROUPS
+	InsertGroup(w http.ResponseWriter, r *http.Request)
+	UpdateGroup(w http.ResponseWriter, r *http.Request)
+	GetGroup(w http.ResponseWriter, r *http.Request)
+	GetGroups(w http.ResponseWriter, r *http.Request)
+	DeleteGroup(w http.ResponseWriter, r *http.Request)
+
 	GetConfig(w http.ResponseWriter, r *http.Request)
 	ChangeConfig(w http.ResponseWriter, r *http.Request)
 }

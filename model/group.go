@@ -15,7 +15,10 @@
 
 package model
 
+import "go.mongodb.org/mongo-driver/bson/primitive"
+
 type GroupType struct {
-	Name  string `json:"name" bson:"name"`
-	Roles string `json:"roles" bson:"roles"`
+	ID    primitive.ObjectID `json:"id" bson:"_id"`
+	Name  string             `json:"name" bson:"name"`
+	Roles []string           `json:"roles" bson:"roles"`
 }
