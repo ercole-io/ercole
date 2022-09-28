@@ -257,6 +257,13 @@ type APIServiceInterface interface {
 	GetRoles() ([]model.RoleType, error)
 	DeleteRole(id primitive.ObjectID) error
 
+	// GROUPS
+	InsertGroup(group model.GroupType) (*model.GroupType, error)
+	UpdateGroup(group model.GroupType) (*model.GroupType, error)
+	GetGroup(id primitive.ObjectID) (*model.GroupType, error)
+	GetGroups() ([]model.GroupType, error)
+	DeleteGroup(id primitive.ObjectID) error
+
 	GetDatabaseConnectionStatus() bool
 	GetConfig() (*config.Configuration, error)
 	ChangeConfig(config config.Configuration) error

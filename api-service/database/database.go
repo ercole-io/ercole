@@ -221,6 +221,13 @@ type MongoDatabaseInterface interface {
 	UpdateRole(role model.RoleType) error
 	DeleteRole(id primitive.ObjectID) error
 	GetRoles() ([]model.RoleType, error)
+
+	// GROUPS
+	InsertGroup(group model.GroupType) error
+	GetGroup(id primitive.ObjectID) (*model.GroupType, error)
+	UpdateGroup(group model.GroupType) error
+	DeleteGroup(id primitive.ObjectID) error
+	GetGroups() ([]model.GroupType, error)
 }
 
 // MongoDatabase is a implementation

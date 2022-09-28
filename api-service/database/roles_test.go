@@ -52,7 +52,7 @@ func (m *MongodbSuite) TestUpdateRole() {
 		err := m.db.UpdateRole(role)
 		var aerr *utils.AdvancedError
 		assert.ErrorAs(t, err, &aerr)
-		assert.ErrorIs(t, aerr.Err, utils.ErrNotFound)
+		assert.ErrorIs(t, aerr.Err, utils.ErrRoleNotFound)
 	})
 
 	m.T().Run("should_update", func(t *testing.T) {
