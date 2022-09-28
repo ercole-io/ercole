@@ -51,6 +51,13 @@ func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 	router.HandleFunc("/configuration", ctrl.GetConfig).Methods("GET")
 	router.HandleFunc("/configuration", ctrl.UpdateConfig).Methods("POST")
 
+	// USERS
+	router.HandleFunc("/users", ctrl.GetUsers).Methods("GET")
+	router.HandleFunc("/users", ctrl.AddUser).Methods("POST")
+	router.HandleFunc("/users/{username}", ctrl.GetUser).Methods("GET")
+	router.HandleFunc("/users/{username}", ctrl.UpdateUser).Methods("PUT")
+	router.HandleFunc("/users/{username}", ctrl.RemoveUser).Methods("DELETE")
+
 	// HOSTS
 	router.HandleFunc("/hosts", ctrl.SearchHosts).Methods("GET")
 	router.HandleFunc("/hosts/count", ctrl.GetHostsCountStats).Methods("GET")

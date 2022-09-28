@@ -267,6 +267,12 @@ type APIServiceInterface interface {
 	GetDatabaseConnectionStatus() bool
 	GetConfig() (*config.Configuration, error)
 	ChangeConfig(config config.Configuration) error
+
+	ListUsers() ([]model.User, error)
+	GetUser(username string) (*model.User, error)
+	AddUser(user model.User) error
+	UpdateUserGroups(updatedUser model.User) error
+	RemoveUser(username string) error
 }
 
 // APIService is the concrete implementation of APIServiceInterface.

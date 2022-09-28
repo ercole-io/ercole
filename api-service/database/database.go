@@ -228,6 +228,13 @@ type MongoDatabaseInterface interface {
 	UpdateGroup(group model.GroupType) error
 	DeleteGroup(id primitive.ObjectID) error
 	GetGroups() ([]model.GroupType, error)
+
+	// USERS
+	ListUsers() ([]model.User, error)
+	GetUser(username string) (*model.User, error)
+	AddUser(user model.User) error
+	UpdateUserGroups(user model.User) error
+	RemoveUser(username string) error
 }
 
 // MongoDatabase is a implementation

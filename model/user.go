@@ -15,11 +15,17 @@
 
 package model
 
-import "time"
+import (
+	"time"
 
-type UserType struct {
-	Username  string     `json:"username" bson:"username"`
-	Password  string     `json:"password" bson:"password"`
-	LastLogin *time.Time `json:"lastLogin" bson:"lastLogin"`
-	Groups    string     `json:"groups" bson:"groups"`
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
+
+type User struct {
+	ID        primitive.ObjectID `json:"-" bson:"_id"`
+	Username  string             `json:"username,omitempty" bson:"username,omitempty"`
+	Password  string             `json:"password" bson:"password"`
+	Salt      string             `json:"-" bson:"salt"`
+	LastLogin *time.Time         `json:"lastLogin" bson:"lastLogin"`
+	Groups    []string           `json:"groups,omitempty" bson:"groups,omitempty"`
 }
