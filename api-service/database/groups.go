@@ -25,14 +25,14 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-const roleCollection = "roles"
+const groupCollection = "groups"
 
-// InsertRole insert a role into the database
-func (md *MongoDatabase) InsertRole(role model.RoleType) error {
-	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(roleCollection).
+// InsertGroup insert a group into the database
+func (md *MongoDatabase) InsertGroup(group model.GroupType) error {
+	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(groupCollection).
 		InsertOne(
 			context.TODO(),
-			role,
+			group,
 		)
 	if err != nil {
 		return utils.NewError(err, "DB ERROR")
@@ -41,19 +41,19 @@ func (md *MongoDatabase) InsertRole(role model.RoleType) error {
 	return nil
 }
 
-// GetRole return the role specified by id
-func (md *MongoDatabase) GetRole(id primitive.ObjectID) (*model.RoleType, error) {
-	res := md.Client.Database(md.Config.Mongodb.DBName).Collection(roleCollection).
+// GetGroup return the group specified by id
+func (md *MongoDatabase) GetGroup(id primitive.ObjectID) (*model.GroupType, error) {
+	res := md.Client.Database(md.Config.Mongodb.DBName).Collection(groupCollection).
 		FindOne(context.TODO(), bson.M{
 			"_id": id,
 		})
 	if res.Err() == mongo.ErrNoDocuments {
-		return nil, utils.NewError(utils.ErrRoleNotFound, "DB ERROR")
+		return nil, utils.NewError(utils.ErrGroupNotFound, "DB ERROR")
 	} else if res.Err() != nil {
 		return nil, utils.NewError(res.Err(), "DB ERROR")
 	}
 
-	var out model.RoleType
+	var out model.GroupType
 
 	if err := res.Decode(&out); err != nil {
 		return nil, utils.NewError(err, "Decode ERROR")
@@ -62,28 +62,28 @@ func (md *MongoDatabase) GetRole(id primitive.ObjectID) (*model.RoleType, error)
 	return &out, nil
 }
 
-// UpdateRole update a role in the database
-func (md *MongoDatabase) UpdateRole(role model.RoleType) error {
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(roleCollection).
+// UpdateGroup update a group in the database
+func (md *MongoDatabase) UpdateGroup(group model.GroupType) error {
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(groupCollection).
 		UpdateOne(
 			context.TODO(),
-			bson.M{"_id": role.ID},
-			bson.M{"$set": role},
+			bson.M{"_id": group.ID},
+			bson.M{"$set": group},
 		)
 	if err != nil {
 		return utils.NewError(err, "DB ERROR")
 	}
 
 	if cur.MatchedCount != 1 {
-		return utils.NewError(utils.ErrRoleNotFound, "DB ERROR")
+		return utils.NewError(utils.ErrGroupNotFound, "DB ERROR")
 	}
 
 	return nil
 }
 
-// DeleteRole delete a role from the database
-func (md *MongoDatabase) DeleteRole(id primitive.ObjectID) error {
-	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(roleCollection).
+// DeleteGroup delete a group from the database
+func (md *MongoDatabase) DeleteGroup(id primitive.ObjectID) error {
+	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(groupCollection).
 		DeleteOne(context.TODO(), bson.M{
 			"_id": id,
 		})
@@ -92,26 +92,26 @@ func (md *MongoDatabase) DeleteRole(id primitive.ObjectID) error {
 	}
 
 	if res.DeletedCount != 1 {
-		return utils.NewError(utils.ErrRoleNotFound, "DB ERROR")
+		return utils.NewError(utils.ErrGroupNotFound, "DB ERROR")
 	}
 
 	return nil
 }
 
-// GetRoles lists roles
-func (md *MongoDatabase) GetRoles() ([]model.RoleType, error) {
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(roleCollection).
+// GetGroups lists groups
+func (md *MongoDatabase) GetGroups() ([]model.GroupType, error) {
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(groupCollection).
 		Find(context.TODO(), bson.D{})
 	if err != nil {
 		return nil, utils.NewError(err, "DB ERROR")
 	}
 
-	roles := make([]model.RoleType, 0)
+	groups := make([]model.GroupType, 0)
 
-	err = cur.All(context.TODO(), &roles)
+	err = cur.All(context.TODO(), &groups)
 	if err != nil {
 		return nil, utils.NewError(err, "Decode ERROR")
 	}
 
-	return roles, nil
+	return groups, nil
 }

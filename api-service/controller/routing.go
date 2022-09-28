@@ -157,6 +157,13 @@ func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 	router.HandleFunc("/roles/{id}", ctrl.DeleteRole).Methods("DELETE")
 	router.HandleFunc("/roles", ctrl.GetRoles).Methods("GET")
 
+	// GROUPS
+	router.HandleFunc("/groups", ctrl.InsertGroup).Methods("POST")
+	router.HandleFunc("/groups/{id}", ctrl.UpdateGroup).Methods("PUT")
+	router.HandleFunc("/groups/{id}", ctrl.GetGroup).Methods("GET")
+	router.HandleFunc("/groups/{id}", ctrl.DeleteGroup).Methods("DELETE")
+	router.HandleFunc("/groups", ctrl.GetGroups).Methods("GET")
+
 	router.HandleFunc("/database/connection/status", ctrl.GetDatabaseConnectionStatus).Methods("GET")
 
 	ctrl.setupSettingsRoutes(router.PathPrefix("/settings").Subrouter())
