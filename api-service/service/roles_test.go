@@ -36,14 +36,13 @@ func TestInsertRole(t *testing.T) {
 	}
 
 	t.Run("Success", func(t *testing.T) {
-		expected := model.RoleType{
-			ID:   utils.Str2oid("000000000000000000000001"),
+		expected := model.Role{
 			Name: "Test",
 		}
 		db.EXPECT().InsertRole(expected).
 			Return(nil).Times(1)
 
-		role := model.RoleType{
+		role := model.Role{
 			Name: "Test",
 		}
 		actual, err := as.InsertRole(role)
@@ -53,8 +52,7 @@ func TestInsertRole(t *testing.T) {
 	})
 
 	t.Run("Error", func(t *testing.T) {
-		role := model.RoleType{
-			ID:   utils.Str2oid("000000000000000000000002"),
+		role := model.Role{
 			Name: "Test",
 		}
 		db.EXPECT().InsertRole(role).
@@ -76,7 +74,7 @@ func TestUpdateRole(t *testing.T) {
 	}
 
 	t.Run("Success", func(t *testing.T) {
-		role := model.RoleType{
+		role := model.Role{
 			Name: "Test",
 		}
 		db.EXPECT().UpdateRole(role).
@@ -88,7 +86,7 @@ func TestUpdateRole(t *testing.T) {
 	})
 
 	t.Run("Error", func(t *testing.T) {
-		role := model.RoleType{
+		role := model.Role{
 			Name: "Test",
 		}
 		db.EXPECT().UpdateRole(role).
@@ -109,9 +107,8 @@ func TestGetRoles(t *testing.T) {
 	}
 
 	t.Run("Success", func(t *testing.T) {
-		expected := []model.RoleType{
+		expected := []model.Role{
 			{
-				ID:   [12]byte{},
 				Name: "Test",
 			},
 		}
@@ -144,24 +141,23 @@ func TestGetRole(t *testing.T) {
 	}
 
 	t.Run("Success", func(t *testing.T) {
-		expected := model.RoleType{
-			ID:   utils.Str2oid("000000000000000000000002"),
+		expected := model.Role{
 			Name: "Test",
 		}
-		db.EXPECT().GetRole(utils.Str2oid("000000000000000000000002")).
+		db.EXPECT().GetRole("Test").
 			Return(&expected, nil).Times(1)
 
-		actual, err := as.GetRole(utils.Str2oid("000000000000000000000002"))
+		actual, err := as.GetRole("Test")
 		require.NoError(t, err)
 
 		assert.Equal(t, &expected, actual)
 	})
 
 	t.Run("Error", func(t *testing.T) {
-		db.EXPECT().GetRole(utils.Str2oid("000000000000000000000002")).
+		db.EXPECT().GetRole("Bart").
 			Return(nil, errMock).Times(1)
 
-		actual, err := as.GetRole(utils.Str2oid("000000000000000000000002"))
+		actual, err := as.GetRole("Bart")
 		require.EqualError(t, err, "MockError")
 
 		assert.Nil(t, actual)
@@ -177,20 +173,20 @@ func TestDeleteRole(t *testing.T) {
 	}
 
 	t.Run("Success", func(t *testing.T) {
-		id := utils.Str2oid("iiiiiiiiiiiiiiiiiiiiiiii")
-		db.EXPECT().DeleteRole(id).
+		name := "Test"
+		db.EXPECT().DeleteRole(name).
 			Return(nil).Times(1)
 
-		err := as.DeleteRole(id)
+		err := as.DeleteRole(name)
 		require.NoError(t, err)
 	})
 
 	t.Run("Error", func(t *testing.T) {
-		id := utils.Str2oid("iiiiiiiiiiiiiiiiiiiiiiii")
-		db.EXPECT().DeleteRole(id).
+		name := "Bart"
+		db.EXPECT().DeleteRole(name).
 			Return(errMock).Times(1)
 
-		err := as.DeleteRole(id)
+		err := as.DeleteRole(name)
 		require.EqualError(t, err, "MockError")
 	})
 }

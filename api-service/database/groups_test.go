@@ -29,8 +29,7 @@ import (
 func (m *MongodbSuite) TestInsertGroup() {
 	defer m.db.Client.Database(m.dbname).Collection(groupCollection).DeleteMany(context.TODO(), bson.M{})
 
-	group := model.GroupType{
-		ID:    utils.Str2oid("000000000000000000000001"),
+	group := model.Group{
 		Name:  "Test",
 		Roles: []string{"role1", "role2"},
 	}
@@ -44,8 +43,7 @@ func (m *MongodbSuite) TestInsertGroup() {
 func (m *MongodbSuite) TestUpdateGroup() {
 	defer m.db.Client.Database(m.dbname).Collection(groupCollection).DeleteMany(context.TODO(), bson.M{})
 
-	group := model.GroupType{
-		ID:    utils.Str2oid("000000000000000000000001"),
+	group := model.Group{
 		Name:  "Test",
 		Roles: []string{"role1", "role2"},
 	}
@@ -74,14 +72,12 @@ func (m *MongodbSuite) TestGetGroups() {
 	m.T().Run("should_load_all", func(t *testing.T) {
 		defer m.db.Client.Database(m.dbname).Collection(groupCollection).DeleteMany(context.TODO(), bson.M{})
 
-		groups := []model.GroupType{
+		groups := []model.Group{
 			{
-				ID:    utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
 				Name:  "Test",
 				Roles: []string{"role1", "role2"},
 			},
 			{
-				ID:    utils.Str2oid("bbbbbbbbbbbbbbbbbbbbbbbb"),
 				Name:  "Testdue",
 				Roles: []string{"role1", "role2"},
 			},
@@ -103,7 +99,7 @@ func (m *MongodbSuite) TestGetGroups() {
 		actual, err := m.db.GetGroups()
 		m.Require().NoError(err)
 
-		groups := make([]model.GroupType, 0)
+		groups := make([]model.Group, 0)
 		assert.Equal(t, groups, actual)
 	})
 }
@@ -112,20 +108,17 @@ func (m *MongodbSuite) TestGetGroup() {
 	m.T().Run("should_load_all", func(t *testing.T) {
 		defer m.db.Client.Database(m.dbname).Collection(groupCollection).DeleteMany(context.TODO(), bson.M{})
 
-		group := model.GroupType{
-			ID:    utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
+		group := model.Group{
 			Name:  "Test",
 			Roles: []string{"role1", "role2"},
 		}
 
-		groups := []model.GroupType{
+		groups := []model.Group{
 			{
-				ID:    utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
 				Name:  "Test",
 				Roles: []string{"role1", "role2"},
 			},
 			{
-				ID:    utils.Str2oid("bbbbbbbbbbbbbbbbbbbbbbbb"),
 				Name:  "Testdue",
 				Roles: []string{"role1", "role2"},
 			},
@@ -137,7 +130,7 @@ func (m *MongodbSuite) TestGetGroup() {
 		_, err := m.db.Client.Database(m.dbname).Collection(groupCollection).InsertMany(context.TODO(), groupsInt)
 		require.Nil(m.T(), err)
 
-		actual, err := m.db.GetGroup(utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"))
+		actual, err := m.db.GetGroup("Test")
 		m.Require().NoError(err)
 
 		assert.Equal(t, &group, actual)
@@ -147,7 +140,7 @@ func (m *MongodbSuite) TestGetGroup() {
 		actual, err := m.db.GetGroups()
 		m.Require().NoError(err)
 
-		groups := make([]model.GroupType, 0)
+		groups := make([]model.Group, 0)
 		assert.Equal(t, groups, actual)
 	})
 }
@@ -155,18 +148,15 @@ func (m *MongodbSuite) TestGetGroup() {
 func (m *MongodbSuite) TestDeleteGroup() {
 	defer m.db.Client.Database(m.dbname).Collection(groupCollection).DeleteMany(context.TODO(), bson.M{})
 
-	id := utils.Str2oid("000000000000000000000001")
-
 	m.T().Run("error not found", func(t *testing.T) {
-		err := m.db.DeleteGroup(id)
+		err := m.db.DeleteGroup("Bart")
 		var aerr *utils.AdvancedError
 		assert.ErrorAs(t, err, &aerr)
 		assert.ErrorIs(t, aerr.Err, utils.ErrGroupNotFound)
 	})
 
 	m.T().Run("should_delete", func(t *testing.T) {
-		group := model.GroupType{
-			ID:    utils.Str2oid("000000000000000000000001"),
+		group := model.Group{
 			Name:  "Test",
 			Roles: []string{"role1", "role2"},
 		}
@@ -177,7 +167,7 @@ func (m *MongodbSuite) TestDeleteGroup() {
 			)
 		require.NoError(t, err)
 
-		err = m.db.DeleteGroup(group.ID)
+		err = m.db.DeleteGroup(group.Name)
 		assert.NoError(t, err)
 	})
 }

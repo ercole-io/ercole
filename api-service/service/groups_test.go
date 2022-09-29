@@ -36,15 +36,14 @@ func TestInsertGroup(t *testing.T) {
 	}
 
 	t.Run("Success", func(t *testing.T) {
-		expected := model.GroupType{
-			ID:    utils.Str2oid("000000000000000000000001"),
+		expected := model.Group{
 			Name:  "Test",
 			Roles: []string{"role1", "role2"},
 		}
 		db.EXPECT().InsertGroup(expected).
 			Return(nil).Times(1)
 
-		group := model.GroupType{
+		group := model.Group{
 			Name:  "Test",
 			Roles: []string{"role1", "role2"},
 		}
@@ -55,8 +54,7 @@ func TestInsertGroup(t *testing.T) {
 	})
 
 	t.Run("Error", func(t *testing.T) {
-		group := model.GroupType{
-			ID:    utils.Str2oid("000000000000000000000002"),
+		group := model.Group{
 			Name:  "Test",
 			Roles: []string{"role1", "role2"},
 		}
@@ -79,7 +77,7 @@ func TestUpdateGroup(t *testing.T) {
 	}
 
 	t.Run("Success", func(t *testing.T) {
-		group := model.GroupType{
+		group := model.Group{
 			Name:  "Test",
 			Roles: []string{"role1", "role2"},
 		}
@@ -92,7 +90,7 @@ func TestUpdateGroup(t *testing.T) {
 	})
 
 	t.Run("Error", func(t *testing.T) {
-		group := model.GroupType{
+		group := model.Group{
 			Name:  "Test",
 			Roles: []string{"role1", "role2"},
 		}
@@ -114,9 +112,8 @@ func TestGetGroups(t *testing.T) {
 	}
 
 	t.Run("Success", func(t *testing.T) {
-		expected := []model.GroupType{
+		expected := []model.Group{
 			{
-				ID:    [12]byte{},
 				Name:  "Test",
 				Roles: []string{"role1", "role2"},
 			},
@@ -150,25 +147,24 @@ func TestGetGroup(t *testing.T) {
 	}
 
 	t.Run("Success", func(t *testing.T) {
-		expected := model.GroupType{
-			ID:    utils.Str2oid("000000000000000000000002"),
+		expected := model.Group{
 			Name:  "Test",
 			Roles: []string{"role1", "role2"},
 		}
-		db.EXPECT().GetGroup(utils.Str2oid("000000000000000000000002")).
+		db.EXPECT().GetGroup("Test").
 			Return(&expected, nil).Times(1)
 
-		actual, err := as.GetGroup(utils.Str2oid("000000000000000000000002"))
+		actual, err := as.GetGroup("Test")
 		require.NoError(t, err)
 
 		assert.Equal(t, &expected, actual)
 	})
 
 	t.Run("Error", func(t *testing.T) {
-		db.EXPECT().GetGroup(utils.Str2oid("000000000000000000000002")).
+		db.EXPECT().GetGroup("Bart").
 			Return(nil, errMock).Times(1)
 
-		actual, err := as.GetGroup(utils.Str2oid("000000000000000000000002"))
+		actual, err := as.GetGroup("Bart")
 		require.EqualError(t, err, "MockError")
 
 		assert.Nil(t, actual)
@@ -184,20 +180,20 @@ func TestDeleteGroup(t *testing.T) {
 	}
 
 	t.Run("Success", func(t *testing.T) {
-		id := utils.Str2oid("iiiiiiiiiiiiiiiiiiiiiiii")
-		db.EXPECT().DeleteGroup(id).
+		name := "test"
+		db.EXPECT().DeleteGroup(name).
 			Return(nil).Times(1)
 
-		err := as.DeleteGroup(id)
+		err := as.DeleteGroup(name)
 		require.NoError(t, err)
 	})
 
 	t.Run("Error", func(t *testing.T) {
-		id := utils.Str2oid("iiiiiiiiiiiiiiiiiiiiiiii")
-		db.EXPECT().DeleteGroup(id).
+		name := "Bart"
+		db.EXPECT().DeleteGroup(name).
 			Return(errMock).Times(1)
 
-		err := as.DeleteGroup(id)
+		err := as.DeleteGroup(name)
 		require.EqualError(t, err, "MockError")
 	})
 }

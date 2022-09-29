@@ -26,7 +26,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
@@ -45,14 +44,13 @@ func TestInsertGroup_Success(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	group := model.GroupType{
+	group := model.Group{
 		Name:  "Test",
 		Roles: []string{"role1", "role2"},
 	}
 
 	returnAgr := group
 	var err error
-	returnAgr.ID, err = primitive.ObjectIDFromHex("aaaaaaaaaaaaaaaaaaaaaaaa")
 	require.Nil(t, err)
 
 	as.EXPECT().InsertGroup(group).
@@ -126,7 +124,7 @@ func TestInsertGroup_InternalServerError(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	group := model.GroupType{
+	group := model.Group{
 		Name:  "Test",
 		Roles: []string{"role1", "role2"},
 	}
@@ -168,8 +166,7 @@ func TestUpdateGroup_Success(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	group := model.GroupType{
-		ID:    utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
+	group := model.Group{
 		Name:  "Test",
 		Roles: []string{"role1", "role2"},
 	}
@@ -184,7 +181,7 @@ func TestUpdateGroup_Success(t *testing.T) {
 	req, err := http.NewRequest("POST", "/", reader)
 	require.NoError(t, err)
 	req = mux.SetURLVars(req, map[string]string{
-		"id": "aaaaaaaaaaaaaaaaaaaaaaaa",
+		"name": "Test",
 	})
 
 	handler := http.HandlerFunc(ac.UpdateGroup)
@@ -222,7 +219,7 @@ func TestUpdateGroup_BadRequest_CantDecode(t *testing.T) {
 	req, err := http.NewRequest("POST", "", reader)
 	require.NoError(t, err)
 	req = mux.SetURLVars(req, map[string]string{
-		"id": "aaaaaaaaaaaaaaaaaaaaaaaa",
+		"name": "Test",
 	})
 
 	handler := http.HandlerFunc(ac.UpdateGroup)
@@ -241,48 +238,6 @@ func TestUpdateGroup_BadRequest_CantDecode(t *testing.T) {
 	assert.Equal(t, "Bad Request", feErr.Message)
 }
 
-func TestUpdateGroup_BadRequest_HasWrongID(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config:  config.Configuration{},
-		Log:     logger.NewLogger("TEST"),
-	}
-
-	wrongAgr := model.GroupType{
-		Name:  "Test",
-		Roles: []string{"role1", "role2"},
-	}
-
-	agrBytes, err := json.Marshal(wrongAgr)
-	require.NoError(t, err)
-
-	reader := bytes.NewReader(agrBytes)
-	req, err := http.NewRequest("POST", "", reader)
-	require.NoError(t, err)
-	req = mux.SetURLVars(req, map[string]string{
-		"id": "aaaaaaaaaaaaaaaaaaaaaaaa",
-	})
-
-	handler := http.HandlerFunc(ac.UpdateGroup)
-	rr := httptest.NewRecorder()
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusBadRequest, rr.Code)
-
-	var feErr utils.ErrorResponseFE
-	decoder := json.NewDecoder(bytes.NewReader(rr.Body.Bytes()))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&feErr)
-	require.NoError(t, err)
-
-	assert.Equal(t, "Object ID does not correspond", feErr.Error)
-	assert.Equal(t, "Bad Request", feErr.Message)
-}
-
 func TestUpdateGroup_NotFoundError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
@@ -294,8 +249,7 @@ func TestUpdateGroup_NotFoundError(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	group := model.GroupType{
-		ID:    utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
+	group := model.Group{
 		Name:  "Test",
 		Roles: []string{"role1", "role2"},
 	}
@@ -311,7 +265,7 @@ func TestUpdateGroup_NotFoundError(t *testing.T) {
 	req, err := http.NewRequest("POST", "", reader)
 	require.NoError(t, err)
 	req = mux.SetURLVars(req, map[string]string{
-		"id": "aaaaaaaaaaaaaaaaaaaaaaaa",
+		"name": "Test",
 	})
 
 	handler := http.HandlerFunc(ac.UpdateGroup)
@@ -341,8 +295,7 @@ func TestUpdateGroup_InternalServerError(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	group := model.GroupType{
-		ID:    utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
+	group := model.Group{
 		Name:  "Test",
 		Roles: []string{"role1", "role2"},
 	}
@@ -357,7 +310,7 @@ func TestUpdateGroup_InternalServerError(t *testing.T) {
 	req, err := http.NewRequest("POST", "", reader)
 	require.NoError(t, err)
 	req = mux.SetURLVars(req, map[string]string{
-		"id": "aaaaaaaaaaaaaaaaaaaaaaaa",
+		"name": "Test",
 	})
 
 	handler := http.HandlerFunc(ac.UpdateGroup)
@@ -387,9 +340,8 @@ func TestGetGroups_Success(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	groups := []model.GroupType{
+	groups := []model.Group{
 		{
-			ID:    utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
 			Name:  "Test",
 			Roles: []string{"role1", "role2"},
 		},
@@ -461,13 +413,13 @@ func TestDeleteGroup_Success(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	as.EXPECT().DeleteGroup(utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa")).
+	as.EXPECT().DeleteGroup("Test").
 		Return(nil)
 
 	req, err := http.NewRequest("DELETE", "/", nil)
 	require.NoError(t, err)
 	req = mux.SetURLVars(req, map[string]string{
-		"id": "aaaaaaaaaaaaaaaaaaaaaaaa",
+		"name": "Test",
 	})
 
 	handler := http.HandlerFunc(ac.DeleteGroup)
@@ -475,39 +427,6 @@ func TestDeleteGroup_Success(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusNoContent, rr.Code)
-}
-
-func TestDeleteGroup_BadRequest_HasWrongID(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config:  config.Configuration{},
-		Log:     logger.NewLogger("TEST"),
-	}
-
-	req, err := http.NewRequest("DELETE", "", nil)
-	require.NoError(t, err)
-	req = mux.SetURLVars(req, map[string]string{
-		"id": "asdf",
-	})
-
-	handler := http.HandlerFunc(ac.DeleteGroup)
-	rr := httptest.NewRecorder()
-	handler.ServeHTTP(rr, req)
-
-	assert.Equal(t, http.StatusUnprocessableEntity, rr.Code)
-
-	var feErr utils.ErrorResponseFE
-	decoder := json.NewDecoder(bytes.NewReader(rr.Body.Bytes()))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&feErr)
-	require.NoError(t, err)
-
-	assert.Equal(t, "the provided hex string is not a valid ObjectID", feErr.Error)
-	assert.Equal(t, "Unprocessable Entity", feErr.Message)
 }
 
 func TestDeleteGroup_NotFoundError(t *testing.T) {
@@ -522,13 +441,13 @@ func TestDeleteGroup_NotFoundError(t *testing.T) {
 	}
 
 	aerr := utils.NewError(utils.ErrGroupNotFound, "test")
-	as.EXPECT().DeleteGroup(utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa")).
+	as.EXPECT().DeleteGroup("Test").
 		Return(aerr)
 
 	req, err := http.NewRequest("DELETE", "", nil)
 	require.NoError(t, err)
 	req = mux.SetURLVars(req, map[string]string{
-		"id": "aaaaaaaaaaaaaaaaaaaaaaaa",
+		"name": "Test",
 	})
 
 	handler := http.HandlerFunc(ac.DeleteGroup)
@@ -558,13 +477,13 @@ func TestDeleteGroup_InternalServerError(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	as.EXPECT().DeleteGroup(utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa")).
+	as.EXPECT().DeleteGroup("Test").
 		Return(errMock)
 
 	req, err := http.NewRequest("DELETE", "", nil)
 	require.NoError(t, err)
 	req = mux.SetURLVars(req, map[string]string{
-		"id": "aaaaaaaaaaaaaaaaaaaaaaaa",
+		"name": "Test",
 	})
 
 	handler := http.HandlerFunc(ac.DeleteGroup)
@@ -594,13 +513,12 @@ func TestGetGroup_Success(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	group := model.GroupType{
-		ID:    utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
+	group := model.Group{
 		Name:  "Test",
 		Roles: []string{"role1", "role2"},
 	}
 
-	as.EXPECT().GetGroup(utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa")).
+	as.EXPECT().GetGroup("Test").
 		Return(&group, nil)
 
 	expBytes, err := json.Marshal(group)
@@ -610,7 +528,7 @@ func TestGetGroup_Success(t *testing.T) {
 	req, err := http.NewRequest("GET", "", reader)
 	require.NoError(t, err)
 	req = mux.SetURLVars(req, map[string]string{
-		"id": "aaaaaaaaaaaaaaaaaaaaaaaa",
+		"name": "Test",
 	})
 
 	handler := http.HandlerFunc(ac.GetGroup)
@@ -633,13 +551,13 @@ func TestGetGroup_InternalServerError(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	as.EXPECT().GetGroup(utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa")).
+	as.EXPECT().GetGroup("Test").
 		Return(nil, errMock)
 
 	req, err := http.NewRequest("GET", "", nil)
 	require.NoError(t, err)
 	req = mux.SetURLVars(req, map[string]string{
-		"id": "aaaaaaaaaaaaaaaaaaaaaaaa",
+		"name": "Test",
 	})
 
 	handler := http.HandlerFunc(ac.GetGroup)

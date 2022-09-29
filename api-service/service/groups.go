@@ -18,12 +18,9 @@ package service
 
 import (
 	"github.com/ercole-io/ercole/v2/model"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (as *APIService) InsertGroup(group model.GroupType) (*model.GroupType, error) {
-	group.ID = as.NewObjectID()
-
+func (as *APIService) InsertGroup(group model.Group) (*model.Group, error) {
 	err := as.Database.InsertGroup(group)
 	if err != nil {
 		return nil, err
@@ -32,7 +29,7 @@ func (as *APIService) InsertGroup(group model.GroupType) (*model.GroupType, erro
 	return &group, nil
 }
 
-func (as *APIService) UpdateGroup(group model.GroupType) (*model.GroupType, error) {
+func (as *APIService) UpdateGroup(group model.Group) (*model.Group, error) {
 	if err := as.Database.UpdateGroup(group); err != nil {
 		return nil, err
 	}
@@ -40,8 +37,8 @@ func (as *APIService) UpdateGroup(group model.GroupType) (*model.GroupType, erro
 	return &group, nil
 }
 
-func (as *APIService) GetGroup(id primitive.ObjectID) (*model.GroupType, error) {
-	group, err := as.Database.GetGroup(id)
+func (as *APIService) GetGroup(name string) (*model.Group, error) {
+	group, err := as.Database.GetGroup(name)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +46,7 @@ func (as *APIService) GetGroup(id primitive.ObjectID) (*model.GroupType, error) 
 	return group, nil
 }
 
-func (as *APIService) GetGroups() ([]model.GroupType, error) {
+func (as *APIService) GetGroups() ([]model.Group, error) {
 	groups, err := as.Database.GetGroups()
 	if err != nil {
 		return nil, err
@@ -58,8 +55,8 @@ func (as *APIService) GetGroups() ([]model.GroupType, error) {
 	return groups, nil
 }
 
-func (as *APIService) DeleteGroup(id primitive.ObjectID) error {
-	if err := as.Database.DeleteGroup(id); err != nil {
+func (as *APIService) DeleteGroup(name string) error {
+	if err := as.Database.DeleteGroup(name); err != nil {
 		return err
 	}
 
