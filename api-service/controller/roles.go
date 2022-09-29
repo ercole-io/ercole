@@ -16,20 +16,37 @@
 package controller
 
 import (
+	"encoding/json"
 	"errors"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/gorilla/mux"
 
 	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/schema"
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
 func (ctrl *APIController) InsertRole(w http.ResponseWriter, r *http.Request) {
+	raw, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, utils.NewError(err, http.StatusText(http.StatusBadRequest)))
+		return
+	}
+	defer r.Body.Close()
+
 	var role model.Role
 
-	if err := utils.Decode(r.Body, &role); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
+	if validationErr := schema.ValidateRole(raw); validationErr != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, validationErr)
+
+		return
+	}
+
+	err = json.Unmarshal(raw, &role)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
