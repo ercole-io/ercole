@@ -251,18 +251,18 @@ type APIServiceInterface interface {
 	SearchPostgreSqlInstancesAsXLSX(filter dto.SearchPostgreSqlInstancesFilter) (*excelize.File, error)
 
 	// ROLES
-	InsertRole(role model.RoleType) (*model.RoleType, error)
-	UpdateRole(role model.RoleType) (*model.RoleType, error)
-	GetRole(id primitive.ObjectID) (*model.RoleType, error)
-	GetRoles() ([]model.RoleType, error)
-	DeleteRole(id primitive.ObjectID) error
+	InsertRole(role model.Role) (*model.Role, error)
+	UpdateRole(role model.Role) (*model.Role, error)
+	GetRole(name string) (*model.Role, error)
+	GetRoles() ([]model.Role, error)
+	DeleteRole(name string) error
 
 	// GROUPS
-	InsertGroup(group model.GroupType) (*model.GroupType, error)
-	UpdateGroup(group model.GroupType) (*model.GroupType, error)
-	GetGroup(id primitive.ObjectID) (*model.GroupType, error)
-	GetGroups() ([]model.GroupType, error)
-	DeleteGroup(id primitive.ObjectID) error
+	InsertGroup(group model.Group) (*model.Group, error)
+	UpdateGroup(group model.Group) (*model.Group, error)
+	GetGroup(name string) (*model.Group, error)
+	GetGroups() ([]model.Group, error)
+	DeleteGroup(name string) error
 
 	GetDatabaseConnectionStatus() bool
 	GetConfig() (*config.Configuration, error)
