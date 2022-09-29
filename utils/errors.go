@@ -50,6 +50,8 @@ var ErrInvalidHostdata = errors.New("Invalid hostdata")
 
 var ErrInvalidLicenseType = errors.New("Invalid license type")
 
+var ErrInvalidRole = errors.New("Invalid role")
+
 var ErrInvalidAck = errors.New("Alert(s) cannot be acknowledged")
 
 // ErrHostNotInCluster
