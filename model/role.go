@@ -15,9 +15,6 @@
 
 package model
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
-
-type RoleType struct {
-	ID   primitive.ObjectID `json:"id" bson:"_id"`
-	Name string             `json:"name" bson:"name"`
+type Role struct {
+	Name string `json:"name" bson:"name"`
 }

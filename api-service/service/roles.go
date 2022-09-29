@@ -18,12 +18,9 @@ package service
 
 import (
 	"github.com/ercole-io/ercole/v2/model"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (as *APIService) InsertRole(role model.RoleType) (*model.RoleType, error) {
-	role.ID = as.NewObjectID()
-
+func (as *APIService) InsertRole(role model.Role) (*model.Role, error) {
 	err := as.Database.InsertRole(role)
 	if err != nil {
 		return nil, err
@@ -32,7 +29,7 @@ func (as *APIService) InsertRole(role model.RoleType) (*model.RoleType, error) {
 	return &role, nil
 }
 
-func (as *APIService) UpdateRole(role model.RoleType) (*model.RoleType, error) {
+func (as *APIService) UpdateRole(role model.Role) (*model.Role, error) {
 	if err := as.Database.UpdateRole(role); err != nil {
 		return nil, err
 	}
@@ -40,8 +37,8 @@ func (as *APIService) UpdateRole(role model.RoleType) (*model.RoleType, error) {
 	return &role, nil
 }
 
-func (as *APIService) GetRole(id primitive.ObjectID) (*model.RoleType, error) {
-	role, err := as.Database.GetRole(id)
+func (as *APIService) GetRole(name string) (*model.Role, error) {
+	role, err := as.Database.GetRole(name)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +46,7 @@ func (as *APIService) GetRole(id primitive.ObjectID) (*model.RoleType, error) {
 	return role, nil
 }
 
-func (as *APIService) GetRoles() ([]model.RoleType, error) {
+func (as *APIService) GetRoles() ([]model.Role, error) {
 	roles, err := as.Database.GetRoles()
 	if err != nil {
 		return nil, err
@@ -58,8 +55,8 @@ func (as *APIService) GetRoles() ([]model.RoleType, error) {
 	return roles, nil
 }
 
-func (as *APIService) DeleteRole(id primitive.ObjectID) error {
-	if err := as.Database.DeleteRole(id); err != nil {
+func (as *APIService) DeleteRole(name string) error {
+	if err := as.Database.DeleteRole(name); err != nil {
 		return err
 	}
 

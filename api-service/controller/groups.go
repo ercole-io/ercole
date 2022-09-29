@@ -20,14 +20,13 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
 func (ctrl *APIController) InsertGroup(w http.ResponseWriter, r *http.Request) {
-	var group model.GroupType
+	var group model.Group
 
 	if err := utils.Decode(r.Body, &group); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
@@ -44,21 +43,11 @@ func (ctrl *APIController) InsertGroup(w http.ResponseWriter, r *http.Request) {
 }
 
 func (ctrl *APIController) UpdateGroup(w http.ResponseWriter, r *http.Request) {
-	var group model.GroupType
+	name := mux.Vars(r)["name"]
 
-	id, err := primitive.ObjectIDFromHex(mux.Vars(r)["id"])
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
+	group := model.Group{Name: name}
 	if err := utils.Decode(r.Body, &group); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
-		return
-	}
-
-	if group.ID != id {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, errors.New("Object ID does not correspond"))
 		return
 	}
 
@@ -92,13 +81,9 @@ func (ctrl *APIController) GetGroups(w http.ResponseWriter, r *http.Request) {
 func (ctrl *APIController) GetGroup(w http.ResponseWriter, r *http.Request) {
 	var err error
 
-	id, err := primitive.ObjectIDFromHex(mux.Vars(r)["id"])
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-		return
-	}
+	name := mux.Vars(r)["name"]
 
-	group, err := ctrl.Service.GetGroup(id)
+	group, err := ctrl.Service.GetGroup(name)
 	if errors.Is(err, utils.ErrGroupNotFound) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 		return
@@ -111,13 +96,9 @@ func (ctrl *APIController) GetGroup(w http.ResponseWriter, r *http.Request) {
 }
 
 func (ctrl *APIController) DeleteGroup(w http.ResponseWriter, r *http.Request) {
-	id, err := primitive.ObjectIDFromHex(mux.Vars(r)["id"])
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-		return
-	}
+	name := mux.Vars(r)["name"]
 
-	errDel := ctrl.Service.DeleteGroup(id)
+	errDel := ctrl.Service.DeleteGroup(name)
 	if errors.Is(errDel, utils.ErrGroupNotFound) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, errDel)
 		return

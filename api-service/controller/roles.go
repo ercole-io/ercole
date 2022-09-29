@@ -20,14 +20,13 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
 func (ctrl *APIController) InsertRole(w http.ResponseWriter, r *http.Request) {
-	var role model.RoleType
+	var role model.Role
 
 	if err := utils.Decode(r.Body, &role); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
@@ -44,21 +43,11 @@ func (ctrl *APIController) InsertRole(w http.ResponseWriter, r *http.Request) {
 }
 
 func (ctrl *APIController) UpdateRole(w http.ResponseWriter, r *http.Request) {
-	var role model.RoleType
+	name := mux.Vars(r)["name"]
 
-	id, err := primitive.ObjectIDFromHex(mux.Vars(r)["id"])
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
+	role := model.Role{Name: name}
 	if err := utils.Decode(r.Body, &role); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
-		return
-	}
-
-	if role.ID != id {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, errors.New("Object ID does not correspond"))
 		return
 	}
 
@@ -92,13 +81,9 @@ func (ctrl *APIController) GetRoles(w http.ResponseWriter, r *http.Request) {
 func (ctrl *APIController) GetRole(w http.ResponseWriter, r *http.Request) {
 	var err error
 
-	id, err := primitive.ObjectIDFromHex(mux.Vars(r)["id"])
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-		return
-	}
+	name := mux.Vars(r)["name"]
 
-	role, err := ctrl.Service.GetRole(id)
+	role, err := ctrl.Service.GetRole(name)
 	if errors.Is(err, utils.ErrRoleNotFound) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 		return
@@ -111,13 +96,9 @@ func (ctrl *APIController) GetRole(w http.ResponseWriter, r *http.Request) {
 }
 
 func (ctrl *APIController) DeleteRole(w http.ResponseWriter, r *http.Request) {
-	id, err := primitive.ObjectIDFromHex(mux.Vars(r)["id"])
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-		return
-	}
+	name := mux.Vars(r)["name"]
 
-	errDel := ctrl.Service.DeleteRole(id)
+	errDel := ctrl.Service.DeleteRole(name)
 	if errors.Is(errDel, utils.ErrRoleNotFound) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, errDel)
 		return

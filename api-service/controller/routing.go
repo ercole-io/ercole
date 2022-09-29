@@ -58,6 +58,20 @@ func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 	router.HandleFunc("/users/{username}", ctrl.UpdateUser).Methods("PUT")
 	router.HandleFunc("/users/{username}", ctrl.RemoveUser).Methods("DELETE")
 
+	// ROLES
+	router.HandleFunc("/roles", ctrl.InsertRole).Methods("POST")
+	router.HandleFunc("/roles/{name}", ctrl.UpdateRole).Methods("PUT")
+	router.HandleFunc("/roles/{name}", ctrl.GetRole).Methods("GET")
+	router.HandleFunc("/roles/{name}", ctrl.DeleteRole).Methods("DELETE")
+	router.HandleFunc("/roles", ctrl.GetRoles).Methods("GET")
+
+	// GROUPS
+	router.HandleFunc("/groups", ctrl.InsertGroup).Methods("POST")
+	router.HandleFunc("/groups/{name}", ctrl.UpdateGroup).Methods("PUT")
+	router.HandleFunc("/groups/{name}", ctrl.GetGroup).Methods("GET")
+	router.HandleFunc("/groups/{name}", ctrl.DeleteGroup).Methods("DELETE")
+	router.HandleFunc("/groups", ctrl.GetGroups).Methods("GET")
+
 	// HOSTS
 	router.HandleFunc("/hosts", ctrl.SearchHosts).Methods("GET")
 	router.HandleFunc("/hosts/count", ctrl.GetHostsCountStats).Methods("GET")
@@ -156,20 +170,6 @@ func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 	// ALERTS
 	router.HandleFunc("/alerts", ctrl.SearchAlerts).Methods("GET")
 	router.HandleFunc("/alerts/ack", ctrl.AckAlerts).Methods("POST")
-
-	// ROLES
-	router.HandleFunc("/roles", ctrl.InsertRole).Methods("POST")
-	router.HandleFunc("/roles/{id}", ctrl.UpdateRole).Methods("PUT")
-	router.HandleFunc("/roles/{id}", ctrl.GetRole).Methods("GET")
-	router.HandleFunc("/roles/{id}", ctrl.DeleteRole).Methods("DELETE")
-	router.HandleFunc("/roles", ctrl.GetRoles).Methods("GET")
-
-	// GROUPS
-	router.HandleFunc("/groups", ctrl.InsertGroup).Methods("POST")
-	router.HandleFunc("/groups/{id}", ctrl.UpdateGroup).Methods("PUT")
-	router.HandleFunc("/groups/{id}", ctrl.GetGroup).Methods("GET")
-	router.HandleFunc("/groups/{id}", ctrl.DeleteGroup).Methods("DELETE")
-	router.HandleFunc("/groups", ctrl.GetGroups).Methods("GET")
 
 	router.HandleFunc("/database/connection/status", ctrl.GetDatabaseConnectionStatus).Methods("GET")
 

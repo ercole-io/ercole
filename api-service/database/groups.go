@@ -21,14 +21,13 @@ import (
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 const groupCollection = "groups"
 
 // InsertGroup insert a group into the database
-func (md *MongoDatabase) InsertGroup(group model.GroupType) error {
+func (md *MongoDatabase) InsertGroup(group model.Group) error {
 	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(groupCollection).
 		InsertOne(
 			context.TODO(),
@@ -41,11 +40,11 @@ func (md *MongoDatabase) InsertGroup(group model.GroupType) error {
 	return nil
 }
 
-// GetGroup return the group specified by id
-func (md *MongoDatabase) GetGroup(id primitive.ObjectID) (*model.GroupType, error) {
+// GetGroup return the group specified by group name
+func (md *MongoDatabase) GetGroup(name string) (*model.Group, error) {
 	res := md.Client.Database(md.Config.Mongodb.DBName).Collection(groupCollection).
 		FindOne(context.TODO(), bson.M{
-			"_id": id,
+			"name": name,
 		})
 	if res.Err() == mongo.ErrNoDocuments {
 		return nil, utils.NewError(utils.ErrGroupNotFound, "DB ERROR")
@@ -53,7 +52,7 @@ func (md *MongoDatabase) GetGroup(id primitive.ObjectID) (*model.GroupType, erro
 		return nil, utils.NewError(res.Err(), "DB ERROR")
 	}
 
-	var out model.GroupType
+	var out model.Group
 
 	if err := res.Decode(&out); err != nil {
 		return nil, utils.NewError(err, "Decode ERROR")
@@ -63,11 +62,11 @@ func (md *MongoDatabase) GetGroup(id primitive.ObjectID) (*model.GroupType, erro
 }
 
 // UpdateGroup update a group in the database
-func (md *MongoDatabase) UpdateGroup(group model.GroupType) error {
+func (md *MongoDatabase) UpdateGroup(group model.Group) error {
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(groupCollection).
 		UpdateOne(
 			context.TODO(),
-			bson.M{"_id": group.ID},
+			bson.M{"name": group.Name},
 			bson.M{"$set": group},
 		)
 	if err != nil {
@@ -82,10 +81,10 @@ func (md *MongoDatabase) UpdateGroup(group model.GroupType) error {
 }
 
 // DeleteGroup delete a group from the database
-func (md *MongoDatabase) DeleteGroup(id primitive.ObjectID) error {
+func (md *MongoDatabase) DeleteGroup(name string) error {
 	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(groupCollection).
 		DeleteOne(context.TODO(), bson.M{
-			"_id": id,
+			"name": name,
 		})
 	if err != nil {
 		return utils.NewError(err, "DB ERROR")
@@ -99,14 +98,14 @@ func (md *MongoDatabase) DeleteGroup(id primitive.ObjectID) error {
 }
 
 // GetGroups lists groups
-func (md *MongoDatabase) GetGroups() ([]model.GroupType, error) {
+func (md *MongoDatabase) GetGroups() ([]model.Group, error) {
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(groupCollection).
 		Find(context.TODO(), bson.D{})
 	if err != nil {
 		return nil, utils.NewError(err, "DB ERROR")
 	}
 
-	groups := make([]model.GroupType, 0)
+	groups := make([]model.Group, 0)
 
 	err = cur.All(context.TODO(), &groups)
 	if err != nil {

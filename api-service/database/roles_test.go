@@ -29,8 +29,7 @@ import (
 func (m *MongodbSuite) TestInsertRole() {
 	defer m.db.Client.Database(m.dbname).Collection(roleCollection).DeleteMany(context.TODO(), bson.M{})
 
-	role := model.RoleType{
-		ID:   utils.Str2oid("000000000000000000000001"),
+	role := model.Role{
 		Name: "Test",
 	}
 
@@ -43,8 +42,7 @@ func (m *MongodbSuite) TestInsertRole() {
 func (m *MongodbSuite) TestUpdateRole() {
 	defer m.db.Client.Database(m.dbname).Collection(roleCollection).DeleteMany(context.TODO(), bson.M{})
 
-	role := model.RoleType{
-		ID:   utils.Str2oid("000000000000000000000001"),
+	role := model.Role{
 		Name: "Test",
 	}
 
@@ -72,13 +70,11 @@ func (m *MongodbSuite) TestGetRoles() {
 	m.T().Run("should_load_all", func(t *testing.T) {
 		defer m.db.Client.Database(m.dbname).Collection(roleCollection).DeleteMany(context.TODO(), bson.M{})
 
-		roles := []model.RoleType{
+		roles := []model.Role{
 			{
-				ID:   utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
 				Name: "Test",
 			},
 			{
-				ID:   utils.Str2oid("bbbbbbbbbbbbbbbbbbbbbbbb"),
 				Name: "Testdue",
 			},
 		}
@@ -99,7 +95,7 @@ func (m *MongodbSuite) TestGetRoles() {
 		actual, err := m.db.GetRoles()
 		m.Require().NoError(err)
 
-		roles := make([]model.RoleType, 0)
+		roles := make([]model.Role, 0)
 		assert.Equal(t, roles, actual)
 	})
 }
@@ -108,18 +104,15 @@ func (m *MongodbSuite) TestGetRole() {
 	m.T().Run("should_load_all", func(t *testing.T) {
 		defer m.db.Client.Database(m.dbname).Collection(roleCollection).DeleteMany(context.TODO(), bson.M{})
 
-		role := model.RoleType{
-			ID:   utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
+		role := model.Role{
 			Name: "Test",
 		}
 
-		roles := []model.RoleType{
+		roles := []model.Role{
 			{
-				ID:   utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
 				Name: "Test",
 			},
 			{
-				ID:   utils.Str2oid("bbbbbbbbbbbbbbbbbbbbbbbb"),
 				Name: "Testdue",
 			},
 		}
@@ -130,7 +123,7 @@ func (m *MongodbSuite) TestGetRole() {
 		_, err := m.db.Client.Database(m.dbname).Collection(roleCollection).InsertMany(context.TODO(), rolesInt)
 		require.Nil(m.T(), err)
 
-		actual, err := m.db.GetRole(utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"))
+		actual, err := m.db.GetRole("Test")
 		m.Require().NoError(err)
 
 		assert.Equal(t, &role, actual)
@@ -140,7 +133,7 @@ func (m *MongodbSuite) TestGetRole() {
 		actual, err := m.db.GetRoles()
 		m.Require().NoError(err)
 
-		roles := make([]model.RoleType, 0)
+		roles := make([]model.Role, 0)
 		assert.Equal(t, roles, actual)
 	})
 }
@@ -148,18 +141,15 @@ func (m *MongodbSuite) TestGetRole() {
 func (m *MongodbSuite) TestDeleteRole() {
 	defer m.db.Client.Database(m.dbname).Collection(roleCollection).DeleteMany(context.TODO(), bson.M{})
 
-	id := utils.Str2oid("000000000000000000000001")
-
 	m.T().Run("error not found", func(t *testing.T) {
-		err := m.db.DeleteRole(id)
+		err := m.db.DeleteRole("Bart")
 		var aerr *utils.AdvancedError
 		assert.ErrorAs(t, err, &aerr)
 		assert.ErrorIs(t, aerr.Err, utils.ErrRoleNotFound)
 	})
 
 	m.T().Run("should_delete", func(t *testing.T) {
-		role := model.RoleType{
-			ID:   utils.Str2oid("000000000000000000000001"),
+		role := model.Role{
 			Name: "Test",
 		}
 		_, err := m.db.Client.Database(m.dbname).Collection(roleCollection).
@@ -169,7 +159,7 @@ func (m *MongodbSuite) TestDeleteRole() {
 			)
 		require.NoError(t, err)
 
-		err = m.db.DeleteRole(role.ID)
+		err = m.db.DeleteRole(role.Name)
 		assert.NoError(t, err)
 	})
 }
