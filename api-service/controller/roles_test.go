@@ -26,7 +26,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
@@ -45,13 +44,12 @@ func TestInsertRole_Success(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	role := model.RoleType{
+	role := model.Role{
 		Name: "Test",
 	}
 
 	returnAgr := role
 	var err error
-	returnAgr.ID, err = primitive.ObjectIDFromHex("aaaaaaaaaaaaaaaaaaaaaaaa")
 	require.Nil(t, err)
 
 	as.EXPECT().InsertRole(role).
@@ -125,7 +123,7 @@ func TestInsertRole_InternalServerError(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	role := model.RoleType{
+	role := model.Role{
 		Name: "Test",
 	}
 
@@ -166,8 +164,7 @@ func TestUpdateRole_Success(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	role := model.RoleType{
-		ID:   utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
+	role := model.Role{
 		Name: "Test",
 	}
 
@@ -181,7 +178,7 @@ func TestUpdateRole_Success(t *testing.T) {
 	req, err := http.NewRequest("POST", "/", reader)
 	require.NoError(t, err)
 	req = mux.SetURLVars(req, map[string]string{
-		"id": "aaaaaaaaaaaaaaaaaaaaaaaa",
+		"name": "Test",
 	})
 
 	handler := http.HandlerFunc(ac.UpdateRole)
@@ -219,7 +216,7 @@ func TestUpdateRole_BadRequest_CantDecode(t *testing.T) {
 	req, err := http.NewRequest("POST", "", reader)
 	require.NoError(t, err)
 	req = mux.SetURLVars(req, map[string]string{
-		"id": "aaaaaaaaaaaaaaaaaaaaaaaa",
+		"name": "Test",
 	})
 
 	handler := http.HandlerFunc(ac.UpdateRole)
@@ -238,47 +235,6 @@ func TestUpdateRole_BadRequest_CantDecode(t *testing.T) {
 	assert.Equal(t, "Bad Request", feErr.Message)
 }
 
-func TestUpdateRole_BadRequest_HasWrongID(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config:  config.Configuration{},
-		Log:     logger.NewLogger("TEST"),
-	}
-
-	wrongAgr := model.RoleType{
-		Name: "Test",
-	}
-
-	agrBytes, err := json.Marshal(wrongAgr)
-	require.NoError(t, err)
-
-	reader := bytes.NewReader(agrBytes)
-	req, err := http.NewRequest("POST", "", reader)
-	require.NoError(t, err)
-	req = mux.SetURLVars(req, map[string]string{
-		"id": "aaaaaaaaaaaaaaaaaaaaaaaa",
-	})
-
-	handler := http.HandlerFunc(ac.UpdateRole)
-	rr := httptest.NewRecorder()
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusBadRequest, rr.Code)
-
-	var feErr utils.ErrorResponseFE
-	decoder := json.NewDecoder(bytes.NewReader(rr.Body.Bytes()))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&feErr)
-	require.NoError(t, err)
-
-	assert.Equal(t, "Object ID does not correspond", feErr.Error)
-	assert.Equal(t, "Bad Request", feErr.Message)
-}
-
 func TestUpdateRole_NotFoundError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
@@ -290,8 +246,7 @@ func TestUpdateRole_NotFoundError(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	role := model.RoleType{
-		ID:   utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
+	role := model.Role{
 		Name: "Test",
 	}
 
@@ -306,7 +261,7 @@ func TestUpdateRole_NotFoundError(t *testing.T) {
 	req, err := http.NewRequest("POST", "", reader)
 	require.NoError(t, err)
 	req = mux.SetURLVars(req, map[string]string{
-		"id": "aaaaaaaaaaaaaaaaaaaaaaaa",
+		"name": "Test",
 	})
 
 	handler := http.HandlerFunc(ac.UpdateRole)
@@ -336,8 +291,7 @@ func TestUpdateRole_InternalServerError(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	role := model.RoleType{
-		ID:   utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
+	role := model.Role{
 		Name: "Test",
 	}
 
@@ -351,7 +305,7 @@ func TestUpdateRole_InternalServerError(t *testing.T) {
 	req, err := http.NewRequest("POST", "", reader)
 	require.NoError(t, err)
 	req = mux.SetURLVars(req, map[string]string{
-		"id": "aaaaaaaaaaaaaaaaaaaaaaaa",
+		"name": "Test",
 	})
 
 	handler := http.HandlerFunc(ac.UpdateRole)
@@ -381,9 +335,8 @@ func TestGetRoles_Success(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	roles := []model.RoleType{
+	roles := []model.Role{
 		{
-			ID:   utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
 			Name: "Test",
 		},
 	}
@@ -454,13 +407,13 @@ func TestDeleteRole_Success(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	as.EXPECT().DeleteRole(utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa")).
+	as.EXPECT().DeleteRole("Test").
 		Return(nil)
 
 	req, err := http.NewRequest("DELETE", "/", nil)
 	require.NoError(t, err)
 	req = mux.SetURLVars(req, map[string]string{
-		"id": "aaaaaaaaaaaaaaaaaaaaaaaa",
+		"name": "Test",
 	})
 
 	handler := http.HandlerFunc(ac.DeleteRole)
@@ -468,39 +421,6 @@ func TestDeleteRole_Success(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusNoContent, rr.Code)
-}
-
-func TestDeleteRole_BadRequest_HasWrongID(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config:  config.Configuration{},
-		Log:     logger.NewLogger("TEST"),
-	}
-
-	req, err := http.NewRequest("DELETE", "", nil)
-	require.NoError(t, err)
-	req = mux.SetURLVars(req, map[string]string{
-		"id": "asdf",
-	})
-
-	handler := http.HandlerFunc(ac.DeleteRole)
-	rr := httptest.NewRecorder()
-	handler.ServeHTTP(rr, req)
-
-	assert.Equal(t, http.StatusUnprocessableEntity, rr.Code)
-
-	var feErr utils.ErrorResponseFE
-	decoder := json.NewDecoder(bytes.NewReader(rr.Body.Bytes()))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&feErr)
-	require.NoError(t, err)
-
-	assert.Equal(t, "the provided hex string is not a valid ObjectID", feErr.Error)
-	assert.Equal(t, "Unprocessable Entity", feErr.Message)
 }
 
 func TestDeleteRole_NotFoundError(t *testing.T) {
@@ -515,13 +435,13 @@ func TestDeleteRole_NotFoundError(t *testing.T) {
 	}
 
 	aerr := utils.NewError(utils.ErrRoleNotFound, "test")
-	as.EXPECT().DeleteRole(utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa")).
+	as.EXPECT().DeleteRole("Test").
 		Return(aerr)
 
 	req, err := http.NewRequest("DELETE", "", nil)
 	require.NoError(t, err)
 	req = mux.SetURLVars(req, map[string]string{
-		"id": "aaaaaaaaaaaaaaaaaaaaaaaa",
+		"name": "Test",
 	})
 
 	handler := http.HandlerFunc(ac.DeleteRole)
@@ -551,13 +471,13 @@ func TestDeleteRole_InternalServerError(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	as.EXPECT().DeleteRole(utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa")).
+	as.EXPECT().DeleteRole("Test").
 		Return(errMock)
 
 	req, err := http.NewRequest("DELETE", "", nil)
 	require.NoError(t, err)
 	req = mux.SetURLVars(req, map[string]string{
-		"id": "aaaaaaaaaaaaaaaaaaaaaaaa",
+		"name": "Test",
 	})
 
 	handler := http.HandlerFunc(ac.DeleteRole)
@@ -587,12 +507,11 @@ func TestGetRole_Success(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	role := model.RoleType{
-		ID:   utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
+	role := model.Role{
 		Name: "Test",
 	}
 
-	as.EXPECT().GetRole(utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa")).
+	as.EXPECT().GetRole("Test").
 		Return(&role, nil)
 
 	expBytes, err := json.Marshal(role)
@@ -602,7 +521,7 @@ func TestGetRole_Success(t *testing.T) {
 	req, err := http.NewRequest("GET", "", reader)
 	require.NoError(t, err)
 	req = mux.SetURLVars(req, map[string]string{
-		"id": "aaaaaaaaaaaaaaaaaaaaaaaa",
+		"name": "Test",
 	})
 
 	handler := http.HandlerFunc(ac.GetRole)
@@ -625,13 +544,13 @@ func TestGetRole_InternalServerError(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	as.EXPECT().GetRole(utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa")).
+	as.EXPECT().GetRole("Test").
 		Return(nil, errMock)
 
 	req, err := http.NewRequest("GET", "", nil)
 	require.NoError(t, err)
 	req = mux.SetURLVars(req, map[string]string{
-		"id": "aaaaaaaaaaaaaaaaaaaaaaaa",
+		"name": "Test",
 	})
 
 	handler := http.HandlerFunc(ac.GetRole)

@@ -21,14 +21,13 @@ import (
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 const roleCollection = "roles"
 
 // InsertRole insert a role into the database
-func (md *MongoDatabase) InsertRole(role model.RoleType) error {
+func (md *MongoDatabase) InsertRole(role model.Role) error {
 	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(roleCollection).
 		InsertOne(
 			context.TODO(),
@@ -41,11 +40,11 @@ func (md *MongoDatabase) InsertRole(role model.RoleType) error {
 	return nil
 }
 
-// GetRole return the role specified by id
-func (md *MongoDatabase) GetRole(id primitive.ObjectID) (*model.RoleType, error) {
+// GetRole return the role specified by role name
+func (md *MongoDatabase) GetRole(name string) (*model.Role, error) {
 	res := md.Client.Database(md.Config.Mongodb.DBName).Collection(roleCollection).
 		FindOne(context.TODO(), bson.M{
-			"_id": id,
+			"name": name,
 		})
 	if res.Err() == mongo.ErrNoDocuments {
 		return nil, utils.NewError(utils.ErrRoleNotFound, "DB ERROR")
@@ -53,7 +52,7 @@ func (md *MongoDatabase) GetRole(id primitive.ObjectID) (*model.RoleType, error)
 		return nil, utils.NewError(res.Err(), "DB ERROR")
 	}
 
-	var out model.RoleType
+	var out model.Role
 
 	if err := res.Decode(&out); err != nil {
 		return nil, utils.NewError(err, "Decode ERROR")
@@ -63,11 +62,11 @@ func (md *MongoDatabase) GetRole(id primitive.ObjectID) (*model.RoleType, error)
 }
 
 // UpdateRole update a role in the database
-func (md *MongoDatabase) UpdateRole(role model.RoleType) error {
+func (md *MongoDatabase) UpdateRole(role model.Role) error {
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(roleCollection).
 		UpdateOne(
 			context.TODO(),
-			bson.M{"_id": role.ID},
+			bson.M{"name": role.Name},
 			bson.M{"$set": role},
 		)
 	if err != nil {
@@ -82,10 +81,10 @@ func (md *MongoDatabase) UpdateRole(role model.RoleType) error {
 }
 
 // DeleteRole delete a role from the database
-func (md *MongoDatabase) DeleteRole(id primitive.ObjectID) error {
+func (md *MongoDatabase) DeleteRole(name string) error {
 	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(roleCollection).
 		DeleteOne(context.TODO(), bson.M{
-			"_id": id,
+			"name": name,
 		})
 	if err != nil {
 		return utils.NewError(err, "DB ERROR")
@@ -99,14 +98,14 @@ func (md *MongoDatabase) DeleteRole(id primitive.ObjectID) error {
 }
 
 // GetRoles lists roles
-func (md *MongoDatabase) GetRoles() ([]model.RoleType, error) {
+func (md *MongoDatabase) GetRoles() ([]model.Role, error) {
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(roleCollection).
 		Find(context.TODO(), bson.D{})
 	if err != nil {
 		return nil, utils.NewError(err, "DB ERROR")
 	}
 
-	roles := make([]model.RoleType, 0)
+	roles := make([]model.Role, 0)
 
 	err = cur.All(context.TODO(), &roles)
 	if err != nil {
