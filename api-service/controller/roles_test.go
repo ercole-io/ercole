@@ -70,48 +70,6 @@ func TestInsertRole_Success(t *testing.T) {
 	assert.JSONEq(t, utils.ToJSON(returnAgr), rr.Body.String())
 }
 
-func TestInsertRole_BadRequest_CantDecode(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config:  config.Configuration{},
-		Log:     logger.NewLogger("TEST"),
-	}
-
-	wrongAgr := struct {
-		Pippo string
-		Pluto int
-	}{
-		Pippo: "pippo",
-		Pluto: 42,
-	}
-
-	agrBytes, err := json.Marshal(wrongAgr)
-	require.NoError(t, err)
-
-	reader := bytes.NewReader(agrBytes)
-	req, err := http.NewRequest("GET", "", reader)
-	require.NoError(t, err)
-
-	handler := http.HandlerFunc(ac.InsertRole)
-	rr := httptest.NewRecorder()
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusBadRequest, rr.Code)
-
-	var feErr utils.ErrorResponseFE
-	decoder := json.NewDecoder(bytes.NewReader(rr.Body.Bytes()))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&feErr)
-	require.NoError(t, err)
-
-	assert.Equal(t, "json: unknown field \"Pippo\"", feErr.Error)
-	assert.Equal(t, "Bad Request", feErr.Message)
-}
-
 func TestInsertRole_InternalServerError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
