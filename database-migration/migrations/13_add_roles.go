@@ -23,6 +23,7 @@ import (
 	migrate "github.com/xakep666/mongo-migrate"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func init() {
@@ -44,13 +45,25 @@ func init() {
 
 func addRoles(client *mongo.Database) error {
 	collectionName := "roles"
+	ctx := context.TODO()
 
-	if cols, err := client.ListCollectionNames(context.TODO(), bson.D{}); err != nil {
+	if cols, err := client.ListCollectionNames(ctx, bson.D{}); err != nil {
 		return err
 	} else if !utils.Contains(cols, collectionName) {
-		if err := client.RunCommand(context.TODO(), bson.D{
+		if err := client.RunCommand(ctx, bson.D{
 			{Key: "create", Value: collectionName},
 		}).Err(); err != nil {
+			return err
+		}
+
+		_, err := client.Collection(collectionName).Indexes().
+			CreateOne(ctx, mongo.IndexModel{
+				Keys: bson.D{
+					{Key: "name", Value: 1},
+				},
+				Options: (&options.IndexOptions{}).SetUnique(true),
+			})
+		if err != nil {
 			return err
 		}
 	}
