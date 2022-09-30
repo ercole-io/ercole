@@ -16,6 +16,7 @@
 package controller
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/ercole-io/ercole/v2/model"
@@ -50,6 +51,11 @@ func (ctrl *APIController) AddUser(w http.ResponseWriter, r *http.Request) {
 
 	if err := utils.Decode(r.Body, user); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
+		return
+	}
+
+	if user.Password == "" {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, errors.New("Invalid password"))
 		return
 	}
 
