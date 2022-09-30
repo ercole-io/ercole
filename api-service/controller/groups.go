@@ -16,20 +16,37 @@
 package controller
 
 import (
+	"encoding/json"
 	"errors"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/gorilla/mux"
 
 	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/schema"
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
 func (ctrl *APIController) InsertGroup(w http.ResponseWriter, r *http.Request) {
+	raw, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, utils.NewError(err, http.StatusText(http.StatusBadRequest)))
+		return
+	}
+	defer r.Body.Close()
+
 	var group model.Group
 
-	if err := utils.Decode(r.Body, &group); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
+	if validationErr := schema.ValidateGroup(raw); validationErr != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, validationErr)
+
+		return
+	}
+
+	err = json.Unmarshal(raw, &group)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -43,11 +60,26 @@ func (ctrl *APIController) InsertGroup(w http.ResponseWriter, r *http.Request) {
 }
 
 func (ctrl *APIController) UpdateGroup(w http.ResponseWriter, r *http.Request) {
+	raw, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, utils.NewError(err, http.StatusText(http.StatusBadRequest)))
+		return
+	}
+	defer r.Body.Close()
+
 	name := mux.Vars(r)["name"]
 
 	group := model.Group{Name: name}
-	if err := utils.Decode(r.Body, &group); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
+
+	if validationErr := schema.ValidateGroup(raw); validationErr != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, validationErr)
+
+		return
+	}
+
+	err = json.Unmarshal(raw, &group)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 

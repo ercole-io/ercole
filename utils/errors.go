@@ -52,6 +52,8 @@ var ErrInvalidLicenseType = errors.New("Invalid license type")
 
 var ErrInvalidRole = errors.New("Invalid role")
 
+var ErrInvalidGroup = errors.New("Invalid group")
+
 var ErrInvalidUser = errors.New("Invalid user")
 
 var ErrInvalidAck = errors.New("Alert(s) cannot be acknowledged")
