@@ -18,9 +18,11 @@ package service
 import (
 	"crypto/rand"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 
 	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/schema"
 	"golang.org/x/crypto/argon2"
 )
 
@@ -55,6 +57,15 @@ func (as *APIService) AddUser(user model.User) error {
 	}
 
 	user.Password, user.Salt = generateHashAndSalt(user.Password, salt, p)
+
+	raw, err := json.Marshal(user)
+	if err != nil {
+		return err
+	}
+
+	if err := schema.ValidateUser(raw); err != nil {
+		return err
+	}
 
 	return as.Database.AddUser(user)
 }
