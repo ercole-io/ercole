@@ -19,6 +19,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/gorilla/mux"
@@ -31,7 +32,7 @@ func (ctrl *APIController) GetUsers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.WriteJSONResponse(w, http.StatusOK, users)
+	utils.WriteJSONResponse(w, http.StatusOK, dto.ToUsers(users))
 }
 
 func (ctrl *APIController) GetUser(w http.ResponseWriter, r *http.Request) {
@@ -43,7 +44,7 @@ func (ctrl *APIController) GetUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.WriteJSONResponse(w, http.StatusOK, user)
+	utils.WriteJSONResponse(w, http.StatusOK, dto.ToUser(user))
 }
 
 func (ctrl *APIController) AddUser(w http.ResponseWriter, r *http.Request) {

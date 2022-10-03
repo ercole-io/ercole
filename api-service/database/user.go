@@ -19,8 +19,10 @@ import (
 	"context"
 
 	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 const userCollection = "users"
@@ -52,21 +54,17 @@ func (md *MongoDatabase) AddUser(user model.User) error {
 }
 
 func (md *MongoDatabase) GetUser(username string) (*model.User, error) {
-	result := &model.User{}
-
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(userCollection).
-		Aggregate(context.TODO(), bson.A{
-			bson.M{
-				"$match": bson.M{
-					"username": username,
-				},
-			},
-		})
-	if err != nil {
-		return nil, err
+	res := md.Client.Database(md.Config.Mongodb.DBName).Collection(userCollection).
+		FindOne(context.TODO(), bson.M{"username": username})
+	if res.Err() == mongo.ErrNoDocuments {
+		return nil, utils.ErrUserNotFound
+	} else if res.Err() != nil {
+		return nil, res.Err()
 	}
 
-	if err := cur.Decode(result); err != nil {
+	result := &model.User{}
+
+	if err := res.Decode(result); err != nil {
 		return nil, err
 	}
 
