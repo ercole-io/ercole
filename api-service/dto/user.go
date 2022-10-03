@@ -13,16 +13,36 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package model
+package dto
 
 import (
-	"time"
+	"github.com/ercole-io/ercole/v2/model"
 )
 
 type User struct {
-	Username  string     `json:"username" bson:"username"`
-	Password  string     `json:"password" bson:"password"`
-	Salt      string     `json:"-" bson:"salt"`
-	LastLogin *time.Time `json:"lastLogin" bson:"lastLogin"`
-	Groups    []string   `json:"groups" bson:"groups"`
+	Username string   `json:"username"`
+	Groups   []string `json:"groups"`
+}
+
+type Users []User
+
+func ToUser(userModel *model.User) User {
+	if userModel != nil {
+		return User{
+			Username: userModel.Username,
+			Groups:   userModel.Groups,
+		}
+	}
+
+	return User{}
+}
+
+func ToUsers(usersModel []model.User) Users {
+	result := make([]User, 0, len(usersModel))
+
+	for _, userModel := range usersModel {
+		result = append(result, ToUser(&userModel))
+	}
+
+	return result
 }
