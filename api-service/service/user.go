@@ -16,23 +16,12 @@
 package service
 
 import (
-	"crypto/rand"
-	"encoding/base64"
 	"encoding/json"
-	"fmt"
 
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/schema"
-	"golang.org/x/crypto/argon2"
+	cr "github.com/ercole-io/ercole/v2/utils/crypto"
 )
-
-type params struct {
-	memory      uint32
-	iterations  uint32
-	parallelism uint8
-	saltLength  uint32
-	keyLength   uint32
-}
 
 func (as *APIService) ListUsers() ([]model.User, error) {
 	return as.Database.ListUsers()
@@ -43,20 +32,12 @@ func (as *APIService) GetUser(username string) (*model.User, error) {
 }
 
 func (as *APIService) AddUser(user model.User) error {
-	p := &params{
-		memory:      64 * 1024,
-		iterations:  3,
-		parallelism: 2,
-		saltLength:  16,
-		keyLength:   32,
-	}
-
-	salt, err := generateRandomBytes(p.saltLength)
+	salt, err := cr.GenerateRandomBytes()
 	if err != nil {
 		return err
 	}
 
-	user.Password, user.Salt = generateHashAndSalt(user.Password, salt, p)
+	user.Password, user.Salt = cr.GenerateHashAndSalt(user.Password, salt)
 
 	raw, err := json.Marshal(user)
 	if err != nil {
@@ -76,26 +57,4 @@ func (as *APIService) UpdateUserGroups(updatedUser model.User) error {
 
 func (as *APIService) RemoveUser(username string) error {
 	return as.Database.RemoveUser(username)
-}
-
-func generateHashAndSalt(password string, salt []byte, p *params) (string, string) {
-	hash := argon2.IDKey([]byte(password), salt, p.iterations, p.memory, p.parallelism, p.keyLength)
-
-	b64Salt := base64.RawStdEncoding.EncodeToString(salt)
-	b64Hash := base64.RawStdEncoding.EncodeToString(hash)
-
-	encodedHash := fmt.Sprintf("$argon2id$v=%d$m=%d,t=%d,p=%d$%s$%s", argon2.Version, p.memory, p.iterations, p.parallelism, b64Salt, b64Hash)
-
-	return encodedHash, b64Salt
-}
-
-func generateRandomBytes(n uint32) ([]byte, error) {
-	b := make([]byte, n)
-
-	_, err := rand.Read(b)
-	if err != nil {
-		return nil, err
-	}
-
-	return b, nil
 }
