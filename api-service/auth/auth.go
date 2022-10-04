@@ -24,6 +24,8 @@ import (
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
 	jwt "github.com/golang-jwt/jwt/v4"
+
+	apiservice_service "github.com/ercole-io/ercole/v2/api-service/service"
 )
 
 // AuthenticationProvider is a interface that wrap methods used to authenticate users
@@ -40,13 +42,14 @@ type AuthenticationProvider interface {
 
 // BuildAuthenticationProvider return a authentication provider that match what is requested in the configuration
 // It's initialized
-func BuildAuthenticationProvider(conf config.AuthenticationProviderConfig, timeNow func() time.Time, log logger.Logger) AuthenticationProvider {
+func BuildAuthenticationProvider(conf config.AuthenticationProviderConfig, service apiservice_service.APIService, timeNow func() time.Time, log logger.Logger) AuthenticationProvider {
 	switch conf.Type {
 	case "basic":
 		prov := new(BasicAuthenticationProvider)
 		prov.Config = conf
 		prov.Log = log
 		prov.TimeNow = timeNow
+		prov.Service = service
 
 		return prov
 	case "ldap":
