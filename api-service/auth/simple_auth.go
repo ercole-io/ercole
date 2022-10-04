@@ -28,9 +28,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ercole-io/ercole/v2/api-service/service"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/utils"
+	cr "github.com/ercole-io/ercole/v2/utils/crypto"
 )
 
 // BasicAuthenticationProvider is the concrete implementation of AuthenticationProvider that provide a simple user authentication.
@@ -45,6 +47,8 @@ type BasicAuthenticationProvider struct {
 	privateKey *rsa.PrivateKey
 	// publicKey contains the public key used to check the JWT tokens
 	publicKey *rsa.PublicKey
+	// Service contains the underlying service used to perform various logical and store operations
+	Service service.APIService
 }
 
 // Init initializes the service and database
@@ -62,10 +66,26 @@ func (ap *BasicAuthenticationProvider) Init() {
 
 // GetUserInfoIfCredentialsAreCorrect return the informations about the user if the provided credentials are correct, otherwise return nil
 func (ap *BasicAuthenticationProvider) GetUserInfoIfCredentialsAreCorrect(username string, password string) (map[string]interface{}, error) {
-	if ap.Config.Username == username && ap.Config.Password == password {
-		return map[string]interface{}{
-			"Username": username,
-		}, nil
+	user, err := ap.Service.GetUser(username)
+	if err != nil {
+		return nil, err
+	}
+
+	if user != nil {
+		salt, err := base64.RawStdEncoding.DecodeString(user.Salt)
+		if err != nil {
+			return nil, err
+		}
+
+		pwd, _ := cr.GenerateHashAndSalt(password, salt)
+
+		if pwd == user.Password {
+			return map[string]interface{}{
+				"Username": username,
+			}, nil
+		} else {
+			return nil, nil
+		}
 	} else {
 		return nil, nil
 	}

@@ -21,6 +21,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	apiservice_service "github.com/ercole-io/ercole/v2/api-service/service"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/utils"
@@ -31,8 +32,10 @@ func TestBuildAuthenticationProvider_NotSupported(t *testing.T) {
 		Type: "foobar",
 	}
 
+	service := apiservice_service.APIService{}
+
 	assert.PanicsWithValue(t, "The AuthenticationProvider type wasn't recognized or supported", func() {
-		BuildAuthenticationProvider(testConf, nil, nil)
+		BuildAuthenticationProvider(testConf, service, nil, nil)
 	})
 }
 
@@ -44,10 +47,11 @@ func TestBuildAuthenticationProvider_Basic(t *testing.T) {
 		PrivateKey: "/tmp/path/to/private.key",
 		PublicKey:  "/tmp/path/to/public.pem",
 	}
+	service := apiservice_service.APIService{}
 	logger := logger.NewLogger("TEST")
 	time := utils.Btc(utils.P("2019-11-05T14:02:03Z"))
 
-	ap := BuildAuthenticationProvider(testConf, time, logger)
+	ap := BuildAuthenticationProvider(testConf, service, time, logger)
 
 	require.IsType(t, &BasicAuthenticationProvider{}, ap)
 	bap, _ := ap.(*BasicAuthenticationProvider)

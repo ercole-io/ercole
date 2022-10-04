@@ -290,7 +290,7 @@ func serveAPIService(config config.Configuration, wg *sync.WaitGroup) {
 	}
 	service.Init()
 
-	auth := apiservice_auth.BuildAuthenticationProvider(config.APIService.AuthenticationProvider, time.Now, log)
+	auth := apiservice_auth.BuildAuthenticationProvider(config.APIService.AuthenticationProvider, *service, time.Now, log)
 	auth.Init()
 
 	ctrl := &apiservice_controller.APIController{
@@ -328,6 +328,14 @@ func serveChartService(config config.Configuration, wg *sync.WaitGroup) {
 	}
 	db.Init()
 
+	dbAPI := &apiservice_database.MongoDatabase{
+		Config:                          config,
+		TimeNow:                         time.Now,
+		OperatingSystemAggregationRules: config.APIService.OperatingSystemAggregationRules,
+		Log:                             log,
+	}
+	dbAPI.Init()
+
 	if configDB, err := db.ReadConfig(); err == nil && configDB != nil {
 		config = *configDB
 	}
@@ -341,7 +349,17 @@ func serveChartService(config config.Configuration, wg *sync.WaitGroup) {
 	}
 	service.Init()
 
-	auth := apiservice_auth.BuildAuthenticationProvider(config.APIService.AuthenticationProvider, time.Now, log)
+	serviceAPI := &apiservice_service.APIService{
+		Config:         config,
+		Version:        serverVersion,
+		Database:       dbAPI,
+		TimeNow:        time.Now,
+		Log:            log,
+		AlertSvcClient: alertservice_client.NewClient(config.AlertService),
+	}
+	serviceAPI.Init()
+
+	auth := apiservice_auth.BuildAuthenticationProvider(config.APIService.AuthenticationProvider, *serviceAPI, time.Now, log)
 	auth.Init()
 
 	ctrl := &chartservice_controller.ChartController{

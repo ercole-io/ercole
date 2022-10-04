@@ -22,13 +22,17 @@ import (
 	"os"
 	"strings"
 	"testing"
+	"time"
 
 	jwt "github.com/golang-jwt/jwt/v4"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	apiservice_database "github.com/ercole-io/ercole/v2/api-service/database"
+	apiservice_service "github.com/ercole-io/ercole/v2/api-service/service"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
+	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
@@ -88,25 +92,58 @@ var validToken string = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsiZm9vYm
 var invalidToken string = "sdfsdf.sdfs.df-sdf-sdfssdfdsdff-"
 var tokenWithInvalidSignature string = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsiZm9vYmFyIl0sImV4cCI6MTU3Mjk2MjU0MywiaWF0IjoxNTcyOTYyNTIzLCJpc3MiOiJlcmNvbGUiLCJqdGkiOiJmb29iYXIiLCJuYmYiOjE1NzI5NjI1MjMsInN1YiI6ImZvb2JhciJ9.QuK03C6rKVF0WU8GhmYwhz40FVoL1IsDEfatep-KbjS8SJBw4OojOJqfyF5Vpeu5AqJvaOqFuoQ1fjGA9Yjhk0F7TlCl-LJHE80Dlrj0W4cR1BJ2u8Mf7-xaMmTe0FQt7x12WTr04DlKfTHuBkO2__DDJDwYzUuJoNSlJbTczMs"
 
+var ercoleConfig = config.Configuration{
+	Mongodb: config.Mongodb{
+		DBName: "ercole",
+		URI:    "mongodb://127.0.0.1:27017",
+	},
+}
+
+var db = &apiservice_database.MongoDatabase{
+	Config:  ercoleConfig,
+	TimeNow: time.Now,
+}
+
+var serviceAuth = &apiservice_service.APIService{
+	Database: db,
+}
+
 func TestGetUserInfoIfCredentialsAreCorrect_WhenAreCredentialsAreWrong(t *testing.T) {
+	db.ConnectToMongodb()
+
 	bap := BasicAuthenticationProvider{
 		Config: config.AuthenticationProviderConfig{
 			Username: "foobar",
 			Password: "C0rr3ctP4ssw0rd",
 		},
+		Service: *serviceAuth,
 	}
 	res, err := bap.GetUserInfoIfCredentialsAreCorrect("foobar", "password")
-	require.NoError(t, err)
+	require.ErrorContains(t, err, "User not found")
 	assert.Nil(t, res)
 }
 
 func TestGetUserInfoIfCredentialsAreCorrect_WhenAreCredentialsAreCorrect(t *testing.T) {
+	db.ConnectToMongodb()
+
+	defer serviceAuth.RemoveUser("foobar")
+
+	serviceAuth.AddUser(
+		model.User{
+			Username: "foobar",
+			Password: "C0rr3ctP4ssw0rd",
+			Groups:   []string{"Test"},
+		},
+	)
+
 	bap := BasicAuthenticationProvider{
 		Config: config.AuthenticationProviderConfig{
 			Username: "foobar",
 			Password: "C0rr3ctP4ssw0rd",
 		},
+		Service: *serviceAuth,
 	}
+
 	res, err := bap.GetUserInfoIfCredentialsAreCorrect("foobar", "C0rr3ctP4ssw0rd")
 	require.NoError(t, err)
 	assert.Equal(t, "foobar", res["Username"])
@@ -164,6 +201,18 @@ func TestInit_InvalidFile(t *testing.T) {
 func TestGetToken_OK(t *testing.T) {
 	var err error
 
+	db.ConnectToMongodb()
+
+	defer serviceAuth.RemoveUser("foobar")
+
+	serviceAuth.AddUser(
+		model.User{
+			Username: "foobar",
+			Password: "C0rr3ctP4ssw0rd",
+			Groups:   []string{"Test"},
+		},
+	)
+
 	bap := BasicAuthenticationProvider{
 		Config: config.AuthenticationProviderConfig{
 			Username:             "foobar",
@@ -172,6 +221,7 @@ func TestGetToken_OK(t *testing.T) {
 		},
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Log:     logger.NewLogger("TEST"),
+		Service: *serviceAuth,
 	}
 
 	privateKey, err := jwt.ParseRSAPrivateKeyFromPEM([]byte(testRSAPrivateKey))
@@ -207,6 +257,8 @@ func TestGetToken_OK(t *testing.T) {
 func TestGetToken_InvalidRequest(t *testing.T) {
 	var err error
 
+	db.ConnectToMongodb()
+
 	bap := BasicAuthenticationProvider{
 		Config: config.AuthenticationProviderConfig{
 			Username:             "foobar",
@@ -215,6 +267,7 @@ func TestGetToken_InvalidRequest(t *testing.T) {
 		},
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Log:     logger.NewLogger("TEST"),
+		Service: *serviceAuth,
 	}
 
 	bap.privateKey, bap.publicKey, err = parsePrivateKey([]byte(testRSAPrivateKey))
@@ -233,6 +286,8 @@ func TestGetToken_InvalidRequest(t *testing.T) {
 func TestGetToken_InvalidCredentials(t *testing.T) {
 	var err error
 
+	db.ConnectToMongodb()
+
 	bap := BasicAuthenticationProvider{
 		Config: config.AuthenticationProviderConfig{
 			Username:             "foobar",
@@ -241,6 +296,7 @@ func TestGetToken_InvalidCredentials(t *testing.T) {
 		},
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Log:     logger.NewLogger("TEST"),
+		Service: *serviceAuth,
 	}
 
 	bap.privateKey, bap.publicKey, err = parsePrivateKey([]byte(testRSAPrivateKey))
@@ -259,6 +315,8 @@ func TestGetToken_InvalidCredentials(t *testing.T) {
 func TestGetToken_InvalidKeys(t *testing.T) {
 	var err error
 
+	db.ConnectToMongodb()
+
 	bap := BasicAuthenticationProvider{
 		Config: config.AuthenticationProviderConfig{
 			Username:             "foobar",
@@ -267,6 +325,7 @@ func TestGetToken_InvalidKeys(t *testing.T) {
 		},
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Log:     logger.NewLogger("TEST"),
+		Service: *serviceAuth,
 	}
 
 	rr := httptest.NewRecorder()
@@ -275,7 +334,7 @@ func TestGetToken_InvalidKeys(t *testing.T) {
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
-	require.Equal(t, http.StatusInternalServerError, rr.Code)
+	require.Equal(t, http.StatusUnauthorized, rr.Code)
 }
 
 func TestAuthenticateMiddleware_NoAuthorizationHeader(t *testing.T) {
