@@ -16,6 +16,8 @@
 package auth
 
 import (
+	"context"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -23,6 +25,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	r "math/rand"
 
 	jwt "github.com/golang-jwt/jwt/v4"
 	"github.com/stretchr/testify/assert"
@@ -94,7 +98,7 @@ var tokenWithInvalidSignature string = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ
 
 var ercoleConfig = config.Configuration{
 	Mongodb: config.Mongodb{
-		DBName: "ercole",
+		DBName: fmt.Sprintf("ercole_test_%d", r.Int()),
 		URI:    "mongodb://127.0.0.1:27017",
 	},
 }
@@ -147,6 +151,9 @@ func TestGetUserInfoIfCredentialsAreCorrect_WhenAreCredentialsAreCorrect(t *test
 	res, err := bap.GetUserInfoIfCredentialsAreCorrect("foobar", "C0rr3ctP4ssw0rd")
 	require.NoError(t, err)
 	assert.Equal(t, "foobar", res["Username"])
+
+	db.Client.Database(db.Config.Mongodb.DBName).Drop(context.TODO())
+	db.Client.Disconnect(context.TODO())
 }
 
 func TestInit_OK(t *testing.T) {
@@ -252,6 +259,9 @@ func TestGetToken_OK(t *testing.T) {
 	assert.Equal(t, jwt.NewNumericDate(utils.P("2019-11-05T14:02:03Z").Local()), claims.NotBefore)
 	assert.Equal(t, "ercole", claims.Issuer)
 	assert.Equal(t, "foobar", claims.Subject)
+
+	db.Client.Database(db.Config.Mongodb.DBName).Drop(context.TODO())
+	db.Client.Disconnect(context.TODO())
 }
 
 func TestGetToken_InvalidRequest(t *testing.T) {
