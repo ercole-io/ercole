@@ -24,7 +24,7 @@ import (
 )
 
 // GetChartControllerHandler setup the routes of the router using the handler in the controller as http handler
-func (ctrl *ChartController) GetChartControllerHandler(auth auth.AuthenticationProvider) http.Handler {
+func (ctrl *ChartController) GetChartControllerHandler(auths []auth.AuthenticationProvider) http.Handler {
 	router := mux.NewRouter()
 
 	router.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
@@ -34,11 +34,19 @@ func (ctrl *ChartController) GetChartControllerHandler(auth auth.AuthenticationP
 		}
 	})
 
-	router.HandleFunc("/user/login", auth.GetToken).Methods("POST")
+	for _, ap := range auths {
+		if ap.GetType() == auth.BasicType {
+			router.HandleFunc("/user/login", ap.GetToken).Methods("POST")
+		}
 
-	subrouter := router.NewRoute().Subrouter()
-	subrouter.Use(auth.AuthenticateMiddleware)
-	ctrl.setupProtectedRoutes(subrouter)
+		if ap.GetType() == auth.LdapType {
+			router.HandleFunc("/ldap/login", ap.GetToken).Methods("POST")
+		}
+
+		subrouter := router.NewRoute().Subrouter()
+		subrouter.Use(ap.AuthenticateMiddleware)
+		ctrl.setupProtectedRoutes(subrouter)
+	}
 
 	return router
 }

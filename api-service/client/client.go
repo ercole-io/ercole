@@ -57,8 +57,8 @@ func NewClient(config config.APIService) *Client {
 func (c *Client) doRequest(ctx context.Context, path, method string, body []byte) (*http.Response, error) {
 	url := utils.NewAPIUrlNoParams(
 		c.remoteEndpoint,
-		c.config.AuthenticationProvider.Username,
-		c.config.AuthenticationProvider.Password,
+		c.config.AuthenticationProvider.LDAPUsername,
+		c.config.AuthenticationProvider.LDAPPassword,
 		path)
 
 	req, err := http.NewRequest(method, url.String(), bytes.NewReader(body))
