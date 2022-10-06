@@ -40,11 +40,11 @@ func TestBuildAuthenticationProvider_NotSupported(t *testing.T) {
 
 func TestBuildAuthenticationProvider_Basic(t *testing.T) {
 	testConf := config.AuthenticationProviderConfig{
-		Types:        []string{"basic"},
-		LDAPUsername: "foobar",
-		LDAPPassword: "F0oB4r",
-		PrivateKey:   "/tmp/path/to/private.key",
-		PublicKey:    "/tmp/path/to/public.pem",
+		Types:      []string{"basic"},
+		Username:   "foobar",
+		Password:   "F0oB4r",
+		PrivateKey: "/tmp/path/to/private.key",
+		PublicKey:  "/tmp/path/to/public.pem",
 	}
 	service := apiservice_service.APIService{}
 	logger := logger.NewLogger("TEST")

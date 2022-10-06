@@ -292,7 +292,9 @@ func serveAPIService(config config.Configuration, wg *sync.WaitGroup) {
 
 	auths := apiservice_auth.BuildAuthenticationProvider(config.APIService.AuthenticationProvider, *service, time.Now, log)
 	for _, auth := range auths {
-		auth.Init()
+		if utils.Contains(config.APIService.AuthenticationProvider.Types, auth.GetType()) {
+			auth.Init()
+		}
 	}
 
 	ctrl := &apiservice_controller.APIController{
@@ -363,7 +365,9 @@ func serveChartService(config config.Configuration, wg *sync.WaitGroup) {
 
 	auths := apiservice_auth.BuildAuthenticationProvider(config.APIService.AuthenticationProvider, *serviceAPI, time.Now, log)
 	for _, auth := range auths {
-		auth.Init()
+		if utils.Contains(config.APIService.AuthenticationProvider.Types, auth.GetType()) {
+			auth.Init()
+		}
 	}
 
 	ctrl := &chartservice_controller.ChartController{
