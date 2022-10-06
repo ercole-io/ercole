@@ -16,6 +16,7 @@
 package model
 
 type Group struct {
-	Name  string   `json:"name" bson:"name"`
-	Roles []string `json:"roles" bson:"roles"`
+	Name        string   `json:"name" bson:"name"`
+	Description string   `json:"description" bson:"description"`
+	Roles       []string `json:"roles" bson:"roles"`
 }
