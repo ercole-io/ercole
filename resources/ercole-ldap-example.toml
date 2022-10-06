@@ -4,8 +4,8 @@
 [APIService.AuthenticationProvider]
 PrivateKey = "/path/to/your/key" # Privatekey is necessary!
 Type = "ldap"
-Username = "zoidberg"
-Password = "zoidberg"
+Username = "user"
+Password = "password"
 TokenValidityTimeout = 360
 Host = "127.0.0.1"
 Port = 10389
