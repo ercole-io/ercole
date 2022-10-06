@@ -186,7 +186,7 @@ func (ap *LDAPAuthenticationProvider) AuthenticateMiddleware(next http.Handler) 
 			user := val[:bytes.IndexRune(val, ':')]
 			password := val[bytes.IndexRune(val, ':')+1:]
 
-			if subtle.ConstantTimeCompare(user, []byte(ap.Config.Username)) == 0 || subtle.ConstantTimeCompare(password, []byte(ap.Config.Password)) == 0 {
+			if subtle.ConstantTimeCompare(user, []byte(ap.Config.LDAPUsername)) == 0 || subtle.ConstantTimeCompare(password, []byte(ap.Config.LDAPPassword)) == 0 {
 				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewError(errors.New("Invalid credentials"), http.StatusText(http.StatusUnauthorized)))
 				return
 			}
@@ -209,4 +209,8 @@ func (ap *LDAPAuthenticationProvider) AuthenticateMiddleware(next http.Handler) 
 
 		utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewError(errors.New("The authorization header value doesn't begin with Basic or Bearer"), http.StatusText(http.StatusUnauthorized)))
 	})
+}
+
+func (ap *LDAPAuthenticationProvider) GetType() string {
+	return LdapType
 }

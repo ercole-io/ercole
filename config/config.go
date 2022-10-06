@@ -298,11 +298,11 @@ type AuthenticationProviderConfig struct {
 	// Type contains the type of the source. Supported types are:
 	//	- basic
 	// 	- ldap
-	Type string
+	Types []string
 	// Username is the username of the user if type == "basic"
-	Username string
+	LDAPUsername string
 	// Password is the password of the user if type == "basic"
-	Password string
+	LDAPPassword string
 	// PrivateKey is the filename of the key
 	PrivateKey string
 	// PublicKey is the filename of the key

@@ -19,7 +19,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 
 	apiservice_service "github.com/ercole-io/ercole/v2/api-service/service"
 	"github.com/ercole-io/ercole/v2/config"
@@ -29,7 +28,7 @@ import (
 
 func TestBuildAuthenticationProvider_NotSupported(t *testing.T) {
 	testConf := config.AuthenticationProviderConfig{
-		Type: "foobar",
+		Types: []string{"foobar"},
 	}
 
 	service := apiservice_service.APIService{}
@@ -41,22 +40,24 @@ func TestBuildAuthenticationProvider_NotSupported(t *testing.T) {
 
 func TestBuildAuthenticationProvider_Basic(t *testing.T) {
 	testConf := config.AuthenticationProviderConfig{
-		Type:       "basic",
-		Username:   "foobar",
-		Password:   "F0oB4r",
-		PrivateKey: "/tmp/path/to/private.key",
-		PublicKey:  "/tmp/path/to/public.pem",
+		Types:        []string{"basic"},
+		LDAPUsername: "foobar",
+		LDAPPassword: "F0oB4r",
+		PrivateKey:   "/tmp/path/to/private.key",
+		PublicKey:    "/tmp/path/to/public.pem",
 	}
 	service := apiservice_service.APIService{}
 	logger := logger.NewLogger("TEST")
 	time := utils.Btc(utils.P("2019-11-05T14:02:03Z"))
 
-	ap := BuildAuthenticationProvider(testConf, service, time, logger)
+	aps := BuildAuthenticationProvider(testConf, service, time, logger)
 
-	require.IsType(t, &BasicAuthenticationProvider{}, ap)
-	bap, _ := ap.(*BasicAuthenticationProvider)
-
-	assert.Same(t, logger, bap.Log)
-	utils.AssertFuncAreTheSame(t, time, bap.TimeNow)
-	assert.Equal(t, testConf, bap.Config)
+	for _, ap := range aps {
+		if ap.GetType() == BasicType {
+			bap, _ := ap.(*BasicAuthenticationProvider)
+			assert.Same(t, logger, bap.Log)
+			utils.AssertFuncAreTheSame(t, time, bap.TimeNow)
+			assert.Equal(t, testConf, bap.Config)
+		}
+	}
 }
