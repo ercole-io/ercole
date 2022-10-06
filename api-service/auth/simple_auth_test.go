@@ -117,8 +117,8 @@ func TestGetUserInfoIfCredentialsAreCorrect_WhenAreCredentialsAreWrong(t *testin
 
 	bap := BasicAuthenticationProvider{
 		Config: config.AuthenticationProviderConfig{
-			LDAPUsername: "foobar",
-			LDAPPassword: "C0rr3ctP4ssw0rd",
+			Username: "foobar",
+			Password: "C0rr3ctP4ssw0rd",
 		},
 		Service: *serviceAuth,
 	}
@@ -142,8 +142,8 @@ func TestGetUserInfoIfCredentialsAreCorrect_WhenAreCredentialsAreCorrect(t *test
 
 	bap := BasicAuthenticationProvider{
 		Config: config.AuthenticationProviderConfig{
-			LDAPUsername: "foobar",
-			LDAPPassword: "C0rr3ctP4ssw0rd",
+			Username: "foobar",
+			Password: "C0rr3ctP4ssw0rd",
 		},
 		Service: *serviceAuth,
 	}
@@ -222,8 +222,8 @@ func TestGetToken_OK(t *testing.T) {
 
 	bap := BasicAuthenticationProvider{
 		Config: config.AuthenticationProviderConfig{
-			LDAPUsername:         "foobar",
-			LDAPPassword:         "C0rr3ctP4ssw0rd",
+			Username:             "foobar",
+			Password:             "C0rr3ctP4ssw0rd",
 			TokenValidityTimeout: 20,
 		},
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
@@ -271,8 +271,8 @@ func TestGetToken_InvalidRequest(t *testing.T) {
 
 	bap := BasicAuthenticationProvider{
 		Config: config.AuthenticationProviderConfig{
-			LDAPUsername:         "foobar",
-			LDAPPassword:         "C0rr3ctP4ssw0rd",
+			Username:             "foobar",
+			Password:             "C0rr3ctP4ssw0rd",
 			TokenValidityTimeout: 20,
 		},
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
@@ -300,8 +300,8 @@ func TestGetToken_InvalidCredentials(t *testing.T) {
 
 	bap := BasicAuthenticationProvider{
 		Config: config.AuthenticationProviderConfig{
-			LDAPUsername:         "foobar",
-			LDAPPassword:         "C0rr3ctP4ssw0rd",
+			Username:             "foobar",
+			Password:             "C0rr3ctP4ssw0rd",
 			TokenValidityTimeout: 20,
 		},
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
@@ -329,8 +329,8 @@ func TestGetToken_InvalidKeys(t *testing.T) {
 
 	bap := BasicAuthenticationProvider{
 		Config: config.AuthenticationProviderConfig{
-			LDAPUsername:         "foobar",
-			LDAPPassword:         "C0rr3ctP4ssw0rd",
+			Username:             "foobar",
+			Password:             "C0rr3ctP4ssw0rd",
 			TokenValidityTimeout: 20,
 		},
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
@@ -352,8 +352,8 @@ func TestAuthenticateMiddleware_NoAuthorizationHeader(t *testing.T) {
 
 	bap := BasicAuthenticationProvider{
 		Config: config.AuthenticationProviderConfig{
-			LDAPUsername:         "foobar",
-			LDAPPassword:         "C0rr3ctP4ssw0rd",
+			Username:             "foobar",
+			Password:             "C0rr3ctP4ssw0rd",
 			TokenValidityTimeout: 20,
 		},
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
@@ -380,8 +380,8 @@ func TestAuthenticateMiddleware_WrongAuthorizationHeader(t *testing.T) {
 
 	bap := BasicAuthenticationProvider{
 		Config: config.AuthenticationProviderConfig{
-			LDAPUsername:         "foobar",
-			LDAPPassword:         "C0rr3ctP4ssw0rd",
+			Username:             "foobar",
+			Password:             "C0rr3ctP4ssw0rd",
 			TokenValidityTimeout: 20,
 		},
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
@@ -409,8 +409,8 @@ func TestAuthenticateMiddleware_BasicInvalidBase64(t *testing.T) {
 
 	bap := BasicAuthenticationProvider{
 		Config: config.AuthenticationProviderConfig{
-			LDAPUsername:         "foobar",
-			LDAPPassword:         "C0rr3ctP4ssw0rd",
+			Username:             "foobar",
+			Password:             "C0rr3ctP4ssw0rd",
 			TokenValidityTimeout: 20,
 		},
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
@@ -438,8 +438,8 @@ func TestAuthenticateMiddleware_BasicMissingColon(t *testing.T) {
 
 	bap := BasicAuthenticationProvider{
 		Config: config.AuthenticationProviderConfig{
-			LDAPUsername:         "foobar",
-			LDAPPassword:         "C0rr3ctP4ssw0rd",
+			Username:             "foobar",
+			Password:             "C0rr3ctP4ssw0rd",
 			TokenValidityTimeout: 20,
 		},
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
@@ -467,8 +467,8 @@ func TestAuthenticateMiddleware_BasicInvalidCredentials(t *testing.T) {
 
 	bap := BasicAuthenticationProvider{
 		Config: config.AuthenticationProviderConfig{
-			LDAPUsername:         "foobar",
-			LDAPPassword:         "C0rr3ctP4ssw0rd",
+			Username:             "foobar",
+			Password:             "C0rr3ctP4ssw0rd",
 			TokenValidityTimeout: 20,
 		},
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
@@ -496,8 +496,8 @@ func TestAuthenticateMiddleware_BasicOk(t *testing.T) {
 
 	bap := BasicAuthenticationProvider{
 		Config: config.AuthenticationProviderConfig{
-			LDAPUsername:         "foobar",
-			LDAPPassword:         "C0rr3ctP4ssw0rd",
+			Username:             "foobar",
+			Password:             "C0rr3ctP4ssw0rd",
 			TokenValidityTimeout: 20,
 		},
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
@@ -525,8 +525,8 @@ func TestAuthenticateMiddleware_BearerInvalidToken(t *testing.T) {
 
 	bap := BasicAuthenticationProvider{
 		Config: config.AuthenticationProviderConfig{
-			LDAPUsername:         "foobar",
-			LDAPPassword:         "C0rr3ctP4ssw0rd",
+			Username:             "foobar",
+			Password:             "C0rr3ctP4ssw0rd",
 			TokenValidityTimeout: 20,
 		},
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
@@ -554,8 +554,8 @@ func TestAuthenticateMiddleware_BearerInvalidSignature(t *testing.T) {
 
 	bap := BasicAuthenticationProvider{
 		Config: config.AuthenticationProviderConfig{
-			LDAPUsername:         "foobar",
-			LDAPPassword:         "C0rr3ctP4ssw0rd",
+			Username:             "foobar",
+			Password:             "C0rr3ctP4ssw0rd",
 			TokenValidityTimeout: 20,
 		},
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
@@ -583,8 +583,8 @@ func TestAuthenticateMiddleware_BearerTokenExpired(t *testing.T) {
 
 	bap := BasicAuthenticationProvider{
 		Config: config.AuthenticationProviderConfig{
-			LDAPUsername:         "foobar",
-			LDAPPassword:         "C0rr3ctP4ssw0rd",
+			Username:             "foobar",
+			Password:             "C0rr3ctP4ssw0rd",
 			TokenValidityTimeout: 20,
 		},
 		TimeNow: utils.Btc(utils.P("2019-11-05T16:02:03Z")),
@@ -612,8 +612,8 @@ func TestAuthenticateMiddleware_BearerTokenFromFuture(t *testing.T) {
 
 	bap := BasicAuthenticationProvider{
 		Config: config.AuthenticationProviderConfig{
-			LDAPUsername:         "foobar",
-			LDAPPassword:         "C0rr3ctP4ssw0rd",
+			Username:             "foobar",
+			Password:             "C0rr3ctP4ssw0rd",
 			TokenValidityTimeout: 20,
 		},
 		TimeNow: utils.Btc(utils.P("2019-11-05T12:02:03Z")),
@@ -641,8 +641,8 @@ func TestAuthenticateMiddleware_BearerOk(t *testing.T) {
 
 	bap := BasicAuthenticationProvider{
 		Config: config.AuthenticationProviderConfig{
-			LDAPUsername:         "foobar",
-			LDAPPassword:         "C0rr3ctP4ssw0rd",
+			Username:             "foobar",
+			Password:             "C0rr3ctP4ssw0rd",
 			TokenValidityTimeout: 20,
 		},
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
