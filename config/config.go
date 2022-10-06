@@ -312,11 +312,9 @@ type AuthenticationProviderConfig struct {
 	Host                 string
 	Port                 int
 	LDAPBase             string
-	LDAPUseSSL           bool
 	LDAPBindDN           string
 	LDAPBindPassword     string
 	LDAPUserFilter       string
-	LDAPGroupFilter      string
 }
 
 // ReadConfig read, parse and return a Configuration from the configuration file

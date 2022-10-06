@@ -18,6 +18,7 @@ package auth
 import (
 	"bytes"
 	"crypto/rsa"
+	"crypto/subtle"
 	"crypto/tls"
 	"encoding/base64"
 	"encoding/json"
@@ -185,13 +186,9 @@ func (ap *LDAPAuthenticationProvider) AuthenticateMiddleware(next http.Handler) 
 			user := val[:bytes.IndexRune(val, ':')]
 			password := val[bytes.IndexRune(val, ':')+1:]
 
-			info, err := ap.GetUserInfoIfCredentialsAreCorrect(string(user), string(password))
-			if err != nil {
-				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, err)
+			if subtle.ConstantTimeCompare(user, []byte(ap.Config.Username)) == 0 || subtle.ConstantTimeCompare(password, []byte(ap.Config.Password)) == 0 {
+				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewError(errors.New("Invalid credentials"), http.StatusText(http.StatusUnauthorized)))
 				return
-			}
-			if info == nil {
-				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewError(errors.New("Failed to login, invalid credentials"), http.StatusText(http.StatusUnauthorized)))
 			}
 
 			next.ServeHTTP(w, r)
