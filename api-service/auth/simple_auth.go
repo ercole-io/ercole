@@ -162,7 +162,7 @@ func (ap *BasicAuthenticationProvider) AuthenticateMiddleware(next http.Handler)
 			user := val[:bytes.IndexRune(val, ':')]
 			password := val[bytes.IndexRune(val, ':')+1:]
 
-			if subtle.ConstantTimeCompare(user, []byte(ap.Config.LDAPUsername)) == 0 || subtle.ConstantTimeCompare(password, []byte(ap.Config.LDAPPassword)) == 0 {
+			if subtle.ConstantTimeCompare(user, []byte(ap.Config.Username)) == 0 || subtle.ConstantTimeCompare(password, []byte(ap.Config.Password)) == 0 {
 				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewError(errors.New("Invalid credentials"), http.StatusText(http.StatusUnauthorized)))
 				return
 			}

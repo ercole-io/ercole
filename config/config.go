@@ -300,9 +300,9 @@ type AuthenticationProviderConfig struct {
 	// 	- ldap
 	Types []string
 	// Username is the username of the user if type == "basic"
-	LDAPUsername string
+	Username string
 	// Password is the password of the user if type == "basic"
-	LDAPPassword string
+	Password string
 	// PrivateKey is the filename of the key
 	PrivateKey string
 	// PublicKey is the filename of the key
