@@ -290,17 +290,19 @@ func serveAPIService(config config.Configuration, wg *sync.WaitGroup) {
 	}
 	service.Init()
 
-	auth := apiservice_auth.BuildAuthenticationProvider(config.APIService.AuthenticationProvider, *service, time.Now, log)
-	auth.Init()
+	auths := apiservice_auth.BuildAuthenticationProvider(config.APIService.AuthenticationProvider, *service, time.Now, log)
+	for _, auth := range auths {
+		auth.Init()
+	}
 
 	ctrl := &apiservice_controller.APIController{
 		Config:        config,
 		Service:       service,
 		TimeNow:       time.Now,
 		Log:           log,
-		Authenticator: auth,
+		Authenticator: auths,
 	}
-	h := ctrl.GetApiControllerHandler(auth)
+	h := ctrl.GetApiControllerHandler(auths)
 	h = useCommonHandlers(h, config.APIService.LogHTTPRequest, log)
 
 	wg.Add(1)
@@ -359,18 +361,20 @@ func serveChartService(config config.Configuration, wg *sync.WaitGroup) {
 	}
 	serviceAPI.Init()
 
-	auth := apiservice_auth.BuildAuthenticationProvider(config.APIService.AuthenticationProvider, *serviceAPI, time.Now, log)
-	auth.Init()
+	auths := apiservice_auth.BuildAuthenticationProvider(config.APIService.AuthenticationProvider, *serviceAPI, time.Now, log)
+	for _, auth := range auths {
+		auth.Init()
+	}
 
 	ctrl := &chartservice_controller.ChartController{
 		Config:        config,
 		Service:       service,
 		TimeNow:       time.Now,
 		Log:           log,
-		Authenticator: auth,
+		Authenticator: auths,
 	}
 
-	h := ctrl.GetChartControllerHandler(auth)
+	h := ctrl.GetChartControllerHandler(auths)
 	h = useCommonHandlers(h, config.ChartService.LogHTTPRequest, log)
 
 	wg.Add(1)
