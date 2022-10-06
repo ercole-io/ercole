@@ -39,8 +39,8 @@ type HistoricizeLicensesComplianceJob struct {
 func (job *HistoricizeLicensesComplianceJob) Run() {
 	url := utils.NewAPIUrlNoParams(
 		job.Config.APIService.RemoteEndpoint,
-		job.Config.APIService.AuthenticationProvider.Username,
-		job.Config.APIService.AuthenticationProvider.Password,
+		job.Config.APIService.AuthenticationProvider.LDAPUsername,
+		job.Config.APIService.AuthenticationProvider.LDAPPassword,
 		"/hosts/technologies/all/databases/licenses-compliance").String()
 
 	client := http.Client{Timeout: 1 * time.Minute}

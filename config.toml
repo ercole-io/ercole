@@ -52,12 +52,22 @@ DefaultDatabaseTags = [
 ]
 
   [APIService.AuthenticationProvider]
-  Type = "basic"
-  Username = "user"
-  Password = "password"
+  Types = [
+    "basic",
+    "ldap",
+  ]
+  LDAPUsername = "user"
+  LDAPPassword = "password"
   PrivateKey = "/path/to/my_private_rsa_key"
-  PublicKey = "/path/to/my_public_rsa_key.pub"
+  PublicKey = /path/to/my_public_rsa_key.pub"
   TokenValidityTimeout = 7200
+  Host = "127.0.0.1"
+  Port = 10389
+  LDAPBase = "dc=planetexpress,dc=com"
+  LDAPBindDN = "cn=admin,dc=planetexpress,dc=com"
+  LDAPBindPassword = "GoodNewsEveryone"
+  LDAPUserFilter = "(uid=%s)"
+
 
   [[APIService.OperatingSystemAggregationRules]]
   Regex = "^Red Hat Enterprise Linux 8.*$"

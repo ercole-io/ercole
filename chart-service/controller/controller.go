@@ -55,7 +55,7 @@ type ChartController struct {
 	// Log contains logger formatted
 	Log logger.Logger
 	// Authenticator contains the authenticator
-	Authenticator auth.AuthenticationProvider
+	Authenticator []auth.AuthenticationProvider
 }
 
 // GetTechnologiesMetrics return metrics of all technologies

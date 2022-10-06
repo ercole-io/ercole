@@ -23,9 +23,15 @@ import (
 
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
+	"github.com/ercole-io/ercole/v2/utils"
 	jwt "github.com/golang-jwt/jwt/v4"
 
 	apiservice_service "github.com/ercole-io/ercole/v2/api-service/service"
+)
+
+const (
+	BasicType = "basic"
+	LdapType  = "ldap"
 )
 
 // AuthenticationProvider is a interface that wrap methods used to authenticate users
@@ -38,30 +44,39 @@ type AuthenticationProvider interface {
 	GetToken(w http.ResponseWriter, r *http.Request)
 	// GetUserInfoIfCorrect return the informations about the user if the provided credentials are correct, otherwise return nil
 	GetUserInfoIfCredentialsAreCorrect(username string, password string) (map[string]interface{}, error)
+
+	GetType() string
 }
 
 // BuildAuthenticationProvider return a authentication provider that match what is requested in the configuration
 // It's initialized
-func BuildAuthenticationProvider(conf config.AuthenticationProviderConfig, service apiservice_service.APIService, timeNow func() time.Time, log logger.Logger) AuthenticationProvider {
-	switch conf.Type {
-	case "basic":
+func BuildAuthenticationProvider(conf config.AuthenticationProviderConfig, service apiservice_service.APIService, timeNow func() time.Time, log logger.Logger) []AuthenticationProvider {
+	provs := make([]AuthenticationProvider, 0, 2)
+
+	if len(conf.Types) == 0 || (!utils.Contains(conf.Types, BasicType) && !utils.Contains(conf.Types, LdapType)) {
+		panic("The AuthenticationProvider type wasn't recognized or supported")
+	}
+
+	if utils.Contains(conf.Types, BasicType) {
 		prov := new(BasicAuthenticationProvider)
 		prov.Config = conf
 		prov.Log = log
 		prov.TimeNow = timeNow
 		prov.Service = service
 
-		return prov
-	case "ldap":
+		provs = append(provs, prov)
+	}
+
+	if utils.Contains(conf.Types, LdapType) {
 		prov := new(LDAPAuthenticationProvider)
 		prov.Config = conf
 		prov.Log = log
 		prov.TimeNow = timeNow
 
-		return prov
-	default:
-		panic("The AuthenticationProvider type wasn't recognized or supported")
+		provs = append(provs, prov)
 	}
+
+	return provs
 }
 
 func buildToken(now time.Time, tokenValidityTimeout int, username string, privateKey *rsa.PrivateKey) (string, error) {
