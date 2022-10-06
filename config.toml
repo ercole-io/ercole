@@ -56,8 +56,8 @@ DefaultDatabaseTags = [
     "basic",
     "ldap",
   ]
-  LDAPUsername = "user"
-  LDAPPassword = "password"
+  Username = "user"
+  Password = "password"
   PrivateKey = "/path/to/my_private_rsa_key"
   PublicKey = /path/to/my_public_rsa_key.pub"
   TokenValidityTimeout = 7200
