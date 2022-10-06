@@ -16,5 +16,6 @@
 package model
 
 type Role struct {
-	Name string `json:"name" bson:"name"`
+	Name        string `json:"name" bson:"name"`
+	Description string `json:"description" bson:"description"`
 }
