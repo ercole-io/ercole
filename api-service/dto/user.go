@@ -20,17 +20,25 @@ import (
 )
 
 type User struct {
-	Username string   `json:"username"`
-	Groups   []string `json:"groups"`
+	Username  string   `json:"username"`
+	FirstName string   `json:"firstName"`
+	LastName  string   `json:"lastName"`
+	Groups    []string `json:"groups"`
 }
 
 type Users []User
 
 func ToUser(userModel *model.User) User {
 	if userModel != nil {
+		if userModel.Groups == nil {
+			userModel.Groups = []string{}
+		}
+
 		return User{
-			Username: userModel.Username,
-			Groups:   userModel.Groups,
+			Username:  userModel.Username,
+			FirstName: userModel.FirstName,
+			LastName:  userModel.LastName,
+			Groups:    userModel.Groups,
 		}
 	}
 
@@ -41,6 +49,10 @@ func ToUsers(usersModel []model.User) Users {
 	result := make([]User, 0, len(usersModel))
 
 	for _, userModel := range usersModel {
+		if userModel.Groups == nil {
+			userModel.Groups = []string{}
+		}
+
 		result = append(result, ToUser(&userModel))
 	}
 
