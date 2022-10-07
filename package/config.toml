@@ -43,12 +43,21 @@ LogHTTPRequest = true
 ReadOnly = false
 
   [APIService.AuthenticationProvider]
-  Type = "basic"
+  Types = [
+    "basic",
+    "ldap",
+  ]
   Username = "user"
   Password = "password"
-  PrivateKey = "/etc/ssh/ssh_host_rsa_key"
-  PublicKey = "/etc/ssh/ssh_host_rsa_key.pub"
-  TokenValidityTimeout = 2700
+  PrivateKey = "/path/to/my_private_rsa_key"
+  PublicKey = "/path/to/my_public_rsa_key.pub"
+  TokenValidityTimeout = 7200
+  Host = "127.0.0.1"
+  Port = 10389
+  LDAPBase = "dc=planetexpress,dc=com"
+  LDAPBindDN = "cn=admin,dc=planetexpress,dc=com"
+  LDAPBindPassword = "GoodNewsEveryone"
+  LDAPUserFilter = "(uid=%s)"
 
   [[APIService.OperatingSystemAggregationRules]]
   Regex = "^Red Hat Enterprise Linux 8.*$"
