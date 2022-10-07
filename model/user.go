@@ -24,5 +24,7 @@ type User struct {
 	Password  string     `json:"password" bson:"password"`
 	Salt      string     `json:"-" bson:"salt"`
 	LastLogin *time.Time `json:"lastLogin" bson:"lastLogin"`
+	FirstName string     `json:"firstName" bson:"firstName"`
+	LastName  string     `json:"lastName" bson:"lastName"`
 	Groups    []string   `json:"groups" bson:"groups"`
 }
