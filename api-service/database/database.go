@@ -216,10 +216,7 @@ type MongoDatabaseInterface interface {
 	SearchPostgreSqlInstances(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) (*dto.PostgreSqlInstanceResponse, error)
 
 	// ROLES
-	InsertRole(role model.Role) error
 	GetRole(name string) (*model.Role, error)
-	UpdateRole(role model.Role) error
-	DeleteRole(name string) error
 	GetRoles() ([]model.Role, error)
 
 	// GROUPS

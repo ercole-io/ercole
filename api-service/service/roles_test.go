@@ -23,80 +23,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/ercole-io/ercole/v2/model"
-	"github.com/ercole-io/ercole/v2/utils"
 )
-
-func TestInsertRole(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	db := NewMockMongoDatabaseInterface(mockCtrl)
-	as := APIService{
-		Database:    db,
-		NewObjectID: utils.NewObjectIDForTests(),
-	}
-
-	t.Run("Success", func(t *testing.T) {
-		expected := model.Role{
-			Name: "Test",
-		}
-		db.EXPECT().InsertRole(expected).
-			Return(nil).Times(1)
-
-		role := model.Role{
-			Name: "Test",
-		}
-		actual, err := as.InsertRole(role)
-		require.NoError(t, err)
-
-		assert.Equal(t, &expected, actual)
-	})
-
-	t.Run("Error", func(t *testing.T) {
-		role := model.Role{
-			Name: "Test",
-		}
-		db.EXPECT().InsertRole(role).
-			Return(errMock).Times(1)
-
-		actual, err := as.InsertRole(role)
-		assert.EqualError(t, err, "MockError")
-
-		assert.Nil(t, actual)
-	})
-}
-
-func TestUpdateRole(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	db := NewMockMongoDatabaseInterface(mockCtrl)
-	as := APIService{
-		Database: db,
-	}
-
-	t.Run("Success", func(t *testing.T) {
-		role := model.Role{
-			Name: "Test",
-		}
-		db.EXPECT().UpdateRole(role).
-			Return(nil).Times(1)
-
-		actual, err := as.UpdateRole(role)
-		require.NoError(t, err)
-		assert.Equal(t, role, *actual)
-	})
-
-	t.Run("Error", func(t *testing.T) {
-		role := model.Role{
-			Name: "Test",
-		}
-		db.EXPECT().UpdateRole(role).
-			Return(errMock).Times(1)
-
-		actual, err := as.UpdateRole(role)
-		require.EqualError(t, err, "MockError")
-		assert.Nil(t, actual)
-	})
-}
 
 func TestGetRoles(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
@@ -161,32 +88,5 @@ func TestGetRole(t *testing.T) {
 		require.EqualError(t, err, "MockError")
 
 		assert.Nil(t, actual)
-	})
-}
-
-func TestDeleteRole(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	db := NewMockMongoDatabaseInterface(mockCtrl)
-	as := APIService{
-		Database: db,
-	}
-
-	t.Run("Success", func(t *testing.T) {
-		name := "Test"
-		db.EXPECT().DeleteRole(name).
-			Return(nil).Times(1)
-
-		err := as.DeleteRole(name)
-		require.NoError(t, err)
-	})
-
-	t.Run("Error", func(t *testing.T) {
-		name := "Bart"
-		db.EXPECT().DeleteRole(name).
-			Return(errMock).Times(1)
-
-		err := as.DeleteRole(name)
-		require.EqualError(t, err, "MockError")
 	})
 }

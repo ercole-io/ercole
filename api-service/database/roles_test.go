@@ -20,51 +20,10 @@ import (
 	"testing"
 
 	"github.com/ercole-io/ercole/v2/model"
-	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.mongodb.org/mongo-driver/bson"
 )
-
-func (m *MongodbSuite) TestInsertRole() {
-	defer m.db.Client.Database(m.dbname).Collection(roleCollection).DeleteMany(context.TODO(), bson.M{})
-
-	role := model.Role{
-		Name: "Test",
-	}
-
-	m.T().Run("should_insert", func(t *testing.T) {
-		err := m.db.InsertRole(role)
-		m.Require().NoError(err)
-	})
-}
-
-func (m *MongodbSuite) TestUpdateRole() {
-	defer m.db.Client.Database(m.dbname).Collection(roleCollection).DeleteMany(context.TODO(), bson.M{})
-
-	role := model.Role{
-		Name: "Test",
-	}
-
-	m.T().Run("error not found", func(t *testing.T) {
-		err := m.db.UpdateRole(role)
-		var aerr *utils.AdvancedError
-		assert.ErrorAs(t, err, &aerr)
-		assert.ErrorIs(t, aerr.Err, utils.ErrRoleNotFound)
-	})
-
-	m.T().Run("should_update", func(t *testing.T) {
-		_, err := m.db.Client.Database(m.dbname).Collection(roleCollection).
-			InsertOne(
-				context.TODO(),
-				role,
-			)
-		require.NoError(t, err)
-
-		err = m.db.UpdateRole(role)
-		assert.NoError(t, err)
-	})
-}
 
 func (m *MongodbSuite) TestGetRoles() {
 	m.T().Run("should_load_all", func(t *testing.T) {
@@ -135,31 +94,5 @@ func (m *MongodbSuite) TestGetRole() {
 
 		roles := make([]model.Role, 0)
 		assert.Equal(t, roles, actual)
-	})
-}
-
-func (m *MongodbSuite) TestDeleteRole() {
-	defer m.db.Client.Database(m.dbname).Collection(roleCollection).DeleteMany(context.TODO(), bson.M{})
-
-	m.T().Run("error not found", func(t *testing.T) {
-		err := m.db.DeleteRole("Bart")
-		var aerr *utils.AdvancedError
-		assert.ErrorAs(t, err, &aerr)
-		assert.ErrorIs(t, aerr.Err, utils.ErrRoleNotFound)
-	})
-
-	m.T().Run("should_delete", func(t *testing.T) {
-		role := model.Role{
-			Name: "Test",
-		}
-		_, err := m.db.Client.Database(m.dbname).Collection(roleCollection).
-			InsertOne(
-				context.TODO(),
-				role,
-			)
-		require.NoError(t, err)
-
-		err = m.db.DeleteRole(role.Name)
-		assert.NoError(t, err)
 	})
 }
