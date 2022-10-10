@@ -20,23 +20,6 @@ import (
 	"github.com/ercole-io/ercole/v2/model"
 )
 
-func (as *APIService) InsertRole(role model.Role) (*model.Role, error) {
-	err := as.Database.InsertRole(role)
-	if err != nil {
-		return nil, err
-	}
-
-	return &role, nil
-}
-
-func (as *APIService) UpdateRole(role model.Role) (*model.Role, error) {
-	if err := as.Database.UpdateRole(role); err != nil {
-		return nil, err
-	}
-
-	return &role, nil
-}
-
 func (as *APIService) GetRole(name string) (*model.Role, error) {
 	role, err := as.Database.GetRole(name)
 	if err != nil {
@@ -53,12 +36,4 @@ func (as *APIService) GetRoles() ([]model.Role, error) {
 	}
 
 	return roles, nil
-}
-
-func (as *APIService) DeleteRole(name string) error {
-	if err := as.Database.DeleteRole(name); err != nil {
-		return err
-	}
-
-	return nil
 }
