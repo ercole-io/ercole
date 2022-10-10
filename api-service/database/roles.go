@@ -26,20 +26,6 @@ import (
 
 const roleCollection = "roles"
 
-// InsertRole insert a role into the database
-func (md *MongoDatabase) InsertRole(role model.Role) error {
-	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(roleCollection).
-		InsertOne(
-			context.TODO(),
-			role,
-		)
-	if err != nil {
-		return utils.NewError(err, "DB ERROR")
-	}
-
-	return nil
-}
-
 // GetRole return the role specified by role name
 func (md *MongoDatabase) GetRole(name string) (*model.Role, error) {
 	res := md.Client.Database(md.Config.Mongodb.DBName).Collection(roleCollection).
@@ -59,42 +45,6 @@ func (md *MongoDatabase) GetRole(name string) (*model.Role, error) {
 	}
 
 	return &out, nil
-}
-
-// UpdateRole update a role in the database
-func (md *MongoDatabase) UpdateRole(role model.Role) error {
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(roleCollection).
-		UpdateOne(
-			context.TODO(),
-			bson.M{"name": role.Name},
-			bson.M{"$set": role},
-		)
-	if err != nil {
-		return utils.NewError(err, "DB ERROR")
-	}
-
-	if cur.MatchedCount != 1 {
-		return utils.NewError(utils.ErrRoleNotFound, "DB ERROR")
-	}
-
-	return nil
-}
-
-// DeleteRole delete a role from the database
-func (md *MongoDatabase) DeleteRole(name string) error {
-	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(roleCollection).
-		DeleteOne(context.TODO(), bson.M{
-			"name": name,
-		})
-	if err != nil {
-		return utils.NewError(err, "DB ERROR")
-	}
-
-	if res.DeletedCount != 1 {
-		return utils.NewError(utils.ErrRoleNotFound, "DB ERROR")
-	}
-
-	return nil
 }
 
 // GetRoles lists roles
