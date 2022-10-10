@@ -39,20 +39,20 @@ func (ctrl *APIController) InsertRole(w http.ResponseWriter, r *http.Request) {
 	var role model.Role
 
 	if validationErr := schema.ValidateRole(raw); validationErr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, validationErr)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, validationErr)
 
 		return
 	}
 
 	err = json.Unmarshal(raw, &role)
 	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
 		return
 	}
 
 	roleInserted, err := ctrl.Service.InsertRole(role)
 	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
@@ -75,7 +75,7 @@ func (ctrl *APIController) UpdateRole(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
@@ -85,7 +85,7 @@ func (ctrl *APIController) UpdateRole(w http.ResponseWriter, r *http.Request) {
 func (ctrl *APIController) GetRoles(w http.ResponseWriter, r *http.Request) {
 	roles, err := ctrl.Service.GetRoles()
 	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
@@ -105,7 +105,7 @@ func (ctrl *APIController) GetRole(w http.ResponseWriter, r *http.Request) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 		return
 	} else if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
@@ -122,7 +122,7 @@ func (ctrl *APIController) DeleteRole(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if errDel != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, errDel)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, errDel)
 		return
 	}
 
