@@ -70,7 +70,7 @@ func TestInsertRole_Success(t *testing.T) {
 	assert.JSONEq(t, utils.ToJSON(returnAgr), rr.Body.String())
 }
 
-func TestInsertRole_InternalServerError(t *testing.T) {
+func TestInsertRole_UnprocessableEntity(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -99,7 +99,7 @@ func TestInsertRole_InternalServerError(t *testing.T) {
 	rr := httptest.NewRecorder()
 	handler.ServeHTTP(rr, req)
 
-	require.Equal(t, http.StatusInternalServerError, rr.Code)
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 
 	var feErr utils.ErrorResponseFE
 	decoder := json.NewDecoder(bytes.NewReader(rr.Body.Bytes()))
@@ -108,7 +108,7 @@ func TestInsertRole_InternalServerError(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, "MockError", feErr.Error)
-	assert.Equal(t, "Internal Server Error", feErr.Message)
+	assert.Equal(t, "Unprocessable Entity", feErr.Message)
 }
 
 func TestUpdateRole_Success(t *testing.T) {
@@ -238,7 +238,7 @@ func TestUpdateRole_NotFoundError(t *testing.T) {
 	assert.Equal(t, "test", feErr.Message)
 }
 
-func TestUpdateRole_InternalServerError(t *testing.T) {
+func TestUpdateRole_UnprocessableEntity(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -270,7 +270,7 @@ func TestUpdateRole_InternalServerError(t *testing.T) {
 	rr := httptest.NewRecorder()
 	handler.ServeHTTP(rr, req)
 
-	require.Equal(t, http.StatusInternalServerError, rr.Code)
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 
 	var feErr utils.ErrorResponseFE
 	decoder := json.NewDecoder(bytes.NewReader(rr.Body.Bytes()))
@@ -279,7 +279,7 @@ func TestUpdateRole_InternalServerError(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, "MockError", feErr.Error)
-	assert.Equal(t, "Internal Server Error", feErr.Message)
+	assert.Equal(t, "Unprocessable Entity", feErr.Message)
 }
 
 func TestGetRoles_Success(t *testing.T) {
@@ -321,7 +321,7 @@ func TestGetRoles_Success(t *testing.T) {
 	assert.JSONEq(t, utils.ToJSON(expected), rr.Body.String())
 }
 
-func TestGetRoles_InternalServerError(t *testing.T) {
+func TestGetRoles_UnprocessableEntity(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -342,7 +342,7 @@ func TestGetRoles_InternalServerError(t *testing.T) {
 	rr := httptest.NewRecorder()
 	handler.ServeHTTP(rr, req)
 
-	require.Equal(t, http.StatusInternalServerError, rr.Code)
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 
 	var feErr utils.ErrorResponseFE
 	decoder := json.NewDecoder(bytes.NewReader(rr.Body.Bytes()))
@@ -351,7 +351,7 @@ func TestGetRoles_InternalServerError(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, "MockError", feErr.Error)
-	assert.Equal(t, "Internal Server Error", feErr.Message)
+	assert.Equal(t, "Unprocessable Entity", feErr.Message)
 }
 
 func TestDeleteRole_Success(t *testing.T) {
@@ -418,7 +418,7 @@ func TestDeleteRole_NotFoundError(t *testing.T) {
 	assert.Equal(t, "test", feErr.Message)
 }
 
-func TestDeleteRole_InternalServerError(t *testing.T) {
+func TestDeleteRole_UnprocessableEntity(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -442,7 +442,7 @@ func TestDeleteRole_InternalServerError(t *testing.T) {
 	rr := httptest.NewRecorder()
 	handler.ServeHTTP(rr, req)
 
-	require.Equal(t, http.StatusInternalServerError, rr.Code)
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 
 	var feErr utils.ErrorResponseFE
 	decoder := json.NewDecoder(bytes.NewReader(rr.Body.Bytes()))
@@ -451,7 +451,7 @@ func TestDeleteRole_InternalServerError(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, "MockError", feErr.Error)
-	assert.Equal(t, "Internal Server Error", feErr.Message)
+	assert.Equal(t, "Unprocessable Entity", feErr.Message)
 }
 
 func TestGetRole_Success(t *testing.T) {
@@ -491,7 +491,7 @@ func TestGetRole_Success(t *testing.T) {
 	assert.JSONEq(t, utils.ToJSON(&role), rr.Body.String())
 }
 
-func TestGetRole_InternalServerError(t *testing.T) {
+func TestGetRole_UnprocessableEntity(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -515,7 +515,7 @@ func TestGetRole_InternalServerError(t *testing.T) {
 	rr := httptest.NewRecorder()
 	handler.ServeHTTP(rr, req)
 
-	require.Equal(t, http.StatusInternalServerError, rr.Code)
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 
 	var feErr utils.ErrorResponseFE
 	decoder := json.NewDecoder(bytes.NewReader(rr.Body.Bytes()))
@@ -524,5 +524,5 @@ func TestGetRole_InternalServerError(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, "MockError", feErr.Error)
-	assert.Equal(t, "Internal Server Error", feErr.Message)
+	assert.Equal(t, "Unprocessable Entity", feErr.Message)
 }

@@ -39,20 +39,20 @@ func (ctrl *APIController) InsertGroup(w http.ResponseWriter, r *http.Request) {
 	var group model.Group
 
 	if validationErr := schema.ValidateGroup(raw); validationErr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, validationErr)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, validationErr)
 
 		return
 	}
 
 	err = json.Unmarshal(raw, &group)
 	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
 		return
 	}
 
 	groupInserted, err := ctrl.Service.InsertGroup(group)
 	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
@@ -72,14 +72,14 @@ func (ctrl *APIController) UpdateGroup(w http.ResponseWriter, r *http.Request) {
 	group := model.Group{Name: name}
 
 	if validationErr := schema.ValidateGroup(raw); validationErr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, validationErr)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, validationErr)
 
 		return
 	}
 
 	err = json.Unmarshal(raw, &group)
 	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
 		return
 	}
 
@@ -90,7 +90,7 @@ func (ctrl *APIController) UpdateGroup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
@@ -100,7 +100,7 @@ func (ctrl *APIController) UpdateGroup(w http.ResponseWriter, r *http.Request) {
 func (ctrl *APIController) GetGroups(w http.ResponseWriter, r *http.Request) {
 	groups, err := ctrl.Service.GetGroups()
 	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
@@ -120,7 +120,7 @@ func (ctrl *APIController) GetGroup(w http.ResponseWriter, r *http.Request) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 		return
 	} else if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
@@ -132,7 +132,7 @@ func (ctrl *APIController) DeleteGroup(w http.ResponseWriter, r *http.Request) {
 
 	users, err := ctrl.Service.ListUsers()
 	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
@@ -152,7 +152,7 @@ func (ctrl *APIController) DeleteGroup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if errDel != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, errDel)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, errDel)
 		return
 	}
 
