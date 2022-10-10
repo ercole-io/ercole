@@ -66,10 +66,7 @@ func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 	router.HandleFunc("/users/{username}", ctrl.RemoveUser).Methods("DELETE")
 
 	// ROLES
-	router.HandleFunc("/roles", ctrl.InsertRole).Methods("POST")
-	router.HandleFunc("/roles/{name}", ctrl.UpdateRole).Methods("PUT")
 	router.HandleFunc("/roles/{name}", ctrl.GetRole).Methods("GET")
-	router.HandleFunc("/roles/{name}", ctrl.DeleteRole).Methods("DELETE")
 	router.HandleFunc("/roles", ctrl.GetRoles).Methods("GET")
 
 	// GROUPS

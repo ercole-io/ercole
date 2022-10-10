@@ -251,11 +251,8 @@ type APIServiceInterface interface {
 	SearchPostgreSqlInstancesAsXLSX(filter dto.SearchPostgreSqlInstancesFilter) (*excelize.File, error)
 
 	// ROLES
-	InsertRole(role model.Role) (*model.Role, error)
-	UpdateRole(role model.Role) (*model.Role, error)
 	GetRole(name string) (*model.Role, error)
 	GetRoles() ([]model.Role, error)
-	DeleteRole(name string) error
 
 	// GROUPS
 	InsertGroup(group model.Group) (*model.Group, error)

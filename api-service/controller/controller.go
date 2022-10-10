@@ -186,11 +186,8 @@ type APIControllerInterface interface {
 	DeleteMySQLContract(w http.ResponseWriter, r *http.Request)
 
 	// ROLES
-	InsertRole(w http.ResponseWriter, r *http.Request)
-	UpdateRole(w http.ResponseWriter, r *http.Request)
 	GetRole(w http.ResponseWriter, r *http.Request)
 	GetRoles(w http.ResponseWriter, r *http.Request)
-	DeleteRole(w http.ResponseWriter, r *http.Request)
 
 	// GROUPS
 	InsertGroup(w http.ResponseWriter, r *http.Request)
