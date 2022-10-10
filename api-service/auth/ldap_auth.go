@@ -64,8 +64,23 @@ func (ap *LDAPAuthenticationProvider) Init() {
 	}
 
 	l, err := ldap.DialURL(fmt.Sprintf("%s%s%s%s", "ldap://", ap.Config.Host, ":", strconv.Itoa(ap.Config.Port)))
+
+	var isBasic bool
+
 	if err != nil {
-		ap.Log.Fatalf("Error dialing LDAP url: %v", err)
+		types := ap.Config.Types
+
+		for _, typeAuth := range types {
+			if typeAuth == BasicType {
+				isBasic = true
+			}
+		}
+
+		if !isBasic {
+			ap.Log.Fatalf("Error dialing LDAP url: %v", err)
+		} else {
+			return
+		}
 	}
 
 	err = l.StartTLS(&tls.Config{InsecureSkipVerify: true})
