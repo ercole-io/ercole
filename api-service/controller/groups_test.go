@@ -71,7 +71,7 @@ func TestInsertGroup_Success(t *testing.T) {
 	assert.JSONEq(t, utils.ToJSON(returnAgr), rr.Body.String())
 }
 
-func TestInsertGroup_InternalServerError(t *testing.T) {
+func TestInsertGroup_UnprocessableEntity(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -101,7 +101,7 @@ func TestInsertGroup_InternalServerError(t *testing.T) {
 	rr := httptest.NewRecorder()
 	handler.ServeHTTP(rr, req)
 
-	require.Equal(t, http.StatusInternalServerError, rr.Code)
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 
 	var feErr utils.ErrorResponseFE
 	decoder := json.NewDecoder(bytes.NewReader(rr.Body.Bytes()))
@@ -110,7 +110,7 @@ func TestInsertGroup_InternalServerError(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, "MockError", feErr.Error)
-	assert.Equal(t, "Internal Server Error", feErr.Message)
+	assert.Equal(t, "Unprocessable Entity", feErr.Message)
 }
 
 func TestUpdateGroup_Success(t *testing.T) {
@@ -197,7 +197,7 @@ func TestUpdateGroup_NotFoundError(t *testing.T) {
 	assert.Equal(t, "test", feErr.Message)
 }
 
-func TestUpdateGroup_InternalServerError(t *testing.T) {
+func TestUpdateGroup_UnprocessableEntity(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -230,7 +230,7 @@ func TestUpdateGroup_InternalServerError(t *testing.T) {
 	rr := httptest.NewRecorder()
 	handler.ServeHTTP(rr, req)
 
-	require.Equal(t, http.StatusInternalServerError, rr.Code)
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 
 	var feErr utils.ErrorResponseFE
 	decoder := json.NewDecoder(bytes.NewReader(rr.Body.Bytes()))
@@ -239,7 +239,7 @@ func TestUpdateGroup_InternalServerError(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, "MockError", feErr.Error)
-	assert.Equal(t, "Internal Server Error", feErr.Message)
+	assert.Equal(t, "Unprocessable Entity", feErr.Message)
 }
 
 func TestGetGroups_Success(t *testing.T) {
@@ -282,7 +282,7 @@ func TestGetGroups_Success(t *testing.T) {
 	assert.JSONEq(t, utils.ToJSON(expected), rr.Body.String())
 }
 
-func TestGetGroups_InternalServerError(t *testing.T) {
+func TestGetGroups_UnprocessableEntity(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -303,7 +303,7 @@ func TestGetGroups_InternalServerError(t *testing.T) {
 	rr := httptest.NewRecorder()
 	handler.ServeHTTP(rr, req)
 
-	require.Equal(t, http.StatusInternalServerError, rr.Code)
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 
 	var feErr utils.ErrorResponseFE
 	decoder := json.NewDecoder(bytes.NewReader(rr.Body.Bytes()))
@@ -312,7 +312,7 @@ func TestGetGroups_InternalServerError(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, "MockError", feErr.Error)
-	assert.Equal(t, "Internal Server Error", feErr.Message)
+	assert.Equal(t, "Unprocessable Entity", feErr.Message)
 }
 
 func TestDeleteGroup_Success(t *testing.T) {
@@ -385,7 +385,7 @@ func TestDeleteGroup_NotFoundError(t *testing.T) {
 	assert.Equal(t, "test", feErr.Message)
 }
 
-func TestDeleteGroup_InternalServerError(t *testing.T) {
+func TestDeleteGroup_UnprocessableEntity(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -412,7 +412,7 @@ func TestDeleteGroup_InternalServerError(t *testing.T) {
 	rr := httptest.NewRecorder()
 	handler.ServeHTTP(rr, req)
 
-	require.Equal(t, http.StatusInternalServerError, rr.Code)
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 
 	var feErr utils.ErrorResponseFE
 	decoder := json.NewDecoder(bytes.NewReader(rr.Body.Bytes()))
@@ -421,7 +421,7 @@ func TestDeleteGroup_InternalServerError(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, "MockError", feErr.Error)
-	assert.Equal(t, "Internal Server Error", feErr.Message)
+	assert.Equal(t, "Unprocessable Entity", feErr.Message)
 }
 
 func TestGetGroup_Success(t *testing.T) {
@@ -462,7 +462,7 @@ func TestGetGroup_Success(t *testing.T) {
 	assert.JSONEq(t, utils.ToJSON(&group), rr.Body.String())
 }
 
-func TestGetGroup_InternalServerError(t *testing.T) {
+func TestGetGroup_UnprocessableEntity(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -486,7 +486,7 @@ func TestGetGroup_InternalServerError(t *testing.T) {
 	rr := httptest.NewRecorder()
 	handler.ServeHTTP(rr, req)
 
-	require.Equal(t, http.StatusInternalServerError, rr.Code)
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 
 	var feErr utils.ErrorResponseFE
 	decoder := json.NewDecoder(bytes.NewReader(rr.Body.Bytes()))
@@ -495,5 +495,5 @@ func TestGetGroup_InternalServerError(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, "MockError", feErr.Error)
-	assert.Equal(t, "Internal Server Error", feErr.Message)
+	assert.Equal(t, "Unprocessable Entity", feErr.Message)
 }
