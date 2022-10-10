@@ -326,6 +326,9 @@ func TestDeleteGroup_Success(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
+	as.EXPECT().ListUsers().
+		Return(nil, nil)
+
 	as.EXPECT().DeleteGroup("Test").
 		Return(nil)
 
@@ -352,6 +355,9 @@ func TestDeleteGroup_NotFoundError(t *testing.T) {
 		Config:  config.Configuration{},
 		Log:     logger.NewLogger("TEST"),
 	}
+
+	as.EXPECT().ListUsers().
+		Return(nil, nil)
 
 	aerr := utils.NewError(utils.ErrGroupNotFound, "test")
 	as.EXPECT().DeleteGroup("Test").
@@ -389,6 +395,9 @@ func TestDeleteGroup_InternalServerError(t *testing.T) {
 		Config:  config.Configuration{},
 		Log:     logger.NewLogger("TEST"),
 	}
+
+	as.EXPECT().ListUsers().
+		Return(nil, nil)
 
 	as.EXPECT().DeleteGroup("Test").
 		Return(errMock)

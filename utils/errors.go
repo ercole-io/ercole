@@ -74,3 +74,5 @@ var ErrRoleAlreadyExists = errors.New("Role already exists")
 var ErrGroupNotFound = errors.New("Group not found")
 
 var ErrGroupAlreadyExists = errors.New("Group already exists")
+
+var ErrGroupCannotBeDeleted = errors.New("The group cannot be deleted because it is associated with one or more users")
