@@ -130,6 +130,21 @@ func (ctrl *APIController) GetGroup(w http.ResponseWriter, r *http.Request) {
 func (ctrl *APIController) DeleteGroup(w http.ResponseWriter, r *http.Request) {
 	name := mux.Vars(r)["name"]
 
+	users, err := ctrl.Service.ListUsers()
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
+
+	for _, user := range users {
+		for _, group := range user.Groups {
+			if group == name {
+				utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, utils.ErrGroupCannotBeDeleted)
+				return
+			}
+		}
+	}
+
 	errDel := ctrl.Service.DeleteGroup(name)
 	if errors.Is(errDel, utils.ErrGroupNotFound) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, errDel)
