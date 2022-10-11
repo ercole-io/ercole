@@ -96,3 +96,20 @@ func (md *MongoDatabase) RemoveUser(username string) error {
 
 	return nil
 }
+
+func (md *MongoDatabase) UpdatePassword(username string, password string, salt string) error {
+	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(userCollection).
+		UpdateOne(
+			context.TODO(),
+			bson.M{"username": username},
+			bson.D{{Key: "$set", Value: bson.D{
+				primitive.E{Key: "password", Value: password},
+				primitive.E{Key: "salt", Value: salt},
+			}}},
+		)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

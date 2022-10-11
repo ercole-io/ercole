@@ -16,7 +16,9 @@
 package service
 
 import (
+	"encoding/base64"
 	"encoding/json"
+	"errors"
 
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/schema"
@@ -39,6 +41,8 @@ func (as *APIService) AddUser(user model.User) error {
 
 	user.Password, user.Salt = cr.GenerateHashAndSalt(user.Password, salt)
 
+	user.Groups = append(user.Groups, model.GroupLimited)
+
 	raw, err := json.Marshal(user)
 	if err != nil {
 		return err
@@ -57,4 +61,60 @@ func (as *APIService) UpdateUserGroups(updatedUser model.User) error {
 
 func (as *APIService) RemoveUser(username string) error {
 	return as.Database.RemoveUser(username)
+}
+
+func (as *APIService) NewPassword(username string) (string, error) {
+	saltByte, err := cr.GenerateRandomBytes()
+	if err != nil {
+		return "", err
+	}
+
+	suggestedPassword := cr.SuggestPassword()
+
+	hashPwd, salt := cr.GenerateHashAndSalt(suggestedPassword, saltByte)
+
+	if err := as.Database.UpdatePassword(username, hashPwd, salt); err != nil {
+		return "", err
+	}
+
+	return suggestedPassword, nil
+}
+
+func (as *APIService) MatchPassword(user *model.User, password string) bool {
+	if user == nil {
+		return false
+	}
+
+	salt, err := base64.RawStdEncoding.DecodeString(user.Salt)
+	if err != nil {
+		return false
+	}
+
+	pwd, _ := cr.GenerateHashAndSalt(password, salt)
+
+	return pwd == user.Password
+}
+
+func (as *APIService) UpdatePassword(username string, oldPass string, newPass string) error {
+	user, err := as.GetUser(username)
+	if err != nil {
+		return err
+	}
+
+	if ok := as.MatchPassword(user, oldPass); !ok {
+		return errors.New("Invalid password")
+	}
+
+	saltByte, err := cr.GenerateRandomBytes()
+	if err != nil {
+		return err
+	}
+
+	hashPwd, salt := cr.GenerateHashAndSalt(newPass, saltByte)
+
+	if err := as.Database.UpdatePassword(username, hashPwd, salt); err != nil {
+		return err
+	}
+
+	return nil
 }
