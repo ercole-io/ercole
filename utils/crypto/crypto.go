@@ -19,11 +19,26 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
+	"strings"
+	"time"
+
+	mathRand "math/rand"
 
 	"golang.org/x/crypto/argon2"
 )
 
-const saltLength = 16
+const (
+	saltLength     = 16
+	lowerCharSet   = "abcdedfghijklmnopqrst"
+	upperCharSet   = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	specialCharSet = "!@#$%&*"
+	numberSet      = "0123456789"
+	allCharSet     = lowerCharSet + upperCharSet + specialCharSet + numberSet
+	minSpecialChar = 2
+	minNum         = 2
+	minUpperCase   = 2
+	passwordLength = 16
+)
 
 type Params struct {
 	Memory      uint32
@@ -61,4 +76,38 @@ func GenerateHashAndSalt(password string, salt []byte) (string, string) {
 	encodedHash := fmt.Sprintf("$argon2id$v=%d$m=%d,t=%d,p=%d$%s$%s", argon2.Version, p.Memory, p.Iterations, p.Parallelism, b64Salt, b64Hash)
 
 	return encodedHash, b64Salt
+}
+
+func SuggestPassword() string {
+	mathRand.Seed(time.Now().Unix())
+
+	var password strings.Builder
+
+	for i := 0; i < minSpecialChar; i++ {
+		random := mathRand.Intn(len(specialCharSet))
+		password.WriteString(string(specialCharSet[random]))
+	}
+
+	for i := 0; i < minNum; i++ {
+		random := mathRand.Intn(len(numberSet))
+		password.WriteString(string(numberSet[random]))
+	}
+
+	for i := 0; i < minUpperCase; i++ {
+		random := mathRand.Intn(len(upperCharSet))
+		password.WriteString(string(upperCharSet[random]))
+	}
+
+	remainingLength := passwordLength - minSpecialChar - minNum - minUpperCase
+	for i := 0; i < remainingLength; i++ {
+		random := mathRand.Intn(len(allCharSet))
+		password.WriteString(string(allCharSet[random]))
+	}
+
+	inRune := []rune(password.String())
+	mathRand.Shuffle(len(inRune), func(i, j int) {
+		inRune[i], inRune[j] = inRune[j], inRune[i]
+	})
+
+	return string(inRune)
 }

@@ -232,6 +232,7 @@ type MongoDatabaseInterface interface {
 	AddUser(user model.User) error
 	UpdateUserGroups(user model.User) error
 	RemoveUser(username string) error
+	UpdatePassword(username string, password string, salt string) error
 }
 
 // MongoDatabase is a implementation

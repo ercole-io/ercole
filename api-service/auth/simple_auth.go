@@ -32,7 +32,6 @@ import (
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/utils"
-	cr "github.com/ercole-io/ercole/v2/utils/crypto"
 )
 
 // BasicAuthenticationProvider is the concrete implementation of AuthenticationProvider that provide a simple user authentication.
@@ -71,24 +70,11 @@ func (ap *BasicAuthenticationProvider) GetUserInfoIfCredentialsAreCorrect(userna
 		return nil, err
 	}
 
-	if user != nil {
-		salt, err := base64.RawStdEncoding.DecodeString(user.Salt)
-		if err != nil {
-			return nil, err
-		}
-
-		pwd, _ := cr.GenerateHashAndSalt(password, salt)
-
-		if pwd == user.Password {
-			return map[string]interface{}{
-				"Username": username,
-			}, nil
-		} else {
-			return nil, nil
-		}
-	} else {
-		return nil, nil
+	if ap.Service.MatchPassword(user, password) {
+		return map[string]interface{}{"Username": username}, nil
 	}
+
+	return nil, utils.ErrInvalidUser
 }
 
 // GetToken return the middleware used to check if the users are authenticated
@@ -118,9 +104,7 @@ func (ap *BasicAuthenticationProvider) GetToken(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	username := info["Username"].(string)
-
-	token, err := buildToken(ap.TimeNow(), ap.Config.TokenValidityTimeout, username, ap.privateKey)
+	token, err := buildToken(ap.TimeNow(), ap.Config.TokenValidityTimeout, request.Username, ap.privateKey)
 	if err != nil {
 		ap.Log.Errorf("Unable to get signed token: %s", err)
 		w.WriteHeader(http.StatusInternalServerError)
