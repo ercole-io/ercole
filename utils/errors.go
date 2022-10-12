@@ -76,3 +76,5 @@ var ErrGroupNotFound = errors.New("Group not found")
 var ErrGroupAlreadyExists = errors.New("Group already exists")
 
 var ErrGroupCannotBeDeleted = errors.New("The group cannot be deleted because it is associated with one or more users")
+
+var ErrConnectLDAPServer = errors.New("Cannot connect to LDAP server")
