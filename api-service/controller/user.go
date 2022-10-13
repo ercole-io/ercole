@@ -95,3 +95,44 @@ func (ctrl *APIController) RemoveUser(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusNoContent)
 }
+
+func (ctrl *APIController) NewPassword(w http.ResponseWriter, r *http.Request) {
+	username := mux.Vars(r)["username"]
+
+	newPassword, err := ctrl.Service.NewPassword(username)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, newPassword)
+}
+
+func (ctrl *APIController) ChangePassword(w http.ResponseWriter, r *http.Request) {
+	username := mux.Vars(r)["username"]
+
+	type changes struct {
+		OldPass       string `json:"oldPassword"`
+		NewPass       string `json:"newPassword"`
+		ConfirmedPass string `json:"confirmedPassword"`
+	}
+
+	reqChanges := changes{}
+
+	if err := utils.Decode(r.Body, &reqChanges); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
+		return
+	}
+
+	if reqChanges.NewPass != reqChanges.ConfirmedPass {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, errors.New("Invalid password"))
+		return
+	}
+
+	if err := ctrl.Service.UpdatePassword(username, reqChanges.OldPass, reqChanges.NewPass); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}

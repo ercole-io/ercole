@@ -15,6 +15,11 @@
 
 package model
 
+const (
+	// limited can only change the password
+	GroupLimited = "limited"
+)
+
 type Group struct {
 	Name        string   `json:"name" bson:"name"`
 	Description string   `json:"description" bson:"description"`
