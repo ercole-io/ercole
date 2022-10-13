@@ -21,6 +21,8 @@ import (
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
+const SuperUser = "ercole"
+
 type User struct {
 	Username  string     `json:"username" bson:"username"`
 	Password  string     `json:"password" bson:"password"`
