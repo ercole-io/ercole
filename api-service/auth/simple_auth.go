@@ -32,6 +32,7 @@ import (
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/gorilla/context"
 )
 
 // BasicAuthenticationProvider is the concrete implementation of AuthenticationProvider that provide a simple user authentication.
@@ -156,12 +157,25 @@ func (ap *BasicAuthenticationProvider) AuthenticateMiddleware(next http.Handler)
 		}
 
 		if strings.HasPrefix(tokenString, "Bearer ") {
-			err := validateBearerToken(tokenString, ap.TimeNow, ap.publicKey)
+			claims, err := validateBearerToken(tokenString, ap.TimeNow, ap.publicKey)
 			if err != nil {
 				ap.Log.Debugf("Invalid token: %s", err)
 				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, fmt.Errorf("Invalid token"))
 				return
 			}
+
+			if claims == nil {
+				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, fmt.Errorf("Invalid token"))
+				return
+			}
+
+			user, err := ap.Service.GetUser(claims.Subject)
+			if err != nil {
+				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, err)
+				return
+			}
+
+			context.Set(r, "user", user)
 
 			next.ServeHTTP(w, r)
 			return
