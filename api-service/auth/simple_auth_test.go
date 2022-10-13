@@ -123,7 +123,7 @@ func TestGetUserInfoIfCredentialsAreCorrect_WhenAreCredentialsAreWrong(t *testin
 		Service: *serviceAuth,
 	}
 	res, err := bap.GetUserInfoIfCredentialsAreCorrect("foobar", "password")
-	require.ErrorContains(t, err, "User not found")
+	require.ErrorContains(t, err, "Invalid user")
 	assert.Nil(t, res)
 }
 
@@ -639,6 +639,18 @@ func TestAuthenticateMiddleware_BearerTokenFromFuture(t *testing.T) {
 func TestAuthenticateMiddleware_BearerOk(t *testing.T) {
 	var err error
 
+	db.ConnectToMongodb()
+
+	defer serviceAuth.RemoveUser("foobar")
+
+	serviceAuth.AddUser(
+		model.User{
+			Username: "foobar",
+			Password: "C0rr3ctP4ssw0rd",
+			Groups:   []string{"Test"},
+		},
+	)
+
 	bap := BasicAuthenticationProvider{
 		Config: config.AuthenticationProviderConfig{
 			Username:             "foobar",
@@ -647,6 +659,7 @@ func TestAuthenticateMiddleware_BearerOk(t *testing.T) {
 		},
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Log:     logger.NewLogger("TEST", logger.LogVerbosely(true)),
+		Service: *serviceAuth,
 	}
 
 	bap.privateKey, bap.publicKey, err = parsePrivateKey([]byte(testRSAPrivateKey))
@@ -663,4 +676,7 @@ func TestAuthenticateMiddleware_BearerOk(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, 222, rr.Code)
+
+	db.Client.Database(db.Config.Mongodb.DBName).Collection("users").Drop(context.TODO())
+	db.Client.Disconnect(context.TODO())
 }

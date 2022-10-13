@@ -111,7 +111,7 @@ func parsePrivateKey(raw []byte) (*rsa.PrivateKey, *rsa.PublicKey, error) {
 	return privateKey, &privateKey.PublicKey, nil
 }
 
-func validateBearerToken(tokenString string, timeNow func() time.Time, publicKey *rsa.PublicKey) error {
+func validateBearerToken(tokenString string, timeNow func() time.Time, publicKey *rsa.PublicKey) (*jwt.RegisteredClaims, error) {
 	tokenString = tokenString[len("Bearer "):]
 	jwt.TimeFunc = timeNow
 	token, err := jwt.ParseWithClaims(tokenString, &jwt.RegisteredClaims{}, func(_ *jwt.Token) (interface{}, error) {
@@ -119,13 +119,13 @@ func validateBearerToken(tokenString string, timeNow func() time.Time, publicKey
 	}, jwt.WithValidMethods([]string{jwt.SigningMethodRS256.Name}))
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	_, ok := token.Claims.(*jwt.RegisteredClaims)
 	if !ok || !token.Valid {
-		return fmt.Errorf("Invalid token")
+		return nil, fmt.Errorf("Invalid token")
 	}
 
-	return nil
+	return token.Claims.(*jwt.RegisteredClaims), nil
 }

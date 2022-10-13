@@ -57,7 +57,7 @@ func (md *MongoDatabase) GetUser(username string) (*model.User, error) {
 	res := md.Client.Database(md.Config.Mongodb.DBName).Collection(userCollection).
 		FindOne(context.TODO(), bson.M{"username": username})
 	if res.Err() == mongo.ErrNoDocuments {
-		return nil, utils.ErrUserNotFound
+		return nil, utils.ErrInvalidUser
 	} else if res.Err() != nil {
 		return nil, res.Err()
 	}

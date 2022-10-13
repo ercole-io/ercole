@@ -211,7 +211,7 @@ func (ap *LDAPAuthenticationProvider) AuthenticateMiddleware(next http.Handler) 
 		}
 
 		if strings.HasPrefix(tokenString, "Bearer ") {
-			err := validateBearerToken(tokenString, ap.TimeNow, ap.publicKey)
+			_, err := validateBearerToken(tokenString, ap.TimeNow, ap.publicKey)
 			if err != nil {
 				ap.Log.Debugf("Invalid token: %s", err)
 				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, fmt.Errorf("Invalid token"))
