@@ -88,6 +88,11 @@ func (ctrl *APIController) UpdateUser(w http.ResponseWriter, r *http.Request) {
 func (ctrl *APIController) RemoveUser(w http.ResponseWriter, r *http.Request) {
 	username := mux.Vars(r)["username"]
 
+	if username == model.SuperUser {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, utils.ErrSuperUserCannotBeDeleted)
+		return
+	}
+
 	if err := ctrl.Service.RemoveUser(username); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
