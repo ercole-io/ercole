@@ -21,6 +21,7 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/ercole-io/ercole/v2/api-service/auth"
+	"github.com/ercole-io/ercole/v2/api-service/auth/middleware"
 )
 
 // GetApiControllerHandler setup the routes of the router using the handler in the controller as http handler
@@ -60,12 +61,7 @@ func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 
 	// USERS
 	router.HandleFunc("/users", ctrl.GetUsers).Methods("GET")
-	router.HandleFunc("/users", ctrl.AddUser).Methods("POST")
 	router.HandleFunc("/users/{username}", ctrl.GetUser).Methods("GET")
-	router.HandleFunc("/users/{username}", ctrl.UpdateUser).Methods("PUT")
-	router.HandleFunc("/users/{username}", ctrl.RemoveUser).Methods("DELETE")
-	router.HandleFunc("/users/{username}/reset-password", ctrl.NewPassword).Methods("POST")
-	router.HandleFunc("/users/{username}/change-password", ctrl.ChangePassword).Methods("POST")
 	router.HandleFunc("/users/ldap/{user}", ctrl.GetLDAPUsers).Methods("GET")
 
 	// ROLES
@@ -182,6 +178,7 @@ func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 
 	ctrl.setupSettingsRoutes(router.PathPrefix("/settings").Subrouter())
 	ctrl.setupFrontendAPIRoutes(router.PathPrefix("/frontend").Subrouter())
+	ctrl.setupAdminRoutes(router.PathPrefix("/admin").Subrouter())
 }
 
 func (ctrl *APIController) setupSettingsRoutes(router *mux.Router) {
@@ -198,4 +195,12 @@ func (ctrl *APIController) setupSettingsRoutes(router *mux.Router) {
 
 func (ctrl *APIController) setupFrontendAPIRoutes(router *mux.Router) {
 	router.HandleFunc("/dashboard", ctrl.GetInfoForFrontendDashboard).Methods("GET")
+}
+
+func (ctrl *APIController) setupAdminRoutes(router *mux.Router) {
+	router.HandleFunc("/users", ctrl.AddUser).Methods("POST")
+	router.HandleFunc("/users/{username}", middleware.Admin(ctrl.UpdateUser)).Methods("PUT")
+	router.HandleFunc("/users/{username}", middleware.Admin(ctrl.RemoveUser)).Methods("DELETE")
+	router.HandleFunc("/users/{username}/reset-password", middleware.Admin(ctrl.NewPassword)).Methods("POST")
+	router.HandleFunc("/users/{username}/change-password", middleware.Admin(ctrl.ChangePassword)).Methods("POST")
 }

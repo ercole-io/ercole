@@ -17,6 +17,8 @@ package model
 
 import (
 	"time"
+
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 type User struct {
@@ -27,4 +29,12 @@ type User struct {
 	FirstName string     `json:"firstName" bson:"firstName"`
 	LastName  string     `json:"lastName" bson:"lastName"`
 	Groups    []string   `json:"groups" bson:"groups"`
+}
+
+func (u *User) IsGroup(group string) bool {
+	return utils.Contains(u.Groups, group)
+}
+
+func (u *User) IsAdmin() bool {
+	return utils.Contains(u.Groups, GroupAdmin)
 }

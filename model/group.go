@@ -18,6 +18,7 @@ package model
 const (
 	// limited can only change the password
 	GroupLimited = "limited"
+	GroupAdmin   = "admin"
 )
 
 type Group struct {
