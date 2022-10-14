@@ -206,6 +206,7 @@ type APIControllerInterface interface {
 	RemoveUser(w http.ResponseWriter, r *http.Request)
 
 	GetLDAPUsers(w http.ResponseWriter, r *http.Request)
+	AddUserLDAP(w http.ResponseWriter, r *http.Request)
 }
 
 // APIController is the struct used to handle the requests from agents and contains the concrete implementation of APIControllerInterface
