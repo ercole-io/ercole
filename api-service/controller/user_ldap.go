@@ -19,6 +19,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/gorilla/mux"
 )
@@ -38,4 +39,25 @@ func (ctrl *APIController) GetLDAPUsers(w http.ResponseWriter, r *http.Request) 
 	}
 
 	utils.WriteJSONResponse(w, http.StatusOK, userLDAP)
+}
+
+func (ctrl *APIController) AddUserLDAP(w http.ResponseWriter, r *http.Request) {
+	type bodyReq struct {
+		UserLDAP model.UserLDAP `json:"userLDAP"`
+		Groups   []string       `json:"groups"`
+	}
+
+	body := &bodyReq{}
+
+	if err := utils.Decode(r.Body, body); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
+		return
+	}
+
+	if err := ctrl.Service.AddUserByLDAP(body.UserLDAP, body.Groups); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
 }

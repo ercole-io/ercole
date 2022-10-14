@@ -16,7 +16,7 @@
 package model
 
 type UserLDAP struct {
-	GivenName string
-	Sn        string
-	Uid       string
+	GivenName string `json:"givenName"`
+	Sn        string `json:"sn"`
+	Uid       string `json:"uid"`
 }

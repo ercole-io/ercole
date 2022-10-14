@@ -275,6 +275,7 @@ type APIServiceInterface interface {
 	MatchPassword(user *model.User, password string) bool
 
 	GetLDAPUsers(user string) ([]model.UserLDAP, error)
+	AddUserByLDAP(userLDAP model.UserLDAP, groups []string) error
 }
 
 // APIService is the concrete implementation of APIServiceInterface.
