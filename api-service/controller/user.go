@@ -22,6 +22,7 @@ import (
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
 )
 
@@ -115,6 +116,14 @@ func (ctrl *APIController) NewPassword(w http.ResponseWriter, r *http.Request) {
 
 func (ctrl *APIController) ChangePassword(w http.ResponseWriter, r *http.Request) {
 	username := mux.Vars(r)["username"]
+
+	user := context.Get(r, "user")
+	if user != nil {
+		if !user.(*model.User).IsAdmin() && user.(*model.User).Username != username {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnauthorized, utils.ErrInvalidUser)
+			return
+		}
+	}
 
 	type changes struct {
 		OldPass       string `json:"oldPassword"`
