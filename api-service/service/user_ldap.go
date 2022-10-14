@@ -120,3 +120,12 @@ func ldapSearchRequest(filter string, ldapBase string) *ldap.SearchRequest {
 
 	return searchRequest
 }
+
+func (as *APIService) AddUserByLDAP(userLDAP model.UserLDAP, groups []string) error {
+	return as.AddUser(model.User{
+		Username:  userLDAP.Uid,
+		FirstName: userLDAP.GivenName,
+		LastName:  userLDAP.Sn,
+		Groups:    groups,
+	})
+}

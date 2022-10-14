@@ -34,12 +34,14 @@ func (as *APIService) GetUser(username string) (*model.User, error) {
 }
 
 func (as *APIService) AddUser(user model.User) error {
-	salt, err := cr.GenerateRandomBytes()
-	if err != nil {
-		return err
-	}
+	if user.Password != "" {
+		salt, err := cr.GenerateRandomBytes()
+		if err != nil {
+			return err
+		}
 
-	user.Password, user.Salt = cr.GenerateHashAndSalt(user.Password, salt)
+		user.Password, user.Salt = cr.GenerateHashAndSalt(user.Password, salt)
+	}
 
 	user.Groups = append(user.Groups, model.GroupLimited)
 
