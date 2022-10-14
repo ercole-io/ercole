@@ -30,6 +30,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ercole-io/ercole/v2/api-service/service"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/utils"
@@ -49,6 +50,8 @@ type LDAPAuthenticationProvider struct {
 	// publicKey contains the public key used to check the JWT tokens
 	publicKey *rsa.PublicKey
 	Client    *ldap.Conn
+	// Service contains the underlying service used to perform various logical and store operations
+	Service service.APIService
 }
 
 // Init initializes the service and database
@@ -98,6 +101,11 @@ func (ap *LDAPAuthenticationProvider) Init() {
 
 // GetUserInfoIfCredentialsAreCorrect return the informations about the user if the provided credentials are correct, otherwise return nil
 func (ap *LDAPAuthenticationProvider) GetUserInfoIfCredentialsAreCorrect(username string, password string) (map[string]interface{}, error) {
+	_, err := ap.Service.GetUser(username)
+	if err != nil {
+		return nil, err
+	}
+
 	filter := fmt.Sprintf(ap.Config.LDAPUserFilter, ldap.EscapeFilter(username))
 	searchRequest := ldap.NewSearchRequest(
 		ap.Config.LDAPBase,
