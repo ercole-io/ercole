@@ -72,6 +72,7 @@ func BuildAuthenticationProvider(conf config.AuthenticationProviderConfig, servi
 		prov.Config = conf
 		prov.Log = log
 		prov.TimeNow = timeNow
+		prov.Service = service
 
 		provs = append(provs, prov)
 	}
