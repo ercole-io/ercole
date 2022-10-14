@@ -63,6 +63,7 @@ func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 	router.HandleFunc("/users", ctrl.GetUsers).Methods("GET")
 	router.HandleFunc("/users/{username}", ctrl.GetUser).Methods("GET")
 	router.HandleFunc("/users/ldap/{user}", ctrl.GetLDAPUsers).Methods("GET")
+	router.HandleFunc("/users/{username}/change-password", ctrl.ChangePassword).Methods("POST")
 
 	// ROLES
 	router.HandleFunc("/roles/{name}", ctrl.GetRole).Methods("GET")
