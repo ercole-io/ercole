@@ -127,5 +127,6 @@ func (as *APIService) AddUserByLDAP(userLDAP model.UserLDAP, groups []string) er
 		FirstName: userLDAP.GivenName,
 		LastName:  userLDAP.Sn,
 		Groups:    groups,
+		Provider:  "ldap",
 	})
 }
