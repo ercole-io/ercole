@@ -61,6 +61,10 @@ func (as *APIService) UpdateUserGroups(updatedUser model.User) error {
 	return as.Database.UpdateUserGroups(updatedUser)
 }
 
+func (as *APIService) UpdateUserLastLogin(updatedUser model.User) error {
+	return as.Database.UpdateUserLastLogin(updatedUser)
+}
+
 func (as *APIService) RemoveUser(username string, provider string) error {
 	return as.Database.RemoveUser(username, provider)
 }
