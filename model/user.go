@@ -39,5 +39,5 @@ func (u *User) IsGroup(group string) bool {
 }
 
 func (u *User) IsAdmin() bool {
-	return utils.Contains(u.Groups, GroupAdmin)
+	return u.IsGroup(GroupAdmin)
 }
