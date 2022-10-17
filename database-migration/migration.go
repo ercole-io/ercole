@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -21,12 +21,14 @@ import (
 	"sort"
 	"time"
 
+	cr "github.com/ercole-io/ercole/v2/utils/crypto"
 	migrate "github.com/xakep666/mongo-migrate"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"github.com/ercole-io/ercole/v2/config"
 	_ "github.com/ercole-io/ercole/v2/database-migration/migrations"
+	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
@@ -106,4 +108,37 @@ func GetVersions(conf config.Mongodb) (actual, latest uint64, err error) {
 	lastMigration := migrations[len(migrations)-1]
 
 	return actual, lastMigration.Version, nil
+}
+
+func InsertSuperUser(conf config.Mongodb, pwd string) error {
+	database, err := connectToMongodb(conf)
+	if err != nil {
+		return err
+	}
+
+	now := time.Now()
+
+	saltByte, err := cr.GenerateRandomBytes()
+	if err != nil {
+		return err
+	}
+
+	hashPwd, salt := cr.GenerateHashAndSalt(pwd, saltByte)
+
+	superUser := model.User{
+		Username:  "ercole",
+		Password:  hashPwd,
+		Salt:      salt,
+		FirstName: "ercole",
+		LastName:  "ercole",
+		LastLogin: &now,
+		Provider:  "basic",
+		Groups:    []string{model.GroupAdmin},
+	}
+
+	if _, err = database.Collection("users").InsertOne(context.TODO(), superUser); err != nil {
+		return err
+	}
+
+	return nil
 }
