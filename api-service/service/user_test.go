@@ -17,6 +17,7 @@ package service
 
 import (
 	"testing"
+	"time"
 
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/model"
@@ -97,6 +98,40 @@ func TestUpdateUserGroups(t *testing.T) {
 		db.EXPECT().UpdateUserGroups(user).Return(errMock)
 
 		err := as.UpdateUserGroups(user)
+
+		require.EqualError(t, err, "MockError")
+	})
+}
+
+func TestUpdateUserLastLogin(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+	}
+
+	now := time.Now()
+
+	t.Run("Success", func(t *testing.T) {
+		user := model.User{
+			Username:  "username",
+			LastLogin: &now,
+		}
+		db.EXPECT().UpdateUserLastLogin(user).Return(nil)
+
+		err := as.UpdateUserLastLogin(user)
+
+		assert.Nil(t, err)
+	})
+
+	t.Run("Error", func(t *testing.T) {
+		user := model.User{
+			LastLogin: &now,
+		}
+		db.EXPECT().UpdateUserLastLogin(user).Return(errMock)
+
+		err := as.UpdateUserLastLogin(user)
 
 		require.EqualError(t, err, "MockError")
 	})

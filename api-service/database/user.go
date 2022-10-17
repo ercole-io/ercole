@@ -87,6 +87,25 @@ func (md *MongoDatabase) UpdateUserGroups(user model.User) error {
 	return nil
 }
 
+func (md *MongoDatabase) UpdateUserLastLogin(user model.User) error {
+	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(userCollection).
+		UpdateOne(
+			context.TODO(),
+			bson.M{
+				"username": user.Username,
+				"provider": user.Provider,
+			},
+			bson.M{"$set": bson.M{
+				"lastLogin": user.LastLogin,
+			}},
+		)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (md *MongoDatabase) RemoveUser(username string, provider string) error {
 	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(userCollection).
 		DeleteOne(context.TODO(), bson.M{"username": username, "provider": provider})
