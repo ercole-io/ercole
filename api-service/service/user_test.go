@@ -63,9 +63,9 @@ func TestGetUser_Success(t *testing.T) {
 		Groups:    []string{"ercole"},
 	}
 
-	db.EXPECT().GetUser("username").Return(expected, nil)
+	db.EXPECT().GetUser("username", "basic").Return(expected, nil)
 
-	res, err := as.GetUser("username")
+	res, err := as.GetUser("username", "basic")
 	require.NoError(t, err)
 	assert.Equal(t, expected, res)
 }
@@ -111,9 +111,9 @@ func TestRemoveUser(t *testing.T) {
 	}
 
 	t.Run("Success", func(t *testing.T) {
-		db.EXPECT().RemoveUser("username").Return(nil)
+		db.EXPECT().RemoveUser("username", "basic").Return(nil)
 
-		err := as.RemoveUser("username")
+		err := as.RemoveUser("username", "basic")
 		assert.Nil(t, err)
 	})
 }
