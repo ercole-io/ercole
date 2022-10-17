@@ -269,6 +269,7 @@ type APIServiceInterface interface {
 	GetUser(username string, provider string) (*model.User, error)
 	AddUser(user model.User) error
 	UpdateUserGroups(updatedUser model.User) error
+	UpdateUserLastLogin(updatedUser model.User) error
 	RemoveUser(username string, provider string) error
 	NewPassword(username string) (string, error)
 	UpdatePassword(username string, oldPass string, newPass string) error

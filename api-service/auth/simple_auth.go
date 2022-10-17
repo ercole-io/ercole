@@ -172,6 +172,16 @@ func (ap *BasicAuthenticationProvider) AuthenticateMiddleware(next http.Handler)
 				return
 			}
 
+			now := time.Now()
+
+			user.LastLogin = &now
+
+			errLastLogin := ap.Service.UpdateUserLastLogin(*user)
+			if errLastLogin != nil {
+				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, errLastLogin)
+				return
+			}
+
 			context.Set(r, "user", user)
 
 			next.ServeHTTP(w, r)

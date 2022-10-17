@@ -36,6 +36,7 @@ import (
 	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/go-ldap/ldap"
+	"github.com/gorilla/context"
 )
 
 // LDAPAuthenticationProvider is the concrete implementation of AuthenticationProvider that provide a LDAP user authentication.
@@ -215,12 +216,35 @@ func (ap *LDAPAuthenticationProvider) AuthenticateMiddleware(next http.Handler) 
 		}
 
 		if strings.HasPrefix(tokenString, "Bearer ") {
-			_, err := validateBearerToken(tokenString, ap.TimeNow, ap.publicKey)
+			claims, err := validateBearerToken(tokenString, ap.TimeNow, ap.publicKey)
 			if err != nil {
 				ap.Log.Debugf("Invalid token: %s", err)
 				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, fmt.Errorf("Invalid token"))
 				return
 			}
+
+			if claims == nil {
+				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, fmt.Errorf("Invalid token"))
+				return
+			}
+
+			user, err := ap.Service.GetUser(claims.Subject, "ldap")
+			if err != nil {
+				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, err)
+				return
+			}
+
+			now := time.Now()
+
+			user.LastLogin = &now
+
+			errLastLogin := ap.Service.UpdateUserLastLogin(*user)
+			if errLastLogin != nil {
+				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, errLastLogin)
+				return
+			}
+
+			context.Set(r, "user", user)
 
 			next.ServeHTTP(w, r)
 			return
