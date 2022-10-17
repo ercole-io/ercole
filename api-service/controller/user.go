@@ -39,7 +39,7 @@ func (ctrl *APIController) GetUsers(w http.ResponseWriter, r *http.Request) {
 func (ctrl *APIController) GetUser(w http.ResponseWriter, r *http.Request) {
 	username := mux.Vars(r)["username"]
 
-	user, err := ctrl.Service.GetUser(username)
+	user, err := ctrl.Service.GetUser(username, "basic")
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
@@ -60,6 +60,8 @@ func (ctrl *APIController) AddUser(w http.ResponseWriter, r *http.Request) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, errors.New("Invalid password"))
 		return
 	}
+
+	user.Provider = "basic"
 
 	if err := ctrl.Service.AddUser(*user); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
@@ -94,7 +96,7 @@ func (ctrl *APIController) RemoveUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := ctrl.Service.RemoveUser(username); err != nil {
+	if err := ctrl.Service.RemoveUser(username, "basic"); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}

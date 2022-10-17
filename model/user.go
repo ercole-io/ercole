@@ -31,6 +31,7 @@ type User struct {
 	FirstName string     `json:"firstName" bson:"firstName"`
 	LastName  string     `json:"lastName" bson:"lastName"`
 	Groups    []string   `json:"groups" bson:"groups"`
+	Provider  string     `json:"provider" bson:"provider"`
 }
 
 func (u *User) IsGroup(group string) bool {
