@@ -45,5 +45,4 @@ func NewInsertSuperUserCmd(conf *config.Configuration) *cobra.Command {
 			}
 		},
 	}
-
 }
