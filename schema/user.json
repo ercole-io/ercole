@@ -4,7 +4,8 @@
     "required": [
         "username",
         "password",
-        "groups"
+        "groups",
+        "provider"
     ],
     "properties": {
         "username": {
@@ -27,6 +28,13 @@
                 {
                     "type": "null"
                 }
+            ]
+        },
+        "provider": {
+            "type": "string",
+            "enum": [
+                "basic",
+                "ldap"
             ]
         }
     }

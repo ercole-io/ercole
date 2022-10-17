@@ -53,9 +53,9 @@ func (md *MongoDatabase) AddUser(user model.User) error {
 	return nil
 }
 
-func (md *MongoDatabase) GetUser(username string) (*model.User, error) {
+func (md *MongoDatabase) GetUser(username string, provider string) (*model.User, error) {
 	res := md.Client.Database(md.Config.Mongodb.DBName).Collection(userCollection).
-		FindOne(context.TODO(), bson.M{"username": username})
+		FindOne(context.TODO(), bson.M{"username": username, "provider": provider})
 	if res.Err() == mongo.ErrNoDocuments {
 		return nil, utils.ErrInvalidUser
 	} else if res.Err() != nil {
@@ -87,9 +87,9 @@ func (md *MongoDatabase) UpdateUserGroups(user model.User) error {
 	return nil
 }
 
-func (md *MongoDatabase) RemoveUser(username string) error {
+func (md *MongoDatabase) RemoveUser(username string, provider string) error {
 	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(userCollection).
-		DeleteOne(context.TODO(), bson.M{"username": username})
+		DeleteOne(context.TODO(), bson.M{"username": username, "provider": provider})
 	if err != nil {
 		return err
 	}

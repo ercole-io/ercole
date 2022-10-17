@@ -29,8 +29,8 @@ func (as *APIService) ListUsers() ([]model.User, error) {
 	return as.Database.ListUsers()
 }
 
-func (as *APIService) GetUser(username string) (*model.User, error) {
-	return as.Database.GetUser(username)
+func (as *APIService) GetUser(username string, provider string) (*model.User, error) {
+	return as.Database.GetUser(username, provider)
 }
 
 func (as *APIService) AddUser(user model.User) error {
@@ -61,8 +61,8 @@ func (as *APIService) UpdateUserGroups(updatedUser model.User) error {
 	return as.Database.UpdateUserGroups(updatedUser)
 }
 
-func (as *APIService) RemoveUser(username string) error {
-	return as.Database.RemoveUser(username)
+func (as *APIService) RemoveUser(username string, provider string) error {
+	return as.Database.RemoveUser(username, provider)
 }
 
 func (as *APIService) NewPassword(username string) (string, error) {
@@ -98,7 +98,7 @@ func (as *APIService) MatchPassword(user *model.User, password string) bool {
 }
 
 func (as *APIService) UpdatePassword(username string, oldPass string, newPass string) error {
-	user, err := as.GetUser(username)
+	user, err := as.GetUser(username, "basic")
 	if err != nil {
 		return err
 	}

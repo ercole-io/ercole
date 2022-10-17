@@ -101,7 +101,7 @@ func (ap *LDAPAuthenticationProvider) Init() {
 
 // GetUserInfoIfCredentialsAreCorrect return the informations about the user if the provided credentials are correct, otherwise return nil
 func (ap *LDAPAuthenticationProvider) GetUserInfoIfCredentialsAreCorrect(username string, password string) (map[string]interface{}, error) {
-	_, err := ap.Service.GetUser(username)
+	_, err := ap.Service.GetUser(username, "ldap")
 	if err != nil {
 		return nil, err
 	}
