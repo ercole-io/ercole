@@ -17,6 +17,7 @@ package auth
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -33,6 +34,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	apiservice_database "github.com/ercole-io/ercole/v2/api-service/database"
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	apiservice_service "github.com/ercole-io/ercole/v2/api-service/service"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
@@ -132,14 +134,14 @@ func TestGetUserInfoIfCredentialsAreCorrect_WhenAreCredentialsAreCorrect(t *test
 
 	defer serviceAuth.RemoveUser("foobar", "basic")
 
-	serviceAuth.AddUser(
-		model.User{
-			Username: "foobar",
-			Password: "C0rr3ctP4ssw0rd",
-			Groups:   []string{"Test"},
-			Provider: "basic",
-		},
-	)
+	user := model.User{
+		Username: "foobar",
+		Password: "C0rr3ctP4ssw0rd",
+		Groups:   []string{"Test"},
+		Provider: "basic",
+	}
+
+	serviceAuth.AddUser(user)
 
 	bap := BasicAuthenticationProvider{
 		Config: config.AuthenticationProviderConfig{
@@ -149,9 +151,12 @@ func TestGetUserInfoIfCredentialsAreCorrect_WhenAreCredentialsAreCorrect(t *test
 		Service: *serviceAuth,
 	}
 
+	user.Groups = append(user.Groups, "limited")
+	userDto := dto.ToUser(&user)
+
 	res, err := bap.GetUserInfoIfCredentialsAreCorrect("foobar", "C0rr3ctP4ssw0rd")
 	require.NoError(t, err)
-	assert.Equal(t, "foobar", res["Username"])
+	assert.Equal(t, &userDto, res)
 
 	db.Client.Database(db.Config.Mongodb.DBName).Drop(context.TODO())
 	db.Client.Disconnect(context.TODO())
@@ -250,8 +255,12 @@ func TestGetToken_OK(t *testing.T) {
 
 	var claims jwt.RegisteredClaims
 
+	bodyJSON := map[string]interface{}{}
+	err = json.Unmarshal(rr.Body.Bytes(), &bodyJSON)
+	require.NoError(t, err)
+
 	jwt.TimeFunc = bap.TimeNow
-	_, err = jwt.ParseWithClaims(rr.Body.String(), &claims, func(_ *jwt.Token) (interface{}, error) {
+	_, err = jwt.ParseWithClaims(bodyJSON["token"].(string), &claims, func(_ *jwt.Token) (interface{}, error) {
 		return &privateKey.PublicKey, nil
 	})
 	require.NoError(t, err)
