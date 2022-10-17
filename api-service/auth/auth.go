@@ -26,6 +26,7 @@ import (
 	"github.com/ercole-io/ercole/v2/utils"
 	jwt "github.com/golang-jwt/jwt/v4"
 
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	apiservice_service "github.com/ercole-io/ercole/v2/api-service/service"
 )
 
@@ -43,7 +44,7 @@ type AuthenticationProvider interface {
 	// TokenEndpoint return the middleware used to check if the users are authenticated
 	GetToken(w http.ResponseWriter, r *http.Request)
 	// GetUserInfoIfCorrect return the informations about the user if the provided credentials are correct, otherwise return nil
-	GetUserInfoIfCredentialsAreCorrect(username string, password string) (map[string]interface{}, error)
+	GetUserInfoIfCredentialsAreCorrect(username string, password string) (*dto.User, error)
 
 	GetType() string
 }

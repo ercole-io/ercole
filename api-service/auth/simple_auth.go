@@ -28,6 +28,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/api-service/service"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
@@ -65,14 +66,15 @@ func (ap *BasicAuthenticationProvider) Init() {
 }
 
 // GetUserInfoIfCredentialsAreCorrect return the informations about the user if the provided credentials are correct, otherwise return nil
-func (ap *BasicAuthenticationProvider) GetUserInfoIfCredentialsAreCorrect(username string, password string) (map[string]interface{}, error) {
+func (ap *BasicAuthenticationProvider) GetUserInfoIfCredentialsAreCorrect(username string, password string) (*dto.User, error) {
 	user, err := ap.Service.GetUser(username, "basic")
 	if err != nil {
 		return nil, err
 	}
 
 	if ap.Service.MatchPassword(user, password) {
-		return map[string]interface{}{"Username": username}, nil
+		userDto := dto.ToUser(user)
+		return &userDto, nil
 	}
 
 	return nil, utils.ErrInvalidUser
@@ -94,13 +96,13 @@ func (ap *BasicAuthenticationProvider) GetToken(w http.ResponseWriter, r *http.R
 	}
 
 	//Check if the credentials are valid
-	info, err := ap.GetUserInfoIfCredentialsAreCorrect(request.Username, request.Password)
+	userInfo, err := ap.GetUserInfoIfCredentialsAreCorrect(request.Username, request.Password)
 	if err != nil {
 		utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, err)
 		return
 	}
 
-	if info == nil {
+	if userInfo == nil {
 		utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewError(errors.New("Failed to login, invalid credentials"), http.StatusText(http.StatusUnauthorized)))
 		return
 	}
@@ -114,12 +116,7 @@ func (ap *BasicAuthenticationProvider) GetToken(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	if _, err := w.Write([]byte(token)); err != nil {
-		utils.WriteAndLogError(ap.Log, w, http.StatusInternalServerError, err)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
+	utils.WriteJSONResponse(w, http.StatusOK, dto.ToLoginResponse(token, userInfo))
 }
 
 // AuthenticateMiddleware return the middleware used to check if the users are authenticated
