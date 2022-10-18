@@ -15,6 +15,8 @@
 
 package model
 
+import "github.com/ercole-io/ercole/v2/utils"
+
 const (
 	// limited can only change the password
 	GroupLimited = "limited"
@@ -25,4 +27,8 @@ type Group struct {
 	Name        string   `json:"name" bson:"name"`
 	Description string   `json:"description" bson:"description"`
 	Roles       []string `json:"roles" bson:"roles"`
+}
+
+func (g *Group) IsRole(role string) bool {
+	return utils.Contains(g.Roles, role)
 }
