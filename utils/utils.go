@@ -115,6 +115,15 @@ func Remove(slice []string, i int) []string {
 	return append(slice[:i], slice[i+1:]...)
 }
 
+func RemoveString(slice []string, s string) []string {
+	for i, v := range slice {
+		if v == s {
+			return append(slice[:i], slice[i+1:]...)
+		}
+	}
+	return slice
+}
+
 // Str2bool parse a string to a boolean
 func Str2bool(in string, defaultValue bool) (bool, error) {
 	if in == "" {
