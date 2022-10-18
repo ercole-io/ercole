@@ -22,6 +22,7 @@ import (
 
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/schema"
+	"github.com/ercole-io/ercole/v2/utils"
 	cr "github.com/ercole-io/ercole/v2/utils/crypto"
 )
 
@@ -63,6 +64,22 @@ func (as *APIService) UpdateUserGroups(updatedUser model.User) error {
 
 func (as *APIService) UpdateUserLastLogin(updatedUser model.User) error {
 	return as.Database.UpdateUserLastLogin(updatedUser)
+}
+
+func (as *APIService) RemoveLimitedGroup(updatedUser model.User) error {
+	if utils.Contains(updatedUser.Groups, model.GroupLimited) {
+		updatedUser.Groups = utils.RemoveString(updatedUser.Groups, model.GroupLimited)
+	}
+
+	return as.Database.UpdateUserGroups(updatedUser)
+}
+
+func (as *APIService) AddLimitedGroup(updatedUser model.User) error {
+	if !utils.Contains(updatedUser.Groups, model.GroupLimited) {
+		updatedUser.Groups = append(updatedUser.Groups, model.GroupLimited)
+	}
+
+	return as.Database.UpdateUserGroups(updatedUser)
 }
 
 func (as *APIService) RemoveUser(username string, provider string) error {

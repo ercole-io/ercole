@@ -24,6 +24,7 @@ type User struct {
 	FirstName string   `json:"firstName"`
 	LastName  string   `json:"lastName"`
 	Groups    []string `json:"groups"`
+	Provider  string   `json:"provider"`
 }
 
 type Users []User
@@ -39,6 +40,7 @@ func ToUser(userModel *model.User) User {
 			FirstName: userModel.FirstName,
 			LastName:  userModel.LastName,
 			Groups:    userModel.Groups,
+			Provider:  userModel.Provider,
 		}
 	}
 
@@ -49,10 +51,6 @@ func ToUsers(usersModel []model.User) Users {
 	result := make([]User, 0, len(usersModel))
 
 	for _, userModel := range usersModel {
-		if userModel.Groups == nil {
-			userModel.Groups = []string{}
-		}
-
 		result = append(result, ToUser(&userModel))
 	}
 
