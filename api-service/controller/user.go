@@ -107,9 +107,20 @@ func (ctrl *APIController) RemoveUser(w http.ResponseWriter, r *http.Request) {
 func (ctrl *APIController) NewPassword(w http.ResponseWriter, r *http.Request) {
 	username := mux.Vars(r)["username"]
 
+	user, err := ctrl.Service.GetUser(username, "basic")
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
 	newPassword, err := ctrl.Service.NewPassword(username)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	if err := ctrl.Service.AddLimitedGroup(*user); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
 		return
 	}
 
@@ -146,6 +157,12 @@ func (ctrl *APIController) ChangePassword(w http.ResponseWriter, r *http.Request
 	}
 
 	if err := ctrl.Service.UpdatePassword(username, reqChanges.OldPass, reqChanges.NewPass); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
+		return
+	}
+
+	u := user.(*model.User)
+	if err := ctrl.Service.RemoveLimitedGroup(*u); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
 		return
 	}
