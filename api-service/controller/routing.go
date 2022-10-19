@@ -201,8 +201,8 @@ func (ctrl *APIController) setupFrontendAPIRoutes(router *mux.Router) {
 
 func (ctrl *APIController) setupAdminRoutes(router *mux.Router) {
 	router.HandleFunc("/basic/users", ctrl.AddUser).Methods("POST")
-	router.HandleFunc("/basic/users/{username}", middleware.Admin(ctrl.UpdateUser)).Methods("PUT")
-	router.HandleFunc("/basic/users/{username}", middleware.Admin(ctrl.RemoveUser)).Methods("DELETE")
+	router.HandleFunc("/{provider}/users/{username}", middleware.Admin(ctrl.UpdateUser)).Methods("PUT")
+	router.HandleFunc("/{provider}/users/{username}", middleware.Admin(ctrl.RemoveUser)).Methods("DELETE")
 	router.HandleFunc("/basic/users/{username}/reset-password", middleware.Admin(ctrl.NewPassword)).Methods("POST")
 	router.HandleFunc("/basic/users/{username}/change-password", middleware.Admin(ctrl.ChangePassword)).Methods("POST")
 
