@@ -54,11 +54,6 @@ func (job *AwsDataRetrieveJob) FetchObjectsCount(profile model.AwsProfile, seq u
 		return err
 	}
 
-	snapshotsCount, err := job.getSnapshotsCount(sess)
-	if err != nil {
-		return err
-	}
-
 	dbInstancesCount, err := job.getDbInstancesCount(sess)
 	if err != nil {
 		return err
@@ -91,10 +86,6 @@ func (job *AwsDataRetrieveJob) FetchObjectsCount(profile model.AwsProfile, seq u
 			{
 				Name:  "load balancers",
 				Count: *loadBalancersCount,
-			},
-			{
-				Name:  "snapshots",
-				Count: *snapshotsCount,
 			},
 			{
 				Name:  "db instances",
@@ -148,17 +139,6 @@ func (job *AwsDataRetrieveJob) getLoadBalancersCount(session *session.Session) (
 	}
 
 	return aws.Int(len(result.LoadBalancerDescriptions)), nil
-}
-
-func (job *AwsDataRetrieveJob) getSnapshotsCount(session *session.Session) (*int, error) {
-	svc := ec2.New(session)
-
-	result, err := svc.DescribeSnapshots(nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return aws.Int(len(result.Snapshots)), nil
 }
 
 func (job *AwsDataRetrieveJob) getDbInstancesCount(session *session.Session) (*int, error) {
