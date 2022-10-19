@@ -41,3 +41,7 @@ func (u *User) IsGroup(group string) bool {
 func (u *User) IsAdmin() bool {
 	return u.IsGroup(GroupAdmin)
 }
+
+func (u *User) IsLDAP() bool {
+	return u.Provider == "ldap"
+}

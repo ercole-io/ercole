@@ -44,7 +44,9 @@ func (as *APIService) AddUser(user model.User) error {
 		user.Password, user.Salt = cr.GenerateHashAndSalt(user.Password, salt)
 	}
 
-	user.Groups = append(user.Groups, model.GroupLimited)
+	if !user.IsLDAP() {
+		user.Groups = append(user.Groups, model.GroupLimited)
+	}
 
 	raw, err := json.Marshal(user)
 	if err != nil {
