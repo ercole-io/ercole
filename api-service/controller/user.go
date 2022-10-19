@@ -80,6 +80,12 @@ func (ctrl *APIController) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	provider := mux.Vars(r)["provider"]
+	if user.Provider != provider {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, nil)
+		return
+	}
+
 	if err := ctrl.Service.UpdateUserGroups(user); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
@@ -96,7 +102,8 @@ func (ctrl *APIController) RemoveUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := ctrl.Service.RemoveUser(username, "basic"); err != nil {
+	provider := mux.Vars(r)["provider"]
+	if err := ctrl.Service.RemoveUser(username, provider); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
