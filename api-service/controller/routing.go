@@ -37,17 +37,21 @@ func (ctrl *APIController) GetApiControllerHandler(auths []auth.AuthenticationPr
 	})
 
 	for _, ap := range auths {
+		subrouter := router.NewRoute().Subrouter()
+		prefix := ""
+
 		if ap.GetType() == auth.BasicType {
 			router.HandleFunc("/user/login", ap.GetToken).Methods("POST")
 		}
 
 		if ap.GetType() == auth.LdapType {
 			router.HandleFunc("/ldap/login", ap.GetToken).Methods("POST")
+
+			prefix = "/ldap"
 		}
 
-		subrouter := router.NewRoute().Subrouter()
 		subrouter.Use(ap.AuthenticateMiddleware)
-		ctrl.setupProtectedRoutes(subrouter)
+		ctrl.setupProtectedRoutes(subrouter.PathPrefix(prefix).Subrouter())
 	}
 
 	return router
@@ -61,8 +65,8 @@ func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 
 	// USERS
 	router.HandleFunc("/users", ctrl.GetUsers).Methods("GET")
-	router.HandleFunc("/basic/users/{username}", ctrl.GetUser).Methods("GET")
-	router.HandleFunc("/basic/users/{username}/change-password", ctrl.ChangePassword).Methods("POST")
+	router.HandleFunc("/users/{username}", ctrl.GetUser).Methods("GET")
+	router.HandleFunc("/users/{username}/change-password", ctrl.ChangePassword).Methods("POST")
 
 	router.HandleFunc("/users/ldap/{user}", ctrl.GetLDAPUsers).Methods("GET")
 
@@ -200,11 +204,11 @@ func (ctrl *APIController) setupFrontendAPIRoutes(router *mux.Router) {
 }
 
 func (ctrl *APIController) setupAdminRoutes(router *mux.Router) {
-	router.HandleFunc("/basic/users", ctrl.AddUser).Methods("POST")
-	router.HandleFunc("/{provider}/users/{username}", middleware.Admin(ctrl.UpdateUser)).Methods("PUT")
-	router.HandleFunc("/{provider}/users/{username}", middleware.Admin(ctrl.RemoveUser)).Methods("DELETE")
-	router.HandleFunc("/basic/users/{username}/reset-password", middleware.Admin(ctrl.NewPassword)).Methods("POST")
-	router.HandleFunc("/basic/users/{username}/change-password", middleware.Admin(ctrl.ChangePassword)).Methods("POST")
+	router.HandleFunc("/users", ctrl.AddUser).Methods("POST")
+	router.HandleFunc("/users/{username}", middleware.Admin(ctrl.UpdateUser)).Methods("PUT")
+	router.HandleFunc("/users/{username}", middleware.Admin(ctrl.RemoveUser)).Methods("DELETE")
+	router.HandleFunc("/users/{username}/reset-password", middleware.Admin(ctrl.NewPassword)).Methods("POST")
+	router.HandleFunc("/users/{username}/change-password", middleware.Admin(ctrl.ChangePassword)).Methods("POST")
 
-	router.HandleFunc("/ldap/users", ctrl.AddUserLDAP).Methods("POST")
+	router.HandleFunc("/users", ctrl.AddUserLDAP).Methods("POST")
 }

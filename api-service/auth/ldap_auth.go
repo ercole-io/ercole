@@ -103,7 +103,7 @@ func (ap *LDAPAuthenticationProvider) Init() {
 
 // GetUserInfoIfCredentialsAreCorrect return the informations about the user if the provided credentials are correct, otherwise return nil
 func (ap *LDAPAuthenticationProvider) GetUserInfoIfCredentialsAreCorrect(username string, password string) (*dto.User, error) {
-	user, err := ap.Service.GetUser(username, "ldap")
+	user, err := ap.Service.GetUser(username, LdapType)
 	if err != nil {
 		return nil, err
 	}
@@ -228,7 +228,7 @@ func (ap *LDAPAuthenticationProvider) AuthenticateMiddleware(next http.Handler) 
 				return
 			}
 
-			user, err := ap.Service.GetUser(claims.Subject, "ldap")
+			user, err := ap.Service.GetUser(claims.Subject, LdapType)
 			if err != nil {
 				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, err)
 				return

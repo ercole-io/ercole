@@ -18,7 +18,9 @@ package controller
 import (
 	"errors"
 	"net/http"
+	"strings"
 
+	"github.com/ercole-io/ercole/v2/api-service/auth"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
@@ -39,7 +41,7 @@ func (ctrl *APIController) GetUsers(w http.ResponseWriter, r *http.Request) {
 func (ctrl *APIController) GetUser(w http.ResponseWriter, r *http.Request) {
 	username := mux.Vars(r)["username"]
 
-	user, err := ctrl.Service.GetUser(username, "basic")
+	user, err := ctrl.Service.GetUser(username, auth.BasicType)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
@@ -61,7 +63,7 @@ func (ctrl *APIController) AddUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user.Provider = "basic"
+	user.Provider = auth.BasicType
 
 	if err := ctrl.Service.AddUser(*user); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
@@ -80,7 +82,13 @@ func (ctrl *APIController) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	provider := mux.Vars(r)["provider"]
+	provider := auth.BasicType
+
+	reqSlice := strings.Split(r.RequestURI, "/")
+	if utils.Contains(reqSlice, auth.LdapType) {
+		provider = auth.LdapType
+	}
+
 	if user.Provider != provider {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, nil)
 		return
@@ -102,7 +110,13 @@ func (ctrl *APIController) RemoveUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	provider := mux.Vars(r)["provider"]
+	provider := auth.BasicType
+
+	reqSlice := strings.Split(r.RequestURI, "/")
+	if utils.Contains(reqSlice, auth.LdapType) {
+		provider = auth.LdapType
+	}
+
 	if err := ctrl.Service.RemoveUser(username, provider); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
