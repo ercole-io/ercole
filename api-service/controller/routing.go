@@ -16,12 +16,17 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
 
 	"github.com/ercole-io/ercole/v2/api-service/auth"
 	"github.com/ercole-io/ercole/v2/api-service/auth/middleware"
+)
+
+const (
+	userGroup = "/users"
 )
 
 // GetApiControllerHandler setup the routes of the router using the handler in the controller as http handler
@@ -64,11 +69,11 @@ func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 	router.HandleFunc("/configuration", ctrl.UpdateConfig).Methods("POST")
 
 	// USERS
-	router.HandleFunc("/users", ctrl.GetUsers).Methods("GET")
-	router.HandleFunc("/users/{username}", ctrl.GetUser).Methods("GET")
-	router.HandleFunc("/users/{username}/change-password", ctrl.ChangePassword).Methods("POST")
+	router.HandleFunc(userGroup, ctrl.GetUsers).Methods("GET")
+	router.HandleFunc(fmt.Sprintf("%s/{username}", userGroup), ctrl.GetUser).Methods("GET")
+	router.HandleFunc(fmt.Sprintf("%s/{username}/change-password", userGroup), ctrl.ChangePassword).Methods("POST")
 
-	router.HandleFunc("/users/ldap/{user}", ctrl.GetLDAPUsers).Methods("GET")
+	router.HandleFunc(fmt.Sprintf("%s/ldap/{user}", userGroup), ctrl.GetLDAPUsers).Methods("GET")
 
 	// ROLES
 	router.HandleFunc("/roles/{name}", ctrl.GetRole).Methods("GET")
@@ -204,11 +209,11 @@ func (ctrl *APIController) setupFrontendAPIRoutes(router *mux.Router) {
 }
 
 func (ctrl *APIController) setupAdminRoutes(router *mux.Router) {
-	router.HandleFunc("/users", ctrl.AddUser).Methods("POST")
-	router.HandleFunc("/users/{username}", middleware.Admin(ctrl.UpdateUser)).Methods("PUT")
-	router.HandleFunc("/users/{username}", middleware.Admin(ctrl.RemoveUser)).Methods("DELETE")
-	router.HandleFunc("/users/{username}/reset-password", middleware.Admin(ctrl.NewPassword)).Methods("POST")
-	router.HandleFunc("/users/{username}/change-password", middleware.Admin(ctrl.ChangePassword)).Methods("POST")
+	router.HandleFunc(userGroup, ctrl.AddUser).Methods("POST")
+	router.HandleFunc(fmt.Sprintf("%s/{username}", userGroup), middleware.Admin(ctrl.UpdateUser)).Methods("PUT")
+	router.HandleFunc(fmt.Sprintf("%s/{username}", userGroup), middleware.Admin(ctrl.RemoveUser)).Methods("DELETE")
+	router.HandleFunc(fmt.Sprintf("%s/{username}/reset-password", userGroup), middleware.Admin(ctrl.NewPassword)).Methods("POST")
+	router.HandleFunc(fmt.Sprintf("%s/{username}/change-password", userGroup), middleware.Admin(ctrl.ChangePassword)).Methods("POST")
 
-	router.HandleFunc("/users", ctrl.AddUserLDAP).Methods("POST")
+	router.HandleFunc(userGroup, ctrl.AddUserLDAP).Methods("POST")
 }
