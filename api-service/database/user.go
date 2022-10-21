@@ -71,13 +71,13 @@ func (md *MongoDatabase) GetUser(username string, provider string) (*model.User,
 	return result, nil
 }
 
-func (md *MongoDatabase) UpdateUserGroups(user model.User) error {
+func (md *MongoDatabase) UpdateUserGroups(username string, provider string, groups []string) error {
 	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(userCollection).
 		UpdateOne(
 			context.TODO(),
-			bson.M{"username": user.Username},
+			bson.M{"username": username, "provider": provider},
 			bson.D{{Key: "$set", Value: bson.D{
-				primitive.E{Key: "groups", Value: user.Groups},
+				primitive.E{Key: "groups", Value: groups},
 			}}},
 		)
 	if err != nil {

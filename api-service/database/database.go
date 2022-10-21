@@ -230,7 +230,7 @@ type MongoDatabaseInterface interface {
 	ListUsers() ([]model.User, error)
 	GetUser(username string, provider string) (*model.User, error)
 	AddUser(user model.User) error
-	UpdateUserGroups(user model.User) error
+	UpdateUserGroups(username string, provider string, groups []string) error
 	UpdateUserLastLogin(user model.User) error
 	RemoveUser(username string, provider string) error
 	UpdatePassword(username string, password string, salt string) error
