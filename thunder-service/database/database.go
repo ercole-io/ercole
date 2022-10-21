@@ -84,10 +84,6 @@ func (md *MongoDatabase) Init() {
 	md.ConnectToMongodb()
 
 	md.Log.Debug("MongoDatabase is connected to MongoDB! ", utils.HideMongoDBPassword(md.Config.Mongodb.URI))
-
-	if err := md.MigrateConfig(); err != nil {
-		md.Log.Error(err)
-	}
 }
 
 // ConnectToMongodb connects to the MongoDB and return the connection
@@ -108,26 +104,6 @@ func (md *MongoDatabase) ConnectToMongodb() {
 	if err != nil {
 		md.Log.Warn(err)
 	}
-}
-
-func (md *MongoDatabase) MigrateConfig() error {
-	ctx := context.TODO()
-
-	collections, err := md.Client.Database(md.Config.Mongodb.DBName).ListCollectionNames(ctx, bson.D{})
-	if err != nil {
-		return err
-	}
-
-	if utils.Contains(collections, "config") {
-		return nil
-	}
-
-	_, err = md.Client.Database(md.Config.Mongodb.DBName).Collection("config").InsertOne(ctx, md.Config)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
 
 func (md *MongoDatabase) ReadConfig() (*config.Configuration, error) {
