@@ -84,9 +84,9 @@ func TestUpdateUserGroups(t *testing.T) {
 			Username: "username",
 			Groups:   []string{"group1", "group2"},
 		}
-		db.EXPECT().UpdateUserGroups(user).Return(nil)
+		db.EXPECT().UpdateUserGroups(user.Username, "basic", user.Groups).Return(nil)
 
-		err := as.UpdateUserGroups(user)
+		err := as.UpdateUserGroups(user.Username, "basic", user.Groups)
 
 		assert.Nil(t, err)
 	})
@@ -95,9 +95,9 @@ func TestUpdateUserGroups(t *testing.T) {
 		user := model.User{
 			Groups: []string{"group1", "group2"},
 		}
-		db.EXPECT().UpdateUserGroups(user).Return(errMock)
+		db.EXPECT().UpdateUserGroups("", "basic", user.Groups).Return(errMock)
 
-		err := as.UpdateUserGroups(user)
+		err := as.UpdateUserGroups("", "basic", user.Groups)
 
 		require.EqualError(t, err, "MockError")
 	})

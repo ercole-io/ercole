@@ -60,8 +60,8 @@ func (as *APIService) AddUser(user model.User) error {
 	return as.Database.AddUser(user)
 }
 
-func (as *APIService) UpdateUserGroups(updatedUser model.User) error {
-	return as.Database.UpdateUserGroups(updatedUser)
+func (as *APIService) UpdateUserGroups(username string, provider string, groups []string) error {
+	return as.Database.UpdateUserGroups(username, provider, groups)
 }
 
 func (as *APIService) UpdateUserLastLogin(updatedUser model.User) error {
@@ -73,7 +73,7 @@ func (as *APIService) RemoveLimitedGroup(updatedUser model.User) error {
 		updatedUser.Groups = utils.RemoveString(updatedUser.Groups, model.GroupLimited)
 	}
 
-	return as.Database.UpdateUserGroups(updatedUser)
+	return as.Database.UpdateUserGroups(updatedUser.Username, updatedUser.Provider, updatedUser.Groups)
 }
 
 func (as *APIService) AddLimitedGroup(updatedUser model.User) error {
@@ -81,7 +81,7 @@ func (as *APIService) AddLimitedGroup(updatedUser model.User) error {
 		updatedUser.Groups = append(updatedUser.Groups, model.GroupLimited)
 	}
 
-	return as.Database.UpdateUserGroups(updatedUser)
+	return as.Database.UpdateUserGroups(updatedUser.Username, updatedUser.Provider, updatedUser.Groups)
 }
 
 func (as *APIService) RemoveUser(username string, provider string) error {

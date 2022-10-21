@@ -89,12 +89,7 @@ func (ctrl *APIController) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		provider = auth.LdapType
 	}
 
-	if user.Provider != provider {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, nil)
-		return
-	}
-
-	if err := ctrl.Service.UpdateUserGroups(user); err != nil {
+	if err := ctrl.Service.UpdateUserGroups(username, provider, user.Groups); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
