@@ -268,7 +268,7 @@ type APIServiceInterface interface {
 	ListUsers() ([]model.User, error)
 	GetUser(username string, provider string) (*model.User, error)
 	AddUser(user model.User) error
-	UpdateUserGroups(updatedUser model.User) error
+	UpdateUserGroups(username string, provider string, groups []string) error
 	UpdateUserLastLogin(updatedUser model.User) error
 	RemoveLimitedGroup(updatedUser model.User) error
 	AddLimitedGroup(updatedUser model.User) error
