@@ -67,7 +67,7 @@ func (ap *BasicAuthenticationProvider) Init() {
 
 // GetUserInfoIfCredentialsAreCorrect return the informations about the user if the provided credentials are correct, otherwise return nil
 func (ap *BasicAuthenticationProvider) GetUserInfoIfCredentialsAreCorrect(username string, password string) (*dto.User, error) {
-	user, err := ap.Service.GetUser(username, "basic")
+	user, err := ap.Service.GetUser(username, BasicType)
 	if err != nil {
 		return nil, err
 	}
@@ -166,7 +166,7 @@ func (ap *BasicAuthenticationProvider) AuthenticateMiddleware(next http.Handler)
 				return
 			}
 
-			user, err := ap.Service.GetUser(claims.Subject, "basic")
+			user, err := ap.Service.GetUser(claims.Subject, BasicType)
 			if err != nil {
 				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, err)
 				return
