@@ -38,7 +38,10 @@ const (
 	minNum         = 2
 	minUpperCase   = 2
 	passwordLength = 16
+	usernameLength = 16
 )
+
+var sample = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
 type Params struct {
 	Memory      uint32
@@ -110,4 +113,15 @@ func SuggestPassword() string {
 	})
 
 	return string(inRune)
+}
+
+func SuggestUsername() string {
+	mathRand.Seed(time.Now().UnixNano())
+
+	b := make([]rune, usernameLength)
+	for i := range b {
+		b[i] = sample[mathRand.Intn(len(sample))]
+	}
+
+	return string(b)
 }
