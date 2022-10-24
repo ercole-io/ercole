@@ -25,6 +25,7 @@ import (
 	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
+	cr "github.com/ercole-io/ercole/v2/utils/crypto"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -313,6 +314,9 @@ func (md *MongoDatabase) MigrateConfig() error {
 	if utils.Contains(collections, "config") {
 		return nil
 	}
+
+	md.Config.APIService.AuthenticationProvider.Username = cr.SuggestUsername()
+	md.Config.APIService.AuthenticationProvider.Password = cr.SuggestPassword()
 
 	_, err = md.Client.Database(md.Config.Mongodb.DBName).Collection("config").InsertOne(ctx, md.Config)
 	if err != nil {
