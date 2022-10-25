@@ -42,6 +42,7 @@ func (as *APIService) SearchPostgreSqlInstancesAsXLSX(filter dto.SearchPostgreSq
 	sheet := "Instances"
 	headers := []string{
 		"Hostname",
+		"Location",
 		"Name",
 		"Charset",
 		"Version",
@@ -57,6 +58,7 @@ func (as *APIService) SearchPostgreSqlInstancesAsXLSX(filter dto.SearchPostgreSq
 		nextAxis := axisHelp.NewRow()
 
 		file.SetCellValue(sheet, nextAxis(), val.Hostname)
+		file.SetCellValue(sheet, nextAxis(), val.Location)
 		file.SetCellValue(sheet, nextAxis(), val.Name)
 		file.SetCellValue(sheet, nextAxis(), val.Charset)
 		file.SetCellValue(sheet, nextAxis(), val.Version)

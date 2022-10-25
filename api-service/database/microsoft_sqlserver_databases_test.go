@@ -99,6 +99,7 @@ func (m *MongodbSuite) TestSearchSqlServerInstances() {
 			{
 				Hostname:      "test-db",
 				Environment:   "TST",
+				Location:      "Germany",
 				Name:          "MSSQLSERVER",
 				Status:        "ONLINE",
 				Edition:       "ENT",
@@ -130,6 +131,7 @@ func (m *MongodbSuite) TestSearchSqlServerInstances() {
 			{
 				Hostname:      "test-db2",
 				Environment:   "PRD",
+				Location:      "Germany",
 				Name:          "MSSQLSERVER",
 				Status:        "ONLINE",
 				Edition:       "STD",
@@ -182,6 +184,7 @@ func (m *MongodbSuite) TestSearchSqlServerInstances() {
 			{
 				Hostname:      "test-db2",
 				Environment:   "PRD",
+				Location:      "Germany",
 				Name:          "MSSQLSERVER",
 				Status:        "ONLINE",
 				Edition:       "STD",
@@ -213,6 +216,7 @@ func (m *MongodbSuite) TestSearchSqlServerInstances() {
 			{
 				Hostname:      "test-db",
 				Environment:   "TST",
+				Location:      "Germany",
 				Name:          "MSSQLSERVER",
 				Status:        "ONLINE",
 				Edition:       "ENT",
@@ -222,6 +226,7 @@ func (m *MongodbSuite) TestSearchSqlServerInstances() {
 			{
 				Hostname:      "test-db2",
 				Environment:   "PRD",
+				Location:      "Germany",
 				Name:          "MSSQLSERVER",
 				Status:        "ONLINE",
 				Edition:       "STD",
