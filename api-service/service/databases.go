@@ -75,6 +75,7 @@ func (as *APIService) getOracleDatabases(filter dto.GlobalFilter) ([]dto.Databas
 			Version:          oracleDb.Version,
 			Hostname:         oracleDb.Hostname,
 			Environment:      oracleDb.Environment,
+			Location:         oracleDb.Location,
 			Charset:          oracleDb.Charset,
 			Memory:           oracleDb.Memory,
 			DatafileSize:     oracleDb.DatafileSize,
@@ -110,6 +111,7 @@ func (as *APIService) getMySQLDatabases(filter dto.GlobalFilter) ([]dto.Database
 			Version:          instance.Version,
 			Hostname:         instance.Hostname,
 			Environment:      instance.Environment,
+			Location:         instance.Location,
 			Charset:          instance.CharsetServer,
 			Memory:           instance.BufferPoolSize / 1024,
 			DatafileSize:     0,
@@ -146,6 +148,7 @@ func (as *APIService) getSqlServerDatabases(filter dto.GlobalFilter) ([]dto.Data
 			Version:     instance.Version,
 			Hostname:    instance.Hostname,
 			Environment: instance.Environment,
+			Location:    instance.Location,
 			Charset:     instance.CollationName,
 		}
 		dbs = append(dbs, db)
@@ -175,6 +178,7 @@ func (as *APIService) getPostgreSqlDatabases(filter dto.GlobalFilter) ([]dto.Dat
 			Version:     instance.Version,
 			Hostname:    instance.Hostname,
 			Environment: instance.Environment,
+			Location:    instance.Location,
 			Charset:     instance.Charset,
 		}
 		dbs = append(dbs, db)
@@ -196,6 +200,7 @@ func (as *APIService) SearchDatabasesAsXLSX(filter dto.GlobalFilter) (*excelize.
 		"Version",
 		"Hostname",
 		"Environment",
+		"Location",
 		"Charset",
 		"Memory",
 		"Datafile Size",
@@ -216,6 +221,7 @@ func (as *APIService) SearchDatabasesAsXLSX(filter dto.GlobalFilter) (*excelize.
 		file.SetCellValue(sheet, nextAxis(), val.Version)
 		file.SetCellValue(sheet, nextAxis(), val.Hostname)
 		file.SetCellValue(sheet, nextAxis(), val.Environment)
+		file.SetCellValue(sheet, nextAxis(), val.Location)
 		file.SetCellValue(sheet, nextAxis(), val.Charset)
 		file.SetCellValue(sheet, nextAxis(), val.Memory)
 		file.SetCellValue(sheet, nextAxis(), val.DatafileSize)

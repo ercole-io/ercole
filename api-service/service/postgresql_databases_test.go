@@ -35,16 +35,20 @@ func TestSearchPostgreSqlInstances_Success(t *testing.T) {
 
 	expectedContent := []dto.PostgreSqlInstance{
 		{
-			Hostname: "test-db",
-			Name:     "PostgreSQL-example:1010",
-			Charset:  "UTF8",
-			Version:  "PostgreSQL 10.20",
+			Hostname:    "test-db",
+			Name:        "PostgreSQL-example:1010",
+			Charset:     "UTF8",
+			Version:     "PostgreSQL 10.20",
+			Environment: "PRD",
+			Location:    "Germany",
 		},
 		{
-			Hostname: "test-db",
-			Name:     "PostgreSQL-example:1010",
-			Charset:  "UTF8",
-			Version:  "PostgreSQL 10.20",
+			Hostname:    "test-db",
+			Name:        "PostgreSQL-example:1010",
+			Charset:     "UTF8",
+			Version:     "PostgreSQL 10.20",
+			Environment: "PRD",
+			Location:    "Germany",
 		},
 	}
 

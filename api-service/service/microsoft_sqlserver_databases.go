@@ -45,6 +45,7 @@ func (as *APIService) SearchSqlServerInstancesAsXLSX(filter dto.SearchSqlServerI
 	sheet := "Instances"
 	headers := []string{
 		"Hostname",
+		"Location",
 		"Name",
 		"Status",
 		"Edition",
@@ -62,6 +63,7 @@ func (as *APIService) SearchSqlServerInstancesAsXLSX(filter dto.SearchSqlServerI
 		nextAxis := axisHelp.NewRow()
 
 		file.SetCellValue(sheet, nextAxis(), val.Hostname)
+		file.SetCellValue(sheet, nextAxis(), val.Location)
 		file.SetCellValue(sheet, nextAxis(), val.Name)
 		file.SetCellValue(sheet, nextAxis(), val.Status)
 		file.SetCellValue(sheet, nextAxis(), val.Edition)

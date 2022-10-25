@@ -212,6 +212,7 @@ func (as *APIService) SearchHostsAsXLSX(filters dto.SearchHostsFilters) (*exceli
 		"Version",
 		"Updated",
 		"Environment",
+		"Location",
 		"Databases",
 		"Technology",
 		"Operating System",
@@ -246,6 +247,7 @@ func (as *APIService) SearchHostsAsXLSX(filters dto.SearchHostsFilters) (*exceli
 		file.SetCellValue(sheet, nextAxis(), val.AgentVersion)
 		file.SetCellValue(sheet, nextAxis(), val.CreatedAt)
 		file.SetCellValue(sheet, nextAxis(), val.Environment)
+		file.SetCellValue(sheet, nextAxis(), val.Location)
 
 		databases := strings.Builder{}
 		technology := strings.Builder{}

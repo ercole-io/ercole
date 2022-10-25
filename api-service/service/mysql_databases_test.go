@@ -167,13 +167,13 @@ func TestSearchMySQLInstancesAsXLSX_Success(t *testing.T) {
 	assert.Equal(t, returned[0].MySQLInstance.Name, actual.GetCellValue("Instances", "A2"))
 	assert.Equal(t, returned[1].MySQLInstance.Name, actual.GetCellValue("Instances", "A3"))
 
-	assert.Equal(t, "Version", actual.GetCellValue("Instances", "B1"))
-	assert.Equal(t, returned[0].Version, actual.GetCellValue("Instances", "B2"))
-	assert.Equal(t, returned[1].Version, actual.GetCellValue("Instances", "B3"))
+	assert.Equal(t, "Version", actual.GetCellValue("Instances", "C1"))
+	assert.Equal(t, returned[0].Version, actual.GetCellValue("Instances", "C2"))
+	assert.Equal(t, returned[1].Version, actual.GetCellValue("Instances", "C3"))
 
-	assert.Equal(t, "Table Schemas", actual.GetCellValue("Instances", "Q1"))
-	assert.Equal(t, "marte, venere, saturno", actual.GetCellValue("Instances", "Q2"))
-	assert.Equal(t, "", actual.GetCellValue("Instances", "Q3"))
+	assert.Equal(t, "Table Schemas", actual.GetCellValue("Instances", "R1"))
+	assert.Equal(t, "marte, venere, saturno", actual.GetCellValue("Instances", "R2"))
+	assert.Equal(t, "", actual.GetCellValue("Instances", "R3"))
 }
 
 func TestGetMySQLUsedLicenses(t *testing.T) {

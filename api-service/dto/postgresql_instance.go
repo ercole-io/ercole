@@ -29,6 +29,7 @@ type PostgreSqlInstanceResponse struct {
 type PostgreSqlInstance struct {
 	Hostname    string `json:"hostname" bson:"hostname"`
 	Environment string `json:"environment" bson:"environment"`
+	Location    string `json:"location" bson:"location"`
 	Name        string `json:"name" bson:"name"`
 	Charset     string `json:"charset" bson:"charset"`
 	Version     string `json:"version" bson:"version"`

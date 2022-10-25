@@ -50,6 +50,7 @@ func (md *MongoDatabase) SearchPostgreSqlInstances(keywords []string, sortBy str
 			mu.APProject(bson.M{
 				"hostname":    1,
 				"environment": 1,
+				"location":    1,
 				"instance":    "$features.postgresql.instances",
 			}),
 			mu.APSearchFilterStage([]interface{}{"$hostname", "$name"}, keywords),
@@ -89,6 +90,7 @@ func (md *MongoDatabase) SearchPostgreSqlInstances(keywords []string, sortBy str
 			mu.APProject(bson.M{
 				"hostname":    1,
 				"environment": 1,
+				"location":    1,
 				"instance":    "$features.postgresql.instances",
 			}),
 			mu.APSearchFilterStage([]interface{}{"$hostname", "$name"}, keywords),
