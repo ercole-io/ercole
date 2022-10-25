@@ -99,6 +99,7 @@ func (m *MongodbSuite) TestSearchPostgreSqlInstances() {
 			{
 				Hostname:    "test-db",
 				Environment: "TST",
+				Location:    "Germany",
 				Name:        "PostgreSQL-example:1010",
 				Charset:     "UTF8",
 				Version:     "PostgreSQL 10.20",
@@ -128,6 +129,7 @@ func (m *MongodbSuite) TestSearchPostgreSqlInstances() {
 			{
 				Hostname:    "test-db2",
 				Environment: "PRD",
+				Location:    "Germany",
 				Name:        "PostgreSQL-example:1010",
 				Charset:     "UTF8",
 				Version:     "PostgreSQL 10.20",
@@ -178,6 +180,7 @@ func (m *MongodbSuite) TestSearchPostgreSqlInstances() {
 			{
 				Hostname:    "test-db2",
 				Environment: "PRD",
+				Location:    "Germany",
 				Name:        "PostgreSQL-example:1010",
 				Charset:     "UTF8",
 				Version:     "PostgreSQL 10.20",
@@ -207,6 +210,7 @@ func (m *MongodbSuite) TestSearchPostgreSqlInstances() {
 			{
 				Hostname:    "test-db",
 				Environment: "TST",
+				Location:    "Germany",
 				Name:        "PostgreSQL-example:1010",
 				Charset:     "UTF8",
 				Version:     "PostgreSQL 10.20",
@@ -214,6 +218,7 @@ func (m *MongodbSuite) TestSearchPostgreSqlInstances() {
 			{
 				Hostname:    "test-db2",
 				Environment: "PRD",
+				Location:    "Germany",
 				Name:        "PostgreSQL-example:1010",
 				Charset:     "UTF8",
 				Version:     "PostgreSQL 10.20",

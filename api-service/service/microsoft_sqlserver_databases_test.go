@@ -41,6 +41,8 @@ func TestSearchSqlServerInstances_Success(t *testing.T) {
 			Edition:       "ENT",
 			CollationName: "Latin1_General_CI_AS",
 			Version:       "2019",
+			Environment:   "PRD",
+			Location:      "Germany",
 		},
 		{
 			Hostname:      "test-db",
@@ -49,6 +51,8 @@ func TestSearchSqlServerInstances_Success(t *testing.T) {
 			Edition:       "ENT",
 			CollationName: "Latin1_General_CI_AS",
 			Version:       "2019",
+			Environment:   "PRD",
+			Location:      "Germany",
 		},
 	}
 
