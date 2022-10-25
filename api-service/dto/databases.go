@@ -21,6 +21,7 @@ type Database struct {
 	Version          string  `json:"version"`
 	Hostname         string  `json:"hostname"`
 	Environment      string  `json:"environment"`
+	Location         string  `json:"location"`
 	Charset          string  `json:"charset"`
 	Memory           float64 `json:"memory"`       // in GB
 	DatafileSize     float64 `json:"datafileSize"` // in GB

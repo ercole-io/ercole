@@ -46,6 +46,7 @@ func (as *APIService) SearchMySQLInstancesAsXLSX(filter dto.GlobalFilter) (*exce
 	sheet := "Instances"
 	headers := []string{
 		"Name",
+		"Location",
 		"Version",
 		"Edition",
 		"Platform",
@@ -74,6 +75,7 @@ func (as *APIService) SearchMySQLInstancesAsXLSX(filter dto.GlobalFilter) (*exce
 		nextAxis := axisHelp.NewRow()
 
 		file.SetCellValue(sheet, nextAxis(), val.Name)
+		file.SetCellValue(sheet, nextAxis(), val.Location)
 		file.SetCellValue(sheet, nextAxis(), val.Version)
 		file.SetCellValue(sheet, nextAxis(), val.Edition)
 		file.SetCellValue(sheet, nextAxis(), val.Platform)
