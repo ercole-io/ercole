@@ -50,6 +50,8 @@ var ErrNotInClusterHostNotFound = errors.New("Not in cluster host not found")
 
 var ErrInvalidHostdata = errors.New("Invalid hostdata")
 
+var ErrInvalidLocation = errors.New("Invalid location")
+
 var ErrInvalidLicenseType = errors.New("Invalid license type")
 
 var ErrInvalidRole = errors.New("Invalid role")

@@ -64,3 +64,36 @@ func (md *MongoDatabase) GetRoles() ([]model.Role, error) {
 
 	return roles, nil
 }
+
+func (md *MongoDatabase) AddRole(role model.Role) error {
+	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(roleCollection).InsertOne(context.TODO(), role)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (md *MongoDatabase) UpdateRole(name string, documents bson.D) error {
+	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(roleCollection).
+		UpdateOne(
+			context.TODO(),
+			bson.M{"name": name},
+			bson.D{{Key: "$set", Value: documents}},
+		)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (md *MongoDatabase) RemoveRole(roleName string) error {
+	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(roleCollection).
+		DeleteOne(context.TODO(), bson.M{"name": roleName})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -17,7 +17,13 @@
 package service
 
 import (
+	"encoding/json"
+
 	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/schema"
+	"github.com/ercole-io/ercole/v2/utils"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func (as *APIService) GetRole(name string) (*model.Role, error) {
@@ -36,4 +42,62 @@ func (as *APIService) GetRoles() ([]model.Role, error) {
 	}
 
 	return roles, nil
+}
+
+func (as *APIService) AddRole(role model.Role) error {
+	locations, err := as.ListLocations("", "", utils.MAX_TIME)
+	if err != nil {
+		return err
+	}
+
+	if !utils.Contains(locations, role.Location) {
+		return utils.ErrInvalidLocation
+	}
+
+	raw, err := json.Marshal(role)
+	if err != nil {
+		return err
+	}
+
+	if err := schema.ValidateRole(raw); err != nil {
+		return err
+	}
+
+	return as.Database.AddRole(role)
+}
+
+func (as *APIService) UpdateRole(role model.Role) error {
+	locations, err := as.ListLocations("", "", utils.MAX_TIME)
+	if err != nil {
+		return err
+	}
+
+	if !utils.Contains(locations, role.Location) {
+		return utils.ErrInvalidLocation
+	}
+
+	raw, err := json.Marshal(role)
+	if err != nil {
+		return err
+	}
+
+	if err := schema.ValidateRole(raw); err != nil {
+		return err
+	}
+
+	documents := bson.D{
+		primitive.E{Key: "description", Value: role.Description},
+		primitive.E{Key: "location", Value: role.Location},
+		primitive.E{Key: "permission", Value: role.Permission},
+	}
+
+	if err := as.Database.UpdateRole(role.Name, documents); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (as *APIService) RemoveRole(roleName string) error {
+	return as.Database.RemoveRole(roleName)
 }
