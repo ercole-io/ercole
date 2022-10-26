@@ -21,6 +21,7 @@ import (
 
 	"github.com/gorilla/mux"
 
+	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
@@ -52,4 +53,53 @@ func (ctrl *APIController) GetRole(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.WriteJSONResponse(w, http.StatusOK, role)
+}
+
+func (ctrl *APIController) AddRole(w http.ResponseWriter, r *http.Request) {
+	role := &model.Role{}
+
+	if err := utils.Decode(r.Body, role); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
+		return
+	}
+
+	if err := ctrl.Service.AddRole(*role); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+}
+
+func (ctrl *APIController) UpdateRole(w http.ResponseWriter, r *http.Request) {
+	roleName := mux.Vars(r)["roleName"]
+	role := &model.Role{Name: roleName}
+
+	if err := utils.Decode(r.Body, role); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
+		return
+	}
+
+	if roleName != role.Name {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, utils.ErrInvalidRole)
+		return
+	}
+
+	if err := ctrl.Service.UpdateRole(*role); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (ctrl *APIController) RemoveRole(w http.ResponseWriter, r *http.Request) {
+	roleName := mux.Vars(r)["roleName"]
+
+	if err := ctrl.Service.RemoveRole(roleName); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }

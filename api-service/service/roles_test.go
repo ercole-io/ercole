@@ -21,8 +21,11 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 func TestGetRoles(t *testing.T) {
@@ -88,5 +91,78 @@ func TestGetRole(t *testing.T) {
 		require.EqualError(t, err, "MockError")
 
 		assert.Nil(t, actual)
+	})
+}
+
+func TestAddRole(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+	}
+
+	expected := model.Role{
+		Name:        "Test",
+		Description: "test role",
+		Location:    "IT",
+		Permission:  "admin",
+	}
+
+	t.Run("Success", func(t *testing.T) {
+		db.EXPECT().ListLocations("", "", utils.MAX_TIME).Return([]string{"IT"}, nil)
+		db.EXPECT().AddRole(expected).Return(nil)
+
+		err := as.AddRole(expected)
+		require.NoError(t, err)
+	})
+
+	t.Run("Error location", func(t *testing.T) {
+		db.EXPECT().ListLocations("", "", utils.MAX_TIME).Return([]string{}, nil)
+		db.EXPECT().AddRole(expected).Return(utils.ErrInvalidLocation).AnyTimes()
+
+		err := as.AddRole(expected)
+		require.EqualError(t, err, "Invalid location")
+	})
+}
+
+func TestUpdateRole(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+	}
+
+	expected := model.Role{
+		Name:        "Test",
+		Description: "test role",
+		Location:    "IT",
+		Permission:  "admin",
+	}
+
+	documents := bson.D{
+		primitive.E{Key: "description", Value: "new description"},
+		primitive.E{Key: "location", Value: expected.Location},
+		primitive.E{Key: "permission", Value: expected.Permission},
+	}
+
+	t.Run("Success", func(t *testing.T) {
+		db.EXPECT().ListLocations("", "", utils.MAX_TIME).Return([]string{"IT"}, nil)
+		db.EXPECT().UpdateRole("Test", documents).Return(nil)
+
+		expected.Description = "new description"
+		err := as.UpdateRole(expected)
+		require.NoError(t, err)
+	})
+
+	t.Run("Error location", func(t *testing.T) {
+		db.EXPECT().ListLocations("", "", utils.MAX_TIME).Return([]string{}, nil)
+
+		db.EXPECT().UpdateRole("Test", documents).Return(utils.ErrInvalidLocation).AnyTimes()
+
+		expected.Description = "new description"
+		err := as.UpdateRole(expected)
+		require.EqualError(t, err, "Invalid location")
 	})
 }

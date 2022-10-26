@@ -2,13 +2,24 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
     "required": [
-        "name"
+        "name","description", "location", "permission"
     ],
     "properties": {
         "name": {
             "type": "string",
             "minLength": 1,
             "pattern": "^[^\\s]+$"
+        },
+        "description": {
+            "type": "string",
+            "minLength": 1
+        },
+        "location": {
+            "type": "string"
+        },
+        "permission": {
+            "type": "string",
+            "enum": ["admin","read","write"]
         }
     }
 }
