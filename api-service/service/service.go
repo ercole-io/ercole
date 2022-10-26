@@ -253,6 +253,9 @@ type APIServiceInterface interface {
 	// ROLES
 	GetRole(name string) (*model.Role, error)
 	GetRoles() ([]model.Role, error)
+	AddRole(role model.Role) error
+	UpdateRole(role model.Role) error
+	RemoveRole(roleName string) error
 
 	// GROUPS
 	InsertGroup(group model.Group) (*model.Group, error)

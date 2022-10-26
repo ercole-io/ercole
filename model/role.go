@@ -15,7 +15,15 @@
 
 package model
 
+const (
+	AdminRole = "admin"
+	ReadRole  = "read"
+	WriteRole = "write"
+)
+
 type Role struct {
 	Name        string `json:"name" bson:"name"`
 	Description string `json:"description" bson:"description"`
+	Location    string `json:"location" bson:"location"`
+	Permission  string `json:"permission" bson:"permission"`
 }
