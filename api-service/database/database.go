@@ -219,6 +219,9 @@ type MongoDatabaseInterface interface {
 	// ROLES
 	GetRole(name string) (*model.Role, error)
 	GetRoles() ([]model.Role, error)
+	AddRole(role model.Role) error
+	UpdateRole(name string, documents bson.D) error
+	RemoveRole(roleName string) error
 
 	// GROUPS
 	InsertGroup(group model.Group) error
