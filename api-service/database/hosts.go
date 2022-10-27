@@ -570,8 +570,8 @@ func (md *MongoDatabase) GetHostDatas(olderThan time.Time) ([]model.HostDataBE, 
 	return hostdatas, nil
 }
 
-// ListLocations list locations
-func (md *MongoDatabase) ListLocations(location string, environment string, olderThan time.Time) ([]string, error) {
+// ListAllLocations list all available locations
+func (md *MongoDatabase) ListAllLocations(location string, environment string, olderThan time.Time) ([]string, error) {
 	var out []string = make([]string, 0)
 
 	//Find the matching hostdata

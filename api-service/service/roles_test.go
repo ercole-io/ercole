@@ -110,7 +110,7 @@ func TestAddRole(t *testing.T) {
 	}
 
 	t.Run("Success", func(t *testing.T) {
-		db.EXPECT().ListLocations("", "", utils.MAX_TIME).Return([]string{"IT"}, nil)
+		db.EXPECT().ListAllLocations("", "", utils.MAX_TIME).Return([]string{"IT"}, nil)
 		db.EXPECT().AddRole(expected).Return(nil)
 
 		err := as.AddRole(expected)
@@ -118,7 +118,7 @@ func TestAddRole(t *testing.T) {
 	})
 
 	t.Run("Error location", func(t *testing.T) {
-		db.EXPECT().ListLocations("", "", utils.MAX_TIME).Return([]string{}, nil)
+		db.EXPECT().ListAllLocations("", "", utils.MAX_TIME).Return([]string{}, nil)
 		db.EXPECT().AddRole(expected).Return(utils.ErrInvalidLocation).AnyTimes()
 
 		err := as.AddRole(expected)
@@ -148,7 +148,7 @@ func TestUpdateRole(t *testing.T) {
 	}
 
 	t.Run("Success", func(t *testing.T) {
-		db.EXPECT().ListLocations("", "", utils.MAX_TIME).Return([]string{"IT"}, nil)
+		db.EXPECT().ListAllLocations("", "", utils.MAX_TIME).Return([]string{"IT"}, nil)
 		db.EXPECT().UpdateRole("Test", documents).Return(nil)
 
 		expected.Description = "new description"
@@ -157,7 +157,7 @@ func TestUpdateRole(t *testing.T) {
 	})
 
 	t.Run("Error location", func(t *testing.T) {
-		db.EXPECT().ListLocations("", "", utils.MAX_TIME).Return([]string{}, nil)
+		db.EXPECT().ListAllLocations("", "", utils.MAX_TIME).Return([]string{}, nil)
 
 		db.EXPECT().UpdateRole("Test", documents).Return(utils.ErrInvalidLocation).AnyTimes()
 
