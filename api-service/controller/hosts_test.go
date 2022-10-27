@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -1018,80 +1018,6 @@ func TestGetHost_MongoJSONFailNotFound(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusNotFound, rr.Code)
-}
-
-func TestListLocations_Success(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config:  config.Configuration{},
-		Log:     logger.NewLogger("TEST"),
-	}
-
-	expectedRes := []string{"Italy", "German", "France"}
-
-	as.EXPECT().
-		ListLocations("Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
-		Return(expectedRes, nil)
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.ListLocations)
-	req, err := http.NewRequest("GET", "/locations?environment=TST&location=Italy&older-than=2020-06-10T11%3A54%3A59Z", nil)
-	require.NoError(t, err)
-
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusOK, rr.Code)
-	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
-}
-
-func TestListLocations_FailUnprocessableEntity1(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config:  config.Configuration{},
-		Log:     logger.NewLogger("TEST"),
-	}
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.ListLocations)
-	req, err := http.NewRequest("GET", "/locations?older-than=dfsgdfsg", nil)
-	require.NoError(t, err)
-
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
-}
-
-func TestListLocations_FailInternalServerError(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config:  config.Configuration{},
-		Log:     logger.NewLogger("TEST"),
-	}
-
-	as.EXPECT().
-		ListLocations("", "", utils.MAX_TIME).
-		Return(nil, aerrMock)
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.ListLocations)
-	req, err := http.NewRequest("GET", "/locations", nil)
-	require.NoError(t, err)
-
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusInternalServerError, rr.Code)
 }
 
 func TestListEnvironments_Success(t *testing.T) {
