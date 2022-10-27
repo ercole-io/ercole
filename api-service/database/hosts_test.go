@@ -1424,28 +1424,28 @@ func (m *MongodbSuite) TestListLocations() {
 	m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_10.json"))
 
 	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
-		out, err := m.db.ListLocations("France", "", utils.MAX_TIME)
+		out, err := m.db.ListAllLocations("France", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 
 		assert.ElementsMatch(t, []string{}, out)
 	})
 
 	m.T().Run("should_filter_out_by_environment", func(t *testing.T) {
-		out, err := m.db.ListLocations("", "FOOBAR", utils.MAX_TIME)
+		out, err := m.db.ListAllLocations("", "FOOBAR", utils.MAX_TIME)
 		m.Require().NoError(err)
 
 		assert.ElementsMatch(t, []string{}, out)
 	})
 
 	m.T().Run("should_filter_out_by_older_than", func(t *testing.T) {
-		out, err := m.db.ListLocations("", "", utils.MIN_TIME)
+		out, err := m.db.ListAllLocations("", "", utils.MIN_TIME)
 		m.Require().NoError(err)
 
 		assert.ElementsMatch(t, []string{}, out)
 	})
 
 	m.T().Run("should_return_correct_results", func(t *testing.T) {
-		out, err := m.db.ListLocations("", "", utils.MAX_TIME)
+		out, err := m.db.ListAllLocations("", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 
 		assert.ElementsMatch(t, []string{"Italy", "Germany"}, out)

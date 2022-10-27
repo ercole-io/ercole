@@ -313,9 +313,37 @@ func (as *APIService) GetHost(hostname string, olderThan time.Time, raw bool) (*
 	return host, nil
 }
 
+// ListAllLocations list all available locations
+func (as *APIService) ListAllLocations(location string, environment string, olderThan time.Time) ([]string, error) {
+	return as.Database.ListAllLocations(location, environment, olderThan)
+}
+
 // ListLocations list locations
-func (as *APIService) ListLocations(location string, environment string, olderThan time.Time) ([]string, error) {
-	return as.Database.ListLocations(location, environment, olderThan)
+func (as *APIService) ListLocations(user interface{}) ([]string, error) {
+	var locations []string
+
+	var m = make(map[string]bool)
+
+	for _, groupName := range user.(*model.User).Groups {
+		group, err := as.Database.GetGroup(groupName)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, roleName := range group.Roles {
+			role, err := as.Database.GetRole(roleName)
+			if err != nil {
+				return nil, err
+			}
+
+			if !m[role.Location] {
+				locations = append(locations, role.Location)
+				m[role.Location] = true
+			}
+		}
+	}
+
+	return locations, nil
 }
 
 // ListEnvironments list environments

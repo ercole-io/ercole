@@ -45,7 +45,7 @@ func (as *APIService) GetRoles() ([]model.Role, error) {
 }
 
 func (as *APIService) AddRole(role model.Role) error {
-	locations, err := as.ListLocations("", "", utils.MAX_TIME)
+	locations, err := as.ListAllLocations("", "", utils.MAX_TIME)
 	if err != nil {
 		return err
 	}
@@ -67,7 +67,7 @@ func (as *APIService) AddRole(role model.Role) error {
 }
 
 func (as *APIService) UpdateRole(role model.Role) error {
-	locations, err := as.ListLocations("", "", utils.MAX_TIME)
+	locations, err := as.ListAllLocations("", "", utils.MAX_TIME)
 	if err != nil {
 		return err
 	}
