@@ -863,18 +863,18 @@ func TestListLocations_Success(t *testing.T) {
 		"Germany",
 	}
 
-	db.EXPECT().ListLocations(
+	db.EXPECT().ListAllLocations(
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
 	).Return(expectedRes, nil).Times(1)
 
-	res, err := as.ListLocations(
+	res, err := as.ListAllLocations(
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
 	)
 	require.NoError(t, err)
 	assert.Equal(t, expectedRes, res)
 }
 
-func TestListLocations_Fail(t *testing.T) {
+func TestListAllLocations_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -882,11 +882,35 @@ func TestListLocations_Fail(t *testing.T) {
 		Database: db,
 	}
 
-	db.EXPECT().ListLocations(
+	expectedRes := []string{
+		"Italy",
+		"Germany",
+	}
+
+	db.EXPECT().ListAllLocations(
+		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+	).Return(expectedRes, nil).Times(1)
+
+	res, err := as.ListAllLocations(
+		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+	)
+	require.NoError(t, err)
+	assert.Equal(t, expectedRes, res)
+}
+
+func TestListAllLocations_Fail(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+	}
+
+	db.EXPECT().ListAllLocations(
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
 	).Return(nil, aerrMock).Times(1)
 
-	res, err := as.ListLocations(
+	res, err := as.ListAllLocations(
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
 	)
 	require.Nil(t, res)

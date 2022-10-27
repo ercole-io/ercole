@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@ import (
 	"time"
 
 	"github.com/golang/gddo/httputil"
+	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
@@ -204,21 +205,9 @@ func (ctrl *APIController) GetHostMongoJSON(w http.ResponseWriter, r *http.Reque
 
 // ListLocations list locations using the filters in the request
 func (ctrl *APIController) ListLocations(w http.ResponseWriter, r *http.Request) {
-	var location, environment string
+	user := context.Get(r, "user")
 
-	var olderThan time.Time
-
-	var err error
-
-	location = r.URL.Query().Get("location")
-	environment = r.URL.Query().Get("environment")
-
-	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	locations, err := ctrl.Service.ListLocations(location, environment, olderThan)
+	locations, err := ctrl.Service.ListLocations(user)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
