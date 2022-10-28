@@ -18,11 +18,12 @@ package controller
 import (
 	"net/http"
 
+	"github.com/ercole-io/ercole/v2/api-service/auth"
 	"github.com/gorilla/mux"
 )
 
 // GetThunderControllerHandler setup the routes of the router using the handler in the controller as http handler
-func (ctrl *ThunderController) GetThunderControllerHandler() http.Handler {
+func (ctrl *ThunderController) GetThunderControllerHandler(auths []auth.AuthenticationProvider) http.Handler {
 	router := mux.NewRouter()
 
 	router.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
@@ -32,8 +33,17 @@ func (ctrl *ThunderController) GetThunderControllerHandler() http.Handler {
 		}
 	})
 
-	subrouter := router.NewRoute().Subrouter()
-	ctrl.setupProtectedRoutes(subrouter)
+	for _, ap := range auths {
+		subrouter := router.NewRoute().Subrouter()
+		prefix := ""
+
+		if ap.GetType() == auth.LdapType {
+			prefix = "/ldap"
+		}
+
+		subrouter.Use(ap.AuthenticateMiddleware)
+		ctrl.setupProtectedRoutes(subrouter.PathPrefix(prefix).Subrouter())
+	}
 
 	return router
 }
