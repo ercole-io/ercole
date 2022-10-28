@@ -211,7 +211,7 @@ func (ctrl *APIController) setupAdminRoutes(router *mux.Router) {
 	router.HandleFunc(fmt.Sprintf("%s/{username}/reset-password", userGroup), middleware.Admin(ctrl.NewPassword)).Methods("POST")
 	router.HandleFunc(fmt.Sprintf("%s/{username}/change-password", userGroup), middleware.Admin(ctrl.ChangePassword)).Methods("POST")
 
-	router.HandleFunc(userGroup, ctrl.AddUserLDAP).Methods("POST")
+	router.HandleFunc(fmt.Sprintf("/ldap%s", userGroup), ctrl.AddUserLDAP).Methods("POST")
 
 	// ROLES
 	router.HandleFunc("/roles/{name}", middleware.Admin(ctrl.GetRole)).Methods("GET")
