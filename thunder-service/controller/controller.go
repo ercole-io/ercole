@@ -20,6 +20,7 @@ import (
 	"net/http"
 	"time"
 
+	api_service "github.com/ercole-io/ercole/v2/api-service/service"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/thunder-service/service"
@@ -64,8 +65,9 @@ type ThunderControllerInterface interface {
 
 // ThunderController is the struct used to handle the requests from agents and contains the concrete implementation of ThunderControllerInterface
 type ThunderController struct {
-	Config  config.Configuration
-	Service service.ThunderServiceInterface
-	TimeNow func() time.Time
-	Log     logger.Logger
+	Config     config.Configuration
+	Service    service.ThunderServiceInterface
+	ApiService api_service.APIServiceInterface
+	TimeNow    func() time.Time
+	Log        logger.Logger
 }
