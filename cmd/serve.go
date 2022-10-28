@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -424,6 +424,21 @@ func serveThunderService(config config.Configuration, wg *sync.WaitGroup) {
 	}
 	db.Init()
 
+	db_api := &apiservice_database.MongoDatabase{
+		Config:  config,
+		TimeNow: time.Now,
+		Log:     log,
+	}
+	db_api.Init()
+
+	api_service := &apiservice_service.APIService{
+		Config:   config,
+		Database: db_api,
+		TimeNow:  time.Now,
+		Log:      log,
+	}
+	api_service.Init()
+
 	if configDB, err := db.ReadConfig(); err == nil && configDB != nil {
 		config = *configDB
 	}
@@ -446,12 +461,21 @@ func serveThunderService(config config.Configuration, wg *sync.WaitGroup) {
 	job.Init()
 
 	ctrl := &thunderservice_controller.ThunderController{
-		Config:  config,
-		Service: service,
-		TimeNow: time.Now,
-		Log:     log,
+		Config:     config,
+		Service:    service,
+		ApiService: api_service,
+		TimeNow:    time.Now,
+		Log:        log,
 	}
-	h := ctrl.GetThunderControllerHandler()
+
+	auths := apiservice_auth.BuildAuthenticationProvider(config.APIService.AuthenticationProvider, *api_service, time.Now, log)
+	for _, auth := range auths {
+		if utils.Contains(config.APIService.AuthenticationProvider.Types, auth.GetType()) {
+			auth.Init()
+		}
+	}
+
+	h := ctrl.GetThunderControllerHandler(auths)
 	h = useCommonHandlers(h, config.ThunderService.LogHTTPRequest, log)
 
 	wg.Add(1)
