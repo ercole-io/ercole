@@ -18,7 +18,6 @@ package controller
 import (
 	"errors"
 	"net/http"
-	"strings"
 
 	"github.com/ercole-io/ercole/v2/api-service/auth"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
@@ -75,18 +74,12 @@ func (ctrl *APIController) AddUser(w http.ResponseWriter, r *http.Request) {
 
 func (ctrl *APIController) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	username := mux.Vars(r)["username"]
+	provider := mux.Vars(r)["provider"]
 
 	user := model.User{Username: username}
 	if err := utils.Decode(r.Body, &user); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
 		return
-	}
-
-	provider := auth.BasicType
-
-	reqSlice := strings.Split(r.RequestURI, "/")
-	if utils.Contains(reqSlice, auth.LdapType) {
-		provider = auth.LdapType
 	}
 
 	if err := ctrl.Service.UpdateUserGroups(username, provider, user.Groups); err != nil {
@@ -99,17 +92,11 @@ func (ctrl *APIController) UpdateUser(w http.ResponseWriter, r *http.Request) {
 
 func (ctrl *APIController) RemoveUser(w http.ResponseWriter, r *http.Request) {
 	username := mux.Vars(r)["username"]
+	provider := mux.Vars(r)["provider"]
 
 	if username == model.SuperUser {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, utils.ErrSuperUserCannotBeDeleted)
 		return
-	}
-
-	provider := auth.BasicType
-
-	reqSlice := strings.Split(r.RequestURI, "/")
-	if utils.Contains(reqSlice, auth.LdapType) {
-		provider = auth.LdapType
 	}
 
 	if err := ctrl.Service.RemoveUser(username, provider); err != nil {
