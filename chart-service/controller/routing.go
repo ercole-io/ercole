@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -35,17 +35,15 @@ func (ctrl *ChartController) GetChartControllerHandler(auths []auth.Authenticati
 	})
 
 	for _, ap := range auths {
-		if ap.GetType() == auth.BasicType {
-			router.HandleFunc("/user/login", ap.GetToken).Methods("POST")
-		}
+		subrouter := router.NewRoute().Subrouter()
+		prefix := ""
 
 		if ap.GetType() == auth.LdapType {
-			router.HandleFunc("/ldap/login", ap.GetToken).Methods("POST")
+			prefix = "/ldap"
 		}
 
-		subrouter := router.NewRoute().Subrouter()
 		subrouter.Use(ap.AuthenticateMiddleware)
-		ctrl.setupProtectedRoutes(subrouter)
+		ctrl.setupProtectedRoutes(subrouter.PathPrefix(prefix).Subrouter())
 	}
 
 	return router
