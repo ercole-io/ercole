@@ -82,3 +82,5 @@ var ErrGroupCannotBeDeleted = errors.New("The group cannot be deleted because it
 var ErrConnectLDAPServer = errors.New("Cannot connect to LDAP server")
 
 var ErrSuperUserCannotBeDeleted = errors.New("Super User cannot be deleted")
+
+var ErrPermissionDenied = "Permission denied"

@@ -115,6 +115,13 @@ func TestSearchPostgreSqlInstances_JSONUnpaged(t *testing.T) {
 		Metadata: dto.PagingMetadata{},
 	}
 
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
+
 	as.EXPECT().
 		SearchPostgreSqlInstances(
 			dto.SearchPostgreSqlInstancesFilter{
@@ -231,6 +238,13 @@ func TestSearchPostgreSqlInstances_JSONInternalServerError1(t *testing.T) {
 		Config:  config.Configuration{},
 		Log:     logger.NewLogger("TEST"),
 	}
+
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
 
 	as.EXPECT().
 		SearchPostgreSqlInstances(
@@ -352,6 +366,13 @@ func TestSearchPostgreSqlInstances_XLSXInternalServerError1(t *testing.T) {
 		},
 		Log: logger.NewLogger("TEST"),
 	}
+
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
 
 	as.EXPECT().
 		SearchPostgreSqlInstancesAsXLSX(

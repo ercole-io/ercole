@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -460,6 +460,13 @@ func TestGetTopWorkloadOracleDatabaseStats_FailUnprocessableEntity1(t *testing.T
 		Log:     logger.NewLogger("TEST"),
 	}
 
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
+
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.GetTopWorkloadOracleDatabaseStats)
 	req, err := http.NewRequest("GET", "/stats/databases/top-workload?limit=sdfsdfsdf", nil)
@@ -481,6 +488,13 @@ func TestGetTopWorkloadOracleDatabaseStats_FailUnprocessableEntity2(t *testing.T
 		Log:     logger.NewLogger("TEST"),
 	}
 
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
+
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.GetTopWorkloadOracleDatabaseStats)
 	req, err := http.NewRequest("GET", "/stats/databases/top-workload?older-than=sdfsdfsdf", nil)
@@ -501,6 +515,13 @@ func TestGetTopWorkloadOracleDatabaseStats_FailInternalServerError(t *testing.T)
 		Config:  config.Configuration{},
 		Log:     logger.NewLogger("TEST"),
 	}
+
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
 
 	as.EXPECT().
 		GetTopWorkloadOracleDatabaseStats("", 10, utils.MAX_TIME).
@@ -838,6 +859,14 @@ func TestGetOracleDatabasesStatistics_FailInternalServerError(t *testing.T) {
 	filter := dto.GlobalFilter{
 		OlderThan: utils.MAX_TIME,
 	}
+
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
+
 	as.EXPECT().
 		GetOracleDatabasesStatistics(filter).
 		Return(nil, aerrMock)

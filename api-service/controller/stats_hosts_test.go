@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -328,6 +328,13 @@ func TestGetTopUnusedOracleDatabaseInstanceResourceStats_FailUnprocessableEntity
 		Log:     logger.NewLogger("TEST"),
 	}
 
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
+
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.GetTopUnusedOracleDatabaseInstanceResourceStats)
 	req, err := http.NewRequest("GET", "/stats/top-unused-instance-resource?limit=sdfsdfsdf", nil)
@@ -349,6 +356,13 @@ func TestGetTopUnusedOracleDatabaseInstanceResourceStats_FailUnprocessableEntity
 		Log:     logger.NewLogger("TEST"),
 	}
 
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
+
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.GetTopUnusedOracleDatabaseInstanceResourceStats)
 	req, err := http.NewRequest("GET", "/stats/top-unused-instance-resource?older-than=sdfsdfsdf", nil)
@@ -369,6 +383,13 @@ func TestGetTopUnusedOracleDatabaseInstanceResourceStats_FailInternalServerError
 		Config:  config.Configuration{},
 		Log:     logger.NewLogger("TEST"),
 	}
+
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
 
 	as.EXPECT().
 		GetTopUnusedOracleDatabaseInstanceResourceStats("", "", 15, utils.MAX_TIME).

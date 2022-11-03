@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,10 +17,12 @@ package controller
 
 import (
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/gorilla/context"
 )
 
 // GetOracleDatabaseEnvironmentStats return all statistics about the environments of the databases using the filters in the request
@@ -185,6 +187,17 @@ func (ctrl *APIController) GetTopWorkloadOracleDatabaseStats(w http.ResponseWrit
 
 	//parse the query params
 	location = r.URL.Query().Get("location")
+	if location == "" {
+		user := context.Get(r, "user")
+		locations, errLocation := ctrl.Service.ListLocations(user)
+
+		if errLocation != nil {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, errLocation)
+			return
+		}
+
+		location = strings.Join(locations, ",")
+	}
 
 	if limit, err = utils.Str2int(r.URL.Query().Get("limit"), 10); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
@@ -298,6 +311,18 @@ func (ctrl *APIController) GetOracleDatabasesStatistics(w http.ResponseWriter, r
 		return
 	}
 
+	if filter.Location == "" {
+		user := context.Get(r, "user")
+		locations, errLocation := ctrl.Service.ListLocations(user)
+
+		if errLocation != nil {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, errLocation)
+			return
+		}
+
+		filter.Location = strings.Join(locations, ",")
+	}
+
 	stats, err := ctrl.Service.GetOracleDatabasesStatistics(*filter)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
@@ -319,6 +344,19 @@ func (ctrl *APIController) GetTopUnusedOracleDatabaseInstanceResourceStats(w htt
 
 	//parse the query params
 	location = r.URL.Query().Get("location")
+
+	if location == "" {
+		user := context.Get(r, "user")
+		locations, errLocation := ctrl.Service.ListLocations(user)
+
+		if errLocation != nil {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, errLocation)
+			return
+		}
+
+		location = strings.Join(locations, ",")
+	}
+
 	environment = r.URL.Query().Get("environment")
 
 	if limit, err = utils.Str2int(r.URL.Query().Get("limit"), 15); err != nil {
