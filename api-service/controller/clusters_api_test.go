@@ -139,6 +139,13 @@ func TestSearchCluster_JSONUnpaged(t *testing.T) {
 		},
 	}
 
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
+
 	as.EXPECT().
 		SearchClusters("full", "", "", false, -1, -1, "", "", utils.MAX_TIME).
 		Return(expectedRes, nil)
@@ -178,6 +185,13 @@ func TestSearchClusterNames_JSONUnpaged(t *testing.T) {
 		"not_in_cluster",
 		"Puzzait",
 	}
+
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
 
 	as.EXPECT().
 		SearchClusters("clusternames", "", "", false, -1, -1, "", "", utils.MAX_TIME).
@@ -289,6 +303,13 @@ func TestSearchCluster_JSONUnprocessableEntity5(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
+
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchClusters)
 	req, err := http.NewRequest("GET", "/clusters?older-than=ddfssdf", nil)
@@ -309,6 +330,13 @@ func TestSearchCluster_JSONInternalServerError(t *testing.T) {
 		Config:  config.Configuration{},
 		Log:     logger.NewLogger("TEST"),
 	}
+
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
 
 	as.EXPECT().
 		SearchClusters("full", "", "", false, -1, -1, "", "", utils.MAX_TIME).
@@ -433,6 +461,13 @@ func TestSearchClustersAs_XLSXInternalServerError1(t *testing.T) {
 		OlderThan:   utils.MAX_TIME,
 	}
 
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
+
 	as.EXPECT().
 		SearchClustersAsXLSX(filter).
 		Return(nil, aerrMock)
@@ -470,8 +505,8 @@ func TestGetCluster(t *testing.T) {
 			FetchEndpoint:               "",
 			Hostname:                    "",
 			HostnameAgentVirtualization: "",
-			Location:                    "",
-			Name:                        "",
+			Location:                    "Italy",
+			Name:                        "Pippo",
 			Sockets:                     0,
 			Type:                        "",
 			VirtualizationNodes:         []string{},
@@ -482,13 +517,20 @@ func TestGetCluster(t *testing.T) {
 			VMsErcoleAgentCount:         0,
 		}
 
+		var user interface{}
+		locations := []string{"Italy"}
+
+		as.EXPECT().
+			ListLocations(user).
+			Return(locations, nil)
+
 		as.EXPECT().
 			GetCluster("Pippo", utils.P("2020-06-10T11:54:59Z")).
 			Return(cluster, nil)
 
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(ac.GetCluster)
-		req, err := http.NewRequest("GET", "/hosts/cluster/Pippo?older-than=2020-06-10T11%3A54%3A59Z", nil)
+		req, err := http.NewRequest("GET", "/hosts/cluster/Pippo?location=Italy&older-than=2020-06-10T11%3A54%3A59Z", nil)
 		require.NoError(t, err)
 
 		req = mux.SetURLVars(req, map[string]string{

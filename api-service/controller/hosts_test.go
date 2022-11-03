@@ -181,6 +181,14 @@ func TestSearchHosts_JSONUnpaged(t *testing.T) {
 		LTECPUThreads:  -1,
 		GTECPUThreads:  -1,
 	}
+
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
+
 	as.EXPECT().
 		SearchHosts("full", gomock.Any()).
 		DoAndReturn(func(_ string, actual dto.SearchHostsFilters) ([]map[string]interface{}, error) {
@@ -244,6 +252,14 @@ func TestSearchHosts_JSONHostnames(t *testing.T) {
 		LTECPUThreads:  -1,
 		GTECPUThreads:  -1,
 	}
+
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
+
 	as.EXPECT().
 		SearchHosts("hostnames", gomock.Any()).
 		DoAndReturn(func(_ string, actual dto.SearchHostsFilters) ([]map[string]interface{}, error) {
@@ -273,6 +289,13 @@ func TestSearchHosts_JSONUnprocessableEntity1(t *testing.T) {
 		Config:  config.Configuration{},
 		Log:     logger.NewLogger("TEST"),
 	}
+
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchHosts)
@@ -398,6 +421,14 @@ func TestSearchHosts_JSONInternalServerError(t *testing.T) {
 		LTECPUThreads:  -1,
 		GTECPUThreads:  -1,
 	}
+
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
+
 	as.EXPECT().
 		SearchHosts("full", gomock.Any()).
 		DoAndReturn(func(_ string, actual dto.SearchHostsFilters) ([]map[string]interface{}, error) {
@@ -710,6 +741,14 @@ func TestSearchHosts_XLSXInternalServerError1(t *testing.T) {
 		LTECPUThreads:  -1,
 		GTECPUThreads:  -1,
 	}
+
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
+
 	as.EXPECT().
 		SearchHostsAsXLSX(filters).
 		Return(nil, aerrMock)
@@ -801,15 +840,22 @@ func TestGetHost_JSONSuccess(t *testing.T) {
 		ID:                  utils.Str2oid("5e8c234b24f648a08585bd41"),
 	}
 
+	var user interface{}
+	locations := []string{"Italy"}
+
 	as.EXPECT().
-		GetHost("foobar", utils.P("2020-06-10T11:54:59Z"), false).
+		ListLocations(user).
+		Return(locations, nil)
+
+	as.EXPECT().
+		GetHost("test-virt", utils.P("2020-06-10T11:54:59Z"), false).
 		Return(&expectedRes, nil)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.GetHost)
-	req, err := http.NewRequest("GET", "/hosts/foobar?older-than=2020-06-10T11%3A54%3A59Z", nil)
+	req, err := http.NewRequest("GET", "/hosts/test-virt?older-than=2020-06-10T11%3A54%3A59Z", nil)
 	req = mux.SetURLVars(req, map[string]string{
-		"hostname": "foobar",
+		"hostname": "test-virt",
 	})
 	require.NoError(t, err)
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,9 +17,11 @@ package controller
 
 import (
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/gorilla/context"
 )
 
 // GetTotalOracleExadataMemorySizeStats return the total size of memory of exadata using the filters in the request
@@ -32,6 +34,18 @@ func (ctrl *APIController) GetTotalOracleExadataMemorySizeStats(w http.ResponseW
 
 	//parse the query params
 	location = r.URL.Query().Get("location")
+	if location == "" {
+		user := context.Get(r, "user")
+		locations, errLocation := ctrl.Service.ListLocations(user)
+
+		if errLocation != nil {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, errLocation)
+			return
+		}
+
+		location = strings.Join(locations, ",")
+	}
+
 	environment = r.URL.Query().Get("environment")
 
 	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
@@ -60,6 +74,18 @@ func (ctrl *APIController) GetTotalOracleExadataCPUStats(w http.ResponseWriter, 
 
 	//parse the query params
 	location = r.URL.Query().Get("location")
+	if location == "" {
+		user := context.Get(r, "user")
+		locations, errLocation := ctrl.Service.ListLocations(user)
+
+		if errLocation != nil {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, errLocation)
+			return
+		}
+
+		location = strings.Join(locations, ",")
+	}
+
 	environment = r.URL.Query().Get("environment")
 
 	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
@@ -88,6 +114,18 @@ func (ctrl *APIController) GetAverageOracleExadataStorageUsageStats(w http.Respo
 
 	//parse the query params
 	location = r.URL.Query().Get("location")
+	if location == "" {
+		user := context.Get(r, "user")
+		locations, errLocation := ctrl.Service.ListLocations(user)
+
+		if errLocation != nil {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, errLocation)
+			return
+		}
+
+		location = strings.Join(locations, ",")
+	}
+
 	environment = r.URL.Query().Get("environment")
 
 	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
@@ -116,6 +154,18 @@ func (ctrl *APIController) GetOracleExadataStorageErrorCountStatusStats(w http.R
 
 	//parse the query params
 	location = r.URL.Query().Get("location")
+	if location == "" {
+		user := context.Get(r, "user")
+		locations, errLocation := ctrl.Service.ListLocations(user)
+
+		if errLocation != nil {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, errLocation)
+			return
+		}
+
+		location = strings.Join(locations, ",")
+	}
+
 	environment = r.URL.Query().Get("environment")
 
 	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
@@ -146,6 +196,18 @@ func (ctrl *APIController) GetOracleExadataPatchStatusStats(w http.ResponseWrite
 
 	//parse the query params
 	location = r.URL.Query().Get("location")
+	if location == "" {
+		user := context.Get(r, "user")
+		locations, errLocation := ctrl.Service.ListLocations(user)
+
+		if errLocation != nil {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, errLocation)
+			return
+		}
+
+		location = strings.Join(locations, ",")
+	}
+
 	environment = r.URL.Query().Get("environment")
 
 	if windowTime, err = utils.Str2int(r.URL.Query().Get("window-time"), 6); err != nil {

@@ -17,6 +17,7 @@ package database
 
 import (
 	"math"
+	"strings"
 	"time"
 
 	"github.com/amreo/mu"
@@ -29,7 +30,7 @@ import (
 func FilterByLocationAndEnvironmentSteps(location string, environment string) interface{} {
 	return bson.A{
 		mu.APOptionalStage(location != "", mu.APMatch(bson.M{
-			"location": location,
+			"location": bson.M{"$in": strings.Split(location, ",")},
 		})),
 		mu.APOptionalStage(environment != "", mu.APMatch(bson.M{
 			"environment": environment,

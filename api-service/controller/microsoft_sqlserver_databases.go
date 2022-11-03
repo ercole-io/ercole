@@ -17,10 +17,12 @@ package controller
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/golang/gddo/httputil"
+	"github.com/gorilla/context"
 )
 
 // SearchSqlServerInstances search instances data using the filters in the request
@@ -31,6 +33,18 @@ func (ctrl *APIController) SearchSqlServerInstances(w http.ResponseWriter, r *ht
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
+	}
+
+	if filter.Location == "" {
+		user := context.Get(r, "user")
+		locations, errLocation := ctrl.Service.ListLocations(user)
+
+		if errLocation != nil {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, errLocation)
+			return
+		}
+
+		filter.Location = strings.Join(locations, ",")
 	}
 
 	switch choice {

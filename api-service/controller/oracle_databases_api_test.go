@@ -138,6 +138,13 @@ func TestSearchOracleDatabaseAddms_JSONUnpaged(t *testing.T) {
 		},
 	}
 
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
+
 	as.EXPECT().
 		SearchOracleDatabaseAddms("", "", false, -1, -1, "", "", utils.MAX_TIME).
 		Return(expectedRes, nil)
@@ -227,6 +234,13 @@ func TestSearchOracleDatabaseAddms_JSONUnprocessableEntity4(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
+
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchOracleDatabaseAddms)
 	req, err := http.NewRequest("GET", "/addms?older-than=sdfdfsdfs", nil)
@@ -247,6 +261,13 @@ func TestSearchOracleDatabaseAddms_JSONInternalServerError(t *testing.T) {
 		Config:  config.Configuration{},
 		Log:     logger.NewLogger("TEST"),
 	}
+
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
 
 	as.EXPECT().
 		SearchOracleDatabaseAddms("", "", false, -1, -1, "", "", utils.MAX_TIME).
@@ -348,6 +369,13 @@ func TestSearchOracleDatabaseAddms_XLSXUnprocessableEntity1(t *testing.T) {
 		Log: logger.NewLogger("TEST"),
 	}
 
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
+
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchOracleDatabaseAddms)
 	req, err := http.NewRequest("GET", "/addms?older-than=aasdasd", nil)
@@ -371,6 +399,13 @@ func TestSearchOracleDatabaseAddms_XLSXInternalServerError1(t *testing.T) {
 		},
 		Log: logger.NewLogger("TEST"),
 	}
+
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
 
 	as.EXPECT().
 		SearchOracleDatabaseAddms("", "benefit", true, -1, -1, "", "", utils.MAX_TIME).
@@ -403,6 +438,13 @@ func TestSearchOracleDatabaseAddms_XLSXInternalServerError2(t *testing.T) {
 			"OK": true,
 		},
 	}
+
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
 
 	as.EXPECT().
 		SearchOracleDatabaseAddms("", "benefit", true, -1, -1, "", "", utils.MAX_TIME).
@@ -461,6 +503,13 @@ func TestSearchOracleDatabaseSegmentAdvisors_JSON(t *testing.T) {
 		},
 	}
 
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
+
 	as.EXPECT().
 		SearchOracleDatabaseSegmentAdvisors("", "", false, "", "", utils.MAX_TIME).
 		Return(segmentAdvisors, nil)
@@ -512,6 +561,13 @@ func TestSearchOracleDatabaseSegmentAdvisors_JSONUnprocessableEntity4(t *testing
 		Log:     logger.NewLogger("TEST"),
 	}
 
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
+
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchOracleDatabaseSegmentAdvisors)
 	req, err := http.NewRequest("GET", "/segment-advisors?older-than=asasdasd", nil)
@@ -532,6 +588,13 @@ func TestSearchOracleDatabaseSegmentAdvisors_JSONInternalServerError(t *testing.
 		Config:  config.Configuration{},
 		Log:     logger.NewLogger("TEST"),
 	}
+
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
 
 	as.EXPECT().
 		SearchOracleDatabaseSegmentAdvisors("", "", false, "", "", utils.MAX_TIME).
@@ -652,6 +715,13 @@ func TestSearchOracleDatabaseSegmentAdvisors_XLSXInternalServerError1(t *testing
 		OlderThan:   utils.MAX_TIME,
 	}
 
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
+
 	as.EXPECT().
 		SearchOracleDatabaseSegmentAdvisorsAsXLSX(filter).
 		Return(nil, aerrMock)
@@ -771,6 +841,13 @@ func TestSearchOracleDatabasePatchAdvisors_JSONUnpaged(t *testing.T) {
 		},
 		Metadata: dto.PagingMetadata{},
 	}
+
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
 
 	as.EXPECT().
 		SearchOracleDatabasePatchAdvisors("", "", false, -1, -1, utils.P("2019-05-05T14:02:03Z"), "", "", utils.MAX_TIME, "").
@@ -903,6 +980,13 @@ func TestSearchOracleDatabasePatchAdvisors_JSONUnprocessableEntity6(t *testing.T
 		Log:     logger.NewLogger("TEST"),
 	}
 
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
+
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchOracleDatabasePatchAdvisors)
 	req, err := http.NewRequest("GET", "/patch-advisors?older-than=sdasdasdasd", nil)
@@ -923,6 +1007,13 @@ func TestSearchOracleDatabasePatchAdvisors_JSONInternalServerError(t *testing.T)
 		Config:  config.Configuration{},
 		Log:     logger.NewLogger("TEST"),
 	}
+
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
 
 	as.EXPECT().
 		SearchOracleDatabasePatchAdvisors("", "", false, -1, -1, utils.P("2019-05-05T14:02:03Z"), "", "", utils.MAX_TIME, "").
@@ -1020,6 +1111,13 @@ func TestSearchOracleDatabasePatchAdvisors_XLSXInternalServerError1(t *testing.T
 		Environment: "",
 		OlderThan:   utils.MAX_TIME,
 	}
+
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
 
 	as.EXPECT().
 		SearchOracleDatabasePatchAdvisorsAsXLSX(windowTime, filter).
@@ -1165,6 +1263,13 @@ func TestSearchOracleDatabases_JSONUnpaged(t *testing.T) {
 		Metadata: dto.PagingMetadata{},
 	}
 
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
+
 	as.EXPECT().
 		SearchOracleDatabases(
 			dto.SearchOracleDatabasesFilter{
@@ -1281,6 +1386,13 @@ func TestSearchOracleDatabases_JSONInternalServerError1(t *testing.T) {
 		Config:  config.Configuration{},
 		Log:     logger.NewLogger("TEST"),
 	}
+
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
 
 	as.EXPECT().
 		SearchOracleDatabases(
@@ -1402,6 +1514,13 @@ func TestSearchOracleDatabases_XLSXInternalServerError1(t *testing.T) {
 		},
 		Log: logger.NewLogger("TEST"),
 	}
+
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
 
 	as.EXPECT().
 		SearchOracleDatabasesAsXLSX(
