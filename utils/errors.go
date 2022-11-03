@@ -79,6 +79,8 @@ var ErrGroupAlreadyExists = errors.New("Group already exists")
 
 var ErrGroupCannotBeDeleted = errors.New("The group cannot be deleted because it is associated with one or more users")
 
+var ErrRoleCannotBeDeleted = errors.New("The role cannot be deleted because it is associated with one or more groups")
+
 var ErrConnectLDAPServer = errors.New("Cannot connect to LDAP server")
 
 var ErrSuperUserCannotBeDeleted = errors.New("Super User cannot be deleted")
