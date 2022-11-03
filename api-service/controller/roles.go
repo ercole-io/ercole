@@ -96,8 +96,23 @@ func (ctrl *APIController) UpdateRole(w http.ResponseWriter, r *http.Request) {
 func (ctrl *APIController) RemoveRole(w http.ResponseWriter, r *http.Request) {
 	roleName := mux.Vars(r)["roleName"]
 
-	if err := ctrl.Service.RemoveRole(roleName); err != nil {
+	groups, err := ctrl.Service.GetGroups()
+	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	for _, group := range groups {
+		for _, role := range group.Roles {
+			if role == roleName {
+				utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, utils.ErrRoleCannotBeDeleted)
+				return
+			}
+		}
+	}
+
+	if errDel := ctrl.Service.RemoveRole(roleName); errDel != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, errDel)
 		return
 	}
 
