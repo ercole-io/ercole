@@ -18,6 +18,7 @@ package controller
 import (
 	"errors"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/golang/gddo/httputil"
@@ -48,6 +49,18 @@ func (ctrl *APIController) SearchHosts(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
+	}
+
+	if filters.Location == "" {
+		user := context.Get(r, "user")
+		locations, errLocation := ctrl.Service.ListLocations(user)
+
+		if errLocation != nil {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, errLocation)
+			return
+		}
+
+		filters.Location = strings.Join(locations, ",")
 	}
 
 	if requestContentType == "application/json" {
@@ -117,6 +130,18 @@ func (ctrl *APIController) searchHostsLMS(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	if filters.Location == "" {
+		user := context.Get(r, "user")
+		locations, errLocation := ctrl.Service.ListLocations(user)
+
+		if errLocation != nil {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, errLocation)
+			return
+		}
+
+		filters.Location = strings.Join(locations, ",")
+	}
+
 	filters.PageNumber, filters.PageSize = -1, -1
 
 	lms, err := ctrl.Service.SearchHostsAsLMS(*filters)
@@ -175,7 +200,29 @@ func (ctrl *APIController) GetHostJSON(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.WriteJSONResponse(w, http.StatusOK, host)
+	user := context.Get(r, "user")
+	locations, errLocation := ctrl.Service.ListLocations(user)
+
+	if errLocation != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, errLocation)
+		return
+	}
+
+	var isLocationOk bool
+
+	for _, location := range locations {
+		if location == host.Location {
+			isLocationOk = true
+			break
+		}
+	}
+
+	if isLocationOk {
+		utils.WriteJSONResponse(w, http.StatusOK, host)
+	} else {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, errors.New(utils.ErrPermissionDenied))
+		return
+	}
 }
 
 // GetHostMongoJSON return all'informations about the host requested in the id path variable

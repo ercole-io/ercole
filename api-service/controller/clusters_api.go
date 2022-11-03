@@ -18,11 +18,13 @@ package controller
 import (
 	"errors"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 
 	"github.com/golang/gddo/httputil"
+	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
 
 	"github.com/ercole-io/ercole/v2/utils"
@@ -81,6 +83,18 @@ func (ctrl *APIController) SearchClustersJSON(w http.ResponseWriter, r *http.Req
 	}
 
 	location = r.URL.Query().Get("location")
+	if location == "" {
+		user := context.Get(r, "user")
+		locations, errLocation := ctrl.Service.ListLocations(user)
+
+		if errLocation != nil {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, errLocation)
+			return
+		}
+
+		location = strings.Join(locations, ",")
+	}
+
 	environment = r.URL.Query().Get("environment")
 
 	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
@@ -116,6 +130,18 @@ func (ctrl *APIController) SearchClustersXLSX(w http.ResponseWriter, r *http.Req
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
+	}
+
+	if filter.Location == "" {
+		user := context.Get(r, "user")
+		locations, errLocation := ctrl.Service.ListLocations(user)
+
+		if errLocation != nil {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, errLocation)
+			return
+		}
+
+		filter.Location = strings.Join(locations, ",")
 	}
 
 	xlsx, err := ctrl.Service.SearchClustersAsXLSX(*filter)
@@ -158,7 +184,29 @@ func (ctrl *APIController) GetClusterJSON(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	utils.WriteJSONResponse(w, http.StatusOK, data)
+	user := context.Get(r, "user")
+	locations, errLocation := ctrl.Service.ListLocations(user)
+
+	if errLocation != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, errLocation)
+		return
+	}
+
+	var isLocationOk bool
+
+	for _, location := range locations {
+		if location == data.Location {
+			isLocationOk = true
+			break
+		}
+	}
+
+	if isLocationOk {
+		utils.WriteJSONResponse(w, http.StatusOK, data)
+	} else {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, errors.New(utils.ErrPermissionDenied))
+		return
+	}
 }
 
 //GetClusterXLSX get cluster data using the filters in the request and returns it in XLSX format

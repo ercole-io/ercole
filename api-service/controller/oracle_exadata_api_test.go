@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -169,6 +169,13 @@ func TestSearchOracleExadata_SuccessUnpaged(t *testing.T) {
 		Metadata: dto.PagingMetadata{},
 	}
 
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
+
 	as.EXPECT().
 		SearchOracleExadata(false, "", "", false, -1, -1, "", "", utils.MAX_TIME).
 		Return(&exo, nil)
@@ -279,6 +286,13 @@ func TestSearchOracleExadata_FailUnprocessableEntity5(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
+
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchOracleExadata)
 	req, err := http.NewRequest("GET", "/exadata?older-than=dasads", nil)
@@ -299,6 +313,13 @@ func TestSearchOracleExadata_FailInternalServerError(t *testing.T) {
 		Config:  config.Configuration{},
 		Log:     logger.NewLogger("TEST"),
 	}
+
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
 
 	as.EXPECT().
 		SearchOracleExadata(false, "", "", false, -1, -1, "", "", utils.MAX_TIME).

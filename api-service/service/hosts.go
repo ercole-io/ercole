@@ -95,7 +95,7 @@ func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsAsLMS) (*excelize.
 						headerHostCreated = true
 					}
 
-					if cHosts[i]["usingLicenseCount"].(float64) != 0 {
+					if cHosts[i]["usingLicenseCount"] != 0.0 {
 						setCellValueLMS(lms, sheetHostAdded, j, csiByHostname, cHosts[i])
 						j++
 					}
@@ -140,7 +140,7 @@ func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsAsLMS) (*excelize.
 						headerHostDismissed = true
 					}
 
-					if dHosts[i]["usingLicenseCount"].(float64) != 0 {
+					if dHosts[i]["usingLicenseCount"] != 0.0 {
 						setCellValueLMS(lms, sheetHostDismissed, z, csiByHostname, dHosts[i])
 						z++
 					}
@@ -152,7 +152,7 @@ func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsAsLMS) (*excelize.
 	indexRow := 4 // offset for headers
 
 	for i := 0; i < len(hosts); i++ {
-		if hosts[i]["usingLicenseCount"].(float64) != 0 {
+		if hosts[i]["usingLicenseCount"] != 0.0 {
 			setCellValueLMS(lms, sheetDatabaseEbsDbTier, indexRow, csiByHostname, hosts[i])
 			indexRow++
 		}
