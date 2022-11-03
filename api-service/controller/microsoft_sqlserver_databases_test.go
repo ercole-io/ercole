@@ -121,6 +121,13 @@ func TestSearchSqlServerInstances_JSONUnpaged(t *testing.T) {
 		Metadata: dto.PagingMetadata{},
 	}
 
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
+
 	as.EXPECT().
 		SearchSqlServerInstances(
 			dto.SearchSqlServerInstancesFilter{
@@ -237,6 +244,13 @@ func TestSearchSqlServerInstances_JSONInternalServerError1(t *testing.T) {
 		Config:  config.Configuration{},
 		Log:     logger.NewLogger("TEST"),
 	}
+
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
 
 	as.EXPECT().
 		SearchSqlServerInstances(
@@ -358,6 +372,13 @@ func TestSearchSqlServerInstances_XLSXInternalServerError1(t *testing.T) {
 		},
 		Log: logger.NewLogger("TEST"),
 	}
+
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
 
 	as.EXPECT().
 		SearchSqlServerInstancesAsXLSX(

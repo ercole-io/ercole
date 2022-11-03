@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	gomock "github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -26,6 +27,7 @@ import (
 
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
+	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
@@ -68,6 +70,13 @@ func TestGetTotalOracleExadataMemorySizeStats_FailUnprocessableEntity(t *testing
 		Log:     logger.NewLogger("TEST"),
 	}
 
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
+
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.GetTotalOracleExadataMemorySizeStats)
 	req, err := http.NewRequest("GET", "/stats/exadata/total-memory-size?older-than=sdfsdfsdf", nil)
@@ -88,6 +97,13 @@ func TestGetTotalOracleExadataMemorySizeStats_FailInternalServerError(t *testing
 		Config:  config.Configuration{},
 		Log:     logger.NewLogger("TEST"),
 	}
+
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
 
 	as.EXPECT().
 		GetTotalOracleExadataMemorySizeStats("", "", utils.MAX_TIME).
@@ -113,6 +129,25 @@ func TestGetTotalOracleExadataCPUStats_Success(t *testing.T) {
 		Config:  config.Configuration{},
 		Log:     logger.NewLogger("TEST"),
 	}
+
+	tNow := time.Now()
+	var user interface{}
+
+	user = model.User{
+		Username:  "buu",
+		Password:  "IYQLRXRRCDsdgoKTQE",
+		Salt:      "vtx9QGB3XZ",
+		LastLogin: &tNow,
+		FirstName: "buu",
+		LastName:  "kabuu",
+		Groups:    []string{"admin"},
+		Provider:  "basic"}
+
+	locations := []string{"Italy"}
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil).AnyTimes()
 
 	expectedRes := map[string]interface{}{
 		"Enabled": 156,
@@ -145,6 +180,13 @@ func TestGetTotalOracleExadataCPUStats_FailUnprocessableEntity(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
+
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.GetTotalOracleExadataCPUStats)
 	req, err := http.NewRequest("GET", "/stats/exadata/total-cpu?older-than=sdfsdfsdf", nil)
@@ -165,6 +207,13 @@ func TestGetTotalOracleExadataCPUStats_FailInternalServerError(t *testing.T) {
 		Config:  config.Configuration{},
 		Log:     logger.NewLogger("TEST"),
 	}
+
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
 
 	as.EXPECT().
 		GetTotalOracleExadataCPUStats("", "", utils.MAX_TIME).
@@ -219,6 +268,13 @@ func TestGetAverageOracleExadataStorageUsageStats_FailUnprocessableEntity(t *tes
 		Log:     logger.NewLogger("TEST"),
 	}
 
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
+
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.GetAverageOracleExadataStorageUsageStats)
 	req, err := http.NewRequest("GET", "/stats/exadata/average-storage-usage?older-than=sdfsdfsdf", nil)
@@ -239,6 +295,13 @@ func TestGetAverageOracleExadataStorageUsageStats_FailInternalServerError(t *tes
 		Config:  config.Configuration{},
 		Log:     logger.NewLogger("TEST"),
 	}
+
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
 
 	as.EXPECT().
 		GetAverageOracleExadataStorageUsageStats("", "", utils.MAX_TIME).
@@ -302,6 +365,13 @@ func TestGetOracleExadataStorageErrorCountStatusStats_FailUnprocessableEntity(t 
 		Log:     logger.NewLogger("TEST"),
 	}
 
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
+
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.GetOracleExadataStorageErrorCountStatusStats)
 	req, err := http.NewRequest("GET", "/stats/exadata/storage-error-count-status?older-than=sdfsdfsdf", nil)
@@ -322,6 +392,13 @@ func TestGetOracleExadataStorageErrorCountStatusStats_FailInternalServerError(t 
 		Config:  config.Configuration{},
 		Log:     logger.NewLogger("TEST"),
 	}
+
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
 
 	as.EXPECT().
 		GetOracleExadataStorageErrorCountStatusStats("", "", utils.MAX_TIME).
@@ -385,6 +462,13 @@ func TestGetOracleExadataPatchStatusStats_FailUnprocessableEntity1(t *testing.T)
 		Log:     logger.NewLogger("TEST"),
 	}
 
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
+
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.GetOracleExadataPatchStatusStats)
 	req, err := http.NewRequest("GET", "/stats/exadata/patch-status?window-time=sdfsdfsdf", nil)
@@ -406,6 +490,13 @@ func TestGetOracleExadataPatchStatusStats_FailUnprocessableEntity2(t *testing.T)
 		Log:     logger.NewLogger("TEST"),
 	}
 
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
+
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.GetOracleExadataPatchStatusStats)
 	req, err := http.NewRequest("GET", "/stats/exadata/patch-status?older-than=sdfsdfsdf", nil)
@@ -426,6 +517,13 @@ func TestGetOracleExadataPatchStatusStats_FailInternalServerError(t *testing.T) 
 		Config:  config.Configuration{},
 		Log:     logger.NewLogger("TEST"),
 	}
+
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
 
 	as.EXPECT().
 		GetOracleExadataPatchStatusStats("", "", utils.P("2019-05-05T14:02:03Z"), utils.MAX_TIME).
