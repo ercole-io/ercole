@@ -565,118 +565,146 @@
                                                     ]
                                                 },
                                                 "tablespaces": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object",
-                                                        "required": [
-                                                            "name",
-                                                            "maxSize",
-                                                            "total",
-                                                            "used",
-                                                            "usedPerc",
-                                                            "status"
-                                                        ],
-                                                        "properties": {
-                                                            "name": {
-                                                                "type": "string"
-                                                            },
-                                                            "maxSize": {
-                                                                "type": "number",
-                                                                "minimum": 0
-                                                            },
-                                                            "total": {
-                                                                "type": "number",
-                                                                "minimum": 0
-                                                            },
-                                                            "used": {
-                                                                "type": "number",
-                                                                "minimum": 0
-                                                            },
-                                                            "usedPerc": {
-                                                                "type": "number",
-                                                                "minimum": 0
-                                                            },
-                                                            "status": {
-                                                                "type": "string",
-                                                                "enum": [
-                                                                    "ONLINE",
-                                                                    "READ ONLY",
-                                                                    "OFFLINE"
-                                                                ]
+                                                    "anyOf": [
+                                                        {
+                                                            "type": "null"
+                                                        },
+                                                        {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "object",
+                                                                "required": [
+                                                                    "name",
+                                                                    "maxSize",
+                                                                    "total",
+                                                                    "used",
+                                                                    "usedPerc",
+                                                                    "status"
+                                                                ],
+                                                                "properties": {
+                                                                    "name": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "maxSize": {
+                                                                        "type": "number",
+                                                                        "minimum": 0
+                                                                    },
+                                                                    "total": {
+                                                                        "type": "number",
+                                                                        "minimum": 0
+                                                                    },
+                                                                    "used": {
+                                                                        "type": "number",
+                                                                        "minimum": 0
+                                                                    },
+                                                                    "usedPerc": {
+                                                                        "type": "number",
+                                                                        "minimum": 0
+                                                                    },
+                                                                    "status": {
+                                                                        "type": "string",
+                                                                        "enum": [
+                                                                            "ONLINE",
+                                                                            "READ ONLY",
+                                                                            "OFFLINE"
+                                                                        ]
+                                                                    }
+                                                                }
                                                             }
                                                         }
-                                                    }
+                                                    ]
                                                 },
                                                 "schemas": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object",
-                                                        "required": [
-                                                            "indexes",
-                                                            "lob",
-                                                            "tables",
-                                                            "total",
-                                                            "user"
-                                                        ],
-                                                        "properties": {
-                                                            "indexes": {
-                                                                "type": "integer",
-                                                                "minimum": 0
-                                                            },
-                                                            "lob": {
-                                                                "type": "integer",
-                                                                "minimum": 0
-                                                            },
-                                                            "tables": {
-                                                                "type": "integer",
-                                                                "minimum": 0
-                                                            },
-                                                            "total": {
-                                                                "type": "integer",
-                                                                "minimum": 0
-                                                            },
-                                                            "user": {
-                                                                "type": "string"
+                                                    "anyOf": [
+                                                        {
+                                                            "type": "null"
+                                                        },
+                                                        {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "object",
+                                                                "required": [
+                                                                    "indexes",
+                                                                    "lob",
+                                                                    "tables",
+                                                                    "total",
+                                                                    "user"
+                                                                ],
+                                                                "properties": {
+                                                                    "indexes": {
+                                                                        "type": "integer",
+                                                                        "minimum": 0
+                                                                    },
+                                                                    "lob": {
+                                                                        "type": "integer",
+                                                                        "minimum": 0
+                                                                    },
+                                                                    "tables": {
+                                                                        "type": "integer",
+                                                                        "minimum": 0
+                                                                    },
+                                                                    "total": {
+                                                                        "type": "integer",
+                                                                        "minimum": 0
+                                                                    },
+                                                                    "user": {
+                                                                        "type": "string"
+                                                                    }
+                                                                }
                                                             }
                                                         }
-                                                    }
+                                                    ]
                                                 },
                                                 "services": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object",
-                                                        "required": [
-                                                            "name"
-                                                        ],
-                                                        "properties": {
-                                                            "name": {
-                                                                "type": "string"
+                                                    "anyOf": [
+                                                        {
+                                                            "type": "null"
+                                                        },
+                                                        {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "object",
+                                                                "required": [
+                                                                    "name"
+                                                                ],
+                                                                "properties": {
+                                                                    "name": {
+                                                                        "type": "string"
+                                                                    }
+                                                                }
                                                             }
                                                         }
-                                                    }
+                                                    ]
                                                 }
                                             }
                                         }
                                     },
                                     "grantDba": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "object",
-                                            "properties": {
-                                                "grantee": {
-                                                    "type": "string",
-                                                    "maxLength": 30
-                                                },
-                                                "adminOption": {
-                                                    "type": "string",
-                                                    "maxLength": 3
-                                                },
-                                                "defaultRole": {
-                                                    "type": "string",
-                                                    "maxLength": 3
+                                        "anyOf": [
+                                            {
+                                                "type": "null"
+                                            },
+                                            {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "grantee": {
+                                                            "type": "string",
+                                                            "maxLength": 30
+                                                        },
+                                                        "adminOption": {
+                                                            "type": "string",
+                                                            "maxLength": 3
+                                                        },
+                                                        "defaultRole": {
+                                                            "type": "string",
+                                                            "maxLength": 3
+                                                        }
+                                                    }
                                                 }
                                             }
-                                        }
+                                        ]
                                     }
                                 }
                             }
