@@ -17,22 +17,34 @@ package controller
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/golang/gddo/httputil"
+	"github.com/gorilla/context"
 )
 
 func (ctrl *APIController) ListOracleDatabaseTablespaces(w http.ResponseWriter, r *http.Request) {
+	choice := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
+
 	filter, err := dto.GetGlobalFilter(r)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
 		return
 	}
 
-	choice := r.Header.Get("Content-Type")
-	if choice == "" {
-		choice = "application/json"
+	if filter.Location == "" {
+		user := context.Get(r, "user")
+		locations, errLocation := ctrl.Service.ListLocations(user)
+
+		if errLocation != nil {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, errLocation)
+			return
+		}
+
+		filter.Location = strings.Join(locations, ",")
 	}
 
 	switch choice {

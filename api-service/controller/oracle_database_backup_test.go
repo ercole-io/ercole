@@ -57,8 +57,15 @@ func TestGetOracleBackupList_Success(t *testing.T) {
 		},
 	}
 
+	var user interface{}
+	var locations []string
+
 	as.EXPECT().
-		GetOracleBackupList().
+		ListLocations(user).
+		Return(locations, nil)
+
+	as.EXPECT().
+		GetOracleBackupList(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).
 		Return(result, nil)
 
 	rr := httptest.NewRecorder()
@@ -99,7 +106,14 @@ func TestGetOracleBackupListXLSX_Success(t *testing.T) {
 
 	expectedRes, _ := exutils.NewXLSX(ac.Config, sheet, headers...)
 
-	as.EXPECT().CreateGetOracleBackupListXLSX().Return(expectedRes, nil)
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
+
+	as.EXPECT().CreateGetOracleBackupListXLSX(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).Return(expectedRes, nil)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.GetOracleBackupList)

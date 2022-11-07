@@ -21,6 +21,7 @@ import (
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/ercole-io/ercole/v2/utils/mongoutils"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson"
@@ -30,7 +31,7 @@ func (m *MongodbSuite) TestGetOraclePatchList() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 
 	m.T().Run("success with empty table", func(t *testing.T) {
-		actual, err := m.db.GetOraclePatchList()
+		actual, err := m.db.GetOraclePatchList(dto.GlobalFilter{OlderThan: utils.MAX_TIME})
 		m.Require().NoError(err)
 
 		expected := make([]dto.OracleDatabasePatchDto, 0)
@@ -60,7 +61,7 @@ func (m *MongodbSuite) TestGetOraclePatchList() {
 			InsertMany(ctx, expected)
 		m.Require().NoError(err)
 
-		actual, err := m.db.GetOraclePatchList()
+		actual, err := m.db.GetOraclePatchList(dto.GlobalFilter{OlderThan: utils.MAX_TIME})
 		m.Require().NoError(err)
 
 		assert.ElementsMatch(m.T(), expected, actual)

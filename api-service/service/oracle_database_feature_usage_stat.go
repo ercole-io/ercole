@@ -21,8 +21,8 @@ import (
 	"github.com/ercole-io/ercole/v2/utils/exutils"
 )
 
-func (as *APIService) GetOracleOptionList() ([]dto.OracleDatabaseFeatureUsageStatDto, error) {
-	result, err := as.Database.GetOracleOptionList()
+func (as *APIService) GetOracleOptionList(filter dto.GlobalFilter) ([]dto.OracleDatabaseFeatureUsageStatDto, error) {
+	result, err := as.Database.GetOracleOptionList(filter)
 	if err != nil {
 		return nil, err
 	}
@@ -30,8 +30,8 @@ func (as *APIService) GetOracleOptionList() ([]dto.OracleDatabaseFeatureUsageSta
 	return result, nil
 }
 
-func (as *APIService) CreateGetOracleOptionListXLSX() (*excelize.File, error) {
-	result, err := as.Database.GetOracleOptionList()
+func (as *APIService) CreateGetOracleOptionListXLSX(filter dto.GlobalFilter) (*excelize.File, error) {
+	result, err := as.Database.GetOracleOptionList(filter)
 	if err != nil {
 		return nil, err
 	}
