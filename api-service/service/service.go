@@ -152,15 +152,15 @@ type APIServiceInterface interface {
 	CreateOracleGrantDbaXlsx(hostname string, filter dto.GlobalFilter) (*excelize.File, error)
 
 	// ORACLE DATABASE PATCH
-	GetOraclePatchList() ([]dto.OracleDatabasePatchDto, error)
-	CreateGetOraclePatchListXLSX() (*excelize.File, error)
+	GetOraclePatchList(filter dto.GlobalFilter) ([]dto.OracleDatabasePatchDto, error)
+	CreateGetOraclePatchListXLSX(filter dto.GlobalFilter) (*excelize.File, error)
 
 	// ORACLE DATABASE OPTION
-	GetOracleOptionList() ([]dto.OracleDatabaseFeatureUsageStatDto, error)
-	CreateGetOracleOptionListXLSX() (*excelize.File, error)
+	GetOracleOptionList(filter dto.GlobalFilter) ([]dto.OracleDatabaseFeatureUsageStatDto, error)
+	CreateGetOracleOptionListXLSX(filter dto.GlobalFilter) (*excelize.File, error)
 
 	// ORACLE DATABASE CHANGES
-	GetOracleChanges() ([]dto.OracleChangesDto, error)
+	GetOracleChanges(filter dto.GlobalFilter) ([]dto.OracleChangesDto, error)
 
 	// ORACLE DATABASE TABLESPACE
 	ListOracleDatabaseTablespaces(filter dto.GlobalFilter) ([]dto.OracleDatabaseTablespace, error)
@@ -175,12 +175,12 @@ type APIServiceInterface interface {
 	CreateOracleDatabasePdbsXlsx(filter dto.GlobalFilter) (*excelize.File, error)
 
 	// ORACLE DATABASE BACKUP
-	GetOracleBackupList() ([]dto.OracleDatabaseBackupDto, error)
-	CreateGetOracleBackupListXLSX() (*excelize.File, error)
+	GetOracleBackupList(filter dto.GlobalFilter) ([]dto.OracleDatabaseBackupDto, error)
+	CreateGetOracleBackupListXLSX(filter dto.GlobalFilter) (*excelize.File, error)
 
 	// ORACLE DATABASE SERVICE
-	GetOracleServiceList() ([]dto.OracleDatabaseServiceDto, error)
-	CreateGetOracleServiceListXLSX() (*excelize.File, error)
+	GetOracleServiceList(filter dto.GlobalFilter) ([]dto.OracleDatabaseServiceDto, error)
+	CreateGetOracleServiceListXLSX(filter dto.GlobalFilter) (*excelize.File, error)
 
 	// SQL SERVER DATABASE LICENSES
 	GetSqlServerDatabaseLicenseTypes() ([]model.SqlServerDatabaseLicenseType, error)

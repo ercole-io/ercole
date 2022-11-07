@@ -31,7 +31,7 @@ func (ctrl *APIController) GetLDAPUsers(w http.ResponseWriter, r *http.Request) 
 
 	userLDAP, err := ctrl.Service.GetLDAPUsers(user)
 	if errors.Is(err, utils.ErrConnectLDAPServer) {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, utils.ErrConnectLDAPServer)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, utils.ErrConnectLDAPServer)
 		return
 	} else if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)

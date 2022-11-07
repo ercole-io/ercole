@@ -24,7 +24,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func (md *MongoDatabase) GetOracleChanges() ([]dto.OracleChangesDto, error) {
+func (md *MongoDatabase) GetOracleChanges(filter dto.GlobalFilter) ([]dto.OracleChangesDto, error) {
 	ctx := context.TODO()
 
 	result := make([]dto.OracleChangesDto, 0)
@@ -32,9 +32,9 @@ func (md *MongoDatabase) GetOracleChanges() ([]dto.OracleChangesDto, error) {
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		ctx,
 		mu.MAPipeline(
+			FilterByOldnessSteps(filter.OlderThan),
+			FilterByLocationAndEnvironmentSteps(filter.Location, filter.Environment),
 			mu.APMatch(bson.M{
-				"dismissedAt": nil,
-				"archived":    false,
 				"features.oracle.database.databases": bson.M{
 					"$ne": nil,
 				},
@@ -48,7 +48,6 @@ func (md *MongoDatabase) GetOracleChanges() ([]dto.OracleChangesDto, error) {
 				"history",
 				mu.MAPipeline(
 					mu.APMatch(mu.QOExpr(mu.APOAnd(mu.APOEqual("$hostname", "$$hn"), mu.APOGreaterOrEqual("$$ca", "$createdAt")))),
-
 					mu.APProject(bson.M{
 						"createdAt": 1,
 						"features.oracle.database.databases.name":          1,
@@ -87,7 +86,7 @@ func (md *MongoDatabase) GetOracleChanges() ([]dto.OracleChangesDto, error) {
 				"features.oracle": mu.APOCond(mu.APOEqual("$features.oracle.database.databases", nil), nil, "$features.oracle"),
 			}),
 			mu.APProject(bson.M{
-				"hostname": "$hostname",
+				"hostname": 1,
 				"oracleChangesDBs": mu.APOMap(
 					"$features.oracle.database.databases",
 					"changesDB",

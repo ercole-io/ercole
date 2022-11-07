@@ -57,8 +57,15 @@ func TestGetOraclePatchList_Success(t *testing.T) {
 		},
 	}
 
+	var user interface{}
+	var locations []string
+
 	as.EXPECT().
-		GetOraclePatchList().
+		ListLocations(user).
+		Return(locations, nil)
+
+	as.EXPECT().
+		GetOraclePatchList(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).
 		Return(result, nil)
 
 	rr := httptest.NewRecorder()
@@ -99,7 +106,14 @@ func TestGetOraclePatchListXLSX_Success(t *testing.T) {
 
 	expectedRes, _ := exutils.NewXLSX(ac.Config, sheet, headers...)
 
-	as.EXPECT().CreateGetOraclePatchListXLSX().Return(expectedRes, nil)
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
+
+	as.EXPECT().CreateGetOraclePatchListXLSX(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).Return(expectedRes, nil)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.GetOraclePatchList)

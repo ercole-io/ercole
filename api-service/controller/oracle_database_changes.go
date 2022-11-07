@@ -17,13 +17,33 @@ package controller
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/gorilla/context"
 )
 
 func (ctrl *APIController) GetOracleChanges(w http.ResponseWriter, r *http.Request) {
-	result, err := ctrl.GetOracleChangesJSON()
+	filter, err := dto.GetGlobalFilter(r)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
+		return
+	}
+
+	if filter.Location == "" {
+		user := context.Get(r, "user")
+		locations, errLocation := ctrl.Service.ListLocations(user)
+
+		if errLocation != nil {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, errLocation)
+			return
+		}
+
+		filter.Location = strings.Join(locations, ",")
+	}
+
+	result, err := ctrl.GetOracleChangesJSON(filter)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
@@ -32,6 +52,6 @@ func (ctrl *APIController) GetOracleChanges(w http.ResponseWriter, r *http.Reque
 	utils.WriteJSONResponse(w, http.StatusOK, result)
 }
 
-func (ctrl *APIController) GetOracleChangesJSON() ([]dto.OracleChangesDto, error) {
-	return ctrl.Service.GetOracleChanges()
+func (ctrl *APIController) GetOracleChangesJSON(filters *dto.GlobalFilter) ([]dto.OracleChangesDto, error) {
+	return ctrl.Service.GetOracleChanges(*filters)
 }
