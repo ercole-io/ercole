@@ -51,9 +51,9 @@ func TestGetOracleOptionList_Success(t *testing.T) {
 			},
 		},
 	}
-	db.EXPECT().GetOracleOptionList().Return(expected, nil)
+	db.EXPECT().GetOracleOptionList(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).Return(expected, nil)
 
-	res, err := as.GetOracleOptionList()
+	res, err := as.GetOracleOptionList(dto.GlobalFilter{OlderThan: utils.MAX_TIME})
 	require.NoError(t, err)
 	assert.Equal(t, expected, res)
 }

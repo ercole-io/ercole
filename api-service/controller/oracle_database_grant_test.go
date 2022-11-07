@@ -63,6 +63,13 @@ func TestListOracleGrantDbaByHostname_Success(t *testing.T) {
 		},
 	}
 
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
+
 	as.EXPECT().
 		ListOracleGrantDbaByHostname("hostname", filter).
 		Return(gdRes, nil)
@@ -111,6 +118,13 @@ func TestGetOracleGrantDbaXLSX_Success(t *testing.T) {
 	}
 
 	expectedRes, _ := exutils.NewXLSX(ac.Config, sheet, headers...)
+
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
 
 	as.EXPECT().CreateOracleGrantDbaXlsx("", filter).Return(expectedRes, nil)
 

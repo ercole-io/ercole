@@ -148,11 +148,14 @@ type MongoDatabaseInterface interface {
 
 	FindGrantDbaByHostname(hostname string, filter dto.GlobalFilter) ([]dto.OracleGrantDbaDto, error)
 
-	GetOraclePatchList() ([]dto.OracleDatabasePatchDto, error)
-	GetOracleOptionList() ([]dto.OracleDatabaseFeatureUsageStatDto, error)
-	GetOracleChanges() ([]dto.OracleChangesDto, error)
-	GetOracleBackupList() ([]dto.OracleDatabaseBackupDto, error)
-	GetOracleServiceList() ([]dto.OracleDatabaseServiceDto, error)
+	GetOraclePatchList(filter dto.GlobalFilter) ([]dto.OracleDatabasePatchDto, error)
+	GetOracleOptionList(filter dto.GlobalFilter) ([]dto.OracleDatabaseFeatureUsageStatDto, error)
+	GetOracleChanges(filter dto.GlobalFilter) ([]dto.OracleChangesDto, error)
+	GetOracleBackupList(filter dto.GlobalFilter) ([]dto.OracleDatabaseBackupDto, error)
+	GetOracleServiceList(filter dto.GlobalFilter) ([]dto.OracleDatabaseServiceDto, error)
+	FindAllOracleDatabaseTablespaces(filter dto.GlobalFilter) ([]dto.OracleDatabaseTablespace, error)
+	FindAllOracleDatabaseSchemas(filter dto.GlobalFilter) ([]dto.OracleDatabaseSchema, error)
+	FindAllOracleDatabasePdbs(filter dto.GlobalFilter) ([]dto.OracleDatabasePluggableDatabase, error)
 
 	// ReplaceHostData adds a new hostdata to the database
 	ReplaceHostData(hostData model.HostDataBE) error
@@ -179,10 +182,6 @@ type MongoDatabaseInterface interface {
 	GetHostsCountUsingTechnologies(location string, environment string, olderThan time.Time) (map[string]float64, error)
 	// ExistNotInClusterHost return true if the host specified by hostname exist and it is not in cluster, otherwise false
 	ExistNotInClusterHost(hostname string) (bool, error)
-
-	FindAllOracleDatabaseTablespaces(filter dto.GlobalFilter) ([]dto.OracleDatabaseTablespace, error)
-	FindAllOracleDatabaseSchemas(filter dto.GlobalFilter) ([]dto.OracleDatabaseSchema, error)
-	FindAllOracleDatabasePdbs(filter dto.GlobalFilter) ([]dto.OracleDatabasePluggableDatabase, error)
 
 	// MYSQL
 

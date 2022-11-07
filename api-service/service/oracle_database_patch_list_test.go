@@ -21,6 +21,7 @@ import (
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -48,9 +49,9 @@ func TestGetOraclePatchList_Success(t *testing.T) {
 			},
 		},
 	}
-	db.EXPECT().GetOraclePatchList().Return(expected, nil)
+	db.EXPECT().GetOraclePatchList(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).Return(expected, nil)
 
-	res, err := as.GetOraclePatchList()
+	res, err := as.GetOraclePatchList(dto.GlobalFilter{OlderThan: utils.MAX_TIME})
 	require.NoError(t, err)
 	assert.Equal(t, expected, res)
 }

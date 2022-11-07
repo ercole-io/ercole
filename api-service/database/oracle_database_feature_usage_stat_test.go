@@ -31,7 +31,7 @@ func (m *MongodbSuite) TestGetOracleOptionList() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 
 	m.T().Run("success with empty table", func(t *testing.T) {
-		actual, err := m.db.GetOracleOptionList()
+		actual, err := m.db.GetOracleOptionList(dto.GlobalFilter{OlderThan: utils.MAX_TIME})
 		m.Require().NoError(err)
 
 		expected := make([]dto.OracleDatabaseFeatureUsageStatDto, 0)
@@ -63,7 +63,7 @@ func (m *MongodbSuite) TestGetOracleOptionList() {
 			InsertMany(ctx, expected)
 		m.Require().NoError(err)
 
-		actual, err := m.db.GetOracleOptionList()
+		actual, err := m.db.GetOracleOptionList(dto.GlobalFilter{OlderThan: utils.MAX_TIME})
 		m.Require().NoError(err)
 
 		assert.ElementsMatch(m.T(), expected, actual)

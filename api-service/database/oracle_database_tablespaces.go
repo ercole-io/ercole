@@ -31,7 +31,6 @@ func (md *MongoDatabase) FindAllOracleDatabaseTablespaces(filter dto.GlobalFilte
 		mu.MAPipeline(
 			FilterByOldnessSteps(filter.OlderThan),
 			FilterByLocationAndEnvironmentSteps(filter.Location, filter.Environment),
-			bson.M{"$match": bson.M{"archived": false}},
 			bson.M{"$unwind": bson.M{"path": "$features.oracle.database.databases"}},
 			bson.M{"$unwind": bson.M{"path": "$features.oracle.database.databases.tablespaces"}},
 			bson.M{"$project": bson.M{

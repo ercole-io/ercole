@@ -18,53 +18,42 @@ package database
 import (
 	"context"
 
+	"github.com/amreo/mu"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func (md *MongoDatabase) GetOracleBackupList() ([]dto.OracleDatabaseBackupDto, error) {
+func (md *MongoDatabase) GetOracleBackupList(filter dto.GlobalFilter) ([]dto.OracleDatabaseBackupDto, error) {
 	ctx := context.TODO()
 
 	result := make([]dto.OracleDatabaseBackupDto, 0)
 
-	query := bson.A{
-		bson.M{"$match": bson.M{
-			"dismissedAt": nil,
-			"archived":    false,
-		}},
-		bson.M{
-			"$unwind": bson.M{
-				"path": "$features.oracle.database.databases",
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
+		ctx,
+		mu.MAPipeline(
+			FilterByOldnessSteps(filter.OlderThan),
+			FilterByLocationAndEnvironmentSteps(filter.Location, filter.Environment),
+			bson.M{"$unwind": bson.M{"path": "$features.oracle.database.databases"}},
+			bson.M{"$unwind": bson.M{"path": "$features.oracle.database.databases.backups"}},
+			bson.M{"$project": bson.M{
+				"hostname":                        1,
+				"location":                        1,
+				"environment":                     1,
+				"createdAt":                       1,
+				"databasename":                    "$features.oracle.database.databases.name",
+				"oracleDatabaseBackup.backupType": "$features.oracle.database.databases.backups.backupType",
+				"oracleDatabaseBackup.hour":       "$features.oracle.database.databases.backups.hour",
+				"oracleDatabaseBackup.weekDays": bson.M{"$map": bson.M{
+					"input": "$features.oracle.database.databases.backups.weekDays",
+					"as":    "days",
+					"in":    "$$days",
+				}},
+				"oracleDatabaseBackup.avgBckSize": "$features.oracle.database.databases.backups.avgBckSize",
+				"oracleDatabaseBackup.retention":  "$features.oracle.database.databases.backups.retention",
 			}},
-		bson.M{"$set": bson.M{
-			"database": "$features.oracle.database.databases",
-		}},
-		bson.M{
-			"$unwind": bson.M{
-				"path": "$database.backups",
-			}},
-		bson.M{"$project": bson.M{
-			"hostname": "$hostname",
-			"dbname":   "$database.name",
-			"backups":  "$database.backups",
-		}},
-		bson.M{"$project": bson.M{
-			"oracleDatabaseBackup.backupType": "$backups.backupType",
-			"oracleDatabaseBackup.hour":       "$backups.hour",
-			"oracleDatabaseBackup.weekDays": bson.M{"$map": bson.M{
-				"input": "$backups.weekDays",
-				"as":    "days",
-				"in":    "$$days",
-			}},
-			"oracleDatabaseBackup.avgBckSize": "$backups.avgBckSize",
-			"oracleDatabaseBackup.retention":  "$backups.retention",
-			"hostname":                        "$hostname",
-			"databasename":                    "$dbname",
-		}},
-	}
-
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(ctx, query)
+		),
+	)
 	if err != nil {
 		return nil, utils.NewError(err, "DB ERROR")
 	}

@@ -31,7 +31,6 @@ func (md *MongoDatabase) FindAllOracleDatabaseSchemas(filter dto.GlobalFilter) (
 		mu.MAPipeline(
 			FilterByOldnessSteps(filter.OlderThan),
 			FilterByLocationAndEnvironmentSteps(filter.Location, filter.Environment),
-			bson.M{"$match": bson.M{"archived": false}},
 			bson.M{"$unwind": bson.M{"path": "$features.oracle.database.databases"}},
 			bson.M{"$unwind": bson.M{"path": "$features.oracle.database.databases.schemas"}},
 			bson.M{"$project": bson.M{

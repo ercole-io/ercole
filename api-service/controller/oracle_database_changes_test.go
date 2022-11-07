@@ -74,8 +74,15 @@ func TestGetOracleChanges_Success(t *testing.T) {
 		},
 	}
 
+	var user interface{}
+	var locations []string
+
 	as.EXPECT().
-		GetOracleChanges().
+		ListLocations(user).
+		Return(locations, nil)
+
+	as.EXPECT().
+		GetOracleChanges(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).
 		Return(result, nil)
 
 	rr := httptest.NewRecorder()
