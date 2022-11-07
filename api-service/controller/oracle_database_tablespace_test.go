@@ -54,6 +54,13 @@ func TestListOracleDatabaseTablespaces_Success(t *testing.T) {
 		},
 	}
 
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
+
 	as.EXPECT().
 		ListOracleDatabaseTablespaces(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).
 		Return(result, nil)
@@ -95,12 +102,19 @@ func TestGetOracleDatabaseTablespacesXLSX_Success(t *testing.T) {
 
 	expectedRes, _ := exutils.NewXLSX(ac.Config, sheet, headers...)
 
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
+
 	as.EXPECT().CreateOracleDatabaseTablespacesXlsx(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).Return(expectedRes, nil)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.ListOracleDatabaseTablespaces)
-	req, err := http.NewRequest("GET", "/", nil)
-	req.Header.Add("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	req, err := http.NewRequest("GET", "/tablespaces", nil)
+	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)

@@ -21,8 +21,8 @@ import (
 	"github.com/ercole-io/ercole/v2/utils/exutils"
 )
 
-func (as *APIService) GetOracleServiceList() ([]dto.OracleDatabaseServiceDto, error) {
-	result, err := as.Database.GetOracleServiceList()
+func (as *APIService) GetOracleServiceList(filter dto.GlobalFilter) ([]dto.OracleDatabaseServiceDto, error) {
+	result, err := as.Database.GetOracleServiceList(filter)
 	if err != nil {
 		return nil, err
 	}
@@ -30,8 +30,8 @@ func (as *APIService) GetOracleServiceList() ([]dto.OracleDatabaseServiceDto, er
 	return result, nil
 }
 
-func (as *APIService) CreateGetOracleServiceListXLSX() (*excelize.File, error) {
-	result, err := as.Database.GetOracleServiceList()
+func (as *APIService) CreateGetOracleServiceListXLSX(filter dto.GlobalFilter) (*excelize.File, error) {
+	result, err := as.Database.GetOracleServiceList(filter)
 	if err != nil {
 		return nil, err
 	}
@@ -40,11 +40,7 @@ func (as *APIService) CreateGetOracleServiceListXLSX() (*excelize.File, error) {
 	headers := []string{
 		"Hostname",
 		"DB Name",
-		"Name",
-		"Failover Method",
-		"Failover Type",
-		"Failover Retries",
-		"Failover Delay",
+		"Service Name",
 		"Enabled",
 	}
 
@@ -59,12 +55,18 @@ func (as *APIService) CreateGetOracleServiceListXLSX() (*excelize.File, error) {
 		nextAxis := axisHelp.NewRow()
 		sheets.SetCellValue(sheet, nextAxis(), val.Hostname)
 		sheets.SetCellValue(sheet, nextAxis(), val.Databasename)
-		sheets.SetCellValue(sheet, nextAxis(), &val.OracleDatabaseService.Name)
-		sheets.SetCellValue(sheet, nextAxis(), &val.OracleDatabaseService.FailoverMethod)
-		sheets.SetCellValue(sheet, nextAxis(), &val.OracleDatabaseService.FailoverType)
-		sheets.SetCellValue(sheet, nextAxis(), &val.OracleDatabaseService.FailoverRetries)
-		sheets.SetCellValue(sheet, nextAxis(), &val.OracleDatabaseService.FailoverDelay)
-		sheets.SetCellValue(sheet, nextAxis(), &val.OracleDatabaseService.Enabled)
+
+		if val.OracleDatabaseService.Name != nil {
+			sheets.SetCellValue(sheet, nextAxis(), *val.OracleDatabaseService.Name)
+		} else {
+			sheets.SetCellValue(sheet, nextAxis(), "")
+		}
+
+		if val.OracleDatabaseService.Enabled != nil {
+			sheets.SetCellValue(sheet, nextAxis(), *val.OracleDatabaseService.Enabled)
+		} else {
+			sheets.SetCellValue(sheet, nextAxis(), "")
+		}
 	}
 
 	return sheets, err

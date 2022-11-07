@@ -61,8 +61,15 @@ func TestGetOracleServiceList_Success(t *testing.T) {
 		},
 	}
 
+	var user interface{}
+	var locations []string
+
 	as.EXPECT().
-		GetOracleServiceList().
+		ListLocations(user).
+		Return(locations, nil)
+
+	as.EXPECT().
+		GetOracleServiceList(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).
 		Return(result, nil)
 
 	rr := httptest.NewRecorder()
@@ -95,16 +102,19 @@ func TestGetOracleServiceListXLSX_Success(t *testing.T) {
 		"Hostname",
 		"DB Name",
 		"Name",
-		"Failover Method",
-		"Failover Type",
-		"Failover Retries",
-		"Failover Delay",
 		"Enabled",
 	}
 
 	expectedRes, _ := exutils.NewXLSX(ac.Config, sheet, headers...)
 
-	as.EXPECT().CreateGetOracleServiceListXLSX().Return(expectedRes, nil)
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
+
+	as.EXPECT().CreateGetOracleServiceListXLSX(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).Return(expectedRes, nil)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.GetOracleServiceList)
@@ -121,9 +131,5 @@ func TestGetOracleServiceListXLSX_Success(t *testing.T) {
 	assert.Equal(t, "Hostname", sp.GetCellValue("Services", "A1"))
 	assert.Equal(t, "DB Name", sp.GetCellValue("Services", "B1"))
 	assert.Equal(t, "Name", sp.GetCellValue("Services", "C1"))
-	assert.Equal(t, "Failover Method", sp.GetCellValue("Services", "D1"))
-	assert.Equal(t, "Failover Type", sp.GetCellValue("Services", "E1"))
-	assert.Equal(t, "Failover Retries", sp.GetCellValue("Services", "F1"))
-	assert.Equal(t, "Failover Delay", sp.GetCellValue("Services", "G1"))
-	assert.Equal(t, "Enabled", sp.GetCellValue("Services", "H1"))
+	assert.Equal(t, "Enabled", sp.GetCellValue("Services", "D1"))
 }

@@ -18,50 +18,39 @@ package database
 import (
 	"context"
 
+	"github.com/amreo/mu"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func (md *MongoDatabase) GetOracleServiceList() ([]dto.OracleDatabaseServiceDto, error) {
+func (md *MongoDatabase) GetOracleServiceList(filter dto.GlobalFilter) ([]dto.OracleDatabaseServiceDto, error) {
 	ctx := context.TODO()
 
 	result := make([]dto.OracleDatabaseServiceDto, 0)
 
-	query := bson.A{
-		bson.M{"$match": bson.M{
-			"dismissedAt": nil,
-			"archived":    false,
-		}},
-		bson.M{
-			"$unwind": bson.M{
-				"path": "$features.oracle.database.databases",
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
+		ctx,
+		mu.MAPipeline(
+			FilterByOldnessSteps(filter.OlderThan),
+			FilterByLocationAndEnvironmentSteps(filter.Location, filter.Environment),
+			bson.M{"$unwind": bson.M{"path": "$features.oracle.database.databases"}},
+			bson.M{"$unwind": bson.M{"path": "$features.oracle.database.databases.services"}},
+			bson.M{"$project": bson.M{
+				"hostname":                              1,
+				"location":                              1,
+				"environment":                           1,
+				"createdAt":                             1,
+				"databasename":                          "$features.oracle.database.databases.name",
+				"oracleDatabaseService.name":            "$features.oracle.database.databases.services.name",
+				"oracleDatabaseService.failoverMethod":  "$features.oracle.database.databases.services.failoverMethod",
+				"oracleDatabaseService.failoverType":    "$features.oracle.database.databases.services.failoverType",
+				"oracleDatabaseService.failoverRetries": "$features.oracle.database.databases.services.failoverRetries",
+				"oracleDatabaseService.failoverDelay":   "$features.oracle.database.databases.services.failoverDelay",
+				"oracleDatabaseService.enabled":         "$features.oracle.database.databases.services.enabled",
 			}},
-		bson.M{"$set": bson.M{
-			"database": "$features.oracle.database.databases",
-		}},
-		bson.M{
-			"$unwind": bson.M{
-				"path": "$database.services",
-			}},
-		bson.M{"$project": bson.M{
-			"hostname": "$hostname",
-			"dbname":   "$database.name",
-			"services": "$database.services",
-		}},
-		bson.M{"$project": bson.M{
-			"oracleDatabaseService.name":            "$services.name",
-			"oracleDatabaseService.failoverMethod":  "$services.failoverMethod",
-			"oracleDatabaseService.failoverType":    "$services.failoverType",
-			"oracleDatabaseService.failoverRetries": "$services.failoverRetries",
-			"oracleDatabaseService.failoverDelay":   "$services.failoverDelay",
-			"oracleDatabaseService.enabled":         "$services.enabled",
-			"hostname":                              "$hostname",
-			"databasename":                          "$dbname",
-		}},
-	}
-
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(ctx, query)
+		),
+	)
 	if err != nil {
 		return nil, utils.NewError(err, "DB ERROR")
 	}

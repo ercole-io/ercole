@@ -18,51 +18,40 @@ package database
 import (
 	"context"
 
+	"github.com/amreo/mu"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func (md *MongoDatabase) GetOracleOptionList() ([]dto.OracleDatabaseFeatureUsageStatDto, error) {
+func (md *MongoDatabase) GetOracleOptionList(filter dto.GlobalFilter) ([]dto.OracleDatabaseFeatureUsageStatDto, error) {
 	ctx := context.TODO()
 
 	result := make([]dto.OracleDatabaseFeatureUsageStatDto, 0)
 
-	query := bson.A{
-		bson.M{"$match": bson.M{
-			"dismissedAt": nil,
-			"archived":    false,
-		}},
-		bson.M{
-			"$unwind": bson.M{
-				"path": "$features.oracle.database.databases",
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
+		ctx,
+		mu.MAPipeline(
+			FilterByOldnessSteps(filter.OlderThan),
+			FilterByLocationAndEnvironmentSteps(filter.Location, filter.Environment),
+			bson.M{"$unwind": bson.M{"path": "$features.oracle.database.databases"}},
+			bson.M{"$unwind": bson.M{"path": "$features.oracle.database.databases.featureUsageStats"}},
+			bson.M{"$project": bson.M{
+				"hostname":                               1,
+				"location":                               1,
+				"environment":                            1,
+				"createdAt":                              1,
+				"databasename":                           "$features.oracle.database.databases.name",
+				"oracleDatabaseFeatureUsageStat.product": "$features.oracle.database.databases.featureUsageStats.product",
+				"oracleDatabaseFeatureUsageStat.feature": "$features.oracle.database.databases.featureUsageStats.feature",
+				"oracleDatabaseFeatureUsageStat.detectedUsages":   "$features.oracle.database.databases.featureUsageStats.detectedUsages",
+				"oracleDatabaseFeatureUsageStat.currentlyUsed":    "$features.oracle.database.databases.featureUsageStats.currentlyUsed",
+				"oracleDatabaseFeatureUsageStat.firstUsageDate":   "$features.oracle.database.databases.featureUsageStats.firstUsageDate",
+				"oracleDatabaseFeatureUsageStat.lastUsageDate":    "$features.oracle.database.databases.featureUsageStats.lastUsageDate",
+				"oracleDatabaseFeatureUsageStat.extraFeatureInfo": "$features.oracle.database.databases.featureUsageStats.extraFeatureInfo",
 			}},
-		bson.M{"$set": bson.M{
-			"database": "$features.oracle.database.databases",
-		}},
-		bson.M{
-			"$unwind": bson.M{
-				"path": "$database.featureUsageStats",
-			}},
-		bson.M{"$project": bson.M{
-			"hostname":          "$hostname",
-			"dbname":            "$database.name",
-			"featureUsageStats": "$database.featureUsageStats",
-		}},
-		bson.M{"$project": bson.M{
-			"oracleDatabaseFeatureUsageStat.product":          "$featureUsageStats.product",
-			"oracleDatabaseFeatureUsageStat.feature":          "$featureUsageStats.feature",
-			"oracleDatabaseFeatureUsageStat.detectedUsages":   "$featureUsageStats.detectedUsages",
-			"oracleDatabaseFeatureUsageStat.currentlyUsed":    "$featureUsageStats.currentlyUsed",
-			"oracleDatabaseFeatureUsageStat.firstUsageDate":   "$featureUsageStats.firstUsageDate",
-			"oracleDatabaseFeatureUsageStat.lastUsageDate":    "$featureUsageStats.lastUsageDate",
-			"oracleDatabaseFeatureUsageStat.extraFeatureInfo": "$featureUsageStats.extraFeatureInfo",
-			"hostname":     "$hostname",
-			"databasename": "$dbname",
-		}},
-	}
-
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(ctx, query)
+		),
+	)
 	if err != nil {
 		return nil, utils.NewError(err, "DB ERROR")
 	}

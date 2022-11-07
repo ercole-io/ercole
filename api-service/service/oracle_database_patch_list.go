@@ -21,8 +21,8 @@ import (
 	"github.com/ercole-io/ercole/v2/utils/exutils"
 )
 
-func (as *APIService) GetOraclePatchList() ([]dto.OracleDatabasePatchDto, error) {
-	result, err := as.Database.GetOraclePatchList()
+func (as *APIService) GetOraclePatchList(filter dto.GlobalFilter) ([]dto.OracleDatabasePatchDto, error) {
+	result, err := as.Database.GetOraclePatchList(filter)
 	if err != nil {
 		return nil, err
 	}
@@ -30,8 +30,8 @@ func (as *APIService) GetOraclePatchList() ([]dto.OracleDatabasePatchDto, error)
 	return result, nil
 }
 
-func (as *APIService) CreateGetOraclePatchListXLSX() (*excelize.File, error) {
-	result, err := as.Database.GetOraclePatchList()
+func (as *APIService) CreateGetOraclePatchListXLSX(filter dto.GlobalFilter) (*excelize.File, error) {
+	result, err := as.Database.GetOraclePatchList(filter)
 	if err != nil {
 		return nil, err
 	}

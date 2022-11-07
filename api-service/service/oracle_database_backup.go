@@ -21,8 +21,8 @@ import (
 	"github.com/ercole-io/ercole/v2/utils/exutils"
 )
 
-func (as *APIService) GetOracleBackupList() ([]dto.OracleDatabaseBackupDto, error) {
-	result, err := as.Database.GetOracleBackupList()
+func (as *APIService) GetOracleBackupList(filter dto.GlobalFilter) ([]dto.OracleDatabaseBackupDto, error) {
+	result, err := as.Database.GetOracleBackupList(filter)
 	if err != nil {
 		return nil, err
 	}
@@ -30,8 +30,8 @@ func (as *APIService) GetOracleBackupList() ([]dto.OracleDatabaseBackupDto, erro
 	return result, nil
 }
 
-func (as *APIService) CreateGetOracleBackupListXLSX() (*excelize.File, error) {
-	result, err := as.Database.GetOracleBackupList()
+func (as *APIService) CreateGetOracleBackupListXLSX(filter dto.GlobalFilter) (*excelize.File, error) {
+	result, err := as.Database.GetOracleBackupList(filter)
 	if err != nil {
 		return nil, err
 	}

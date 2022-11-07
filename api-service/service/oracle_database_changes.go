@@ -19,8 +19,8 @@ import (
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 )
 
-func (as *APIService) GetOracleChanges() ([]dto.OracleChangesDto, error) {
-	result, err := as.Database.GetOracleChanges()
+func (as *APIService) GetOracleChanges(filter dto.GlobalFilter) ([]dto.OracleChangesDto, error) {
+	result, err := as.Database.GetOracleChanges(filter)
 	if err != nil {
 		return nil, err
 	}
