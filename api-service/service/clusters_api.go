@@ -17,7 +17,6 @@
 package service
 
 import (
-	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -42,40 +41,11 @@ func (as *APIService) GetCluster(clusterName string, olderThan time.Time) (*dto.
 		return nil, err
 	}
 
-	var errEH error
-
 	for i, vm := range cluster.VMs {
 		exist, err := as.Database.ExistHostdata(vm.Hostname)
 		if err != nil {
 			as.Log.Error(err)
 			return nil, err
-		}
-
-		if !exist {
-			res := strings.Split(vm.Hostname, ".")
-			if len(res) > 0 {
-				exist, errEH = as.Database.ExistHostdata(res[0])
-				if errEH != nil {
-					as.Log.Error(errEH)
-					return nil, errEH
-				}
-
-				if !exist {
-					exist, errEH = as.Database.ExistHostdata(strings.ToUpper(res[0]))
-					if errEH != nil {
-						as.Log.Error(errEH)
-						return nil, errEH
-					}
-
-					if exist {
-						cluster.VMs[i].Hostname = strings.ToUpper(res[0])
-					}
-				} else {
-					cluster.VMs[i].Hostname = res[0]
-				}
-			} else {
-				return nil, errors.New("Hostname not correct")
-			}
 		}
 
 		cluster.VMs[i].IsErcoleInstalled = exist
