@@ -306,10 +306,12 @@ func (as *APIService) manageLicenseWithCappedCPU(usedLicense dto.DatabaseUsedLic
 
 					for _, database := range databases {
 						for _, license := range database.Licenses {
-							if license.LicenseTypeID == usedLicense.LicenseTypeID && cap {
-								licenseCapped = true
-							} else if license.LicenseTypeID == usedLicense.LicenseTypeID && !cap {
-								notlicenseCapped = true
+							if !license.Ignored {
+								if license.LicenseTypeID == usedLicense.LicenseTypeID && cap {
+									licenseCapped = true
+								} else if license.LicenseTypeID == usedLicense.LicenseTypeID && !cap {
+									notlicenseCapped = true
+								}
 							}
 						}
 					}

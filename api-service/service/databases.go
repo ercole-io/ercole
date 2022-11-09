@@ -751,6 +751,20 @@ func (as *APIService) GetUsedLicensesPerHost(filter dto.GlobalFilter) ([]dto.Dat
 		return nil, err
 	}
 
+	hostdatas, err := as.Database.GetHostDatas(utils.MAX_TIME)
+	if err != nil {
+		return nil, err
+	}
+
+	hostdatasPerHostname := make(map[string]*model.HostDataBE, len(hostdatas))
+	hostdatasMap := make(map[string]model.HostDataBE, len(hostdatas))
+
+	for i := range hostdatas {
+		hd := &hostdatas[i]
+		hostdatasPerHostname[hd.Hostname] = hd
+		hostdatasMap[hd.Hostname] = *hd
+	}
+
 	var licensesPerHost []dto.DatabaseUsedLicensePerHost
 
 licenses:
@@ -765,11 +779,15 @@ licenses:
 
 		var clusterLicenses float64
 
+		clustersMap := make(map[string]dto.Cluster, 0)
+
 		if v.ClusterName != "" && v.ClusterType != "VeritasCluster" {
 			cluster, err := as.GetCluster(v.ClusterName, utils.MAX_TIME)
 			if err != nil {
 				continue licenses
 			}
+
+			clustersMap[cluster.Name] = *cluster
 
 			for _, hostVM := range cluster.VMs {
 				if hostVM.CappedCPU {
@@ -806,6 +824,11 @@ licenses:
 			}
 		}
 
+		isCapped, err := as.manageLicenseWithCappedCPU(v, clustersMap, hostdatasMap)
+		if err != nil {
+			return nil, err
+		}
+
 		licensesPerHost = append(licensesPerHost,
 			dto.DatabaseUsedLicensePerHost{
 				Hostname:        v.Hostname,
@@ -815,6 +838,7 @@ licenses:
 				Metric:          v.Metric,
 				UsedLicenses:    v.UsedLicenses,
 				ClusterLicenses: clusterLicenses,
+				OlvmCapped:      isCapped,
 			},
 		)
 	}
