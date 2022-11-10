@@ -67,6 +67,7 @@ func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 	router.HandleFunc("/version", ctrl.GetVersion).Methods("GET")
 	router.HandleFunc("/configuration", ctrl.GetConfig).Methods("GET")
 	router.HandleFunc("/configuration", ctrl.UpdateConfig).Methods("POST")
+	router.HandleFunc("/nodes", ctrl.GetNodes).Methods("GET")
 
 	// USERS
 	router.HandleFunc(userGroup, ctrl.GetUsers).Methods("GET")
