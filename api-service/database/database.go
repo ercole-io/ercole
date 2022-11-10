@@ -237,6 +237,9 @@ type MongoDatabaseInterface interface {
 	UpdateUserLastLogin(user model.User) error
 	RemoveUser(username string, provider string) error
 	UpdatePassword(username string, password string, salt string) error
+
+	// TREE
+	GetNodesByRoles(roles []string) ([]model.Node, error)
 }
 
 // MongoDatabase is a implementation
