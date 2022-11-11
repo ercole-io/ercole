@@ -17,6 +17,7 @@ package service
 
 import (
 	"fmt"
+	"math"
 	"sort"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -241,6 +242,10 @@ licenses:
 		license := &lics[i]
 
 		for _, licenseType := range licenseTypes {
+			if licenseType.Metric == model.LicenseTypeMetricNamedUserPlusPerpetual {
+				license.Count = math.Round(license.Count)
+			}
+
 			if licenseTypesAlreadyUsed[licenseType.ID] {
 				continue
 			}
