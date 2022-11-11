@@ -24,6 +24,7 @@ import (
 	"time"
 
 	"github.com/golang/gddo/httputil"
+	"github.com/gorilla/context"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
@@ -40,7 +41,7 @@ func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) 
 
 	var pageNumber, pageSize int
 
-	var from, to time.Time
+	var from, to, olderThan time.Time
 
 	var err error
 
@@ -101,6 +102,30 @@ func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	filter, err := dto.GetGlobalFilter(r)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	environment = filter.Environment
+
+	location = filter.Location
+	if location == "" {
+		user := context.Get(r, "user")
+		locations, errLocation := ctrl.Service.ListLocations(user)
+
+		if errLocation != nil {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, errLocation)
+			return
+		}
+
+		location = strings.Join(locations, ",")
+		filter.Location = location
+	}
+
+	olderThan = filter.OlderThan
+
 	contentType := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
 
 	switch contentType {
@@ -111,10 +136,10 @@ func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 
-		ctrl.searchAlertsXLSX(w, r, status, from, to)
+		ctrl.searchAlertsXLSX(w, r, status, from, to, *filter)
 
 	default:
-		ctrl.searchAlertsJSON(w, r, mode, search, sortBy, sortDesc, pageNumber, pageSize, location, environment, severity, status, category, code, description, hostname, from, to)
+		ctrl.searchAlertsJSON(w, r, mode, search, sortBy, sortDesc, pageNumber, pageSize, location, environment, severity, status, category, code, description, hostname, from, to, olderThan, *filter)
 	}
 }
 
@@ -122,7 +147,7 @@ func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) 
 func (ctrl *APIController) searchAlertsJSON(w http.ResponseWriter, r *http.Request,
 	mode string, search string, sortBy string, sortDesc bool, pageNumber int, pageSize int,
 	location, environment, severity, status, category, code, description, hostname string,
-	from time.Time, to time.Time) {
+	from time.Time, to time.Time, olderThan time.Time, globalFilter dto.GlobalFilter) {
 	filters := filter.New()
 	filters.Page = pageNumber
 
@@ -146,6 +171,7 @@ func (ctrl *APIController) searchAlertsJSON(w http.ResponseWriter, r *http.Reque
 			Hostname:    hostname,
 			From:        from,
 			To:          to,
+			OlderThan:   olderThan,
 			Filter:      filters,
 		})
 		if err != nil {
@@ -155,13 +181,7 @@ func (ctrl *APIController) searchAlertsJSON(w http.ResponseWriter, r *http.Reque
 
 		utils.WriteJSONResponse(w, http.StatusOK, response)
 	} else if pageSize == 0 {
-		filter, err := dto.GetGlobalFilter(r)
-		if err != nil {
-			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-			return
-		}
-
-		response, err := ctrl.Service.GetAlerts(status, from, to, *filter)
+		response, err := ctrl.Service.GetAlerts(status, from, to, globalFilter)
 		if err != nil {
 			utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 			return
@@ -175,14 +195,8 @@ func (ctrl *APIController) searchAlertsJSON(w http.ResponseWriter, r *http.Reque
 }
 
 // searchAlertsXLSX search alerts using the filters in the request returning it in XLSX format
-func (ctrl *APIController) searchAlertsXLSX(w http.ResponseWriter, r *http.Request, status string, from time.Time, to time.Time) {
-	filter, err := dto.GetGlobalFilter(r)
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	xlsx, err := ctrl.Service.SearchAlertsAsXLSX(status, from, to, *filter)
+func (ctrl *APIController) searchAlertsXLSX(w http.ResponseWriter, r *http.Request, status string, from time.Time, to time.Time, filter dto.GlobalFilter) {
+	xlsx, err := ctrl.Service.SearchAlertsAsXLSX(status, from, to, filter)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return

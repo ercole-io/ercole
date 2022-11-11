@@ -19,6 +19,7 @@ import (
 	"context"
 	"errors"
 	"regexp"
+	"strings"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -77,7 +78,7 @@ func (md *MongoDatabase) SearchAlerts(alertFilter alert_filter.Alert) (*dto.Pagi
 				"hostname": "$otherInfo.hostname",
 			}),
 
-			mu.APOptionalStage(len(alertFilter.Location) > 0 || len(alertFilter.Environment) > 0,
+			mu.APOptionalStage(len(alertFilter.Location) > 0 || len(alertFilter.Environment) > 0 || alertFilter.OlderThan != utils.MAX_TIME,
 				mu.APLookupPipeline(
 					"hosts",
 					bson.M{"hn": "$otherInfo.hostname"},
@@ -92,11 +93,12 @@ func (md *MongoDatabase) SearchAlerts(alertFilter alert_filter.Alert) (*dto.Pagi
 							"_id":         0,
 							"location":    1,
 							"environment": 1,
+							"createdAt":   1,
 						}),
 					),
 				),
 			),
-			mu.APOptionalStage(len(alertFilter.Location) > 0 || len(alertFilter.Environment) > 0,
+			mu.APOptionalStage(len(alertFilter.Location) > 0 || len(alertFilter.Environment) > 0 || alertFilter.OlderThan != utils.MAX_TIME,
 				bson.M{
 					"$unwind": bson.M{"path": "$host", "preserveNullAndEmptyArrays": true},
 				},
@@ -104,7 +106,7 @@ func (md *MongoDatabase) SearchAlerts(alertFilter alert_filter.Alert) (*dto.Pagi
 			mu.APOptionalStage(len(alertFilter.Location) > 0,
 				mu.APMatch(bson.M{
 					"$or": bson.A{
-						bson.M{"host.location": alertFilter.Location},
+						bson.M{"host.location": bson.M{"$in": strings.Split(alertFilter.Location, ",")}},
 						bson.M{"host": bson.M{"$exists": false}},
 					},
 				}),
@@ -116,6 +118,14 @@ func (md *MongoDatabase) SearchAlerts(alertFilter alert_filter.Alert) (*dto.Pagi
 						bson.M{"host": bson.M{"$exists": false}},
 					},
 				})),
+			mu.APOptionalStage(alertFilter.OlderThan != utils.MAX_TIME, bson.A{
+				mu.APMatch(bson.M{
+					"$or": bson.A{
+						bson.M{"host.createdAt": mu.QOLessThanOrEqual(alertFilter.OlderThan)},
+						bson.M{"host": bson.M{"$exists": false}},
+					},
+				}),
+			}),
 			mu.APUnset("host"),
 
 			mu.APOptionalStage(alertFilter.Mode == "aggregated-code-severity", mu.MAPipeline(
@@ -214,7 +224,7 @@ func (md *MongoDatabase) SearchAlerts(alertFilter alert_filter.Alert) (*dto.Pagi
 	return dto.ToPagination(nil, int(count), alertFilter.Filter.Limit, alertFilter.Filter.Page), nil
 }
 
-func (md *MongoDatabase) GetAlerts(location, environment, status string, from, to time.Time) ([]map[string]interface{}, error) {
+func (md *MongoDatabase) GetAlerts(location, environment, status string, from, to, olderThan time.Time) ([]map[string]interface{}, error) {
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(alertsCollection).Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
@@ -229,7 +239,7 @@ func (md *MongoDatabase) GetAlerts(location, environment, status string, from, t
 				"hostname": "$otherInfo.hostname",
 			}),
 
-			mu.APOptionalStage(len(location) > 0 || len(environment) > 0,
+			mu.APOptionalStage(len(location) > 0 || len(environment) > 0 || olderThan != utils.MAX_TIME,
 				mu.APLookupPipeline(
 					"hosts",
 					bson.M{"hn": "$otherInfo.hostname"},
@@ -244,11 +254,12 @@ func (md *MongoDatabase) GetAlerts(location, environment, status string, from, t
 							"_id":         0,
 							"location":    1,
 							"environment": 1,
+							"createdAt":   1,
 						}),
 					),
 				),
 			),
-			mu.APOptionalStage(len(location) > 0 || len(environment) > 0,
+			mu.APOptionalStage(len(location) > 0 || len(environment) > 0 || olderThan != utils.MAX_TIME,
 				bson.M{
 					"$unwind": bson.M{"path": "$host", "preserveNullAndEmptyArrays": true},
 				},
@@ -256,7 +267,7 @@ func (md *MongoDatabase) GetAlerts(location, environment, status string, from, t
 			mu.APOptionalStage(len(location) > 0,
 				mu.APMatch(bson.M{
 					"$or": bson.A{
-						bson.M{"host.location": location},
+						bson.M{"host.location": bson.M{"$in": strings.Split(location, ",")}},
 						bson.M{"host": bson.M{"$exists": false}},
 					},
 				}),
@@ -268,6 +279,14 @@ func (md *MongoDatabase) GetAlerts(location, environment, status string, from, t
 						bson.M{"host": bson.M{"$exists": false}},
 					},
 				})),
+			mu.APOptionalStage(olderThan != utils.MAX_TIME, bson.A{
+				mu.APMatch(bson.M{
+					"$or": bson.A{
+						bson.M{"host.createdAt": mu.QOLessThanOrEqual(olderThan)},
+						bson.M{"host": bson.M{"$exists": false}},
+					},
+				}),
+			}),
 			mu.APUnset("host"),
 		),
 	)
