@@ -33,4 +33,5 @@ type Alert struct {
 	Hostname    string    `json:"hostname"`
 	From        time.Time `json:"from"`
 	To          time.Time `json:"to"`
+	OlderThan   time.Time `json:"olderThan"`
 }
