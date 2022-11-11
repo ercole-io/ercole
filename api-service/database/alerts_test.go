@@ -159,10 +159,11 @@ func (m *MongodbSuite) TestSearchAlerts() {
 
 	m.T().Run("should_be_paging", func(t *testing.T) {
 		filters := alertFilter.Alert{
-			Mode:   "all",
-			Filter: alertFilter.Filter{Limit: 1, Page: 1},
-			From:   utils.MIN_TIME,
-			To:     utils.MAX_TIME,
+			Mode:      "all",
+			Filter:    alertFilter.Filter{Limit: 1, Page: 1},
+			From:      utils.MIN_TIME,
+			To:        utils.MAX_TIME,
+			OlderThan: utils.MAX_TIME,
 		}
 		out, err := m.db.SearchAlerts(filters)
 		m.Require().NoError(err)
@@ -178,12 +179,13 @@ func (m *MongodbSuite) TestSearchAlerts() {
 
 	m.T().Run("should_be_sorting", func(t *testing.T) {
 		filters := alertFilter.Alert{
-			Filter:   alertFilter.New(),
-			Mode:     "all",
-			SortBy:   "alertSeverity",
-			SortDesc: true,
-			From:     utils.MIN_TIME,
-			To:       utils.MAX_TIME,
+			Filter:    alertFilter.New(),
+			Mode:      "all",
+			SortBy:    "alertSeverity",
+			SortDesc:  true,
+			From:      utils.MIN_TIME,
+			To:        utils.MAX_TIME,
+			OlderThan: utils.MAX_TIME,
 		}
 		out, err := m.db.SearchAlerts(filters)
 		m.Require().NoError(err)
@@ -198,11 +200,12 @@ func (m *MongodbSuite) TestSearchAlerts() {
 
 	m.T().Run("should_filter_by_location", func(t *testing.T) {
 		filters := alertFilter.Alert{
-			Filter:   alertFilter.New(),
-			Mode:     "all",
-			Location: "Germany",
-			From:     utils.MIN_TIME,
-			To:       utils.MAX_TIME,
+			Filter:    alertFilter.New(),
+			Mode:      "all",
+			Location:  "Germany",
+			From:      utils.MIN_TIME,
+			To:        utils.MAX_TIME,
+			OlderThan: utils.MAX_TIME,
 		}
 		out, err := m.db.SearchAlerts(filters)
 		m.Require().NoError(err)
@@ -223,6 +226,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 			Environment: "TST",
 			From:        utils.MIN_TIME,
 			To:          utils.MAX_TIME,
+			OlderThan:   utils.MAX_TIME,
 		}
 		out, err := m.db.SearchAlerts(filters)
 		m.Require().NoError(err)
@@ -238,11 +242,12 @@ func (m *MongodbSuite) TestSearchAlerts() {
 
 	m.T().Run("should_filter_by_status", func(t *testing.T) {
 		filters := alertFilter.Alert{
-			Mode:   "all",
-			Filter: alertFilter.New(),
-			Status: model.AlertStatusNew,
-			From:   utils.MIN_TIME,
-			To:     utils.MAX_TIME,
+			Mode:      "all",
+			Filter:    alertFilter.New(),
+			Status:    model.AlertStatusNew,
+			From:      utils.MIN_TIME,
+			To:        utils.MAX_TIME,
+			OlderThan: utils.MAX_TIME,
 		}
 		out, err := m.db.SearchAlerts(filters)
 		m.Require().NoError(err)
@@ -258,11 +263,12 @@ func (m *MongodbSuite) TestSearchAlerts() {
 
 	m.T().Run("should_filter_by_severity", func(t *testing.T) {
 		filters := alertFilter.Alert{
-			Mode:     "all",
-			Filter:   alertFilter.New(),
-			Severity: model.AlertSeverityCritical,
-			From:     utils.MIN_TIME,
-			To:       utils.MAX_TIME,
+			Mode:      "all",
+			Filter:    alertFilter.New(),
+			Severity:  model.AlertSeverityCritical,
+			From:      utils.MIN_TIME,
+			To:        utils.MAX_TIME,
+			OlderThan: utils.MAX_TIME,
 		}
 		out, err := m.db.SearchAlerts(filters)
 		m.Require().NoError(err)
@@ -278,10 +284,11 @@ func (m *MongodbSuite) TestSearchAlerts() {
 
 	m.T().Run("should_filter_by_from", func(t *testing.T) {
 		filters := alertFilter.Alert{
-			Mode:   "all",
-			Filter: alertFilter.New(),
-			From:   utils.P("2020-04-13T08:46:58.38+02:00"),
-			To:     utils.MAX_TIME,
+			Mode:      "all",
+			Filter:    alertFilter.New(),
+			From:      utils.P("2020-04-13T08:46:58.38+02:00"),
+			To:        utils.MAX_TIME,
+			OlderThan: utils.MAX_TIME,
 		}
 		out, err := m.db.SearchAlerts(filters)
 		m.Require().NoError(err)
@@ -297,10 +304,11 @@ func (m *MongodbSuite) TestSearchAlerts() {
 
 	m.T().Run("should_filter_by_to", func(t *testing.T) {
 		filters := alertFilter.Alert{
-			Mode:   "all",
-			Filter: alertFilter.New(),
-			From:   utils.MIN_TIME,
-			To:     utils.P("2020-04-13T08:46:58.38+02:00"),
+			Mode:      "all",
+			Filter:    alertFilter.New(),
+			From:      utils.MIN_TIME,
+			To:        utils.P("2020-04-13T08:46:58.38+02:00"),
+			OlderThan: utils.MAX_TIME,
 		}
 		out, err := m.db.SearchAlerts(filters)
 		m.Require().NoError(err)
@@ -336,11 +344,12 @@ func (m *MongodbSuite) TestSearchAlerts() {
 
 	m.T().Run("should_search2", func(t *testing.T) {
 		filters := alertFilter.Alert{
-			Mode:     "all",
-			Filter:   alertFilter.New(),
-			Keywords: []string{"added", model.AlertCodeNewServer, model.AlertSeverityInfo, "rac1_x"},
-			From:     utils.MIN_TIME,
-			To:       utils.MAX_TIME,
+			Mode:      "all",
+			Filter:    alertFilter.New(),
+			Keywords:  []string{"added", model.AlertCodeNewServer, model.AlertSeverityInfo, "rac1_x"},
+			From:      utils.MIN_TIME,
+			To:        utils.MAX_TIME,
+			OlderThan: utils.MAX_TIME,
 		}
 		out, err := m.db.SearchAlerts(filters)
 		m.Require().NoError(err)
@@ -356,11 +365,12 @@ func (m *MongodbSuite) TestSearchAlerts() {
 
 	m.T().Run("should_search3", func(t *testing.T) {
 		filters := alertFilter.Alert{
-			Mode:     "all",
-			Filter:   alertFilter.New(),
-			Keywords: []string{"ERCOLE", "Diagnostics Pack"},
-			From:     utils.MIN_TIME,
-			To:       utils.MAX_TIME,
+			Mode:      "all",
+			Filter:    alertFilter.New(),
+			Keywords:  []string{"ERCOLE", "Diagnostics Pack"},
+			From:      utils.MIN_TIME,
+			To:        utils.MAX_TIME,
+			OlderThan: utils.MAX_TIME,
 		}
 		out, err := m.db.SearchAlerts(filters)
 		m.Require().NoError(err)
@@ -376,11 +386,12 @@ func (m *MongodbSuite) TestSearchAlerts() {
 
 	m.T().Run("should_aggregate_result_code_severity", func(t *testing.T) {
 		filters := alertFilter.Alert{
-			Mode:   "aggregated-code-severity",
-			Filter: alertFilter.New(),
-			SortBy: "count",
-			From:   utils.MIN_TIME,
-			To:     utils.MAX_TIME,
+			Mode:      "aggregated-code-severity",
+			Filter:    alertFilter.New(),
+			SortBy:    "count",
+			From:      utils.MIN_TIME,
+			To:        utils.MAX_TIME,
+			OlderThan: utils.MAX_TIME,
 		}
 		out, err := m.db.SearchAlerts(filters)
 		m.Require().NoError(err)
@@ -413,11 +424,12 @@ func (m *MongodbSuite) TestSearchAlerts() {
 
 	m.T().Run("should_aggregate_result_category_severity", func(t *testing.T) {
 		filters := alertFilter.Alert{
-			Mode:   "aggregated-category-severity",
-			Filter: alertFilter.New(),
-			SortBy: "count",
-			From:   utils.MIN_TIME,
-			To:     utils.MAX_TIME,
+			Mode:      "aggregated-category-severity",
+			Filter:    alertFilter.New(),
+			SortBy:    "count",
+			From:      utils.MIN_TIME,
+			To:        utils.MAX_TIME,
+			OlderThan: utils.MAX_TIME,
 		}
 		out, err := m.db.SearchAlerts(filters)
 		m.Require().NoError(err)
@@ -573,7 +585,7 @@ func (m *MongodbSuite) TestGetAlerts() {
 	}
 
 	m.T().Run("should_get_alerts", func(t *testing.T) {
-		out, err := m.db.GetAlerts("", "", "NEW", utils.MIN_TIME, utils.MAX_TIME)
+		out, err := m.db.GetAlerts("", "", "NEW", utils.MIN_TIME, utils.MAX_TIME, utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut []map[string]interface{} = []map[string]interface{}{
 			alert1, alert2, alert3, alert4,

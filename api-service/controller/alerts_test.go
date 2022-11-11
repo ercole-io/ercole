@@ -71,16 +71,25 @@ func TestSearchAlerts_JSONSuccessPaged(t *testing.T) {
 	}
 
 	alertFilter := alertFilter.Alert{
-		Mode:     "aggregated-code-severity",
-		SortBy:   "CreatedAt",
-		SortDesc: true,
-		Filter:   alertFilter.Filter{Limit: 2, Page: 10},
-		Severity: model.AlertSeverityCritical,
-		Status:   model.AlertStatusAck,
-		From:     utils.P("2020-06-10T11:54:59Z"),
-		To:       utils.P("2020-06-17T11:54:59Z"),
-		Keywords: []string{"foo"},
+		Mode:      "aggregated-code-severity",
+		SortBy:    "CreatedAt",
+		SortDesc:  true,
+		Filter:    alertFilter.Filter{Limit: 2, Page: 10},
+		Severity:  model.AlertSeverityCritical,
+		Status:    model.AlertStatusAck,
+		From:      utils.P("2020-06-10T11:54:59Z"),
+		To:        utils.P("2020-06-17T11:54:59Z"),
+		OlderThan: utils.MAX_TIME,
+		Keywords:  []string{"foo"},
 	}
+
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
+
 	as.EXPECT().
 		SearchAlerts(alertFilter).
 		Return(expectedRes, nil)
@@ -276,12 +285,20 @@ func TestSearchAlerts_JSONFailInternalServerError(t *testing.T) {
 	}
 
 	alertFilter := alertFilter.Alert{
-		Mode:     "all",
-		Filter:   alertFilter.Filter{Limit: 1, Page: 1},
-		From:     utils.MIN_TIME,
-		To:       utils.MAX_TIME,
-		Keywords: []string{""},
+		Mode:      "all",
+		Filter:    alertFilter.Filter{Limit: 1, Page: 1},
+		From:      utils.MIN_TIME,
+		To:        utils.MAX_TIME,
+		OlderThan: utils.MAX_TIME,
+		Keywords:  []string{""},
 	}
+
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
 
 	as.EXPECT().
 		SearchAlerts(alertFilter).
@@ -535,6 +552,13 @@ func TestSearchAlertsXLSX_InternalServerError(t *testing.T) {
 
 	from := utils.P("2020-06-10T11:54:59Z")
 	to := utils.P("2020-06-17T11:54:59Z")
+
+	var user interface{}
+	var locations []string
+
+	as.EXPECT().
+		ListLocations(user).
+		Return(locations, nil)
 
 	as.EXPECT().
 		SearchAlertsAsXLSX("NEW", from, to, filter).

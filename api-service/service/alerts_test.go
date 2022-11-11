@@ -254,7 +254,7 @@ func TestSearchAlertsAsXLSX_Success(t *testing.T) {
 		},
 	}
 
-	db.EXPECT().GetAlerts("Italy", "TST", "NEW", utils.P("2020-06-10T11:54:59Z"), utils.P("2020-06-17T11:54:59Z")).
+	db.EXPECT().GetAlerts("Italy", "TST", "NEW", utils.P("2020-06-10T11:54:59Z"), utils.P("2020-06-17T11:54:59Z"), utils.P("2019-12-05T14:02:03Z")).
 		Return(data, nil).Times(1)
 
 	filter := dto.GlobalFilter{
