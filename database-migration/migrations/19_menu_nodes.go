@@ -269,6 +269,6 @@ func getNodes() []interface{} {
 		model.Node{
 			Name:   "Repository",
 			Roles:  []string{"admin"},
-			Parent: "Licenses",
+			Parent: "",
 		}}
 }
