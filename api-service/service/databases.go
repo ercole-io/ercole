@@ -769,6 +769,9 @@ func (as *APIService) GetUsedLicensesPerHost(filter dto.GlobalFilter) ([]dto.Dat
 
 licenses:
 	for _, v := range licenses {
+		if v.Ignored {
+			continue
+		}
 
 		for i, v2 := range licensesPerHost {
 			if v.Hostname == v2.Hostname && v.LicenseTypeID == v2.LicenseTypeID {
