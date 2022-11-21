@@ -45,13 +45,8 @@ func (as *APIService) GetRoles() ([]model.Role, error) {
 }
 
 func (as *APIService) AddRole(role model.Role) error {
-	locations, err := as.ListAllLocations("", "", utils.MAX_TIME)
-	if err != nil {
+	if err := as.getLocationError(role.Location); err != nil {
 		return err
-	}
-
-	if !utils.Contains(locations, role.Location) {
-		return utils.ErrInvalidLocation
 	}
 
 	raw, err := json.Marshal(role)
@@ -67,13 +62,8 @@ func (as *APIService) AddRole(role model.Role) error {
 }
 
 func (as *APIService) UpdateRole(role model.Role) error {
-	locations, err := as.ListAllLocations("", "", utils.MAX_TIME)
-	if err != nil {
+	if err := as.getLocationError(role.Location); err != nil {
 		return err
-	}
-
-	if !utils.Contains(locations, role.Location) {
-		return utils.ErrInvalidLocation
 	}
 
 	raw, err := json.Marshal(role)
@@ -100,4 +90,17 @@ func (as *APIService) UpdateRole(role model.Role) error {
 
 func (as *APIService) RemoveRole(roleName string) error {
 	return as.Database.RemoveRole(roleName)
+}
+
+func (as *APIService) getLocationError(location string) error {
+	locations, err := as.ListAllLocations("", "", utils.MAX_TIME)
+	if err != nil {
+		return err
+	}
+
+	if !utils.Contains(locations, location) && location != "All" {
+		return utils.ErrInvalidLocation
+	}
+
+	return nil
 }
