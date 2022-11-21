@@ -83,7 +83,6 @@ func init() {
 
 	rootCmd.AddCommand(migration.NewMigrateCmd(&ercoleConfig))
 	rootCmd.AddCommand(migration.NewMigrateStatusCmd(&ercoleConfig))
-	rootCmd.AddCommand(migration.NewInsertSuperUserCmd(&ercoleConfig))
 
 	rootCmd.AddCommand(repo.NewRepoCmd(&ercoleConfig))
 }
