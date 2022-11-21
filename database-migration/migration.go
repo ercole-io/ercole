@@ -116,8 +116,6 @@ func InsertSuperUser(conf config.Mongodb, pwd string) error {
 		return err
 	}
 
-	now := time.Now()
-
 	saltByte, err := cr.GenerateRandomBytes()
 	if err != nil {
 		return err
@@ -131,7 +129,7 @@ func InsertSuperUser(conf config.Mongodb, pwd string) error {
 		Salt:      salt,
 		FirstName: "ercole",
 		LastName:  "ercole",
-		LastLogin: &now,
+		LastLogin: nil,
 		Provider:  "basic",
 		Groups:    []string{model.GroupAdmin},
 	}
