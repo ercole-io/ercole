@@ -19,6 +19,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	migrate "github.com/xakep666/mongo-migrate"
 	"go.mongodb.org/mongo-driver/bson"
@@ -28,7 +29,7 @@ import (
 
 func init() {
 	err := migrate.Register(func(db *mongo.Database) error {
-		if err := addGroups(db); err != nil {
+		if err := createGroupsCollection(db); err != nil {
 			return err
 		}
 
@@ -43,7 +44,7 @@ func init() {
 	}
 }
 
-func addGroups(client *mongo.Database) error {
+func createGroupsCollection(client *mongo.Database) error {
 	collectionName := "groups"
 	ctx := context.TODO()
 
@@ -66,7 +67,53 @@ func addGroups(client *mongo.Database) error {
 		if err != nil {
 			return err
 		}
+
+		if _, err := client.Collection(collectionName).InsertMany(ctx, getDefaultGroups()); err != nil {
+			return err
+		}
 	}
 
 	return nil
+}
+
+func getDefaultGroups() []interface{} {
+	return []interface{}{
+		model.Group{
+			Name:        "admin",
+			Description: "Admin group",
+			Roles:       []string{"admin"},
+		},
+		model.Group{
+			Name:        "procurement",
+			Description: "procurement",
+			Roles: []string{
+				"read_dashboard",
+				"read_license_contract",
+				"write_license_contract",
+				"read_license_compliance",
+				"write_license_compliance",
+				"read_license_used",
+				"read_alert_type_license",
+			},
+		},
+		model.Group{
+			Name:        "dba",
+			Description: "dba",
+			Roles: []string{
+				"read_dashboard",
+				"write_dashboard",
+				"read_host",
+				"write_host",
+				"read_databases",
+				"write_databases",
+				"read_hypervisor",
+				"write_hypervisor",
+				"read_exadata",
+				"write_exadata",
+				"read_alert",
+				"write_alert",
+				"read_cloud",
+			},
+		},
+	}
 }
