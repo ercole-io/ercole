@@ -336,6 +336,15 @@ func (as *APIService) ListLocations(user interface{}) ([]string, error) {
 				return nil, err
 			}
 
+			if role.Location == model.AllLocation {
+				allLocations, errAll := as.ListAllLocations("", "", utils.MAX_TIME)
+				if errAll != nil {
+					return nil, errAll
+				}
+
+				return allLocations, nil
+			}
+
 			if !m[role.Location] {
 				locations = append(locations, role.Location)
 				m[role.Location] = true
