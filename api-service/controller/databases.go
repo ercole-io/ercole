@@ -88,6 +88,18 @@ func (ctrl *APIController) GetDatabasesStatistics(w http.ResponseWriter, r *http
 		return
 	}
 
+	if filter.Location == "" {
+		user := context.Get(r, "user")
+		locations, errLocation := ctrl.Service.ListLocations(user)
+
+		if errLocation != nil {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, errLocation)
+			return
+		}
+
+		filter.Location = strings.Join(locations, ",")
+	}
+
 	stats, err := ctrl.Service.GetDatabasesStatistics(*filter)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
