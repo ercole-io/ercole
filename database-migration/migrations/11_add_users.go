@@ -28,7 +28,7 @@ import (
 
 func init() {
 	err := migrate.Register(func(db *mongo.Database) error {
-		if err := addUsers(db); err != nil {
+		if err := createUsersCollection(db); err != nil {
 			return err
 		}
 
@@ -43,7 +43,7 @@ func init() {
 	}
 }
 
-func addUsers(client *mongo.Database) error {
+func createUsersCollection(client *mongo.Database) error {
 	collectionName := "users"
 	ctx := context.TODO()
 
@@ -60,6 +60,7 @@ func addUsers(client *mongo.Database) error {
 			CreateOne(ctx, mongo.IndexModel{
 				Keys: bson.D{
 					{Key: "username", Value: 1},
+					{Key: "provider", Value: 1},
 				},
 				Options: (&options.IndexOptions{}).SetUnique(true),
 			})

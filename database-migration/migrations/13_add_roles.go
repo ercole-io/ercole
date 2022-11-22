@@ -19,6 +19,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	migrate "github.com/xakep666/mongo-migrate"
 	"go.mongodb.org/mongo-driver/bson"
@@ -28,7 +29,7 @@ import (
 
 func init() {
 	err := migrate.Register(func(db *mongo.Database) error {
-		if err := addRoles(db); err != nil {
+		if err := createRolesCollection(db); err != nil {
 			return err
 		}
 
@@ -43,7 +44,7 @@ func init() {
 	}
 }
 
-func addRoles(client *mongo.Database) error {
+func createRolesCollection(client *mongo.Database) error {
 	collectionName := "roles"
 	ctx := context.TODO()
 
@@ -66,7 +67,136 @@ func addRoles(client *mongo.Database) error {
 		if err != nil {
 			return err
 		}
+
+		if _, err := client.Collection(collectionName).InsertMany(ctx, getDefaultRoles()); err != nil {
+			return err
+		}
 	}
 
 	return nil
+}
+
+func getDefaultRoles() []interface{} {
+	return []interface{}{
+		model.Role{
+			Name:        "admin",
+			Description: "Admin role",
+			Location:    model.AllLocation,
+			Permission:  model.AdminPermission,
+		},
+		model.Role{
+			Name:        "read_dashboard",
+			Description: "Read dashboard",
+			Location:    model.AllLocation,
+			Permission:  model.ReadPermission,
+		},
+		model.Role{
+			Name:        "write_dashboard",
+			Description: "Write dashboard",
+			Location:    model.AllLocation,
+			Permission:  model.WritePermission,
+		},
+		model.Role{
+			Name:        "read_license_contract",
+			Description: "read_license_contract",
+			Location:    model.AllLocation,
+			Permission:  model.ReadPermission,
+		},
+		model.Role{
+			Name:        "write_license_contract",
+			Description: "write_license_contract",
+			Location:    model.AllLocation,
+			Permission:  model.WritePermission,
+		},
+		model.Role{
+			Name:        "read_license_compliance",
+			Description: "read_license_compliance",
+			Location:    model.AllLocation,
+			Permission:  model.ReadPermission,
+		},
+		model.Role{
+			Name:        "write_license_compliance",
+			Description: "write_license_compliance",
+			Location:    model.AllLocation,
+			Permission:  model.ReadPermission,
+		},
+		model.Role{
+			Name:        "read_license_used",
+			Description: "read_license_used",
+			Location:    model.AllLocation,
+			Permission:  model.ReadPermission,
+		},
+		model.Role{
+			Name:        "read_alert_type_license",
+			Description: "read_alert_type_license",
+			Location:    model.AllLocation,
+			Permission:  model.ReadPermission,
+		},
+		model.Role{
+			Name:        "read_host",
+			Description: "read_host",
+			Location:    model.AllLocation,
+			Permission:  model.ReadPermission,
+		},
+		model.Role{
+			Name:        "write_host",
+			Description: "write_host",
+			Location:    model.AllLocation,
+			Permission:  model.ReadPermission,
+		},
+		model.Role{
+			Name:        "read_databases",
+			Description: "read_databases",
+			Location:    model.AllLocation,
+			Permission:  model.ReadPermission,
+		},
+		model.Role{
+			Name:        "write_databases",
+			Description: "write_databases",
+			Location:    model.AllLocation,
+			Permission:  model.ReadPermission,
+		},
+		model.Role{
+			Name:        "read_hypervisor",
+			Description: "read_hypervisor",
+			Location:    model.AllLocation,
+			Permission:  model.ReadPermission,
+		},
+		model.Role{
+			Name:        "write_hypervisor",
+			Description: "write_hypervisor",
+			Location:    model.AllLocation,
+			Permission:  model.ReadPermission,
+		},
+		model.Role{
+			Name:        "read_exadata",
+			Description: "read_exadata",
+			Location:    model.AllLocation,
+			Permission:  model.ReadPermission,
+		},
+		model.Role{
+			Name:        "write_exadata",
+			Description: "write_exadata",
+			Location:    model.AllLocation,
+			Permission:  model.ReadPermission,
+		},
+		model.Role{
+			Name:        "read_alert",
+			Description: "read_alert",
+			Location:    model.AllLocation,
+			Permission:  model.ReadPermission,
+		},
+		model.Role{
+			Name:        "write_alert",
+			Description: "write_alert",
+			Location:    model.AllLocation,
+			Permission:  model.ReadPermission,
+		},
+		model.Role{
+			Name:        "read_cloud",
+			Description: "read_cloud",
+			Location:    model.AllLocation,
+			Permission:  model.ReadPermission,
+		},
+	}
 }
