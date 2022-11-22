@@ -16,9 +16,10 @@
 package model
 
 const (
-	AdminRole = "admin"
-	ReadRole  = "read"
-	WriteRole = "write"
+	AdminPermission = "admin"
+	ReadPermission  = "read"
+	WritePermission = "write"
+	AllLocation     = "All"
 )
 
 type Role struct {
