@@ -26,6 +26,7 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
@@ -211,7 +212,7 @@ func (ctrl *APIController) GetHostJSON(w http.ResponseWriter, r *http.Request) {
 	var isLocationOk bool
 
 	for _, location := range locations {
-		if location == host.Location {
+		if location == host.Location || location == model.AllLocation {
 			isLocationOk = true
 			break
 		}

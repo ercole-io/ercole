@@ -22,6 +22,7 @@ import (
 	"time"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/model"
 
 	"github.com/golang/gddo/httputil"
 	"github.com/gorilla/context"
@@ -195,7 +196,7 @@ func (ctrl *APIController) GetClusterJSON(w http.ResponseWriter, r *http.Request
 	var isLocationOk bool
 
 	for _, location := range locations {
-		if location == data.Location {
+		if location == data.Location || location == model.AllLocation {
 			isLocationOk = true
 			break
 		}
