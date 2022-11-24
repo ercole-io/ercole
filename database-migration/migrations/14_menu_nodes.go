@@ -123,7 +123,7 @@ func getNodes() []interface{} {
 				"read_databases",
 				"write_databases",
 			},
-			Parent: "Databases",
+			Parent: "Oracle",
 		},
 		model.Node{
 			Name: "ADDM",
