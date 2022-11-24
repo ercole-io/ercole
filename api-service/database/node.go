@@ -20,6 +20,7 @@ import (
 
 	"github.com/ercole-io/ercole/v2/model"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 const nodesCollection = "nodes"
@@ -40,4 +41,56 @@ func (md *MongoDatabase) GetNodesByRoles(roles []string) ([]model.Node, error) {
 	}
 
 	return result, nil
+}
+
+func (md *MongoDatabase) GetNodeByName(name string) (*model.Node, error) {
+	res := md.Client.Database(md.Config.Mongodb.DBName).Collection(nodesCollection).
+		FindOne(context.TODO(), bson.M{"name": name})
+	if res.Err() != nil {
+		return nil, res.Err()
+	}
+
+	result := &model.Node{}
+
+	if err := res.Decode(result); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (md *MongoDatabase) AddNode(node model.Node) error {
+	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(nodesCollection).InsertOne(context.TODO(), node)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (md *MongoDatabase) UpdateNode(node model.Node) error {
+	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(nodesCollection).
+		UpdateOne(
+			context.TODO(),
+			bson.M{"name": node.Name},
+			bson.D{{Key: "$set", Value: bson.D{
+				primitive.E{Key: "roles", Value: node.Roles},
+				primitive.E{Key: "parent", Value: node.Parent},
+			}}},
+		)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (md *MongoDatabase) RemoveNode(name string) error {
+	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(nodesCollection).
+		DeleteOne(context.TODO(), bson.M{"name": name})
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
