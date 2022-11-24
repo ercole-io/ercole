@@ -240,6 +240,10 @@ type MongoDatabaseInterface interface {
 
 	// TREE
 	GetNodesByRoles(roles []string) ([]model.Node, error)
+	GetNodeByName(name string) (*model.Node, error)
+	AddNode(node model.Node) error
+	UpdateNode(node model.Node) error
+	RemoveNode(name string) error
 }
 
 // MongoDatabase is a implementation

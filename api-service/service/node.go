@@ -43,3 +43,24 @@ func (as *APIService) GetNodes(user *model.User) ([]model.Node, error) {
 
 	return nodes, nil
 }
+
+func (as *APIService) GetNode(name string) (*model.Node, error) {
+	node, err := as.Database.GetNodeByName(name)
+	if err != nil {
+		return nil, err
+	}
+
+	return node, nil
+}
+
+func (as *APIService) AddNode(node model.Node) error {
+	return as.Database.AddNode(node)
+}
+
+func (as *APIService) UpdateNode(node model.Node) error {
+	return as.Database.UpdateNode(node)
+}
+
+func (as *APIService) RemoveNode(name string) error {
+	return as.Database.RemoveNode(name)
+}
