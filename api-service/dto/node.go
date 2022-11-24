@@ -13,10 +13,32 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package model
+package dto
+
+import "github.com/ercole-io/ercole/v2/model"
 
 type Node struct {
-	Name   string   `json:"name" bson:"name"`
-	Roles  []string `json:"roles" bson:"roles"`
-	Parent string   `json:"parent" bson:"parent"`
+	Name   string `json:"name"`
+	Parent string `json:"parent"`
+}
+
+func ToNode(nodeModel *model.Node) Node {
+	if nodeModel != nil {
+		return Node{
+			Name:   nodeModel.Name,
+			Parent: nodeModel.Parent,
+		}
+	}
+	
+	return Node{}
+}
+
+func ToNodes(nodesModel []model.Node) []Node {
+	result := make([]Node, 0, len(nodesModel))
+
+	for _, nodeModel := range nodesModel {
+		result = append(result, ToNode(&nodeModel))
+	}
+
+	return result
 }
