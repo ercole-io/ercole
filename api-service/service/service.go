@@ -286,6 +286,10 @@ type APIServiceInterface interface {
 	AddUserByLDAP(userLDAP model.UserLDAP, groups []string) error
 
 	GetNodes(user *model.User) ([]model.Node, error)
+	GetNode(name string) (*model.Node, error)
+	AddNode(node model.Node) error
+	UpdateNode(node model.Node) error
+	RemoveNode(name string) error
 }
 
 // APIService is the concrete implementation of APIServiceInterface.

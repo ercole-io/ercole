@@ -220,4 +220,10 @@ func (ctrl *APIController) setupAdminRoutes(router *mux.Router) {
 	router.HandleFunc("/roles", middleware.Admin(ctrl.AddRole)).Methods("POST")
 	router.HandleFunc("/roles/{roleName}", middleware.Admin(ctrl.UpdateRole)).Methods("PUT")
 	router.HandleFunc("/roles/{roleName}", middleware.Admin(ctrl.RemoveRole)).Methods("DELETE")
+
+	// NODES
+	router.HandleFunc("/nodes", ctrl.AddNode).Methods("POST")
+	router.HandleFunc("/nodes/{name}", ctrl.GetNode).Methods("GET")
+	router.HandleFunc("/nodes/{name}", ctrl.UpdateNode).Methods("PUT")
+	router.HandleFunc("/nodes/{name}", ctrl.RemoveNode).Methods("DELETE")
 }
