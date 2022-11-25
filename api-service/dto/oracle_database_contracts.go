@@ -16,6 +16,8 @@
 package dto
 
 import (
+	"time"
+
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -51,6 +53,8 @@ type OracleDatabaseContractFE struct {
 
 	// If Metric is Named User Plus Perpetual, value is PerUser (already multiplied *25)
 	CoveredLicenses float64 `json:"-" bson:"-"`
+
+	SupportExpiration *time.Time `json:"supportExpiration"`
 }
 
 // OracleDatabaseContractAssociatedHostFE contains the informations about an associated host in contract

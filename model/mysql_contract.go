@@ -15,17 +15,22 @@
 
 package model
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 type MySQLContract struct {
-	ID               primitive.ObjectID `json:"id" bson:"_id"`
-	Type             string             `json:"type" bson:"type"`
-	ContractID       string             `json:"contractID" bson:"contractID"`
-	CSI              string             `json:"csi" bson:"csi"`
-	LicenseTypeID    string             `json:"licenseTypeID" bson:"licenseTypeID"`
-	NumberOfLicenses uint               `json:"numberOfLicenses" bson:"numberOfLicenses"`
-	Clusters         []string           `json:"clusters" bson:"clusters"`
-	Hosts            []string           `json:"hosts" bson:"hosts"`
+	ID                primitive.ObjectID `json:"id" bson:"_id"`
+	Type              string             `json:"type" bson:"type"`
+	ContractID        string             `json:"contractID" bson:"contractID"`
+	CSI               string             `json:"csi" bson:"csi"`
+	LicenseTypeID     string             `json:"licenseTypeID" bson:"licenseTypeID"`
+	NumberOfLicenses  uint               `json:"numberOfLicenses" bson:"numberOfLicenses"`
+	SupportExpiration *time.Time         `json:"supportExpiration" bson:"supportExpiration"`
+	Clusters          []string           `json:"clusters" bson:"clusters"`
+	Hosts             []string           `json:"hosts" bson:"hosts"`
 }
 
 const (
