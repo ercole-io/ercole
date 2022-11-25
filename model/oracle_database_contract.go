@@ -17,22 +17,24 @@ package model
 
 import (
 	"errors"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // OracleDatabaseContract holds informations about a sigle OracleDatabaseContract
 type OracleDatabaseContract struct {
-	ID              primitive.ObjectID `json:"id" bson:"_id"`
-	ContractID      string             `json:"contractID" bson:"contractID"`
-	CSI             string             `json:"csi" bson:"csi"`
-	LicenseTypeID   string             `json:"licenseTypeID" bson:"licenseTypeID"`
-	ReferenceNumber string             `json:"referenceNumber" bson:"referenceNumber"`
-	Unlimited       bool               `json:"unlimited" bson:"unlimited"`
-	Count           int                `json:"count" bson:"count"`
-	Basket          bool               `json:"basket" bson:"basket"`
-	Restricted      bool               `json:"restricted" bson:"restricted"`
-	Hosts           []string           `json:"hosts" bson:"hosts"`
+	ID                primitive.ObjectID `json:"id" bson:"_id"`
+	ContractID        string             `json:"contractID" bson:"contractID"`
+	CSI               string             `json:"csi" bson:"csi"`
+	LicenseTypeID     string             `json:"licenseTypeID" bson:"licenseTypeID"`
+	ReferenceNumber   string             `json:"referenceNumber" bson:"referenceNumber"`
+	Unlimited         bool               `json:"unlimited" bson:"unlimited"`
+	Count             int                `json:"count" bson:"count"`
+	Basket            bool               `json:"basket" bson:"basket"`
+	Restricted        bool               `json:"restricted" bson:"restricted"`
+	SupportExpiration *time.Time         `json:"supportExpiration" bson:"supportExpiration"`
+	Hosts             []string           `json:"hosts" bson:"hosts"`
 }
 
 func (contract OracleDatabaseContract) Check() error {
