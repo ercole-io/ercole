@@ -266,6 +266,10 @@ func (md *MongoDatabase) Init() {
 
 	md.Log.Debug("MongoDatabase is connected to MongoDB! ", utils.HideMongoDBPassword(md.Config.Mongodb.URI))
 
+	if err := md.SetServerVersion(); err != nil {
+		md.Log.Error(err)
+	}
+
 	if err := md.MigrateConfig(); err != nil {
 		md.Log.Error(err)
 	}
@@ -344,4 +348,28 @@ func (md *MongoDatabase) ReadConfig() (*config.Configuration, error) {
 	}
 
 	return &conf, nil
+}
+
+func (md *MongoDatabase) SetServerVersion() error {
+	ctx := context.TODO()
+
+	collections, err := md.Client.Database(md.Config.Mongodb.DBName).ListCollectionNames(ctx, bson.D{})
+	if err != nil {
+		return err
+	}
+
+	if !utils.Contains(collections, "config") {
+		return nil
+	}
+
+	_, err = md.Client.Database(md.Config.Mongodb.DBName).Collection("config").
+		UpdateOne(
+			ctx, bson.M{},
+			bson.D{{Key: "$set", Value: bson.D{primitive.E{Key: "version", Value: md.Config.Version}}}},
+		)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
