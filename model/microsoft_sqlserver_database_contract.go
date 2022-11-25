@@ -16,18 +16,21 @@
 package model
 
 import (
+	"time"
+
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // SqlServerDatabaseContract holds informations about a single SqlServerDatabaseContract
 type SqlServerDatabaseContract struct {
-	ID             primitive.ObjectID `json:"id" bson:"_id"`
-	Type           string             `json:"type" bson:"type"`
-	ContractID     string             `json:"contractID" bson:"contractID"`
-	LicenseTypeID  string             `json:"licenseTypeID" bson:"licenseTypeID"`
-	LicensesNumber int                `json:"licensesNumber" bson:"licensesNumber"`
-	Hosts          []string           `json:"hosts" bson:"hosts"`
-	Clusters       []string           `json:"clusters" bson:"clusters"`
+	ID                primitive.ObjectID `json:"id" bson:"_id"`
+	Type              string             `json:"type" bson:"type"`
+	ContractID        string             `json:"contractID" bson:"contractID"`
+	LicenseTypeID     string             `json:"licenseTypeID" bson:"licenseTypeID"`
+	LicensesNumber    int                `json:"licensesNumber" bson:"licensesNumber"`
+	SupportExpiration *time.Time         `json:"supportExpiration" bson:"supportExpiration"`
+	Hosts             []string           `json:"hosts" bson:"hosts"`
+	Clusters          []string           `json:"clusters" bson:"clusters"`
 }
 
 const (
