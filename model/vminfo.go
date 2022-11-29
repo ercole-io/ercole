@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,8 +17,9 @@ package model
 
 // VMInfo holds info about the vm
 type VMInfo struct {
-	Name               string `json:"name" bson:"name"`
-	Hostname           string `json:"hostname" bson:"hostname"` //Hostname or IP address
-	CappedCPU          bool   `json:"cappedCPU" bson:"cappedCPU"`
-	VirtualizationNode string `json:"virtualizationNode" bson:"virtualizationNode"`
+	Name                    string `json:"name" bson:"name"`
+	Hostname                string `json:"hostname" bson:"hostname"` //Hostname or IP address
+	CappedCPU               bool   `json:"cappedCPU" bson:"cappedCPU"`
+	VirtualizationNode      string `json:"virtualizationNode" bson:"virtualizationNode"`
+	PhysicalServerModelName string `json:"physicalServerModelName" bson:"physicalServerModelName"`
 }
