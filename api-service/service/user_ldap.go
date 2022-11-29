@@ -52,23 +52,27 @@ func (as *APIService) GetLDAPUsers(user string) ([]model.UserLDAP, error) {
 		return nil, err
 	}
 
-	filter = fmt.Sprintf("(uid=%s)", user)
+	ldapUserFilter := as.Config.APIService.AuthenticationProvider.LDAPUserFilter
 
-	resultSR = ldapSearchRequest(filter, ldapBase)
+	filter = fmt.Sprintf(ldapUserFilter, ldap.EscapeFilter(user))
+
+	login := ldapUserFilter[1 : len(ldapUserFilter)-4]
+
+	resultSR = ldapSearchRequest(filter, ldapBase, login)
 
 	sr, errSearch = l.Search(resultSR)
 	if errSearch != nil || len(sr.Entries) == 0 {
 		if len(sr.Entries) != 1 {
 			filter = fmt.Sprintf("(sn=%s)", user)
 
-			resultSR = ldapSearchRequest(filter, ldapBase)
+			resultSR = ldapSearchRequest(filter, ldapBase, login)
 
 			sr, errSearch = l.Search(resultSR)
 			if errSearch != nil || len(sr.Entries) == 0 {
 				if len(sr.Entries) != 1 {
 					filter = fmt.Sprintf("(givenName=%s)", user)
 
-					resultSR = ldapSearchRequest(filter, ldapBase)
+					resultSR = ldapSearchRequest(filter, ldapBase, login)
 
 					sr, errSearch = l.Search(resultSR)
 					if errSearch != nil || len(sr.Entries) == 0 {
@@ -98,7 +102,7 @@ func (as *APIService) GetLDAPUsers(user string) ([]model.UserLDAP, error) {
 				user.GivenName = at.Values[0]
 			case "sn":
 				user.Sn = at.Values[0]
-			case "uid":
+			case login:
 				user.Uid = at.Values[0]
 			}
 		}
@@ -109,12 +113,12 @@ func (as *APIService) GetLDAPUsers(user string) ([]model.UserLDAP, error) {
 	return results, nil
 }
 
-func ldapSearchRequest(filter string, ldapBase string) *ldap.SearchRequest {
+func ldapSearchRequest(filter string, ldapBase string, login string) *ldap.SearchRequest {
 	searchRequest := ldap.NewSearchRequest(
 		ldapBase,
 		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
 		fmt.Sprintf("(&(objectClass=*)%s)", filter),
-		[]string{"givenName", "sn", "uid"},
+		[]string{"givenName", "sn", login},
 		nil,
 	)
 
