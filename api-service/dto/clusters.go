@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -49,9 +49,10 @@ type VirtualizationNodesStat struct {
 }
 
 type VM struct {
-	CappedCPU          bool   `json:"cappedCPU" bson:"cappedCPU"`
-	Hostname           string `json:"hostname" bson:"hostname"`
-	Name               string `json:"name" bson:"name"`
-	VirtualizationNode string `json:"virtualizationNode" bson:"virtualizationNode"`
-	IsErcoleInstalled  bool   `json:"isErcoleInstalled" bson:"isErcoleInstalled"`
+	CappedCPU               bool   `json:"cappedCPU" bson:"cappedCPU"`
+	Hostname                string `json:"hostname" bson:"hostname"`
+	Name                    string `json:"name" bson:"name"`
+	VirtualizationNode      string `json:"virtualizationNode" bson:"virtualizationNode"`
+	PhysicalServerModelName string `json:"physicalServerModelName" bson:"physicalServerModelName"`
+	IsErcoleInstalled       bool   `json:"isErcoleInstalled" bson:"isErcoleInstalled"`
 }

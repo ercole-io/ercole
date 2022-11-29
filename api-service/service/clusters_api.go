@@ -101,7 +101,8 @@ func (as *APIService) GetClusterXLSX(clusterName string, olderThan time.Time) (*
 		xlsx.SetCellValue("VMs", fmt.Sprintf("A%d", i), val.Name)
 		xlsx.SetCellValue("VMs", fmt.Sprintf("B%d", i), val.Hostname)
 		xlsx.SetCellValue("VMs", fmt.Sprintf("C%d", i), val.VirtualizationNode)
-		xlsx.SetCellValue("VMs", fmt.Sprintf("D%d", i), strconv.FormatBool(val.CappedCPU))
+		xlsx.SetCellValue("VMs", fmt.Sprintf("D%d", i), val.PhysicalServerModelName)
+		xlsx.SetCellValue("VMs", fmt.Sprintf("E%d", i), strconv.FormatBool(val.CappedCPU))
 	}
 
 	return xlsx, nil
