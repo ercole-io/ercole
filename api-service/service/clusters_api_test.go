@@ -173,19 +173,21 @@ func TestGetClusterXLSX(t *testing.T) {
 
 		VMs: []dto.VM{
 			{
-				CappedCPU:          false,
-				Hostname:           "test-virt",
-				Name:               "test-virt",
-				VirtualizationNode: "s157-cb32c10a56c256746c337e21b3f82402",
-				IsErcoleInstalled:  false,
+				CappedCPU:               false,
+				Hostname:                "test-virt",
+				Name:                    "test-virt",
+				VirtualizationNode:      "s157-cb32c10a56c256746c337e21b3f82402",
+				PhysicalServerModelName: "HP ProLiant DL380 Gen9",
+				IsErcoleInstalled:       false,
 			},
 
 			{
-				CappedCPU:          true,
-				Hostname:           "test-db",
-				Name:               "test-db",
-				VirtualizationNode: "s157-cb32c10a56c256746c337e21b3f82402",
-				IsErcoleInstalled:  false,
+				CappedCPU:               true,
+				Hostname:                "test-db",
+				Name:                    "test-db",
+				VirtualizationNode:      "s157-cb32c10a56c256746c337e21b3f82402",
+				PhysicalServerModelName: "HP ProLiant DL380 Gen9",
+				IsErcoleInstalled:       false,
 			},
 		},
 		VMsCount:            2,
@@ -205,28 +207,32 @@ func TestGetClusterXLSX(t *testing.T) {
 	sheet := "VMs"
 
 	i := -1
-	columns := []string{"A", "B", "C", "D"}
+	columns := []string{"A", "B", "C", "D", "E"}
 	nextVal := func() string {
 		i += 1
-		cell := columns[i%4] + strconv.Itoa(i/4+1)
+		cell := columns[i%5] + strconv.Itoa(i/5+1)
 		return xlsx.GetCellValue(sheet, cell)
 	}
 
 	assert.Equal(t, "Physical Hosts", nextVal())
 	assert.Equal(t, "Hostname", nextVal())
 	assert.Equal(t, "VirtualizationNode", nextVal())
+	assert.Equal(t, "PhysicalServerModelName", nextVal())
 	assert.Equal(t, "CappedCPU", nextVal())
 
 	assert.Equal(t, "test-virt", nextVal())
 	assert.Equal(t, "test-virt", nextVal())
 	assert.Equal(t, "s157-cb32c10a56c256746c337e21b3f82402", nextVal())
+	assert.Equal(t, "HP ProLiant DL380 Gen9", nextVal())
 	assert.Equal(t, "false", nextVal())
 
 	assert.Equal(t, "test-db", nextVal())
 	assert.Equal(t, "test-db", nextVal())
 	assert.Equal(t, "s157-cb32c10a56c256746c337e21b3f82402", nextVal())
+	assert.Equal(t, "HP ProLiant DL380 Gen9", nextVal())
 	assert.Equal(t, "true", nextVal())
 
+	assert.Equal(t, "", nextVal())
 	assert.Equal(t, "", nextVal())
 	assert.Equal(t, "", nextVal())
 	assert.Equal(t, "", nextVal())
