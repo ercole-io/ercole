@@ -27,9 +27,7 @@ import (
 )
 
 // SearchClusters search clusters
-func (md *MongoDatabase) SearchClusters(mode string, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, error) {
-	var out []map[string]interface{} = make([]map[string]interface{}, 0)
-
+func (md *MongoDatabase) SearchClusters(mode string, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]dto.Cluster, error) {
 	//Find the matching hostdata
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
@@ -58,6 +56,7 @@ func (md *MongoDatabase) SearchClusters(mode string, keywords []string, sortBy s
 				"sockets":                     "$cluster.sockets",
 				"vms":                         "$cluster.vms",
 				"virtualizationNodes":         mu.APOSetUnion(mu.APOMap("$cluster.vms", "vm", "$$vm.virtualizationNode")),
+				"physicalServerModelNames":    mu.APOSetUnion(mu.APOMap("$cluster.vms", "vm", "$$vm.physicalServerModelName")),
 				"vmsCount":                    mu.APOSize("$cluster.vms"),
 			}),
 			mu.APLookupPipeline("hosts", bson.M{
@@ -84,7 +83,8 @@ func (md *MongoDatabase) SearchClusters(mode string, keywords []string, sortBy s
 				"type":                        true,
 				"cpu":                         true,
 				"sockets":                     true,
-				"virtualizationNodes":         mu.APOJoin("$virtualizationNodes", " "),
+				"virtualizationNodes":         true,
+				"physicalServerModelNames":    true,
 				"vmsCount":                    true,
 				"vmsErcoleAgentCount":         true,
 			})),
@@ -100,17 +100,12 @@ func (md *MongoDatabase) SearchClusters(mode string, keywords []string, sortBy s
 		return nil, utils.NewError(err, "DB ERROR")
 	}
 
-	//Decode the documents
-	for cur.Next(context.TODO()) {
-		var item map[string]interface{}
-		if cur.Decode(&item) != nil {
-			return nil, utils.NewError(err, "Decode ERROR")
-		}
-
-		out = append(out, item)
+	var clusters []dto.Cluster
+	if err := cur.All(context.TODO(), &clusters); err != nil {
+		return nil, utils.NewError(err, "Decode ERROR")
 	}
 
-	return out, nil
+	return clusters, nil
 }
 
 func (md *MongoDatabase) GetClusters(filter dto.GlobalFilter) ([]dto.Cluster, error) {
@@ -141,6 +136,7 @@ func (md *MongoDatabase) GetClusters(filter dto.GlobalFilter) ([]dto.Cluster, er
 				"sockets":                     "$cluster.sockets",
 				"vms":                         "$cluster.vms",
 				"virtualizationNodes":         mu.APOSetUnion(mu.APOMap("$cluster.vms", "vm", "$$vm.virtualizationNode")),
+				"physicalServerModelNames":    mu.APOSetUnion(mu.APOMap("$cluster.vms", "vm", "$$vm.physicalServerModelName")),
 				"vmsCount":                    mu.APOSize("$cluster.vms"),
 			}),
 			mu.APLookupPipeline("hosts", bson.M{
@@ -218,6 +214,7 @@ func (md *MongoDatabase) GetCluster(clusterName string, olderThan time.Time) (*d
 				"sockets":                     "$cluster.sockets",
 				"vms":                         "$cluster.vms",
 				"virtualizationNodes":         mu.APOSetUnion(mu.APOMap("$cluster.vms", "vm", "$$vm.virtualizationNode")),
+				"physicalServerModelNames":    mu.APOSetUnion(mu.APOMap("$cluster.vms", "vm", "$$vm.physicalServerModelName")),
 				"vmsCount":                    mu.APOSize("$cluster.vms"),
 			}),
 			mu.APLookupPipeline("hosts", bson.M{

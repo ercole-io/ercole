@@ -31,7 +31,7 @@ import (
 )
 
 // SearchClusters search clusters
-func (as *APIService) SearchClusters(mode string, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, error) {
+func (as *APIService) SearchClusters(mode string, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]dto.Cluster, error) {
 	return as.Database.SearchClusters(mode, strings.Split(search, " "), sortBy, sortDesc, page, pageSize, location, environment, olderThan)
 }
 
@@ -122,6 +122,7 @@ func (as *APIService) SearchClustersAsXLSX(filter dto.GlobalFilter) (*excelize.F
 		"Cores",
 		"Socket",
 		"Physical Host",
+		"Physical Server Model Name",
 		"Total VM",
 		"Total VM Ercole",
 	}
@@ -135,13 +136,20 @@ func (as *APIService) SearchClustersAsXLSX(filter dto.GlobalFilter) (*excelize.F
 
 	for _, val := range clusters {
 		nextAxis := axisHelp.NewRow()
-		sheets.SetCellValue(sheet, nextAxis(), val["name"])
-		sheets.SetCellValue(sheet, nextAxis(), val["type"])
-		sheets.SetCellValue(sheet, nextAxis(), val["cpu"])
-		sheets.SetCellValue(sheet, nextAxis(), val["sockets"])
-		sheets.SetCellValue(sheet, nextAxis(), val["virtualizationNodes"])
-		sheets.SetCellValue(sheet, nextAxis(), val["vmsCount"])
-		sheets.SetCellValue(sheet, nextAxis(), val["vmsErcoleAgentCount"])
+		sheets.SetCellValue(sheet, nextAxis(), val.Name)
+		sheets.SetCellValue(sheet, nextAxis(), val.Type)
+		sheets.SetCellValue(sheet, nextAxis(), val.CPU)
+		sheets.SetCellValue(sheet, nextAxis(), val.Sockets)
+		sheets.SetCellValue(sheet, nextAxis(), val.VirtualizationNodes)
+
+		if len(val.PhysicalServerModelNames) > 0 && val.PhysicalServerModelNames[0] != "" {
+			sheets.SetCellValue(sheet, nextAxis(), val.PhysicalServerModelNames)
+		} else {
+			sheets.SetCellValue(sheet, nextAxis(), "")
+		}
+
+		sheets.SetCellValue(sheet, nextAxis(), val.VMsCount)
+		sheets.SetCellValue(sheet, nextAxis(), val.VMsErcoleAgentCount)
 	}
 
 	return sheets, nil
