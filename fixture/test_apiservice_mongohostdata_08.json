@@ -24,13 +24,15 @@
                     "cappedCPU": false,
                     "hostname": "test-virt",
                     "name": "test-virt",
-                    "virtualizationNode": "s157-cb32c10a56c256746c337e21b3f82402"
+                    "virtualizationNode": "s157-cb32c10a56c256746c337e21b3f82402",
+                    "physicalServerModelName": "HP ProLiant DL380 Gen9"
                 },
                 {
                     "cappedCPU": false,
                     "hostname": "test-db",
                     "name": "test-db",
-                    "virtualizationNode": "s157-cb32c10a56c256746c337e21b3f82402"
+                    "virtualizationNode": "s157-cb32c10a56c256746c337e21b3f82402",
+                    "physicalServerModelName": "HP ProLiant DL380 Gen9"
                 }
             ]
         },
@@ -49,13 +51,15 @@
                     "cappedCPU": false,
                     "hostname": "test-virt2",
                     "name": "test-virt2",
-                    "virtualizationNode": "s157-cb32c10a56c256746c337e21b3ffffff"
+                    "virtualizationNode": "s157-cb32c10a56c256746c337e21b3ffffff",
+                    "physicalServerModelName": "HP ProLiant DL380 Gen9"
                 },
                 {
                     "cappedCPU": false,
                     "hostname": "test-db2",
                     "name": "test-db2",
-                    "virtualizationNode": "s157-cb32c10a56c256746c337e21b3fffeua"
+                    "virtualizationNode": "s157-cb32c10a56c256746c337e21b3fffeua",
+                    "physicalServerModelName": "HP ProLiant DL380 Gen10"
                 }
             ]
         }
