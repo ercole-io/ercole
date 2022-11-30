@@ -33,74 +33,6 @@ import (
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
-func TestSearchCluster_JSONPaged(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config:  config.Configuration{},
-		Log:     logger.NewLogger("TEST"),
-	}
-
-	expectedRes := map[string]interface{}{
-		"content": []interface{}{
-			map[string]interface{}{
-				"CPU":                         0,
-				"Environment":                 "PROD",
-				"Hostname":                    "fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9",
-				"HostnameAgentVirtualization": "fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9",
-				"Location":                    "Italy",
-				"Name":                        "not_in_cluster",
-				"VirtualizationNodes":         "aspera-b1fe49e8501c9ef031e5acff4b5e69a9",
-				"Sockets":                     0,
-				"Type":                        "unknown",
-				"_id":                         utils.Str2oid("5e8c234b24f648a08585bd3d"),
-			},
-			map[string]interface{}{
-				"CPU":                         140,
-				"Environment":                 "PROD",
-				"Hostname":                    "test-virt",
-				"HostnameAgentVirtualization": "test-virt",
-				"Location":                    "Italy",
-				"Name":                        "Puzzait",
-				"VirtualizationNodes":         "s157-cb32c10a56c256746c337e21b3f82402",
-				"Sockets":                     10,
-				"Type":                        "vmware",
-				"_id":                         utils.Str2oid("5e8c234b24f648a08585bd41"),
-			},
-		},
-		"Metadata": map[string]interface{}{
-			"Empty":         false,
-			"First":         true,
-			"Last":          true,
-			"Number":        0,
-			"Size":          20,
-			"TotalElements": 25,
-			"TotalPages":    1,
-		},
-	}
-
-	resFromService := []map[string]interface{}{
-		expectedRes,
-	}
-
-	as.EXPECT().
-		SearchClusters("full", "foobar", "CPU", true, 2, 3, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
-		Return(resFromService, nil)
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchClusters)
-	req, err := http.NewRequest("GET", "/clusters?mode=full&search=foobar&sort-by=CPU&sort-desc=true&page=2&size=3&location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
-	require.NoError(t, err)
-
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusOK, rr.Code)
-	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
-}
-
 func TestSearchCluster_JSONUnpaged(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
@@ -112,30 +44,32 @@ func TestSearchCluster_JSONUnpaged(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	expectedRes := []map[string]interface{}{
+	expectedRes := []dto.Cluster{
 		{
-			"CPU":                         0,
-			"Environment":                 "PROD",
-			"Hostname":                    "fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9",
-			"HostnameAgentVirtualization": "fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9",
-			"Location":                    "Italy",
-			"Name":                        "not_in_cluster",
-			"VirtualizationNodes":         "aspera-b1fe49e8501c9ef031e5acff4b5e69a9",
-			"Sockets":                     0,
-			"Type":                        "unknown",
-			"_id":                         utils.Str2oid("5e8c234b24f648a08585bd3d"),
+			CPU:                         0,
+			Environment:                 "PROD",
+			Hostname:                    "fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9",
+			HostnameAgentVirtualization: "fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9",
+			Location:                    "Italy",
+			Name:                        "not_in_cluster",
+			VirtualizationNodes:         []string{"aspera-b1fe49e8501c9ef031e5acff4b5e69a9"},
+			PhysicalServerModelNames:    []string{"model name"},
+			Sockets:                     0,
+			Type:                        "unknown",
+			ID:                          utils.Str2oid("5e8c234b24f648a08585bd3d"),
 		},
 		{
-			"CPU":                         140,
-			"Environment":                 "PROD",
-			"Hostname":                    "test-virt",
-			"HostnameAgentVirtualization": "test-virt",
-			"Location":                    "Italy",
-			"Name":                        "Puzzait",
-			"VirtualizationNodes":         "s157-cb32c10a56c256746c337e21b3f82402",
-			"Sockets":                     10,
-			"Type":                        "vmware",
-			"_id":                         utils.Str2oid("5e8c234b24f648a08585bd41"),
+			CPU:                         140,
+			Environment:                 "PROD",
+			Hostname:                    "test-virt",
+			HostnameAgentVirtualization: "test-virt",
+			Location:                    "Italy",
+			Name:                        "Puzzait",
+			VirtualizationNodes:         []string{"s157-cb32c10a56c256746c337e21b3f82402"},
+			PhysicalServerModelNames:    []string{"new model name"},
+			Sockets:                     10,
+			Type:                        "vmware",
+			ID:                          utils.Str2oid("5e8c234b24f648a08585bd41"),
 		},
 	}
 
@@ -172,12 +106,12 @@ func TestSearchClusterNames_JSONUnpaged(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	returnedRes := []map[string]interface{}{
+	returnedRes := []dto.Cluster{
 		{
-			"name": "not_in_cluster",
+			Name: "not_in_cluster",
 		},
 		{
-			"name": "Puzzait",
+			Name: "Puzzait",
 		},
 	}
 

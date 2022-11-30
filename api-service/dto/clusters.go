@@ -34,6 +34,7 @@ type Cluster struct {
 	Sockets                     int                       `json:"sockets" bson:"sockets"`
 	Type                        string                    `json:"type" bson:"type"`
 	VirtualizationNodes         []string                  `json:"virtualizationNodes" bson:"virtualizationNodes"`
+	PhysicalServerModelNames    []string                  `json:"physicalServerModelNames" bson:"physicalServerModelNames"`
 	VirtualizationNodesCount    int                       `json:"virtualizationNodesCount" bson:"virtualizationNodesCount"`
 	VirtualizationNodesStats    []VirtualizationNodesStat `json:"virtualizationNodesStats" bson:"virtualizationNodesStats"`
 	VMs                         []VM                      `json:"vms" bson:"vms"`

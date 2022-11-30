@@ -37,30 +37,32 @@ func TestSearchClusters_Success(t *testing.T) {
 		Database: db,
 	}
 
-	expectedRes := []map[string]interface{}{
+	expectedRes := []dto.Cluster{
 		{
-			"CPU":                         0,
-			"Environment":                 "PROD",
-			"Hostname":                    "fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9",
-			"HostnameAgentVirtualization": "fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9",
-			"Location":                    "Italy",
-			"Name":                        "not_in_cluster",
-			"VirtualizationNodes":         "aspera-b1fe49e8501c9ef031e5acff4b5e69a9",
-			"Sockets":                     0,
-			"Type":                        "unknown",
-			"_id":                         utils.Str2oid("5e8c234b24f648a08585bd3d"),
+			CPU:                         0,
+			Environment:                 "PROD",
+			Hostname:                    "fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9",
+			HostnameAgentVirtualization: "fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9",
+			Location:                    "Italy",
+			Name:                        "not_in_cluster",
+			VirtualizationNodes:         []string{"aspera-b1fe49e8501c9ef031e5acff4b5e69a9"},
+			PhysicalServerModelNames:    []string{"model name"},
+			Sockets:                     0,
+			Type:                        "unknown",
+			ID:                          utils.Str2oid("5e8c234b24f648a08585bd3d"),
 		},
 		{
-			"CPU":                         140,
-			"Environment":                 "PROD",
-			"Hostname":                    "test-virt",
-			"HostnameAgentVirtualization": "test-virt",
-			"Location":                    "Italy",
-			"Name":                        "Puzzait",
-			"VirtualizationNodes":         "s157-cb32c10a56c256746c337e21b3f82402",
-			"Sockets":                     10,
-			"Type":                        "vmware",
-			"_id":                         utils.Str2oid("5e8c234b24f648a08585bd41"),
+			CPU:                         140,
+			Environment:                 "PROD",
+			Hostname:                    "test-virt",
+			HostnameAgentVirtualization: "test-virt",
+			Location:                    "Italy",
+			Name:                        "Puzzait",
+			VirtualizationNodes:         []string{"s157-cb32c10a56c256746c337e21b3f82402"},
+			PhysicalServerModelNames:    []string{"new model name"},
+			Sockets:                     10,
+			Type:                        "vmware",
+			ID:                          utils.Str2oid("5e8c234b24f648a08585bd41"),
 		},
 	}
 
@@ -88,12 +90,12 @@ func TestSearchClusterNames_Success(t *testing.T) {
 		Database: db,
 	}
 
-	expectedRes := []map[string]interface{}{
+	expectedRes := []dto.Cluster{
 		{
-			"Name": "not_in_cluster",
+			Name: "not_in_cluster",
 		},
 		{
-			"Name": "Puzzait",
+			Name: "Puzzait",
 		},
 	}
 
@@ -250,15 +252,16 @@ func TestSearchClustersAsXLSX_Success(t *testing.T) {
 		Database: db,
 	}
 
-	data := []map[string]interface{}{
+	data := []dto.Cluster{
 		{
-			"name":                "Puzzait",
-			"type":                "VMWare/VMWare",
-			"cpu":                 140,
-			"sockets":             10,
-			"virtualizationNodes": "s157-cb32c10a56c256746c337e21b3f82402",
-			"vmsCount":            2,
-			"vmsErcoleAgentCount": 2,
+			Name:                     "Puzzait",
+			Type:                     "VMWare/VMWare",
+			CPU:                      140,
+			Sockets:                  10,
+			VirtualizationNodes:      []string{"s157-cb32c10a56c256746c337e21b3f82402"},
+			PhysicalServerModelNames: []string{"model name"},
+			VMsCount:                 2,
+			VMsErcoleAgentCount:      2,
 		},
 	}
 
@@ -280,7 +283,8 @@ func TestSearchClustersAsXLSX_Success(t *testing.T) {
 	assert.Equal(t, "VMWare/VMWare", actual.GetCellValue("Hypervisor", "B2"))
 	assert.Equal(t, "140", actual.GetCellValue("Hypervisor", "C2"))
 	assert.Equal(t, "10", actual.GetCellValue("Hypervisor", "D2"))
-	assert.Equal(t, "s157-cb32c10a56c256746c337e21b3f82402", actual.GetCellValue("Hypervisor", "E2"))
-	assert.Equal(t, "2", actual.GetCellValue("Hypervisor", "F2"))
+	assert.Equal(t, "[s157-cb32c10a56c256746c337e21b3f82402]", actual.GetCellValue("Hypervisor", "E2"))
+	assert.Equal(t, "[model name]", actual.GetCellValue("Hypervisor", "F2"))
 	assert.Equal(t, "2", actual.GetCellValue("Hypervisor", "G2"))
+	assert.Equal(t, "2", actual.GetCellValue("Hypervisor", "H2"))
 }

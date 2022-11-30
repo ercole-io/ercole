@@ -112,16 +112,12 @@ func (ctrl *APIController) SearchClustersJSON(w http.ResponseWriter, r *http.Req
 	if mode == "clusternames" {
 		clusternames := make([]string, len(clusters))
 		for i, h := range clusters {
-			clusternames[i] = h["name"].(string)
+			clusternames[i] = h.Name
 		}
 
 		utils.WriteJSONResponse(w, http.StatusOK, clusternames)
 	} else {
-		if pageNumber == -1 || pageSize == -1 {
-			utils.WriteJSONResponse(w, http.StatusOK, clusters)
-		} else {
-			utils.WriteJSONResponse(w, http.StatusOK, clusters[0])
-		}
+		utils.WriteJSONResponse(w, http.StatusOK, clusters)
 	}
 }
 
