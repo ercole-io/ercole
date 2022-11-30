@@ -35,7 +35,7 @@ func (m *MongodbSuite) TestSearchClusters() {
 	m.T().Run("should_filter_out_by_environment", func(t *testing.T) {
 		out, err := m.db.SearchClusters("full", []string{""}, "", false, -1, -1, "", "TST", utils.MAX_TIME)
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{}
+		var expectedOut []dto.Cluster
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
@@ -43,7 +43,7 @@ func (m *MongodbSuite) TestSearchClusters() {
 	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
 		out, err := m.db.SearchClusters("full", []string{""}, "", false, -1, -1, "France", "", utils.MAX_TIME)
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{}
+		var expectedOut []dto.Cluster
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
@@ -51,44 +51,7 @@ func (m *MongodbSuite) TestSearchClusters() {
 	m.T().Run("should_filter_out_by_older_than", func(t *testing.T) {
 		out, err := m.db.SearchClusters("full", []string{""}, "", false, -1, -1, "", "", utils.P("1999-05-04T16:09:46.608+02:00"))
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{}
-
-		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
-	})
-
-	m.T().Run("should_be_paging", func(t *testing.T) {
-		out, err := m.db.SearchClusters("full", []string{""}, "", false, 0, 1, "", "", utils.MAX_TIME)
-		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{
-			map[string]interface{}{
-				"content": []interface{}{
-					map[string]interface{}{
-						"cpu":                         140,
-						"environment":                 "PROD",
-						"hostname":                    "test-virt",
-						"fetchEndpoint":               "olvmmgr",
-						"hostnameAgentVirtualization": "test-virt",
-						"location":                    "Italy",
-						"name":                        "Puzzait",
-						"virtualizationNodes":         "s157-cb32c10a56c256746c337e21b3f82402",
-						"sockets":                     10,
-						"type":                        "vmware",
-						"vmsCount":                    2,
-						"vmsErcoleAgentCount":         1,
-						"_id":                         utils.Str2oid("5eb0222a45d85f4193704944"),
-					},
-				},
-				"metadata": map[string]interface{}{
-					"empty":         false,
-					"first":         true,
-					"last":          false,
-					"number":        0,
-					"size":          1,
-					"totalElements": 2,
-					"totalPages":    2,
-				},
-			},
-		}
+		var expectedOut []dto.Cluster
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
@@ -96,44 +59,49 @@ func (m *MongodbSuite) TestSearchClusters() {
 	m.T().Run("should_be_sorting", func(t *testing.T) {
 		out, err := m.db.SearchClusters("full", []string{""}, "sockets", true, -1, -1, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{
-			map[string]interface{}{
-				"cpu":                         130,
-				"environment":                 "PROD",
-				"hostname":                    "test-virt",
-				"fetchEndpoint":               "endpoint",
-				"hostnameAgentVirtualization": "test-virt",
-				"location":                    "Italy",
-				"name":                        "Puzzait2",
-				"virtualizationNodes":         "s157-cb32c10a56c256746c337e21b3fffeua s157-cb32c10a56c256746c337e21b3ffffff",
-				"sockets":                     13,
-				"type":                        "vmware",
-				"vmsCount":                    2,
-				"vmsErcoleAgentCount":         0,
-				"_id":                         utils.Str2oid("5eb0222a45d85f4193704944"),
-			}, map[string]interface{}{
-				"cpu":                         140,
-				"environment":                 "PROD",
-				"hostname":                    "test-virt",
-				"fetchEndpoint":               "olvmmgr",
-				"hostnameAgentVirtualization": "test-virt",
-				"location":                    "Italy",
-				"name":                        "Puzzait",
-				"virtualizationNodes":         "s157-cb32c10a56c256746c337e21b3f82402",
-				"sockets":                     10,
-				"type":                        "vmware",
-				"vmsCount":                    2,
-				"vmsErcoleAgentCount":         1,
-				"_id":                         utils.Str2oid("5eb0222a45d85f4193704944"),
+
+		expectedOut := []dto.Cluster{
+			{
+				CPU:                         130,
+				Environment:                 "PROD",
+				Hostname:                    "test-virt",
+				FetchEndpoint:               "endpoint",
+				HostnameAgentVirtualization: "test-virt",
+				Location:                    "Italy",
+				Name:                        "Puzzait2",
+				VirtualizationNodes:         []string{"s157-cb32c10a56c256746c337e21b3fffeua", "s157-cb32c10a56c256746c337e21b3ffffff"},
+				PhysicalServerModelNames:    []string{"HP ProLiant DL380 Gen10", "HP ProLiant DL380 Gen9"},
+				Sockets:                     13,
+				Type:                        "vmware",
+				VMsCount:                    2,
+				VMsErcoleAgentCount:         0,
+				ID:                          utils.Str2oid("5eb0222a45d85f4193704944"),
+			},
+			{
+				CPU:                         140,
+				Environment:                 "PROD",
+				Hostname:                    "test-virt",
+				FetchEndpoint:               "olvmmgr",
+				HostnameAgentVirtualization: "test-virt",
+				Location:                    "Italy",
+				Name:                        "Puzzait",
+				VirtualizationNodes:         []string{"s157-cb32c10a56c256746c337e21b3f82402"},
+				PhysicalServerModelNames:    []string{"HP ProLiant DL380 Gen9"},
+				Sockets:                     10,
+				Type:                        "vmware",
+				VMsCount:                    2,
+				VMsErcoleAgentCount:         1,
+				ID:                          utils.Str2oid("5eb0222a45d85f4193704944"),
 			},
 		}
+
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
 	m.T().Run("should_search_return_anything", func(t *testing.T) {
 		out, err := m.db.SearchClusters("full", []string{"foobar"}, "", false, -1, -1, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{}
+		var expectedOut []dto.Cluster
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
@@ -141,21 +109,23 @@ func (m *MongodbSuite) TestSearchClusters() {
 	m.T().Run("should_search_return_found", func(t *testing.T) {
 		out, err := m.db.SearchClusters("full", []string{"Puzzait2"}, "", false, -1, -1, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{
-			map[string]interface{}{
-				"cpu":                         130,
-				"environment":                 "PROD",
-				"hostname":                    "test-virt",
-				"fetchEndpoint":               "endpoint",
-				"hostnameAgentVirtualization": "test-virt",
-				"location":                    "Italy",
-				"name":                        "Puzzait2",
-				"virtualizationNodes":         "s157-cb32c10a56c256746c337e21b3fffeua s157-cb32c10a56c256746c337e21b3ffffff",
-				"sockets":                     13,
-				"type":                        "vmware",
-				"vmsCount":                    2,
-				"vmsErcoleAgentCount":         0,
-				"_id":                         utils.Str2oid("5eb0222a45d85f4193704944"),
+
+		expectedOut := []dto.Cluster{
+			{
+				CPU:                         130,
+				Environment:                 "PROD",
+				Hostname:                    "test-virt",
+				FetchEndpoint:               "endpoint",
+				HostnameAgentVirtualization: "test-virt",
+				Location:                    "Italy",
+				Name:                        "Puzzait2",
+				VirtualizationNodes:         []string{"s157-cb32c10a56c256746c337e21b3fffeua", "s157-cb32c10a56c256746c337e21b3ffffff"},
+				PhysicalServerModelNames:    []string{"HP ProLiant DL380 Gen10", "HP ProLiant DL380 Gen9"},
+				Sockets:                     13,
+				Type:                        "vmware",
+				VMsCount:                    2,
+				VMsErcoleAgentCount:         0,
+				ID:                          utils.Str2oid("5eb0222a45d85f4193704944"),
 			},
 		}
 
@@ -165,50 +135,54 @@ func (m *MongodbSuite) TestSearchClusters() {
 	m.T().Run("fullmode", func(t *testing.T) {
 		out, err := m.db.SearchClusters("full", []string{""}, "", false, -1, -1, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{
-			map[string]interface{}{
-				"cpu":                         140,
-				"environment":                 "PROD",
-				"hostname":                    "test-virt",
-				"hostnameAgentVirtualization": "test-virt",
-				"location":                    "Italy",
-				"name":                        "Puzzait",
-				"fetchEndpoint":               "olvmmgr",
-				"virtualizationNodes":         "s157-cb32c10a56c256746c337e21b3f82402",
-				"sockets":                     10,
-				"type":                        "vmware",
-				"_id":                         utils.Str2oid("5eb0222a45d85f4193704944"),
-				"vmsCount":                    2,
-				"vmsErcoleAgentCount":         1,
+
+		expectedOut := []dto.Cluster{
+			{
+				CPU:                         140,
+				Environment:                 "PROD",
+				Hostname:                    "test-virt",
+				HostnameAgentVirtualization: "test-virt",
+				Location:                    "Italy",
+				Name:                        "Puzzait",
+				FetchEndpoint:               "olvmmgr",
+				VirtualizationNodes:         []string{"s157-cb32c10a56c256746c337e21b3f82402"},
+				PhysicalServerModelNames:    []string{"HP ProLiant DL380 Gen9"},
+				Sockets:                     10,
+				Type:                        "vmware",
+				ID:                          utils.Str2oid("5eb0222a45d85f4193704944"),
+				VMsCount:                    2,
+				VMsErcoleAgentCount:         1,
 			},
-			map[string]interface{}{
-				"cpu":                         130,
-				"environment":                 "PROD",
-				"hostname":                    "test-virt",
-				"hostnameAgentVirtualization": "test-virt",
-				"location":                    "Italy",
-				"fetchEndpoint":               "endpoint",
-				"name":                        "Puzzait2",
-				"virtualizationNodes":         "s157-cb32c10a56c256746c337e21b3fffeua s157-cb32c10a56c256746c337e21b3ffffff",
-				"sockets":                     13,
-				"type":                        "vmware",
-				"_id":                         utils.Str2oid("5eb0222a45d85f4193704944"),
-				"vmsCount":                    2,
-				"vmsErcoleAgentCount":         0,
+			{
+				CPU:                         130,
+				Environment:                 "PROD",
+				Hostname:                    "test-virt",
+				HostnameAgentVirtualization: "test-virt",
+				Location:                    "Italy",
+				FetchEndpoint:               "endpoint",
+				Name:                        "Puzzait2",
+				VirtualizationNodes:         []string{"s157-cb32c10a56c256746c337e21b3fffeua", "s157-cb32c10a56c256746c337e21b3ffffff"},
+				PhysicalServerModelNames:    []string{"HP ProLiant DL380 Gen10", "HP ProLiant DL380 Gen9"},
+				Sockets:                     13,
+				Type:                        "vmware",
+				ID:                          utils.Str2oid("5eb0222a45d85f4193704944"),
+				VMsCount:                    2,
+				VMsErcoleAgentCount:         0,
 			},
 		}
+
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
 	m.T().Run("clusternames", func(t *testing.T) {
 		out, err := m.db.SearchClusters("clusternames", []string{""}, "", false, -1, -1, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{
-			map[string]interface{}{
-				"name": "Puzzait",
+		expectedOut := []dto.Cluster{
+			{
+				Name: "Puzzait",
 			},
-			map[string]interface{}{
-				"name": "Puzzait2",
+			{
+				Name: "Puzzait2",
 			},
 		}
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
@@ -254,6 +228,7 @@ func (m *MongodbSuite) TestGetClusters() {
 				Sockets:                     10,
 				Type:                        "vmware",
 				VirtualizationNodes:         []string{"s157-cb32c10a56c256746c337e21b3f82402"},
+				PhysicalServerModelNames:    []string{"HP ProLiant DL380 Gen9"},
 				VirtualizationNodesCount:    1,
 				VirtualizationNodesStats: []dto.VirtualizationNodesStat{
 					{
@@ -264,16 +239,20 @@ func (m *MongodbSuite) TestGetClusters() {
 				},
 				VMs: []dto.VM{
 					{
-						CappedCPU:          false,
-						Hostname:           "test-virt",
-						Name:               "test-virt",
-						VirtualizationNode: "s157-cb32c10a56c256746c337e21b3f82402"},
+						CappedCPU:               false,
+						Hostname:                "test-virt",
+						Name:                    "test-virt",
+						VirtualizationNode:      "s157-cb32c10a56c256746c337e21b3f82402",
+						PhysicalServerModelName: "HP ProLiant DL380 Gen9",
+					},
 
 					{
-						CappedCPU:          false,
-						Hostname:           "test-db",
-						Name:               "test-db",
-						VirtualizationNode: "s157-cb32c10a56c256746c337e21b3f82402"},
+						CappedCPU:               false,
+						Hostname:                "test-db",
+						Name:                    "test-db",
+						VirtualizationNode:      "s157-cb32c10a56c256746c337e21b3f82402",
+						PhysicalServerModelName: "HP ProLiant DL380 Gen9",
+					},
 				},
 				VMsCount:            2,
 				VMsErcoleAgentCount: 1,
@@ -293,6 +272,10 @@ func (m *MongodbSuite) TestGetClusters() {
 				VirtualizationNodes: []string{
 					"s157-cb32c10a56c256746c337e21b3fffeua",
 					"s157-cb32c10a56c256746c337e21b3ffffff"},
+				PhysicalServerModelNames: []string{
+					"HP ProLiant DL380 Gen10",
+					"HP ProLiant DL380 Gen9",
+				},
 				VirtualizationNodesCount: 2,
 				VirtualizationNodesStats: []dto.VirtualizationNodesStat{
 					{
@@ -308,16 +291,20 @@ func (m *MongodbSuite) TestGetClusters() {
 				},
 				VMs: []dto.VM{
 					{
-						CappedCPU:          false,
-						Hostname:           "test-virt2",
-						Name:               "test-virt2",
-						VirtualizationNode: "s157-cb32c10a56c256746c337e21b3ffffff"},
+						CappedCPU:               false,
+						Hostname:                "test-virt2",
+						Name:                    "test-virt2",
+						VirtualizationNode:      "s157-cb32c10a56c256746c337e21b3ffffff",
+						PhysicalServerModelName: "HP ProLiant DL380 Gen9",
+					},
 
 					{
-						CappedCPU:          false,
-						Hostname:           "test-db2",
-						Name:               "test-db2",
-						VirtualizationNode: "s157-cb32c10a56c256746c337e21b3fffeua"},
+						CappedCPU:               false,
+						Hostname:                "test-db2",
+						Name:                    "test-db2",
+						VirtualizationNode:      "s157-cb32c10a56c256746c337e21b3fffeua",
+						PhysicalServerModelName: "HP ProLiant DL380 Gen10",
+					},
 				},
 				VMsCount:            2,
 				VMsErcoleAgentCount: 0},
@@ -361,6 +348,7 @@ func (m *MongodbSuite) TestGetCluster() {
 			Sockets:                     10,
 			Type:                        "vmware",
 			VirtualizationNodes:         []string{"s157-cb32c10a56c256746c337e21b3f82402"},
+			PhysicalServerModelNames:    []string{"HP ProLiant DL380 Gen9"},
 			VirtualizationNodesCount:    1,
 			VirtualizationNodesStats: []dto.VirtualizationNodesStat{
 				{
@@ -371,16 +359,19 @@ func (m *MongodbSuite) TestGetCluster() {
 
 			VMs: []dto.VM{
 				{
-					CappedCPU:          false,
-					Hostname:           "test-virt",
-					Name:               "test-virt",
-					VirtualizationNode: "s157-cb32c10a56c256746c337e21b3f82402"},
-
+					CappedCPU:               false,
+					Hostname:                "test-virt",
+					Name:                    "test-virt",
+					VirtualizationNode:      "s157-cb32c10a56c256746c337e21b3f82402",
+					PhysicalServerModelName: "HP ProLiant DL380 Gen9",
+				},
 				{
-					CappedCPU:          false,
-					Hostname:           "test-db",
-					Name:               "test-db",
-					VirtualizationNode: "s157-cb32c10a56c256746c337e21b3f82402"},
+					CappedCPU:               false,
+					Hostname:                "test-db",
+					Name:                    "test-db",
+					VirtualizationNode:      "s157-cb32c10a56c256746c337e21b3f82402",
+					PhysicalServerModelName: "HP ProLiant DL380 Gen9",
+				},
 			},
 			VMsCount:            2,
 			VMsErcoleAgentCount: 1,
