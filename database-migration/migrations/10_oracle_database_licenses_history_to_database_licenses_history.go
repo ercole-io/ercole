@@ -44,48 +44,33 @@ func init() {
 }
 
 func rename_oracle_database_licenses_history_collection(db *mongo.Database) error {
-	collectionFrom := "oracle_database_licenses_history"
-	collectionTo := "database_licenses_history"
+	source := "oracle_database_licenses_history"
+	dest := "database_licenses_history"
 	ctx := context.TODO()
-	filter := bson.M{}
 
-	names, errColl := db.ListCollectionNames(ctx, filter)
-	if errColl != nil {
-		return errColl
-	}
+	if cols, err := db.ListCollectionNames(ctx, bson.D{}); err != nil {
+		return err
+	} else if utils.Contains(cols, source) {
+		if err := db.CreateCollection(ctx, dest); err != nil {
+			return err
+		}
 
-	for _, name := range names {
-		if name == collectionFrom {
-			coll := db.Collection(collectionFrom)
-			if coll == nil {
-				return nil
-			}
+		documents, err := db.Collection(source).Find(ctx, bson.D{})
+		if err != nil && err != mongo.ErrNoDocuments {
+			return err
+		}
 
-			docs, err := coll.Find(ctx, bson.D{})
-			if err != nil {
-				return err
-			}
+		args := make([]interface{}, 0)
+		if err := documents.All(ctx, &args); err != nil {
+			return err
+		}
 
-			errDest := db.CreateCollection(ctx, collectionTo)
-			if errDest != nil {
-				return errDest
-			}
+		if _, err := db.Collection(dest).InsertMany(ctx, args); err != nil {
+			return err
+		}
 
-			if docs.RemainingBatchLength() > 0 {
-				var agrs []interface{}
-				if err := docs.All(ctx, &agrs); err != nil {
-					return utils.NewError(err, "Can't decode cursor")
-				}
-
-				if _, err := db.Collection(collectionTo).InsertMany(ctx, agrs); err != nil {
-					return utils.NewError(err, "Can't insert all contracts")
-				}
-			}
-
-			errDrop := db.Collection(collectionFrom).Drop(ctx)
-			if errDrop != nil {
-				return utils.NewError(err, "Can't drop collection", collectionFrom)
-			}
+		if err := db.Collection(source).Drop(ctx); err != nil {
+			return err
 		}
 	}
 
