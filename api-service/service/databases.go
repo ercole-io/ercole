@@ -678,6 +678,8 @@ func (as *APIService) GetDatabaseLicensesComplianceAsXLSX() (*excelize.File, err
 		"Part Number",
 		"Description",
 		"Metric",
+		"License Available",
+		"Purchesed",
 		"Consumed",
 		"Covered",
 		"Compliance",
@@ -696,6 +698,8 @@ func (as *APIService) GetDatabaseLicensesComplianceAsXLSX() (*excelize.File, err
 		sheets.SetCellValue(sheet, nextAxis(), val.LicenseTypeID)
 		sheets.SetCellValue(sheet, nextAxis(), val.ItemDescription)
 		sheets.SetCellValue(sheet, nextAxis(), val.Metric)
+		sheets.SetCellValue(sheet, nextAxis(), val.Available)
+		sheets.SetCellValue(sheet, nextAxis(), val.Purchased)
 		sheets.SetCellValue(sheet, nextAxis(), val.Consumed)
 		sheets.SetCellValue(sheet, nextAxis(), val.Covered)
 		sheets.SetCellValue(sheet, nextAxis(), val.Compliance)
