@@ -290,7 +290,8 @@
                                                 "lob",
                                                 "tables",
                                                 "total",
-                                                "user"
+                                                "user",
+                                                "accountStatus"
                                             ],
                                             "properties": {
                                                 "indexes": {
@@ -310,6 +311,9 @@
                                                     "minimum": 0
                                                 },
                                                 "user": {
+                                                    "type": "string"
+                                                },
+                                                "accountStatus": {
                                                     "type": "string"
                                                 }
                                             }
