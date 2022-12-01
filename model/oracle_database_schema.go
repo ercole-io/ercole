@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,9 +17,10 @@ package model
 
 // OracleDatabaseSchema holds information about Oracle database schema.
 type OracleDatabaseSchema struct {
-	Indexes int    `json:"indexes" bson:"indexes"`
-	LOB     int    `json:"lob" bson:"lob"`
-	Tables  int    `json:"tables" bson:"tables"`
-	Total   int    `json:"total" bson:"total"`
-	User    string `json:"user" bson:"user"`
+	Indexes       int    `json:"indexes" bson:"indexes"`
+	LOB           int    `json:"lob" bson:"lob"`
+	Tables        int    `json:"tables" bson:"tables"`
+	Total         int    `json:"total" bson:"total"`
+	User          string `json:"user" bson:"user"`
+	AccountStatus string `json:"accountStatus" bson:"accountStatus"`
 }

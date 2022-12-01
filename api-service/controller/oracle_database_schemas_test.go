@@ -44,12 +44,13 @@ func TestListOracleDatabaseSchemas_Success(t *testing.T) {
 
 	result := []dto.OracleDatabaseSchema{
 		{
-			Hostname: "hostname",
-			Indexes:  0,
-			LOB:      0,
-			Tables:   0,
-			Total:    0,
-			User:     "user",
+			Hostname:      "hostname",
+			Indexes:       0,
+			LOB:           0,
+			Tables:        0,
+			Total:         0,
+			User:          "user",
+			AccountStatus: "status",
 		},
 	}
 
@@ -96,6 +97,7 @@ func TestGetOracleDatabaseSchemasXLSX_Success(t *testing.T) {
 		"Tables",
 		"Total",
 		"User",
+		"Account Status",
 	}
 
 	expectedRes, _ := exutils.NewXLSX(ac.Config, sheet, headers...)
@@ -127,4 +129,5 @@ func TestGetOracleDatabaseSchemasXLSX_Success(t *testing.T) {
 	assert.Equal(t, "Tables", sp.GetCellValue("Schema", "D1"))
 	assert.Equal(t, "Total", sp.GetCellValue("Schema", "E1"))
 	assert.Equal(t, "User", sp.GetCellValue("Schema", "F1"))
+	assert.Equal(t, "Account Status", sp.GetCellValue("Schema", "G1"))
 }

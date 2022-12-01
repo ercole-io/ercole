@@ -45,6 +45,7 @@ func (as *APIService) CreateOracleDatabaseSchemasXlsx(filter dto.GlobalFilter) (
 		"Tables",
 		"Total",
 		"User",
+		"Account Status",
 	}
 
 	sheets, err := exutils.NewXLSX(as.Config, sheet, headers...)
@@ -63,6 +64,7 @@ func (as *APIService) CreateOracleDatabaseSchemasXlsx(filter dto.GlobalFilter) (
 		sheets.SetCellValue(sheet, nextAxis(), val.Tables)
 		sheets.SetCellValue(sheet, nextAxis(), val.Total)
 		sheets.SetCellValue(sheet, nextAxis(), val.User)
+		sheets.SetCellValue(sheet, nextAxis(), val.AccountStatus)
 	}
 
 	return sheets, err
