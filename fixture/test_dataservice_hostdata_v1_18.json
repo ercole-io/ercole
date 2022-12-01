@@ -68,49 +68,56 @@
                                 "lob": 0,
                                 "total": 0,
                                 "user": "GSMROOTUSER",
-                                "indexes": 0
+                                "indexes": 0,
+                                "accountStatus": "status"
                             },
                             {
                                 "tables": 0,
                                 "user": "SYS$UMF",
                                 "indexes": 0,
                                 "lob": 0,
-                                "total": 0
+                                "total": 0,
+                                "accountStatus": "status"
                             },
                             {
                                 "indexes": 0,
                                 "user": "GGSYS",
                                 "total": 0,
                                 "lob": 0,
-                                "tables": 0
+                                "tables": 0,
+                                "accountStatus": "status"
                             },
                             {
                                 "tables": 0,
                                 "total": 0,
                                 "lob": 0,
                                 "user": "REMOTE_SCHEDULER_AGENT",
-                                "indexes": 0
+                                "indexes": 0,
+                                "accountStatus": "status"
                             },
                             {
                                 "user": "SYSRAC",
                                 "indexes": 0,
                                 "lob": 0,
                                 "total": 0,
-                                "tables": 0
+                                "tables": 0,
+                                "accountStatus": "status"
                             },
                             {
                                 "tables": 0,
                                 "user": "HR",
                                 "indexes": 1,
                                 "total": 2,
-                                "lob": 0
+                                "lob": 0,
+                                "accountStatus": "status"
                             },
                             {
                                 "tables": 0,
                                 "total": 0,
                                 "lob": 0,
                                 "user": "DBSFWUSER",
-                                "indexes": 0
+                                "indexes": 0,
+                                "accountStatus": "status"
                             }
                         ],
                         "blockSize": 8192,

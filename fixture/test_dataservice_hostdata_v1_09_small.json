@@ -104,14 +104,16 @@
                                 "total": 192,
                                 "tables": 192,
                                 "indexes": 0,
-                                "lob": 0
+                                "lob": 0,
+                                "accountStatus": "status"
                             },
                             {
                                 "user": "REMOTE_SCHEDULER_AGENT",
                                 "total": 0,
                                 "tables": 0,
                                 "indexes": 0,
-                                "lob": 0
+                                "lob": 0,
+                                "accountStatus": "status"
                             }
                         ],
                         "licenses": [

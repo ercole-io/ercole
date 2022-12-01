@@ -229,7 +229,8 @@
                                 "total": {
                                     "$numberInt": "192"
                                 },
-                                "user": "RAF"
+                                "user": "RAF",
+                                "accountStatus": "status"
                             },
                             {
                                 "indexes": {
@@ -244,7 +245,8 @@
                                 "total": {
                                     "$numberInt": "0"
                                 },
-                                "user": "REMOTE_SCHEDULER_AGENT"
+                                "user": "REMOTE_SCHEDULER_AGENT",
+                                "accountStatus": "status"
                             }
                         ],
                         "segmentAdvisors": [
@@ -522,7 +524,8 @@
                                 "total": {
                                     "$numberInt": "192"
                                 },
-                                "user": "RAF"
+                                "user": "RAF",
+                                "accountStatus": "status"
                             },
                             {
                                 "indexes": {
@@ -537,7 +540,8 @@
                                 "total": {
                                     "$numberInt": "0"
                                 },
-                                "user": "REMOTE_SCHEDULER_AGENT"
+                                "user": "REMOTE_SCHEDULER_AGENT",
+                                "accountStatus": "status"
                             }
                         ],
                         "segmentAdvisors": [

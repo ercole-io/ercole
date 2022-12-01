@@ -233,49 +233,56 @@
                                 "tables": 0,
                                 "total": 0,
                                 "indexes": 0,
-                                "user": "GSMROOTUSER"
+                                "user": "GSMROOTUSER",
+                                "accountStatus": "status"
                             },
                             {
                                 "user": "SYS$UMF",
                                 "lob": 0,
                                 "tables": 0,
                                 "indexes": 0,
-                                "total": 0
+                                "total": 0,
+                                "accountStatus": "status"
                             },
                             {
                                 "user": "GGSYS",
                                 "total": 0,
                                 "indexes": 0,
                                 "lob": 0,
-                                "tables": 0
+                                "tables": 0,
+                                "accountStatus": "status"
                             },
                             {
                                 "user": "REMOTE_SCHEDULER_AGENT",
                                 "indexes": 0,
                                 "total": 0,
                                 "tables": 0,
-                                "lob": 0
+                                "lob": 0,
+                                "accountStatus": "status"
                             },
                             {
                                 "user": "SYSRAC",
                                 "indexes": 0,
                                 "total": 0,
                                 "lob": 0,
-                                "tables": 0
+                                "tables": 0,
+                                "accountStatus": "status"
                             },
                             {
                                 "indexes": 1,
                                 "total": 2,
                                 "tables": 0,
                                 "lob": 0,
-                                "user": "HR"
+                                "user": "HR",
+                                "accountStatus": "status"
                             },
                             {
                                 "user": "DBSFWUSER",
                                 "tables": 0,
                                 "lob": 0,
                                 "indexes": 0,
-                                "total": 0
+                                "total": 0,
+                                "accountStatus": "status"
                             }
                         ],
                         "psus": [
@@ -405,42 +412,48 @@
                                         "tables": 0,
                                         "total": 0,
                                         "indexes": 0,
-                                        "user": "SYS$UMF"
+                                        "user": "SYS$UMF",
+                                        "accountStatus": "status"
                                     },
                                     {
                                         "user": "GGSYS",
                                         "tables": 0,
                                         "lob": 0,
                                         "total": 0,
-                                        "indexes": 0
+                                        "indexes": 0,
+                                        "accountStatus": "status"
                                     },
                                     {
                                         "user": "REMOTE_SCHEDULER_AGENT",
                                         "total": 0,
                                         "indexes": 0,
                                         "tables": 0,
-                                        "lob": 0
+                                        "lob": 0,
+                                        "accountStatus": "status"
                                     },
                                     {
                                         "lob": 0,
                                         "tables": 0,
                                         "indexes": 0,
                                         "total": 0,
-                                        "user": "SYSRAC"
+                                        "user": "SYSRAC",
+                                        "accountStatus": "status"
                                     },
                                     {
                                         "user": "PDBADMIN",
                                         "indexes": 0,
                                         "total": 0,
                                         "lob": 0,
-                                        "tables": 0
+                                        "tables": 0,
+                                        "accountStatus": "status"
                                     },
                                     {
                                         "tables": 0,
                                         "lob": 0,
                                         "indexes": 0,
                                         "total": 0,
-                                        "user": "DBSFWUSER"
+                                        "user": "DBSFWUSER",
+                                        "accountStatus": "status"
                                     }
                                 ],
                                 "tablespaces": [
@@ -488,42 +501,48 @@
                                         "total": 0,
                                         "indexes": 0,
                                         "lob": 0,
-                                        "tables": 0
+                                        "tables": 0,
+                                        "accountStatus": "status"
                                     },
                                     {
                                         "indexes": 0,
                                         "total": 0,
                                         "tables": 0,
                                         "lob": 0,
-                                        "user": "GGSYS"
+                                        "user": "GGSYS",
+                                        "accountStatus": "status"
                                     },
                                     {
                                         "tables": 0,
                                         "lob": 0,
                                         "total": 0,
                                         "indexes": 0,
-                                        "user": "REMOTE_SCHEDULER_AGENT"
+                                        "user": "REMOTE_SCHEDULER_AGENT",
+                                        "accountStatus": "status"
                                     },
                                     {
                                         "user": "SYSRAC",
                                         "total": 0,
                                         "indexes": 0,
                                         "tables": 0,
-                                        "lob": 0
+                                        "lob": 0,
+                                        "accountStatus": "status"
                                     },
                                     {
                                         "total": 0,
                                         "indexes": 0,
                                         "tables": 0,
                                         "lob": 0,
-                                        "user": "PDBADMIN"
+                                        "user": "PDBADMIN",
+                                        "accountStatus": "status"
                                     },
                                     {
                                         "user": "DBSFWUSER",
                                         "lob": 0,
                                         "tables": 0,
                                         "indexes": 0,
-                                        "total": 0
+                                        "total": 0,
+                                        "accountStatus": "status"
                                     }
                                 ],
                                 "tablespaces": [
@@ -572,42 +591,48 @@
                                         "lob": 0,
                                         "tables": 0,
                                         "indexes": 0,
-                                        "total": 0
+                                        "total": 0,
+                                        "accountStatus": "status"
                                     },
                                     {
                                         "total": 0,
                                         "indexes": 0,
                                         "lob": 0,
                                         "tables": 0,
-                                        "user": "GGSYS"
+                                        "user": "GGSYS",
+                                        "accountStatus": "status"
                                     },
                                     {
                                         "lob": 0,
                                         "tables": 0,
                                         "total": 0,
                                         "indexes": 0,
-                                        "user": "REMOTE_SCHEDULER_AGENT"
+                                        "user": "REMOTE_SCHEDULER_AGENT",
+                                        "accountStatus": "status"
                                     },
                                     {
                                         "total": 0,
                                         "indexes": 0,
                                         "tables": 0,
                                         "lob": 0,
-                                        "user": "SYSRAC"
+                                        "user": "SYSRAC",
+                                        "accountStatus": "status"
                                     },
                                     {
                                         "user": "PDBADMIN",
                                         "lob": 0,
                                         "tables": 0,
                                         "total": 0,
-                                        "indexes": 0
+                                        "indexes": 0,
+                                        "accountStatus": "status"
                                     },
                                     {
                                         "lob": 0,
                                         "tables": 0,
                                         "indexes": 0,
                                         "total": 0,
-                                        "user": "DBSFWUSER"
+                                        "user": "DBSFWUSER",
+                                        "accountStatus": "status"
                                     }
                                 ],
                                 "tablespaces": [
@@ -803,42 +828,48 @@
                                 "total": 0,
                                 "lob": 0,
                                 "tables": 0,
-                                "user": "GSMROOTUSER"
+                                "user": "GSMROOTUSER",
+                                "accountStatus": "status"
                             },
                             {
                                 "user": "SYS$UMF",
                                 "lob": 0,
                                 "tables": 0,
                                 "total": 0,
-                                "indexes": 0
+                                "indexes": 0,
+                                "accountStatus": "status"
                             },
                             {
                                 "indexes": 0,
                                 "total": 0,
                                 "tables": 0,
                                 "lob": 0,
-                                "user": "REMOTE_SCHEDULER_AGENT"
+                                "user": "REMOTE_SCHEDULER_AGENT",
+                                "accountStatus": "status"
                             },
                             {
                                 "lob": 0,
                                 "tables": 0,
                                 "indexes": 0,
                                 "total": 0,
-                                "user": "DBSFWUSER"
+                                "user": "DBSFWUSER",
+                                "accountStatus": "status"
                             },
                             {
                                 "tables": 0,
                                 "lob": 0,
                                 "indexes": 0,
                                 "total": 0,
-                                "user": "SYSRAC"
+                                "user": "SYSRAC",
+                                "accountStatus": "status"
                             },
                             {
                                 "lob": 0,
                                 "tables": 0,
                                 "total": 0,
                                 "indexes": 0,
-                                "user": "GGSYS"
+                                "user": "GGSYS",
+                                "accountStatus": "status"
                             }
                         ],
                         "instanceName": "ERCSCDB19",
