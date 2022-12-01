@@ -176,49 +176,56 @@
                                 "total": 192,
                                 "tables": 192,
                                 "indexes": 0,
-                                "lob": 0
+                                "lob": 0,
+                                "accountStatus": "status"
                             },
                             {
                                 "user": "REMOTE_SCHEDULER_AGENT",
                                 "total": 0,
                                 "tables": 0,
                                 "indexes": 0,
-                                "lob": 0
+                                "lob": 0,
+                                "accountStatus": "status"
                             },
                             {
                                 "user": "SYS$UMF",
                                 "total": 0,
                                 "tables": 0,
                                 "indexes": 0,
-                                "lob": 0
+                                "lob": 0,
+                                "accountStatus": "status"
                             },
                             {
                                 "user": "GGSYS",
                                 "total": 0,
                                 "tables": 0,
                                 "indexes": 0,
-                                "lob": 0
+                                "lob": 0,
+                                "accountStatus": "status"
                             },
                             {
                                 "user": "DBSFWUSER",
                                 "total": 0,
                                 "tables": 0,
                                 "indexes": 0,
-                                "lob": 0
+                                "lob": 0,
+                                "accountStatus": "status"
                             },
                             {
                                 "user": "ERCOLE",
                                 "total": 384,
                                 "tables": 384,
                                 "indexes": 0,
-                                "lob": 0
+                                "lob": 0,
+                                "accountStatus": "status"
                             },
                             {
                                 "user": "SYSRAC",
                                 "total": 0,
                                 "tables": 0,
                                 "indexes": 0,
-                                "lob": 0
+                                "lob": 0,
+                                "accountStatus": "status"
                             }
                         ],
                         "licenses": [
@@ -462,49 +469,56 @@
                                 "total": 192,
                                 "tables": 192,
                                 "indexes": 0,
-                                "lob": 0
+                                "lob": 0,
+                                "accountStatus": "status"
                             },
                             {
                                 "user": "REMOTE_SCHEDULER_AGENT",
                                 "total": 0,
                                 "tables": 0,
                                 "indexes": 0,
-                                "lob": 0
+                                "lob": 0,
+                                "accountStatus": "status"
                             },
                             {
                                 "user": "SYS$UMF",
                                 "total": 0,
                                 "tables": 0,
                                 "indexes": 0,
-                                "lob": 0
+                                "lob": 0,
+                                "accountStatus": "status"
                             },
                             {
                                 "user": "GGSYS",
                                 "total": 0,
                                 "tables": 0,
                                 "indexes": 0,
-                                "lob": 0
+                                "lob": 0,
+                                "accountStatus": "status"
                             },
                             {
                                 "user": "DBSFWUSER",
                                 "total": 0,
                                 "tables": 0,
                                 "indexes": 0,
-                                "lob": 0
+                                "lob": 0,
+                                "accountStatus": "status"
                             },
                             {
                                 "user": "ERCOLE",
                                 "total": 384,
                                 "tables": 384,
                                 "indexes": 0,
-                                "lob": 0
+                                "lob": 0,
+                                "accountStatus": "status"
                             },
                             {
                                 "user": "SYSRAC",
                                 "total": 0,
                                 "tables": 0,
                                 "indexes": 0,
-                                "lob": 0
+                                "lob": 0,
+                                "accountStatus": "status"
                             }
                         ],
                         "licenses": [

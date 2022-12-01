@@ -422,7 +422,8 @@
                                 "total": {
                                     "$numberInt": "192"
                                 },
-                                "user": "RAF"
+                                "user": "RAF",
+                                "accountStatus": "status"
                             },
                             {
                                 "indexes": {
@@ -437,7 +438,8 @@
                                 "total": {
                                     "$numberInt": "0"
                                 },
-                                "user": "REMOTE_SCHEDULER_AGENT"
+                                "user": "REMOTE_SCHEDULER_AGENT",
+                                "accountStatus": "status"
                             },
                             {
                                 "indexes": {
@@ -452,7 +454,8 @@
                                 "total": {
                                     "$numberInt": "0"
                                 },
-                                "user": "SYS$UMF"
+                                "user": "SYS$UMF",
+                                "accountStatus": "status"
                             },
                             {
                                 "indexes": {
@@ -467,7 +470,8 @@
                                 "total": {
                                     "$numberInt": "0"
                                 },
-                                "user": "GGSYS"
+                                "user": "GGSYS",
+                                "accountStatus": "status"
                             },
                             {
                                 "indexes": {
@@ -482,7 +486,8 @@
                                 "total": {
                                     "$numberInt": "0"
                                 },
-                                "user": "DBSFWUSER"
+                                "user": "DBSFWUSER",
+                                "accountStatus": "status"
                             },
                             {
                                 "indexes": {
@@ -497,7 +502,8 @@
                                 "total": {
                                     "$numberInt": "384"
                                 },
-                                "user": "ERCOLE"
+                                "user": "ERCOLE",
+                                "accountStatus": "status"
                             },
                             {
                                 "indexes": {
@@ -512,7 +518,8 @@
                                 "total": {
                                     "$numberInt": "0"
                                 },
-                                "user": "SYSRAC"
+                                "user": "SYSRAC",
+                                "accountStatus": "status"
                             }
                         ],
                         "segmentAdvisors": [],

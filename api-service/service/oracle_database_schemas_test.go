@@ -37,13 +37,14 @@ func TestListOracleDatabaseSchemas_Success(t *testing.T) {
 
 	expected := []dto.OracleDatabaseSchema{
 		{
-			Hostname:     "hostname",
-			DatabaseName: "databasename",
-			Indexes:      0,
-			LOB:          0,
-			Tables:       0,
-			Total:        0,
-			User:         "user",
+			Hostname:      "hostname",
+			DatabaseName:  "databasename",
+			Indexes:       0,
+			LOB:           0,
+			Tables:        0,
+			Total:         0,
+			User:          "user",
+			AccountStatus: "status",
 		},
 	}
 	db.EXPECT().FindAllOracleDatabaseSchemas(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).Return(expected, nil)
