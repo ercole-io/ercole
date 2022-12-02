@@ -84,6 +84,7 @@ func (as *APIService) GetSqlServerDatabaseContractsAsXLSX() (*excelize.File, err
 		"Type",
 		"ContractID",
 		"LicensesNumber",
+		"Support Expiration",
 		"Hosts",
 		"Clusters",
 	}
@@ -100,6 +101,12 @@ func (as *APIService) GetSqlServerDatabaseContractsAsXLSX() (*excelize.File, err
 		sheets.SetCellValue(sheet, nextAxis(), val.Type)
 		sheets.SetCellValue(sheet, nextAxis(), val.ContractID)
 		sheets.SetCellValue(sheet, nextAxis(), val.LicensesNumber)
+
+		if val.SupportExpiration != nil {
+			sheets.SetCellValue(sheet, nextAxis(), val.SupportExpiration)
+		} else {
+			sheets.SetCellValue(sheet, nextAxis(), "")
+		}
 
 		for _, val2 := range val.Hosts {
 			sheets.DuplicateRow(sheet, axisHelp.GetIndexRow())

@@ -71,6 +71,7 @@ func (as *APIService) GetMySQLContractsAsXLSX() (*excelize.File, error) {
 		"Type",
 		"Contract Number",
 		"CSI",
+		"Support Expiration",
 		"Number of licenses",
 		"Clusters",
 		"Host",
@@ -88,6 +89,13 @@ func (as *APIService) GetMySQLContractsAsXLSX() (*excelize.File, error) {
 		sheets.SetCellValue(sheet, nextAxis(), val.Type)
 		sheets.SetCellValue(sheet, nextAxis(), val.ContractID)
 		sheets.SetCellValue(sheet, nextAxis(), val.CSI)
+
+		if val.SupportExpiration != nil {
+			sheets.SetCellValue(sheet, nextAxis(), val.SupportExpiration)
+		} else {
+			sheets.SetCellValue(sheet, nextAxis(), "")
+		}
+
 		sheets.SetCellValue(sheet, nextAxis(), val.NumberOfLicenses)
 		sheets.SetCellValue(sheet, nextAxis(), val.Clusters)
 
