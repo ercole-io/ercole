@@ -178,9 +178,10 @@ func TestGetMySQLContractsAsXLSX_Success(t *testing.T) {
 	assert.Equal(t, "server", actual.GetCellValue("Contracts", "A2"))
 	assert.Equal(t, "", actual.GetCellValue("Contracts", "B2"))
 	assert.Equal(t, "", actual.GetCellValue("Contracts", "C2"))
-	assert.Equal(t, "42", actual.GetCellValue("Contracts", "D2"))
-	assert.Equal(t, "[pippo]", actual.GetCellValue("Contracts", "E2"))
-	assert.Equal(t, "pluto", actual.GetCellValue("Contracts", "F3"))
+	assert.Equal(t, "", actual.GetCellValue("Contracts", "D2"))
+	assert.Equal(t, "42", actual.GetCellValue("Contracts", "E2"))
+	assert.Equal(t, "[pippo]", actual.GetCellValue("Contracts", "F2"))
+	assert.Equal(t, "pluto", actual.GetCellValue("Contracts", "G3"))
 }
 
 func TestDeleteMySQLContract(t *testing.T) {
