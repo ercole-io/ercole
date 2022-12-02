@@ -2845,7 +2845,8 @@ func TestGetOracleDatabaseContractsAsXLSX_Success(t *testing.T) {
 	assert.Equal(t, "13902248", actual.GetCellValue("Contracts", "E2"))
 	assert.Equal(t, "37255828", actual.GetCellValue("Contracts", "F2"))
 	assert.Equal(t, "0", actual.GetCellValue("Contracts", "H2"))
-	assert.Equal(t, "350", actual.GetCellValue("Contracts", "I2"))
-	assert.Equal(t, "0", actual.GetCellValue("Contracts", "J2"))
+	assert.Equal(t, "0", actual.GetCellValue("Contracts", "I2"))
+	assert.Equal(t, "350", actual.GetCellValue("Contracts", "J2"))
 	assert.Equal(t, "0", actual.GetCellValue("Contracts", "K2"))
+	assert.Equal(t, "0", actual.GetCellValue("Contracts", "L2"))
 }
