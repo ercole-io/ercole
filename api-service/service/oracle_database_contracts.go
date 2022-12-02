@@ -142,6 +142,7 @@ func (as *APIService) GetOracleDatabaseContractsAsXLSX(filter dto.GetOracleDatab
 		"Metric",
 		"CSI",
 		"Reference Number",
+		"Support Expiration",
 		"ULA",
 		"Licenses Per Core",
 		"Licenses Per User",
@@ -149,7 +150,7 @@ func (as *APIService) GetOracleDatabaseContractsAsXLSX(filter dto.GetOracleDatab
 		"Available Licenses User",
 		"Basket",
 		"Restricted",
-
+		"Support ",
 		"Hostname",
 		"Used Licenses",
 		"Covered by this contract",
@@ -171,6 +172,13 @@ func (as *APIService) GetOracleDatabaseContractsAsXLSX(filter dto.GetOracleDatab
 		sheets.SetCellValue(sheet, nextAxis(), val.Metric)
 		sheets.SetCellValue(sheet, nextAxis(), val.CSI)
 		sheets.SetCellValue(sheet, nextAxis(), val.ReferenceNumber)
+
+		if val.SupportExpiration != nil {
+			sheets.SetCellValue(sheet, nextAxis(), val.SupportExpiration)
+		} else {
+			sheets.SetCellValue(sheet, nextAxis(), "")
+		}
+
 		sheets.SetCellValue(sheet, nextAxis(), val.Unlimited)
 		sheets.SetCellValue(sheet, nextAxis(), val.LicensesPerCore)
 		sheets.SetCellValue(sheet, nextAxis(), val.LicensesPerUser)
