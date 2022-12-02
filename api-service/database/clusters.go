@@ -55,7 +55,7 @@ func (md *MongoDatabase) SearchClusters(mode string, keywords []string, sortBy s
 				"cpu":                         "$cluster.cpu",
 				"sockets":                     "$cluster.sockets",
 				"vms":                         "$cluster.vms",
-				"virtualizationNodes":         mu.APOSetUnion(mu.APOMap("$cluster.vms", "vm", "$$vm.virtualizationNode")),
+				"virtualizationNodes":         mu.APOSetUnion(mu.APOMap("$cluster.vms", "vm", mu.APOConcat("$$vm.virtualizationNode", mu.APOIfNull(mu.APOConcat(" - ", "$$vm.physicalServerModelName"), "")))),
 				"physicalServerModelNames":    mu.APOSetUnion(mu.APOMap("$cluster.vms", "vm", "$$vm.physicalServerModelName")),
 				"vmsCount":                    mu.APOSize("$cluster.vms"),
 			}),
