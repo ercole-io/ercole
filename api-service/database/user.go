@@ -17,6 +17,7 @@ package database
 
 import (
 	"context"
+	"regexp"
 
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
@@ -55,7 +56,7 @@ func (md *MongoDatabase) AddUser(user model.User) error {
 
 func (md *MongoDatabase) GetUser(username string, provider string) (*model.User, error) {
 	res := md.Client.Database(md.Config.Mongodb.DBName).Collection(userCollection).
-		FindOne(context.TODO(), bson.M{"username": username, "provider": provider})
+		FindOne(context.TODO(), bson.M{"username": primitive.Regex{Pattern: regexp.QuoteMeta(username), Options: "i"}, "provider": provider})
 	if res.Err() == mongo.ErrNoDocuments {
 		return nil, utils.ErrInvalidUser
 	} else if res.Err() != nil {
@@ -108,7 +109,7 @@ func (md *MongoDatabase) UpdateUserLastLogin(user model.User) error {
 
 func (md *MongoDatabase) RemoveUser(username string, provider string) error {
 	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(userCollection).
-		DeleteOne(context.TODO(), bson.M{"username": username, "provider": provider})
+		DeleteOne(context.TODO(), bson.M{"username": primitive.Regex{Pattern: regexp.QuoteMeta(username), Options: "i"}, "provider": provider})
 	if err != nil {
 		return err
 	}
