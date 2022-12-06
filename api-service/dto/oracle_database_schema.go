@@ -24,4 +24,5 @@ type OracleDatabaseSchema struct {
 	Total         int    `json:"total" bson:"total"`
 	User          string `json:"user" bson:"user"`
 	AccountStatus string `json:"accountStatus" bson:"accountStatus"`
+	Pdb           string `json:"pdb,omitempty" bson:"pdb,omitempty"`
 }

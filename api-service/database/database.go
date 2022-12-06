@@ -155,6 +155,7 @@ type MongoDatabaseInterface interface {
 	GetOracleServiceList(filter dto.GlobalFilter) ([]dto.OracleDatabaseServiceDto, error)
 	FindAllOracleDatabaseTablespaces(filter dto.GlobalFilter) ([]dto.OracleDatabaseTablespace, error)
 	FindAllOracleDatabaseSchemas(filter dto.GlobalFilter) ([]dto.OracleDatabaseSchema, error)
+	FindAllOraclePDBSchemas(filter dto.GlobalFilter) ([]dto.OracleDatabaseSchema, error)
 	FindAllOracleDatabasePdbs(filter dto.GlobalFilter) ([]dto.OracleDatabasePluggableDatabase, error)
 
 	// ReplaceHostData adds a new hostdata to the database

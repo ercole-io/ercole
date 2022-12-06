@@ -37,3 +37,16 @@ func (m *MongodbSuite) TestFindAllOracleDatabaseSchemas() {
 	})
 
 }
+
+func (m *MongodbSuite) TestFindAllOraclePDBSchemas() {
+	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
+
+	m.T().Run("success with empty table", func(t *testing.T) {
+		actual, err := m.db.FindAllOraclePDBSchemas(dto.GlobalFilter{OlderThan: utils.MAX_TIME})
+		m.Require().NoError(err)
+
+		expected := make([]dto.OracleDatabaseSchema, 0)
+		assert.ElementsMatch(m.T(), expected, actual)
+	})
+
+}
