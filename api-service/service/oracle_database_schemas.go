@@ -22,10 +22,21 @@ import (
 )
 
 func (as *APIService) ListOracleDatabaseSchemas(filter dto.GlobalFilter) ([]dto.OracleDatabaseSchema, error) {
-	result, err := as.Database.FindAllOracleDatabaseSchemas(filter)
+	result := make([]dto.OracleDatabaseSchema, 0)
+
+	dbSchemas, err := as.Database.FindAllOracleDatabaseSchemas(filter)
 	if err != nil {
 		return nil, err
 	}
+
+	result = append(result, dbSchemas...)
+
+	pdbSchemas, err := as.Database.FindAllOraclePDBSchemas(filter)
+	if err != nil {
+		return nil, err
+	}
+
+	result = append(result, pdbSchemas...)
 
 	return result, nil
 }
