@@ -81,7 +81,7 @@ func (md *MongoDatabase) FindAllOraclePDBSchemas(filter dto.GlobalFilter) ([]dto
 			}},
 		),
 	)
-	println(cur.RemainingBatchLength())
+
 	if err != nil {
 		return nil, utils.NewError(err, "DB ERROR")
 	}
