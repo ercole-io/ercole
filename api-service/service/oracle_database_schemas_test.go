@@ -47,9 +47,29 @@ func TestListOracleDatabaseSchemas_Success(t *testing.T) {
 			AccountStatus: "status",
 		},
 	}
+
+	expectedPDB := []dto.OracleDatabaseSchema{
+		{
+			Hostname:      "hostname",
+			DatabaseName:  "databasename",
+			Indexes:       0,
+			LOB:           0,
+			Tables:        0,
+			Total:         0,
+			User:          "user",
+			AccountStatus: "status",
+			Pdb:           "",
+		},
+	}
+
 	db.EXPECT().FindAllOracleDatabaseSchemas(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).Return(expected, nil)
+	db.EXPECT().FindAllOraclePDBSchemas(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).Return(expectedPDB, nil)
+
+	expectedRes := make([]dto.OracleDatabaseSchema, 0)
+	expectedRes = append(expectedRes, expected...)
+	expectedRes = append(expectedRes, expectedPDB...)
 
 	res, err := as.ListOracleDatabaseSchemas(dto.GlobalFilter{OlderThan: utils.MAX_TIME})
 	require.NoError(t, err)
-	assert.Equal(t, expected, res)
+	assert.Equal(t, expectedRes, res)
 }
