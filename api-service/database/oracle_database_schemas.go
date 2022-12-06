@@ -57,3 +57,39 @@ func (md *MongoDatabase) FindAllOracleDatabaseSchemas(filter dto.GlobalFilter) (
 
 	return out, nil
 }
+
+func (md *MongoDatabase) FindAllOraclePDBSchemas(filter dto.GlobalFilter) ([]dto.OracleDatabaseSchema, error) {
+	ctx := context.TODO()
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
+		ctx,
+		mu.MAPipeline(
+			FilterByOldnessSteps(filter.OlderThan),
+			FilterByLocationAndEnvironmentSteps(filter.Location, filter.Environment),
+			bson.M{"$unwind": bson.M{"path": "$features.oracle.database.databases"}},
+			bson.M{"$unwind": bson.M{"path": "$features.oracle.database.databases.pdbs"}},
+			bson.M{"$unwind": bson.M{"path": "$features.oracle.database.databases.pdbs.schemas"}},
+			bson.M{"$project": bson.M{
+				"hostname":      1,
+				"databaseName":  "$features.oracle.database.databases.uniqueName",
+				"pdb":           "$features.oracle.database.databases.pdbs.name",
+				"indexes":       "$features.oracle.database.databases.pdbs.schemas.indexes",
+				"lob":           "$features.oracle.database.databases.pdbs.schemas.lob",
+				"tables":        "$features.oracle.database.databases.pdbs.schemas.tables",
+				"total":         "$features.oracle.database.databases.pdbs.schemas.total",
+				"user":          "$features.oracle.database.databases.pdbs.schemas.user",
+				"accountStatus": "$features.oracle.database.databases.pdbs.schemas.accountStatus",
+			}},
+		),
+	)
+
+	if err != nil {
+		return nil, utils.NewError(err, "DB ERROR")
+	}
+
+	out := make([]dto.OracleDatabaseSchema, 0)
+	if err = cur.All(ctx, &out); err != nil {
+		return nil, utils.NewError(err, "Decode ERROR")
+	}
+
+	return out, nil
+}
