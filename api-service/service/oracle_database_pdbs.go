@@ -18,6 +18,7 @@ package service
 import (
 	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils/exutils"
 )
 
@@ -25,6 +26,12 @@ func (as *APIService) ListOracleDatabasePdbs(filter dto.GlobalFilter) ([]dto.Ora
 	result, err := as.Database.FindAllOracleDatabasePdbs(filter)
 	if err != nil {
 		return nil, err
+	}
+
+	for i, n := range result {
+		if n.OracleDatabasePluggableDatabase.SegmentAdvisors == nil {
+			result[i].OracleDatabasePluggableDatabase.SegmentAdvisors = []model.OracleDatabaseSegmentAdvisor{}
+		}
 	}
 
 	return result, nil
