@@ -21,5 +21,5 @@ type OracleDatabasePartitioning struct {
 	SegmentName   string  `json:"segmentName" bson:"segmentName"`
 	PartitionName string  `json:"partitionName" bson:"partitionName"`
 	SegmentType   string  `json:"segmentType" bson:"segmentType"`
-	Bytes         float64 `json:"bytes" bson:"bytes"`
+	Mb            float64 `json:"mb" bson:"mb"`
 }
