@@ -640,6 +640,17 @@
                                 }
                             }
                         ],
+                        "partitionings": [
+                            {
+                                "owner": "OWNER",
+                                "segmentName": "SEGMENTNAME",
+                                "partitionName": "PARTITIONAME",
+                                "segmentType": "INDEX",
+                                "bytes": {
+                                    "$numberDouble": "32767.9844"
+                                }
+                            }
+                        ],
                         "uniqueName": "ERCOLE",
                         "version": "12.2.0.1.0 Enterprise Edition",
                         "work": {
