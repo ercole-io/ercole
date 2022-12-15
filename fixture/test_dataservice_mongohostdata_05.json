@@ -646,7 +646,7 @@
                                 "segmentName": "SEGMENTNAME",
                                 "partitionName": "PARTITIONAME",
                                 "segmentType": "INDEX",
-                                "bytes": {
+                                "mb": {
                                     "$numberDouble": "32767.9844"
                                 }
                             }
