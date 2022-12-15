@@ -65,6 +65,7 @@ type OracleDatabase struct {
 	Services          []OracleDatabaseService           `json:"services" bson:"services"`
 	Changes           []OracleChanges                   `json:"changes" bson:"changes"`
 	GrantDba          []OracleGrantDba                  `json:"grantDba" bson:"grantDba"`
+	Partitionings     []OracleDatabasePartitioning      `json:"partitionings" bson:"partitionings"`
 }
 
 var (
