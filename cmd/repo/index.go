@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@ package repo
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -121,7 +121,7 @@ func (idx *Index) getArtifactsFromGithub(upstreamRepo config.UpstreamRepository)
 	if err != nil {
 		return err
 	} else if resp.StatusCode != 200 {
-		bytes, err := ioutil.ReadAll(resp.Body)
+		bytes, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return err
 		}
@@ -170,7 +170,7 @@ func (idx *Index) getArtifactsFromGithub(upstreamRepo config.UpstreamRepository)
 }
 
 func (idx *Index) getArtifactsFromDirectory(upstreamRepo config.UpstreamRepository) error {
-	files, err := ioutil.ReadDir(upstreamRepo.URL)
+	files, err := os.ReadDir(upstreamRepo.URL)
 	if err != nil {
 		return err
 	}
@@ -182,7 +182,13 @@ func (idx *Index) getArtifactsFromDirectory(upstreamRepo config.UpstreamReposito
 
 		artifactInfo.Repository = upstreamRepo.Name
 		artifactInfo.Filename = filepath.Base(file.Name())
-		artifactInfo.ReleaseDate = file.ModTime().Format("2006-01-02")
+
+		fileInfo, err := file.Info()
+		if err != nil {
+			continue
+		}
+
+		artifactInfo.ReleaseDate = fileInfo.ModTime().Format("2006-01-02")
 		artifactInfo.UpstreamRepository = upstreamRepository{
 			Type:     UpstreamTypeDirectory,
 			Filepath: filepath.Join(upstreamRepo.URL, file.Name()),
@@ -217,7 +223,7 @@ func (idx *Index) getArtifactsFromErcoleReposervice(upstreamRepo config.Upstream
 	if err != nil {
 		return err
 	} else if resp.StatusCode != 200 {
-		bytes, err := ioutil.ReadAll(resp.Body)
+		bytes, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return err
 		}
@@ -226,7 +232,7 @@ func (idx *Index) getArtifactsFromErcoleReposervice(upstreamRepo config.Upstream
 
 	idx.log.Debugf("Fetched data from %s\n", upstreamRepo.URL)
 
-	data, err := ioutil.ReadAll(resp.Body)
+	data, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}

@@ -16,7 +16,7 @@
 package controller
 
 import (
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/ercole-io/ercole/v2/model"
@@ -24,7 +24,7 @@ import (
 )
 
 func (ctrl *DataController) InsertOracleLicenseTypes(w http.ResponseWriter, r *http.Request) {
-	raw, err := ioutil.ReadAll(r.Body)
+	raw, err := io.ReadAll(r.Body)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, utils.NewError(err, http.StatusText(http.StatusBadRequest)))
 		return

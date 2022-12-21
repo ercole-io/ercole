@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@ package cmd
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -31,7 +31,7 @@ var fireHostDataCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		//Load the data
 		if len(args) == 0 {
-			raw, err := ioutil.ReadAll(os.Stdin)
+			raw, err := io.ReadAll(os.Stdin)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "%s\n", err)
 				os.Exit(1)
@@ -39,7 +39,7 @@ var fireHostDataCmd = &cobra.Command{
 			fireHostdata("stdin", raw)
 		} else {
 			for _, arg := range args {
-				if raw, err := ioutil.ReadFile(arg); err != nil {
+				if raw, err := os.ReadFile(arg); err != nil {
 					fmt.Fprintf(os.Stderr, "Failed to read the file %s: %v\n", arg, err)
 					os.Exit(1)
 				} else {
