@@ -5,7 +5,7 @@ import (
 	"crypto/tls"
 	"encoding/base64"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 )
@@ -38,7 +38,7 @@ func importDataRequest(filename string, content []byte, path string) {
 	}
 
 	if resp.StatusCode < 200 || resp.StatusCode > 299 {
-		out, err := ioutil.ReadAll(resp.Body)
+		out, err := io.ReadAll(resp.Body)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "%s\n", err)
 			os.Exit(1)

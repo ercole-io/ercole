@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -23,8 +23,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -54,7 +54,7 @@ type BasicAuthenticationProvider struct {
 
 // Init initializes the service and database
 func (ap *BasicAuthenticationProvider) Init() {
-	raw, err := ioutil.ReadFile(ap.Config.PrivateKey)
+	raw, err := os.ReadFile(ap.Config.PrivateKey)
 	if err != nil {
 		ap.Log.Panic(err)
 	}

@@ -18,7 +18,7 @@ package controller
 import (
 	"encoding/json"
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 
@@ -258,7 +258,7 @@ func (ctrl *APIController) AddHostToOracleDatabaseContract(w http.ResponseWriter
 		return
 	}
 
-	raw, err := ioutil.ReadAll(r.Body)
+	raw, err := io.ReadAll(r.Body)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, utils.NewError(err, http.StatusText(http.StatusBadRequest)))
 		return
