@@ -20,7 +20,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 	"time"
@@ -82,7 +82,7 @@ func (c *Client) getResponse(ctx context.Context, path, method string, body []by
 		return nil, err
 	} else if resp.StatusCode < 200 || resp.StatusCode > 299 {
 		defer resp.Body.Close()
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return resp, err
 		}

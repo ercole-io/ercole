@@ -18,7 +18,7 @@ package controller
 import (
 	"encoding/json"
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -29,7 +29,7 @@ import (
 )
 
 func (ctrl *APIController) InsertGroup(w http.ResponseWriter, r *http.Request) {
-	raw, err := ioutil.ReadAll(r.Body)
+	raw, err := io.ReadAll(r.Body)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, utils.NewError(err, http.StatusText(http.StatusBadRequest)))
 		return
@@ -60,7 +60,7 @@ func (ctrl *APIController) InsertGroup(w http.ResponseWriter, r *http.Request) {
 }
 
 func (ctrl *APIController) UpdateGroup(w http.ResponseWriter, r *http.Request) {
-	raw, err := ioutil.ReadAll(r.Body)
+	raw, err := io.ReadAll(r.Body)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, utils.NewError(err, http.StatusText(http.StatusBadRequest)))
 		return

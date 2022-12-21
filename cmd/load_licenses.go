@@ -17,7 +17,6 @@ package cmd
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -29,7 +28,7 @@ var loadLicenseCmd = &cobra.Command{
 	Long:  `Load oracle license-types from the file/s in the arg/s`,
 	Run: func(cmd *cobra.Command, args []string) {
 		for _, arg := range args {
-			if raw, err := ioutil.ReadFile(arg); err != nil {
+			if raw, err := os.ReadFile(arg); err != nil {
 				fmt.Fprintf(os.Stderr, "Failed to read the file %s: %v\n", arg, err)
 				os.Exit(1)
 			} else {
