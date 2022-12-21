@@ -24,8 +24,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -58,7 +58,7 @@ type LDAPAuthenticationProvider struct {
 
 // Init initializes the service and database
 func (ap *LDAPAuthenticationProvider) Init() {
-	raw, err := ioutil.ReadFile(ap.Config.PrivateKey)
+	raw, err := os.ReadFile(ap.Config.PrivateKey)
 	if err != nil {
 		ap.Log.Fatal(err)
 	}

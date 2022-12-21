@@ -18,7 +18,7 @@ package service
 import (
 	"encoding/base64"
 	"encoding/json"
-	"io/ioutil"
+	"os"
 
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
@@ -27,7 +27,7 @@ import (
 // loadManagedTechnologiesList loads the list of the managed techlogies from file and store it to as.TechnologyInfos.
 func (as *APIService) loadManagedTechnologiesList() {
 	// read the list content
-	listContentRaw, err := ioutil.ReadFile(as.Config.ResourceFilePath + "/technologies/list.json")
+	listContentRaw, err := os.ReadFile(as.Config.ResourceFilePath + "/technologies/list.json")
 	if err != nil {
 		as.Log.Warnf("Unable to read %s: %v\n", as.Config.ResourceFilePath+"/technologies/list.json", err)
 		return
@@ -43,7 +43,7 @@ func (as *APIService) loadManagedTechnologiesList() {
 	// Load every image and encode it to base64
 	for i, info := range as.TechnologyInfos {
 		// read image content
-		raw, err := ioutil.ReadFile(as.Config.ResourceFilePath + "/technologies/" + info.Product + ".png")
+		raw, err := os.ReadFile(as.Config.ResourceFilePath + "/technologies/" + info.Product + ".png")
 		if err != nil {
 			as.Log.Warnf("Unable to read %s: %v\n", as.Config.ResourceFilePath+"/technologies/"+info.Product+".png", err)
 		} else {
