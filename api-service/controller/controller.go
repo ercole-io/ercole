@@ -165,6 +165,7 @@ type APIControllerInterface interface {
 	GetOracleChanges(w http.ResponseWriter, r *http.Request)
 	GetOracleBackupList(w http.ResponseWriter, r *http.Request)
 	GetOracleServiceList(w http.ResponseWriter, r *http.Request)
+	ListOracleDatabasePartitionings(w http.ResponseWriter, r *http.Request)
 
 	// MYSQL
 
