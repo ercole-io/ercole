@@ -157,6 +157,8 @@ type MongoDatabaseInterface interface {
 	FindAllOracleDatabaseSchemas(filter dto.GlobalFilter) ([]dto.OracleDatabaseSchema, error)
 	FindAllOraclePDBSchemas(filter dto.GlobalFilter) ([]dto.OracleDatabaseSchema, error)
 	FindAllOracleDatabasePdbs(filter dto.GlobalFilter) ([]dto.OracleDatabasePluggableDatabase, error)
+	FindAllOracleDatabasePartitionings(filter dto.GlobalFilter) ([]dto.OracleDatabasePartitioning, error)
+	FindAllOraclePDBPartitionings(filter dto.GlobalFilter) ([]dto.OracleDatabasePartitioning, error)
 
 	// ReplaceHostData adds a new hostdata to the database
 	ReplaceHostData(hostData model.HostDataBE) error

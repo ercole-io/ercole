@@ -53,7 +53,6 @@
                                     "schemas",
                                     "licenses",
                                     "addms",
-                                    "segmentAdvisors",
                                     "psus",
                                     "backups",
                                     "featureUsageStats",
@@ -632,7 +631,8 @@
                                                                     "lob",
                                                                     "tables",
                                                                     "total",
-                                                                    "user"
+                                                                    "user",
+                                                                    "accountStatus"
                                                                 ],
                                                                 "properties": {
                                                                     "indexes": {
@@ -652,6 +652,9 @@
                                                                         "minimum": 0
                                                                     },
                                                                     "user": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "accountStatus": {
                                                                         "type": "string"
                                                                     }
                                                                 }
@@ -679,6 +682,71 @@
                                                             }
                                                         }
                                                     ]
+                                                },
+                                                "partitionings": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "required": [
+                                                            "owner",
+                                                            "segmentName",
+                                                            "partitionName",
+                                                            "segmentType",
+                                                            "mb"
+                                                        ],
+                                                        "properties": {
+                                                            "owner": {
+                                                                "type": "string"
+                                                            },
+                                                            "segmentName": {
+                                                                "type": "string"
+                                                            },
+                                                            "partitionName": {
+                                                                "type": "string"
+                                                            },
+                                                            "segmentType": {
+                                                                "type": "string"
+                                                            },
+                                                            "mb": {
+                                                                "type": "number"
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "segmentAdvisors": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "required": [
+                                                            "segmentOwner",
+                                                            "segmentName",
+                                                            "segmentType",
+                                                            "partitionName",
+                                                            "reclaimable",
+                                                            "recommendation"
+                                                        ],
+                                                        "properties": {
+                                                            "segmentOwner": {
+                                                                "type": "string"
+                                                            },
+                                                            "segmentName": {
+                                                                "type": "string"
+                                                            },
+                                                            "segmentType": {
+                                                                "type": "string"
+                                                            },
+                                                            "partitionName": {
+                                                                "type": "string"
+                                                            },
+                                                            "reclaimable": {
+                                                                "type": "number",
+                                                                "minimum": 0
+                                                            },
+                                                            "recommendation": {
+                                                                "type": "string"
+                                                            }
+                                                        }
+                                                    }
                                                 }
                                             }
                                         }
@@ -709,6 +777,36 @@
                                                 }
                                             }
                                         ]
+                                    },
+                                    "partitionings": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "required": [
+                                                "owner",
+                                                "segmentName",
+                                                "partitionName",
+                                                "segmentType",
+                                                "mb"
+                                            ],
+                                            "properties": {
+                                                "owner": {
+                                                    "type": "string"
+                                                },
+                                                "segmentName": {
+                                                    "type": "string"
+                                                },
+                                                "partitionName": {
+                                                    "type": "string"
+                                                },
+                                                "segmentType": {
+                                                    "type": "string"
+                                                },
+                                                "mb": {
+                                                    "type": "number"
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
