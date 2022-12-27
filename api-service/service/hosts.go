@@ -314,10 +314,18 @@ func (as *APIService) GetHost(hostname string, olderThan time.Time, raw bool) (*
 		host.Features.Oracle.Database != nil &&
 		host.Features.Oracle.Database.Databases != nil {
 		for i, n := range host.Features.Oracle.Database.Databases {
+			if n.Partitionings == nil {
+				host.Features.Oracle.Database.Databases[i].Partitionings = []model.OracleDatabasePartitioning{}
+			}
+
 			if n.PDBs != nil {
 				for x, y := range n.PDBs {
 					if y.SegmentAdvisors == nil {
 						host.Features.Oracle.Database.Databases[i].PDBs[x].SegmentAdvisors = []model.OracleDatabaseSegmentAdvisor{}
+					}
+
+					if y.Partitionings == nil {
+						host.Features.Oracle.Database.Databases[i].PDBs[x].Partitionings = []model.OracleDatabasePartitioning{}
 					}
 				}
 			}
