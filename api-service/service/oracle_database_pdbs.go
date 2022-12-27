@@ -34,6 +34,12 @@ func (as *APIService) ListOracleDatabasePdbs(filter dto.GlobalFilter) ([]dto.Ora
 		}
 	}
 
+	for i, n := range result {
+		if n.OracleDatabasePluggableDatabase.Partitionings == nil {
+			result[i].OracleDatabasePluggableDatabase.Partitionings = []model.OracleDatabasePartitioning{}
+		}
+	}
+
 	return result, nil
 }
 
