@@ -1,4 +1,4 @@
-// Copyright (c) 2022 Sorint.lab S.p.A.
+// Copyright (c) 2023 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -61,6 +61,16 @@ type ThunderControllerInterface interface {
 	GetAwsRecommendations(w http.ResponseWriter, r *http.Request)
 	// ForceGetAwsRecommendations force retrieving recommendations from Amazon Web Services Infrastructure
 	ForceGetAwsRecommendations(w http.ResponseWriter, r *http.Request)
+	// Get Configuration profiles for Azure Access
+	GetAzureProfiles(w http.ResponseWriter, r *http.Request)
+	// Add a new Configuration profile for Azure Access
+	AddAzureProfile(w http.ResponseWriter, r *http.Request)
+	// Update an existing Configuration profile for Azure Access
+	UpdateAzureProfile(w http.ResponseWriter, r *http.Request)
+	// Delete an existing Configuration profile for Azure Access
+	DeleteAzureProfile(w http.ResponseWriter, r *http.Request)
+	// SelectAwsProfile define if a profile is active or not to retrieve recommendations associated to it
+	SelectAzureProfile(w http.ResponseWriter, r *http.Request)
 }
 
 // ThunderController is the struct used to handle the requests from agents and contains the concrete implementation of ThunderControllerInterface

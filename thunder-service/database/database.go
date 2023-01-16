@@ -1,4 +1,4 @@
-// Copyright (c) 2022 Sorint.lab S.p.A.
+// Copyright (c) 2023 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -69,6 +69,13 @@ type MongoDatabaseInterface interface {
 	GetAwsRecommendationsByProfiles(profileIDs []primitive.ObjectID) ([]model.AwsRecommendation, error)
 	GetAwsRecommendationsBySeqValue(seqValue uint64) ([]model.AwsRecommendation, error)
 	GetAwsObjectsBySeqValue(seqValue uint64) ([]model.AwsObject, error)
+	GetAzureProfiles(hidePrivateKey bool) ([]model.AzureProfile, error)
+	GetMapAzureProfiles() (map[primitive.ObjectID]model.AzureProfile, error)
+	AddAzureProfile(profile model.AzureProfile) error
+	DeleteAzureProfile(id primitive.ObjectID) error
+	UpdateAzureProfile(profile model.AzureProfile) error
+	SelectAzureProfile(profileId string, selected bool) error
+	GetSelectedAzureProfiles() ([]primitive.ObjectID, error)
 }
 
 // MongoDatabase is a implementation
