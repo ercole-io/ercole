@@ -1,4 +1,4 @@
-// Copyright (c) 2022 Sorint.lab S.p.A.
+// Copyright (c) 2023 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -51,6 +51,11 @@ type ThunderServiceInterface interface {
 	GetAwsRecommendationsBySeqValue(seqValue uint64) ([]model.AwsRecommendation, error)
 	ForceGetAwsRecommendations() error
 	GetLastAwsObjects() ([]model.AwsObject, error)
+	AddAzureProfile(profile model.AzureProfile) (*model.AzureProfile, error)
+	UpdateAzureProfile(profile model.AzureProfile) (*model.AzureProfile, error)
+	GetAzureProfiles() ([]model.AzureProfile, error)
+	DeleteAzureProfile(id primitive.ObjectID) error
+	SelectAzureProfile(profileId string, selected bool) error
 }
 
 type ThunderService struct {

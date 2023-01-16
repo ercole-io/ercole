@@ -1,4 +1,4 @@
-// Copyright (c) 2022 Sorint.lab S.p.A.
+// Copyright (c) 2023 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -69,4 +69,9 @@ func (ctrl *ThunderController) setupProtectedRoutes(router *mux.Router) {
 	router.HandleFunc("/aws/aws-recommendation-errors/{seqnum}", ctrl.GetAwsRecommendationsErrors).Methods("GET")
 	router.HandleFunc("/aws/retrieve-last-aws-recommendations", ctrl.ForceGetAwsRecommendations).Methods("GET")
 	router.HandleFunc("/aws/aws-objects", ctrl.GetAwsObjects).Methods("GET")
+	router.HandleFunc("/azure/configurations", ctrl.GetAzureProfiles).Methods("GET")
+	router.HandleFunc("/azure/configurations", ctrl.AddAzureProfile).Methods("POST")
+	router.HandleFunc("/azure/configurations/{id}", ctrl.UpdateAzureProfile).Methods("PUT")
+	router.HandleFunc("/azure/configurations/{id}", ctrl.DeleteAzureProfile).Methods("DELETE")
+	router.HandleFunc("/azure/profile-selection/profileid/{profileid}/selected/{selected}", ctrl.SelectAzureProfile).Methods("PUT")
 }
