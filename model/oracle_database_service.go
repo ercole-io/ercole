@@ -17,10 +17,10 @@ package model
 
 // OracleDatabaseService holds information about an Oracle database service
 type OracleDatabaseService struct {
-	Name            *string `json:"name" bson:"name,omitempty"`
-	FailoverMethod  *string `json:"failoverMethod" bson:"failoverMethod,omitempty"`
-	FailoverType    *string `json:"failoverType" bson:"failoverType,omitempty"`
-	FailoverRetries *int    `json:"failoverRetries" bson:"failoverRetries,omitempty"`
-	FailoverDelay   string  `json:"failoverDelay" bson:"failoverDelay"`
-	Enabled         *bool   `json:"enabled" bson:"enabled,omitempty"`
+	Name            *string     `json:"name" bson:"name,omitempty"`
+	FailoverMethod  *string     `json:"failoverMethod" bson:"failoverMethod,omitempty"`
+	FailoverType    *string     `json:"failoverType" bson:"failoverType,omitempty"`
+	FailoverRetries *int        `json:"failoverRetries" bson:"failoverRetries,omitempty"`
+	FailoverDelay   interface{} `json:"failoverDelay" bson:"failoverDelay"`
+	Enabled         *bool       `json:"enabled" bson:"enabled,omitempty"`
 }
