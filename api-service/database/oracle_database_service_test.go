@@ -54,7 +54,7 @@ func (m *MongodbSuite) TestGetOracleServiceList() {
 					FailoverMethod:  nil,
 					FailoverType:    nil,
 					FailoverRetries: nil,
-					FailoverDelay:   "",
+					FailoverDelay:   nil,
 				},
 			},
 		}
