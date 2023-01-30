@@ -49,7 +49,7 @@ func TestGetOracleServiceList_Success(t *testing.T) {
 				FailoverMethod:  nil,
 				FailoverType:    nil,
 				FailoverRetries: nil,
-				FailoverDelay:   "",
+				FailoverDelay:   nil,
 			},
 		},
 	}
