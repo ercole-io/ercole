@@ -36,6 +36,8 @@ require (
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 )
 
+require github.com/gocarina/gocsv v0.0.0-20230123225133-763e25b40669 // indirect
+
 require (
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/chzyer/readline v1.5.1 // indirect

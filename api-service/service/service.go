@@ -17,6 +17,7 @@
 package service
 
 import (
+	"encoding/csv"
 	"time"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
@@ -140,6 +141,8 @@ type APIServiceInterface interface {
 	DeleteHostFromOracleDatabaseContract(id primitive.ObjectID, hostname string) error
 	DeleteHostFromOracleDatabaseContracts(hostname string) error
 
+	ImportOracleDatabaseContracts(reader *csv.Reader) error
+
 	// ORACLE DATABASE LICENSES
 
 	GetOracleDatabaseLicenseTypes() ([]model.OracleDatabaseLicenseType, error)
@@ -204,6 +207,8 @@ type APIServiceInterface interface {
 	DeleteSqlServerDatabaseContract(id primitive.ObjectID) error
 	UpdateSqlServerDatabaseContract(contract model.SqlServerDatabaseContract) (*model.SqlServerDatabaseContract, error)
 
+	ImportSQLServerDatabaseContracts(reader *csv.Reader) error
+
 	// AckAlerts ack the specified alerts
 	AckAlerts(alertsFilter dto.AlertsFilter) error
 	// DismissHost dismiss the specified host
@@ -249,6 +254,8 @@ type APIServiceInterface interface {
 	GetMySQLContracts() ([]model.MySQLContract, error)
 	GetMySQLContractsAsXLSX() (*excelize.File, error)
 	DeleteMySQLContract(id primitive.ObjectID) error
+
+	ImportMySQLDatabaseContracts(reader *csv.Reader) error
 
 	// POSTGRESQL
 	// SearchSqlServerInstances search databases
