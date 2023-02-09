@@ -145,6 +145,8 @@ type APIControllerInterface interface {
 	AddHostToOracleDatabaseContract(w http.ResponseWriter, r *http.Request)
 	DeleteHostFromOracleDatabaseContract(w http.ResponseWriter, r *http.Request)
 
+	ImportContractFromCSV(w http.ResponseWriter, r *http.Request)
+
 	// ORACLE DATABASE LICENSE TYPES
 
 	// GetOracleDatabaseLicenseTypes return the list of Oracle/Database contract parts
