@@ -25,17 +25,19 @@ import (
 // OracleDatabaseContract holds informations about a sigle OracleDatabaseContract
 type OracleDatabaseContract struct {
 	ID                primitive.ObjectID `json:"id" bson:"_id"`
-	ContractID        string             `json:"contractID" bson:"contractID"`
-	CSI               string             `json:"csi" bson:"csi"`
-	LicenseTypeID     string             `json:"licenseTypeID" bson:"licenseTypeID"`
-	ReferenceNumber   string             `json:"referenceNumber" bson:"referenceNumber"`
-	Unlimited         bool               `json:"unlimited" bson:"unlimited"`
-	Count             int                `json:"count" bson:"count"`
-	Basket            bool               `json:"basket" bson:"basket"`
-	Restricted        bool               `json:"restricted" bson:"restricted"`
-	SupportExpiration *time.Time         `json:"supportExpiration" bson:"supportExpiration"`
-	Hosts             []string           `json:"hosts" bson:"hosts"`
+	ContractID        string             `json:"contractID" bson:"contractID" csv:"contract_id"`
+	CSI               string             `json:"csi" bson:"csi" csv:"csi"`
+	LicenseTypeID     string             `json:"licenseTypeID" bson:"licenseTypeID" csv:"license_type_id"`
+	ReferenceNumber   string             `json:"referenceNumber" bson:"referenceNumber" csv:"reference_number"`
+	Unlimited         bool               `json:"unlimited" bson:"unlimited" csv:"unlimited"`
+	Count             int                `json:"count" bson:"count" csv:"count"`
+	Basket            bool               `json:"basket" bson:"basket" csv:"basket"`
+	Restricted        bool               `json:"restricted" bson:"restricted" csv:"restricted"`
+	SupportExpiration *time.Time         `json:"supportExpiration" bson:"supportExpiration" csv:"-"`
+	Hosts             []string           `json:"hosts" bson:"hosts" csv:"-"`
+	HostsLiteral      LiteralStrSlice        `json:"-" bson:"-" csv:"hosts"`
 }
+
 
 func (contract OracleDatabaseContract) Check() error {
 	if contract.Restricted && contract.Basket {

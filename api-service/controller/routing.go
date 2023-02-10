@@ -185,6 +185,9 @@ func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 
 	router.HandleFunc("/database/connection/status", ctrl.GetDatabaseConnectionStatus).Methods("GET")
 
+	// UPLOADS
+	router.HandleFunc("/contracts/{databaseType}/upload", ctrl.ImportContractFromCSV).Methods("POST")
+
 	ctrl.setupSettingsRoutes(router.PathPrefix("/settings").Subrouter())
 	ctrl.setupFrontendAPIRoutes(router.PathPrefix("/frontend").Subrouter())
 	ctrl.setupAdminRoutes(router.PathPrefix("/admin").Subrouter())

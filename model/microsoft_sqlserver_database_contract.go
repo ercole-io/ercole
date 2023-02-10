@@ -24,13 +24,15 @@ import (
 // SqlServerDatabaseContract holds informations about a single SqlServerDatabaseContract
 type SqlServerDatabaseContract struct {
 	ID                primitive.ObjectID `json:"id" bson:"_id"`
-	Type              string             `json:"type" bson:"type"`
-	ContractID        string             `json:"contractID" bson:"contractID"`
-	LicenseTypeID     string             `json:"licenseTypeID" bson:"licenseTypeID"`
-	LicensesNumber    int                `json:"licensesNumber" bson:"licensesNumber"`
-	SupportExpiration *time.Time         `json:"supportExpiration" bson:"supportExpiration"`
-	Hosts             []string           `json:"hosts" bson:"hosts"`
-	Clusters          []string           `json:"clusters" bson:"clusters"`
+	Type              string             `json:"type" bson:"type" csv:"type"`
+	ContractID        string             `json:"contractID" bson:"contractID" csv:"contract_id"`
+	LicenseTypeID     string             `json:"licenseTypeID" bson:"licenseTypeID" csv:"license_type_id"`
+	LicensesNumber    int                `json:"licensesNumber" bson:"licensesNumber" csv:"licenses_number"`
+	SupportExpiration *time.Time         `json:"supportExpiration" bson:"supportExpiration" csv:"-"`
+	Hosts             []string           `json:"hosts" bson:"hosts" csv:"-"`
+	Clusters          []string           `json:"clusters" bson:"clusters" csv:"-"`
+	HostsLiteral      LiteralStrSlice    `json:"-" bson:"-" csv:"hosts"`
+	ClusterLiteral    LiteralStrSlice    `json:"-" bson:"-" csv:"clusters"`
 }
 
 const (
