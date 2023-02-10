@@ -23,14 +23,16 @@ import (
 
 type MySQLContract struct {
 	ID                primitive.ObjectID `json:"id" bson:"_id"`
-	Type              string             `json:"type" bson:"type"`
-	ContractID        string             `json:"contractID" bson:"contractID"`
-	CSI               string             `json:"csi" bson:"csi"`
-	LicenseTypeID     string             `json:"licenseTypeID" bson:"licenseTypeID"`
-	NumberOfLicenses  uint               `json:"numberOfLicenses" bson:"numberOfLicenses"`
-	SupportExpiration *time.Time         `json:"supportExpiration" bson:"supportExpiration"`
-	Clusters          []string           `json:"clusters" bson:"clusters"`
-	Hosts             []string           `json:"hosts" bson:"hosts"`
+	Type              string             `json:"type" bson:"type" csv:"type"`
+	ContractID        string             `json:"contractID" bson:"contractID" csv:"contract_id"`
+	CSI               string             `json:"csi" bson:"csi" csv:"csi"`
+	LicenseTypeID     string             `json:"licenseTypeID" bson:"licenseTypeID" csv:"license_type_id"`
+	NumberOfLicenses  uint               `json:"numberOfLicenses" bson:"numberOfLicenses" csv:"number_of_licenses"`
+	SupportExpiration *time.Time         `json:"supportExpiration" bson:"supportExpiration" csv:"-"`
+	Clusters          []string           `json:"clusters" bson:"clusters" csv:"-"`
+	Hosts             []string           `json:"hosts" bson:"hosts" csv:"-"`
+	HostsLiteral      LiteralStrSlice    `json:"-" bson:"-" csv:"hosts"`
+	ClusterLiteral    LiteralStrSlice    `json:"-" bson:"-" csv:"clusters"`
 }
 
 const (
