@@ -26,43 +26,6 @@ import (
 )
 
 func init() {
-	err := migrate.Register(func(db *mongo.Database) error {
-		if err := addSqlServerDatabaseLicenseTypes(db); err != nil {
-			return err
-		}
-
-		return nil
-	}, func(db *mongo.Database) error {
-		return nil
-	})
-
-	if err != nil {
-		fmt.Printf("%v\n", err)
-		return
-	}
-}
-
-func addSqlServerDatabaseLicenseTypes(client *mongo.Database) error {
-	collectionName := "ms_sqlserver_database_license_types"
-
-	if collectionNames, err := client.ListCollectionNames(context.TODO(), bson.D{{Key: "name", Value: collectionName}}); len(collectionNames) == 0 {
-		if err != nil {
-			return err
-		}
-
-		return fmt.Errorf("Collection [%s] not found", collectionName)
-	}
-
-	count, err := client.Collection(collectionName).CountDocuments(context.TODO(), bson.D{})
-	if err != nil {
-		return err
-	}
-
-	if count > 0 {
-		fmt.Printf("Collection [%s] already contains %v documents", collectionName, count)
-		return nil
-	}
-
 	licenseTypes := make([]interface{}, 0, 2)
 
 	licenseTypes = append(licenseTypes, model.SqlServerDatabaseLicenseType{
@@ -78,6 +41,33 @@ func addSqlServerDatabaseLicenseTypes(client *mongo.Database) error {
 		Edition:         "ENT",
 		Version:         "2019",
 	})
+
+	err := migrate.Register(func(db *mongo.Database) error {
+		if err := addSqlServerDatabaseLicenseTypes(db, licenseTypes); err != nil {
+			return err
+		}
+
+		return nil
+	}, func(db *mongo.Database) error {
+		return nil
+	})
+
+	if err != nil {
+		fmt.Printf("%v\n", err)
+		return
+	}
+}
+
+func addSqlServerDatabaseLicenseTypes(client *mongo.Database, licenseTypes []interface{}) error {
+	collectionName := "ms_sqlserver_database_license_types"
+
+	if collectionNames, err := client.ListCollectionNames(context.TODO(), bson.D{{Key: "name", Value: collectionName}}); len(collectionNames) == 0 {
+		if err != nil {
+			return err
+		}
+
+		return fmt.Errorf("collection [%s] not found", collectionName)
+	}
 
 	if _, err := client.Collection(collectionName).InsertMany(context.TODO(), licenseTypes); err != nil {
 		return err
