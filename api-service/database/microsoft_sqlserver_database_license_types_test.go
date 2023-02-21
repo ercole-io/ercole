@@ -49,6 +49,54 @@ func (m *MongodbSuite) TestGetSqlServerDatabaseLicenseTypes() {
 				Edition:         "ENT",
 				Version:         "2019",
 			},
+			model.SqlServerDatabaseLicenseType{
+				ID:              "FAKE-PART-NUMBER-001",
+				ItemDescription: "SQL Server 2016 Standard",
+				Edition:         "STD",
+				Version:         "2016",
+			},
+			model.SqlServerDatabaseLicenseType{
+				ID:              "FAKE-PART-NUMBER-002",
+				ItemDescription: "SQL Server 2016 Enterprise",
+				Edition:         "ENT",
+				Version:         "2016",
+			},
+			model.SqlServerDatabaseLicenseType{
+				ID:              "FAKE-PART-NUMBER-003",
+				ItemDescription: "SQL Server 2014 Standard",
+				Edition:         "STD",
+				Version:         "2014",
+			},
+			model.SqlServerDatabaseLicenseType{
+				ID:              "FAKE-PART-NUMBER-004",
+				ItemDescription: "SQL Server 2014 Enterprise",
+				Edition:         "ENT",
+				Version:         "2014",
+			},
+			model.SqlServerDatabaseLicenseType{
+				ID:              "FAKE-PART-NUMBER-005",
+				ItemDescription: "SQL Server 2012 Standard",
+				Edition:         "STD",
+				Version:         "2012",
+			},
+			model.SqlServerDatabaseLicenseType{
+				ID:              "FAKE-PART-NUMBER-006",
+				ItemDescription: "SQL Server 2012 Enterprise",
+				Edition:         "ENT",
+				Version:         "2012",
+			},
+			model.SqlServerDatabaseLicenseType{
+				ID:              "FAKE-PART-NUMBER-007",
+				ItemDescription: "SQL Server 2008 R2 Standard",
+				Edition:         "STD",
+				Version:         "2008 R2",
+			},
+			model.SqlServerDatabaseLicenseType{
+				ID:              "FAKE-PART-NUMBER-008",
+				ItemDescription: "SQL Server 2008 R2 Enterprise",
+				Edition:         "ENT",
+				Version:         "2008 R2",
+			},
 		}
 
 		actual, err := m.db.GetSqlServerDatabaseLicenseTypes()
