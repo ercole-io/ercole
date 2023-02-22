@@ -27,57 +27,57 @@ func init() {
 	licenseTypes := make([]interface{}, 0, 2)
 
 	licenseTypes = append(licenseTypes, model.SqlServerDatabaseLicenseType{
-		ID:              "FAKE-PART-NUMBER-001",
-		ItemDescription: "SQL Server 2016 Standard",
+		ID:              "AU1GNGYG2DBH317JG",
+		ItemDescription: "SQL Server 2016 Standard Core",
 		Edition:         "STD",
 		Version:         "2016",
 	})
 
 	licenseTypes = append(licenseTypes, model.SqlServerDatabaseLicenseType{
-		ID:              "FAKE-PART-NUMBER-002",
-		ItemDescription: "SQL Server 2016 Enterprise",
+		ID:              "QNUXHXH1SKT0SXEAT",
+		ItemDescription: "SQL Server 2016 Enterprise Core",
 		Edition:         "ENT",
 		Version:         "2016",
 	})
 
 	licenseTypes = append(licenseTypes, model.SqlServerDatabaseLicenseType{
-		ID:              "FAKE-PART-NUMBER-003",
-		ItemDescription: "SQL Server 2014 Standard",
+		ID:              "0ZOQ1R0L1CV9X8KQ1",
+		ItemDescription: "SQL Server 2014 Standard Core",
 		Edition:         "STD",
 		Version:         "2014",
 	})
 
 	licenseTypes = append(licenseTypes, model.SqlServerDatabaseLicenseType{
-		ID:              "FAKE-PART-NUMBER-004",
-		ItemDescription: "SQL Server 2014 Enterprise",
+		ID:              "AKU4AOZ57AE7AMGV0",
+		ItemDescription: "SQL Server 2014 Enterprise Core",
 		Edition:         "ENT",
 		Version:         "2014",
 	})
 
 	licenseTypes = append(licenseTypes, model.SqlServerDatabaseLicenseType{
-		ID:              "FAKE-PART-NUMBER-005",
-		ItemDescription: "SQL Server 2012 Standard",
+		ID:              "UESCGA3LJ0YW8DM3Q",
+		ItemDescription: "SQL Server 2012 Standard Core",
 		Edition:         "STD",
 		Version:         "2012",
 	})
 
 	licenseTypes = append(licenseTypes, model.SqlServerDatabaseLicenseType{
-		ID:              "FAKE-PART-NUMBER-006",
-		ItemDescription: "SQL Server 2012 Enterprise",
+		ID:              "1F8UP2K6L5UEUSNT4",
+		ItemDescription: "SQL Server 2012 Enterprise Core",
 		Edition:         "ENT",
 		Version:         "2012",
 	})
 
 	licenseTypes = append(licenseTypes, model.SqlServerDatabaseLicenseType{
-		ID:              "FAKE-PART-NUMBER-007",
-		ItemDescription: "SQL Server 2008 R2 Standard",
+		ID:              "N3KIE9EJZXR386Q2P",
+		ItemDescription: "SQL Server 2008 R2 Standard Core",
 		Edition:         "STD",
 		Version:         "2008 R2",
 	})
 
 	licenseTypes = append(licenseTypes, model.SqlServerDatabaseLicenseType{
-		ID:              "FAKE-PART-NUMBER-008",
-		ItemDescription: "SQL Server 2008 R2 Enterprise",
+		ID:              "ZYI8M3I5P6KTCK45C",
+		ItemDescription: "SQL Server 2008 R2 Enterprise Core",
 		Edition:         "ENT",
 		Version:         "2008 R2",
 	})
