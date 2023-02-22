@@ -22,6 +22,7 @@ import (
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/gorilla/context"
+	"github.com/gorilla/mux"
 )
 
 func (ctrl *APIController) GetOracleChanges(w http.ResponseWriter, r *http.Request) {
@@ -43,15 +44,13 @@ func (ctrl *APIController) GetOracleChanges(w http.ResponseWriter, r *http.Reque
 		filter.Location = strings.Join(locations, ",")
 	}
 
-	result, err := ctrl.GetOracleChangesJSON(filter)
+	hostname := mux.Vars(r)["hostname"]
+
+	result, err := ctrl.Service.GetOracleChanges(*filter, hostname)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
 	utils.WriteJSONResponse(w, http.StatusOK, result)
-}
-
-func (ctrl *APIController) GetOracleChangesJSON(filters *dto.GlobalFilter) ([]dto.OracleChangesDto, error) {
-	return ctrl.Service.GetOracleChanges(*filters)
 }

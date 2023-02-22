@@ -35,7 +35,7 @@ func (m *MongodbSuite) TestGetOracleChanges() {
 	m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_16.json"))
 
 	m.T().Run("should_detect_oracle_changes", func(t *testing.T) {
-		out, err := m.db.GetOracleChanges(dto.GlobalFilter{OlderThan: utils.MAX_TIME})
+		out, err := m.db.FindOracleChangesByHostname(dto.GlobalFilter{OlderThan: utils.MAX_TIME}, "newdb")
 		require.NoError(t, err)
 
 		expectedResult := []dto.OracleChangesDto{

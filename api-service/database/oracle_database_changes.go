@@ -24,7 +24,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func (md *MongoDatabase) GetOracleChanges(filter dto.GlobalFilter) ([]dto.OracleChangesDto, error) {
+func (md *MongoDatabase) FindOracleChangesByHostname(filter dto.GlobalFilter, hostname string) ([]dto.OracleChangesDto, error) {
 	ctx := context.TODO()
 
 	result := make([]dto.OracleChangesDto, 0)
@@ -38,6 +38,7 @@ func (md *MongoDatabase) GetOracleChanges(filter dto.GlobalFilter) ([]dto.Oracle
 				"features.oracle.database.databases": bson.M{
 					"$ne": nil,
 				},
+				"hostname": hostname,
 			}),
 			mu.APLookupPipeline(
 				"hosts",
