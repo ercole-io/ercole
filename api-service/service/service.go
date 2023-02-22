@@ -163,7 +163,7 @@ type APIServiceInterface interface {
 	CreateGetOracleOptionListXLSX(filter dto.GlobalFilter) (*excelize.File, error)
 
 	// ORACLE DATABASE CHANGES
-	GetOracleChanges(filter dto.GlobalFilter) ([]dto.OracleChangesDto, error)
+	GetOracleChanges(filter dto.GlobalFilter, hostname string) ([]dto.OracleChangesDto, error)
 
 	// ORACLE DATABASE TABLESPACE
 	ListOracleDatabaseTablespaces(filter dto.GlobalFilter) ([]dto.OracleDatabaseTablespace, error)

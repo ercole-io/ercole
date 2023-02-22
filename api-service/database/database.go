@@ -150,7 +150,7 @@ type MongoDatabaseInterface interface {
 
 	GetOraclePatchList(filter dto.GlobalFilter) ([]dto.OracleDatabasePatchDto, error)
 	GetOracleOptionList(filter dto.GlobalFilter) ([]dto.OracleDatabaseFeatureUsageStatDto, error)
-	GetOracleChanges(filter dto.GlobalFilter) ([]dto.OracleChangesDto, error)
+	FindOracleChangesByHostname(filter dto.GlobalFilter, hostname string) ([]dto.OracleChangesDto, error)
 	GetOracleBackupList(filter dto.GlobalFilter) ([]dto.OracleDatabaseBackupDto, error)
 	GetOracleServiceList(filter dto.GlobalFilter) ([]dto.OracleDatabaseServiceDto, error)
 	FindAllOracleDatabaseTablespaces(filter dto.GlobalFilter) ([]dto.OracleDatabaseTablespace, error)

@@ -68,9 +68,9 @@ func TestGetOracleChanges_Success(t *testing.T) {
 			},
 		},
 	}
-	db.EXPECT().GetOracleChanges(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).Return(expected, nil)
+	db.EXPECT().FindOracleChangesByHostname(dto.GlobalFilter{OlderThan: utils.MAX_TIME}, "newdb").Return(expected, nil)
 
-	res, err := as.GetOracleChanges(dto.GlobalFilter{OlderThan: utils.MAX_TIME})
+	res, err := as.GetOracleChanges(dto.GlobalFilter{OlderThan: utils.MAX_TIME}, "newdb")
 	require.NoError(t, err)
 	assert.Equal(t, expected, res)
 }
