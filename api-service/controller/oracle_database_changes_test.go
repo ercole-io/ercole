@@ -25,6 +25,7 @@ import (
 	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/utils"
 	gomock "github.com/golang/mock/gomock"
+	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -82,12 +83,15 @@ func TestGetOracleChanges_Success(t *testing.T) {
 		Return(locations, nil)
 
 	as.EXPECT().
-		GetOracleChanges(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).
+		GetOracleChanges(dto.GlobalFilter{OlderThan: utils.MAX_TIME}, "newdb").
 		Return(result, nil)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.GetOracleChanges)
 	req, err := http.NewRequest("GET", "/", nil)
+	req = mux.SetURLVars(req, map[string]string{
+		"hostname": "newdb",
+	})
 
 	require.NoError(t, err)
 	handler.ServeHTTP(rr, req)
