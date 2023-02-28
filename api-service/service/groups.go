@@ -62,3 +62,18 @@ func (as *APIService) DeleteGroup(name string) error {
 
 	return nil
 }
+
+func (as *APIService) GetMatchedGroupsName(tags []string) []string {
+	res := make([]string, 0, len(tags))
+
+	for _, v := range tags {
+		group, err := as.Database.GetGroupByTag(v)
+		if err != nil {
+			continue
+		}
+
+		res = append(res, group.Name)
+	}
+
+	return res
+}
