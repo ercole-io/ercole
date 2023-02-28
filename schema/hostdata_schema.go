@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2023 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -42,6 +42,9 @@ var microsoftSchema string
 //go:embed mysql.json
 var mysqlSchema string
 
+//go:embed mongodb.json
+var mongodbSchema string
+
 var schema *gojsonschema.Schema
 
 func ValidateHostdata(raw []byte) error {
@@ -82,7 +85,7 @@ func ValidateHostdata(raw []byte) error {
 func loadSchema() error {
 	sl := gojsonschema.NewSchemaLoader()
 
-	schemas := []string{oracleSchema, postgresqlSchema, microsoftSchema, mysqlSchema}
+	schemas := []string{oracleSchema, postgresqlSchema, microsoftSchema, mysqlSchema, mongodbSchema}
 	for i := range schemas {
 		jl := gojsonschema.NewStringLoader(schemas[i])
 		if err := sl.AddSchemas(jl); err != nil {
