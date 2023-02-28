@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2023 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -49,6 +49,11 @@ type AuthenticationProvider interface {
 	GetType() string
 }
 
+type ErcoleClaims struct {
+	Groups []string `json:"groups"`
+	jwt.RegisteredClaims
+}
+
 // BuildAuthenticationProvider return a authentication provider that match what is requested in the configuration
 // It's initialized
 func BuildAuthenticationProvider(conf config.AuthenticationProviderConfig, service apiservice_service.APIService, timeNow func() time.Time, log logger.Logger) []AuthenticationProvider {
@@ -81,17 +86,20 @@ func BuildAuthenticationProvider(conf config.AuthenticationProviderConfig, servi
 	return provs
 }
 
-func buildToken(now time.Time, tokenValidityTimeout int, username string, privateKey *rsa.PrivateKey) (string, error) {
+func buildToken(now time.Time, tokenValidityTimeout int, user dto.User, privateKey *rsa.PrivateKey) (string, error) {
 	if privateKey == nil {
 		return "", fmt.Errorf("privateKey is nil")
 	}
 
-	claims := &jwt.RegisteredClaims{
-		ExpiresAt: jwt.NewNumericDate(now.Add(time.Duration(tokenValidityTimeout) * time.Second)),
-		IssuedAt:  jwt.NewNumericDate(now),
-		NotBefore: jwt.NewNumericDate(now),
-		Issuer:    "ercole",
-		Subject:   username,
+	claims := &ErcoleClaims{
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(now.Add(time.Duration(tokenValidityTimeout) * time.Second)),
+			IssuedAt:  jwt.NewNumericDate(now),
+			NotBefore: jwt.NewNumericDate(now),
+			Issuer:    "ercole",
+			Subject:   user.Username,
+		},
+		Groups: user.Groups,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
@@ -113,10 +121,10 @@ func parsePrivateKey(raw []byte) (*rsa.PrivateKey, *rsa.PublicKey, error) {
 	return privateKey, &privateKey.PublicKey, nil
 }
 
-func validateBearerToken(tokenString string, timeNow func() time.Time, publicKey *rsa.PublicKey) (*jwt.RegisteredClaims, error) {
+func validateBearerToken(tokenString string, timeNow func() time.Time, publicKey *rsa.PublicKey) (*ErcoleClaims, error) {
 	tokenString = tokenString[len("Bearer "):]
 	jwt.TimeFunc = timeNow
-	token, err := jwt.ParseWithClaims(tokenString, &jwt.RegisteredClaims{}, func(_ *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &ErcoleClaims{}, func(_ *jwt.Token) (interface{}, error) {
 		return publicKey, nil
 	}, jwt.WithValidMethods([]string{jwt.SigningMethodRS256.Name}))
 
@@ -124,10 +132,10 @@ func validateBearerToken(tokenString string, timeNow func() time.Time, publicKey
 		return nil, err
 	}
 
-	_, ok := token.Claims.(*jwt.RegisteredClaims)
+	_, ok := token.Claims.(*ErcoleClaims)
 	if !ok || !token.Valid {
-		return nil, fmt.Errorf("Invalid token")
+		return nil, utils.ErrInvalidToken
 	}
 
-	return token.Claims.(*jwt.RegisteredClaims), nil
+	return token.Claims.(*ErcoleClaims), nil
 }

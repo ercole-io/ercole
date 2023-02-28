@@ -61,6 +61,22 @@ func (md *MongoDatabase) GetGroup(name string) (*model.Group, error) {
 	return &out, nil
 }
 
+func (md *MongoDatabase) GetGroupByTag(tag string) (*model.Group, error) {
+	res := md.Client.Database(md.Config.Mongodb.DBName).Collection(groupCollection).
+		FindOne(context.TODO(), bson.M{"tags": tag})
+	if res.Err() != nil {
+		return nil, res.Err()
+	}
+
+	result := &model.Group{}
+
+	if err := res.Decode(result); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 // UpdateGroup update a group in the database
 func (md *MongoDatabase) UpdateGroup(group model.Group) error {
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(groupCollection).

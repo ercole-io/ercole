@@ -231,6 +231,7 @@ type MongoDatabaseInterface interface {
 	UpdateGroup(group model.Group) error
 	DeleteGroup(name string) error
 	GetGroups() ([]model.Group, error)
+	GetGroupByTag(tag string) (*model.Group, error)
 
 	// USERS
 	ListUsers() ([]model.User, error)

@@ -16,13 +16,21 @@
 package dto
 
 type LoginResponse struct {
-	Token string `json:"token"`
-	User  *User   `json:"user"`
+	Token       string      `json:"token"`
+	AllowedUser AllowedUser `json:"allowedUser"`
+}
+
+type AllowedUser struct {
+	Username string   `json:"username"`
+	Groups   []string `json:"groups"`
 }
 
 func ToLoginResponse(token string, user *User) LoginResponse {
 	return LoginResponse{
 		Token: token,
-		User:  user,
+		AllowedUser: AllowedUser{
+			Username: user.Username,
+			Groups:   user.Groups,
+		},
 	}
 }
