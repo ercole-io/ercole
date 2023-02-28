@@ -364,39 +364,39 @@
                                         }
                                     },
                                     "segmentAdvisors": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "object",
-                                            "required": [
-                                                "segmentOwner",
-                                                "segmentName",
-                                                "segmentType",
-                                                "partitionName",
-                                                "reclaimable",
-                                                "recommendation"
-                                            ],
-                                            "properties": {
-                                                "segmentOwner": {
-                                                    "type": "string"
-                                                },
-                                                "segmentName": {
-                                                    "type": "string"
-                                                },
-                                                "segmentType": {
-                                                    "type": "string"
-                                                },
-                                                "partitionName": {
-                                                    "type": "string"
-                                                },
-                                                "reclaimable": {
-                                                    "type": "number",
-                                                    "minimum": 0
-                                                },
-                                                "recommendation": {
-                                                    "type": "string"
+                                        "anyOf": [
+                                            {
+                                                "type": "null"
+                                            },
+                                            {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "segmentOwner": {
+                                                            "type": "string"
+                                                        },
+                                                        "segmentName": {
+                                                            "type": "string"
+                                                        },
+                                                        "segmentType": {
+                                                            "type": "string"
+                                                        },
+                                                        "partitionName": {
+                                                            "type": "string"
+                                                        },
+                                                        "reclaimable": {
+                                                            "type": "number",
+                                                            "minimum": 0
+                                                        },
+                                                        "recommendation": {
+                                                            "type": "string"
+                                                        }
+                                                    }
                                                 }
                                             }
-                                        }
+                                        ]
+                                        
                                     },
                                     "psus": {
                                         "type": "array",
@@ -711,39 +711,39 @@
                                                     }
                                                 },
                                                 "segmentAdvisors": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object",
-                                                        "required": [
-                                                            "segmentOwner",
-                                                            "segmentName",
-                                                            "segmentType",
-                                                            "partitionName",
-                                                            "reclaimable",
-                                                            "recommendation"
-                                                        ],
-                                                        "properties": {
-                                                            "segmentOwner": {
-                                                                "type": "string"
-                                                            },
-                                                            "segmentName": {
-                                                                "type": "string"
-                                                            },
-                                                            "segmentType": {
-                                                                "type": "string"
-                                                            },
-                                                            "partitionName": {
-                                                                "type": "string"
-                                                            },
-                                                            "reclaimable": {
-                                                                "type": "number",
-                                                                "minimum": 0
-                                                            },
-                                                            "recommendation": {
-                                                                "type": "string"
+                                                    "anyOf": [
+                                                        {
+                                                            "type": "null"
+                                                        },
+                                                        {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "segmentOwner": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "segmentName": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "segmentType": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "partitionName": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "reclaimable": {
+                                                                        "type": "number",
+                                                                        "minimum": 0
+                                                                    },
+                                                                    "recommendation": {
+                                                                        "type": "string"
+                                                                    }
+                                                                }
                                                             }
                                                         }
-                                                    }
+                                                    ]
+                                                    
                                                 }
                                             }
                                         }
