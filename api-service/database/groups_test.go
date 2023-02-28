@@ -171,3 +171,39 @@ func (m *MongodbSuite) TestDeleteGroup() {
 		assert.NoError(t, err)
 	})
 }
+
+func (m *MongodbSuite) TestGetGroupByTag() {
+	m.T().Run("should_load_all", func(t *testing.T) {
+		defer m.db.Client.Database(m.dbname).Collection(groupCollection).DeleteMany(context.TODO(), bson.M{})
+
+		group := model.Group{
+			Name:  "Test",
+			Roles: []string{"role1", "role2"},
+			Tags:  []string{"tag1"},
+		}
+
+		groups := []model.Group{
+			{
+				Name:  "Test",
+				Roles: []string{"role1", "role2"},
+				Tags:  []string{"tag1"},
+			},
+			{
+				Name:  "Testdue",
+				Roles: []string{"role1", "role2"},
+				Tags:  []string{"tag2"},
+			},
+		}
+		groupsInt := []interface{}{
+			groups[0],
+			groups[1],
+		}
+		_, err := m.db.Client.Database(m.dbname).Collection(groupCollection).InsertMany(context.TODO(), groupsInt)
+		require.Nil(m.T(), err)
+
+		actual, err := m.db.GetGroupByTag("tag1")
+		m.Require().NoError(err)
+
+		assert.Equal(t, &group, actual)
+	})
+}

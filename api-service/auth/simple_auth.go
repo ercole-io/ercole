@@ -107,7 +107,7 @@ func (ap *BasicAuthenticationProvider) GetToken(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	token, err := buildToken(ap.TimeNow(), ap.Config.TokenValidityTimeout, request.Username, ap.privateKey)
+	token, err := buildToken(ap.TimeNow(), ap.Config.TokenValidityTimeout, *userInfo, ap.privateKey)
 	if err != nil {
 		ap.Log.Errorf("Unable to get signed token: %s", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -156,33 +156,18 @@ func (ap *BasicAuthenticationProvider) AuthenticateMiddleware(next http.Handler)
 		if strings.HasPrefix(tokenString, "Bearer ") {
 			claims, err := validateBearerToken(tokenString, ap.TimeNow, ap.publicKey)
 			if err != nil {
-				ap.Log.Debugf("Invalid token: %s", err)
-				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, fmt.Errorf("Invalid token"))
+				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.ErrInvalidToken)
 				return
 			}
 
 			if claims == nil {
-				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, fmt.Errorf("Invalid token"))
+				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.ErrInvalidToken)
 				return
 			}
 
-			user, err := ap.Service.GetUser(claims.Subject, BasicType)
-			if err != nil {
-				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, err)
-				return
-			}
+			ercoleGroups := ap.Service.GetMatchedGroupsName(claims.Groups)
 
-			now := time.Now()
-
-			user.LastLogin = &now
-
-			errLastLogin := ap.Service.UpdateUserLastLogin(*user)
-			if errLastLogin != nil {
-				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, errLastLogin)
-				return
-			}
-
-			context.Set(r, "user", user)
+			context.Set(r, "user", dto.AllowedUser{Username: claims.Subject, Groups: ercoleGroups})
 
 			next.ServeHTTP(w, r)
 			return

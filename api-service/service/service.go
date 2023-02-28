@@ -276,6 +276,7 @@ type APIServiceInterface interface {
 	GetGroup(name string) (*model.Group, error)
 	GetGroups() ([]model.Group, error)
 	DeleteGroup(name string) error
+	GetMatchedGroupsName(tags []string) []string
 
 	GetDatabaseConnectionStatus() bool
 	GetConfig() (*config.Configuration, error)
