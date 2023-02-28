@@ -167,9 +167,10 @@ func (ap *LDAPAuthenticationProvider) GetToken(w http.ResponseWriter, r *http.Re
 
 	if userInfo == nil {
 		utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewError(errors.New("Failed to login, invalid credentials"), http.StatusText(http.StatusUnauthorized)))
+		return
 	}
 
-	token, err := buildToken(ap.TimeNow(), ap.Config.TokenValidityTimeout, request.Username, ap.privateKey)
+	token, err := buildToken(ap.TimeNow(), ap.Config.TokenValidityTimeout, *userInfo, ap.privateKey)
 	if err != nil {
 		ap.Log.Errorf("Unable to get signed token: %s", err)
 		w.WriteHeader(http.StatusInternalServerError)

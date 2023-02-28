@@ -19,6 +19,21 @@
                 "pattern": "^[^\\s]+$"
             },
             "uniqueItems": true
+        },
+        "tags": {
+            "anyOf": [
+                {
+                    "type": "null"
+                },
+                {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "uniqueItems": true
+                }
+            ]
         }
     }
 }

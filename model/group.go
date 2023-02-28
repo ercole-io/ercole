@@ -27,8 +27,13 @@ type Group struct {
 	Name        string   `json:"name" bson:"name"`
 	Description string   `json:"description" bson:"description"`
 	Roles       []string `json:"roles" bson:"roles"`
+	Tags        []string `json:"tags" bson:"tags"`
 }
 
 func (g *Group) IsRole(role string) bool {
 	return utils.Contains(g.Roles, role)
+}
+
+func (g *Group) IsTag(tag string) bool {
+	return utils.Contains(g.Tags, tag)
 }
