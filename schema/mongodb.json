@@ -1,0 +1,180 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "mongoDBFeature",
+  "type": "object",
+  "properties": {
+    "replicaSet": {
+      "type": "object",
+      "properties": {
+        "primary": {
+          "type": "string"
+        },
+        "hosts": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          ]
+        },
+        "setName": {
+          "type": "string"
+        }
+      }
+    },
+    "shardList": {
+      "type": "object",
+      "properties": {
+        "shards": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "_id": {
+                    "type": "string"
+                  },
+                  "host": {
+                    "type": "string"
+                  },
+                  "state": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "serverStatus": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string"
+        },
+        "dbs": {
+          "type": "integer"
+        },
+        "connections": {
+          "type": "object",
+          "properties": {
+            "current": {
+              "type": "integer"
+            },
+            "available": {
+              "type": "integer"
+            },
+            "totalCreated": {
+              "type": "integer"
+            },
+            "active": {
+              "type": "integer"
+            },
+            "threaded": {
+              "type": "integer"
+            },
+            "exhaustIsMaster": {
+              "type": "integer"
+            },
+            "exhaustHello": {
+              "type": "integer"
+            },
+            "awaitingTopologyChanges": {
+              "type": "integer"
+            },
+            "loadBalanced": {
+              "type": "integer"
+            }
+          }
+        }
+      }
+    },
+    "dbStats": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "properties": {
+            "dbName": {
+              "type": "string"
+            },
+            "charset": {
+              "type": "string"
+            },
+            "collections": {
+              "type": "integer"
+            },
+            "views": {
+              "type": "integer"
+            },
+            "objects": {
+              "type": "integer"
+            },
+            "indexes": {
+              "type": "integer"
+            },
+            "dataSize": {
+              "type": "number"
+            },
+            "indexSize": {
+              "type": "number"
+            },
+            "storageSize": {
+              "type": "number"
+            },
+            "totalSize": {
+              "type": "number"
+            },
+            "fsUsedSize": {
+              "type": "number"
+            },
+            "fsTotalSize": {
+              "type": "number"
+            },
+            "freeStorageSize": {
+              "type": "number"
+            },
+            "indexFreeStorageSize": {
+              "type": "number"
+            },
+            "totalFreeStorageSize": {
+              "type": "number"
+            },
+            "users": {
+              "type": "integer"
+            },
+            "shardDBs": {
+              "type": "array",
+              "items": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string"
+                    },
+                    "primary": {
+                      "type": "string"
+                    },
+                    "partitioned": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}
