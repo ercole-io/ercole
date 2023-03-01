@@ -17,7 +17,7 @@ func (ctrl *APIController) GetNodes(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	nodes, err := ctrl.Service.GetNodes(user.(*model.User))
+	nodes, err := ctrl.Service.GetNodes(user.(dto.AllowedUser).Groups)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
