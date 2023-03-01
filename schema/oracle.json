@@ -681,34 +681,35 @@
                                                     ]
                                                 },
                                                 "partitionings": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object",
-                                                        "required": [
-                                                            "owner",
-                                                            "segmentName",
-                                                            "partitionName",
-                                                            "segmentType",
-                                                            "mb"
-                                                        ],
-                                                        "properties": {
-                                                            "owner": {
-                                                                "type": "string"
-                                                            },
-                                                            "segmentName": {
-                                                                "type": "string"
-                                                            },
-                                                            "partitionName": {
-                                                                "type": "string"
-                                                            },
-                                                            "segmentType": {
-                                                                "type": "string"
-                                                            },
-                                                            "mb": {
-                                                                "type": "number"
+                                                    "anyOf": [
+                                                        {
+                                                            "type": "null"
+                                                        },
+                                                        {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "owner": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "segmentName": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "partitionName": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "segmentType": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "mb": {
+                                                                        "type": "number"
+                                                                    }
+                                                                }
                                                             }
                                                         }
-                                                    }
+                                                    ]
+                                                    
                                                 },
                                                 "segmentAdvisors": {
                                                     "anyOf": [
@@ -776,34 +777,34 @@
                                         ]
                                     },
                                     "partitionings": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "object",
-                                            "required": [
-                                                "owner",
-                                                "segmentName",
-                                                "partitionName",
-                                                "segmentType",
-                                                "mb"
-                                            ],
-                                            "properties": {
-                                                "owner": {
-                                                    "type": "string"
-                                                },
-                                                "segmentName": {
-                                                    "type": "string"
-                                                },
-                                                "partitionName": {
-                                                    "type": "string"
-                                                },
-                                                "segmentType": {
-                                                    "type": "string"
-                                                },
-                                                "mb": {
-                                                    "type": "number"
+                                        "anyOf": [
+                                            {
+                                                "type": "null"
+                                            },
+                                            {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "owner": {
+                                                            "type": "string"
+                                                        },
+                                                        "segmentName": {
+                                                            "type": "string"
+                                                        },
+                                                        "partitionName": {
+                                                            "type": "string"
+                                                        },
+                                                        "segmentType": {
+                                                            "type": "string"
+                                                        },
+                                                        "mb": {
+                                                            "type": "number"
+                                                        }
+                                                    }
                                                 }
                                             }
-                                        }
+                                        ]
                                     }
                                 }
                             }
