@@ -1,4 +1,4 @@
-// Copyright (c) 2022 Sorint.lab S.p.A.
+// Copyright (c) 2023 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -476,6 +476,16 @@ func (md *MongoDatabase) GetHost(hostname string, olderThan time.Time, raw bool)
 		if err != nil {
 			return nil, utils.NewError(err, "DB ERROR")
 		}
+	case model.TechnologyMongoDBMongoDB:
+		cur, err = md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
+			context.TODO(),
+			mu.MAPipeline(
+				getBaseHost(hostname, technology, olderThan, raw),
+			),
+		)
+		if err != nil {
+			return nil, utils.NewError(err, "DB ERROR")
+		}
 	default:
 		cur, err = md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 			context.TODO(),
@@ -856,6 +866,9 @@ func (md *MongoDatabase) getHostTechnology(hostname string, olderThan time.Time)
 				),
 				model.TechnologyPostgreSQLPostgreSQL: mu.APOSum(
 					mu.APOCond(mu.APOGreater(mu.APOSize(mu.APOIfNull("$features.postgresql.instances", bson.A{})), 0), 1, 0),
+				),
+				model.TechnologyMongoDBMongoDB: mu.APOSum(
+					mu.APOCond(mu.APOGreater(mu.APOSize(mu.APOIfNull("$features.mongodb.dbStats", bson.A{})), 0), 1, 0),
 				),
 			}),
 			mu.APUnset("_id"),

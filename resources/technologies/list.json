@@ -80,6 +80,11 @@
         "Color": "#477fa6"
     },
     {
+        "Product": "MongoDB/MongoDB",
+        "PrettyName": "MongoDB",
+        "Color": "#13aa52"
+    },
+    {
         "Product": "Oracle/MySQL",
         "PrettyName": "MySQL",
         "Color": "#04648c"
