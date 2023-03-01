@@ -297,7 +297,7 @@ type APIServiceInterface interface {
 	GetLDAPUsers(user string) ([]model.UserLDAP, error)
 	AddUserByLDAP(userLDAP model.UserLDAP, groups []string) error
 
-	GetNodes(user *model.User) ([]model.Node, error)
+	GetNodes(groups []string) ([]model.Node, error) 
 	GetNode(name string) (*model.Node, error)
 	AddNode(node model.Node) error
 	UpdateNode(node model.Node) error
