@@ -39,11 +39,6 @@ func TestGetNodes_Success(t *testing.T) {
 		Roles: []string{model.AdminPermission},
 	}
 
-	user := model.User{
-		Username: "userTest",
-		Groups:   []string{model.GroupAdmin},
-	}
-
 	expected := []model.Node{
 		{
 			Name:   "test",
@@ -55,7 +50,7 @@ func TestGetNodes_Success(t *testing.T) {
 	db.EXPECT().GetNodesByRoles([]string{model.AdminPermission}).Return(expected, nil)
 	db.EXPECT().GetGroup("admin").Return(&group, nil)
 
-	res, err := as.GetNodes(&user)
+	res, err := as.GetNodes([]string{"admin"})
 	require.NoError(t, err)
 	assert.Equal(t, expected, res)
 }
