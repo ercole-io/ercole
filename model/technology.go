@@ -1,4 +1,4 @@
-// Copyright (c) 2022 Sorint.lab S.p.A.
+// Copyright (c) 2023 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@ const (
 	TechnologyMicrosoftSQLServer       string = "Microsoft/SQLServer"
 	TechnologyMariaDBFoundationMariaDB string = "MariaDBFoundation/MariaDB"
 	TechnologyPostgreSQLPostgreSQL     string = "PostgreSQL/PostgreSQL"
+	TechnologyMongoDBMongoDB           string = "MongoDB/MongoDB"
 	TechnologyOracleMySQL              string = "Oracle/MySQL"
 	TechnologyOracleVM                 string = "Oracle/VM"
 	TechnologyOracleLVM                string = "Oracle/LVM"
@@ -38,6 +39,7 @@ var (
 	TechnologyMicrosoftSQLServerPrt       *string = utils.Str2ptr(TechnologyMicrosoftSQLServer)
 	TechnologyMariaDBFoundationMariaDBPrt *string = utils.Str2ptr(TechnologyMariaDBFoundationMariaDB)
 	TechnologyPostgreSQLPostgreSQLPrt     *string = utils.Str2ptr(TechnologyPostgreSQLPostgreSQL)
+	TechnologyMongoDBMongoDBPrt           *string = utils.Str2ptr(TechnologyMongoDBMongoDB)
 	TechnologyOracleMySQLPrt              *string = utils.Str2ptr(TechnologyOracleMySQL)
 	TechnologyOracleVMPrt                 *string = utils.Str2ptr(TechnologyOracleVM)
 	TechnologyOracleLVMPrt                *string = utils.Str2ptr(TechnologyOracleLVM)

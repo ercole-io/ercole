@@ -204,6 +204,16 @@
                         }
                     ]
                 },
+                "mongodb": {
+                    "anyOf": [
+                        {
+                            "type": "null"
+                        },
+                        {
+                            "$ref": "mongoDBFeature"
+                        }
+                    ]
+                },
                 "microsoft": {
                     "anyOf": [
                         {

@@ -30,7 +30,7 @@ ls
 
 %install
 cd %{_builddir}/%{name}-%{version}
-mkdir -p %{buildroot}/usr/bin/ %{buildroot}/usr/share/ercole/{examples,templates} %{buildroot}/usr/share/ercole/technologies/{Microsoft,Oracle,HP,IBM,RedHat,MariaDBFoundation,PostgreSQL,Unknown,VMWare} %{buildroot}%{_unitdir} %{buildroot}%{_presetdir} %{buildroot}/var/lib/ercole/distributed_files
+mkdir -p %{buildroot}/usr/bin/ %{buildroot}/usr/share/ercole/{examples,templates} %{buildroot}/usr/share/ercole/technologies/{Microsoft,Oracle,HP,IBM,RedHat,MariaDBFoundation,PostgreSQL,MongoDB,Unknown,VMWare} %{buildroot}%{_unitdir} %{buildroot}%{_presetdir} %{buildroot}/var/lib/ercole/distributed_files
 install -m 0755 ercole %{buildroot}/usr/bin/ercole
 install -m 0755 package/ercole-setup %{buildroot}/usr/bin/ercole-setup
 install -m 0644 package/config.toml %{buildroot}/usr/share/ercole/config.toml
@@ -43,6 +43,7 @@ install -m 0644 resources/technologies/IBM/* %{buildroot}/usr/share/ercole/techn
 install -m 0644 resources/technologies/RedHat/* %{buildroot}/usr/share/ercole/technologies/RedHat/
 install -m 0644 resources/technologies/MariaDBFoundation/* %{buildroot}/usr/share/ercole/technologies/MariaDBFoundation/
 install -m 0644 resources/technologies/PostgreSQL/* %{buildroot}/usr/share/ercole/technologies/PostgreSQL/
+install -m 0644 resources/technologies/MongoDB/* %{buildroot}/usr/share/ercole/technologies/MongoDB/
 install -m 0644 resources/technologies/Unknown/* %{buildroot}/usr/share/ercole/technologies/Unknown/
 install -m 0644 resources/technologies/VMWare/* %{buildroot}/usr/share/ercole/technologies/VMWare/
 install -m 0644 package/systemd/*.service %{buildroot}%{_unitdir}/
@@ -112,6 +113,7 @@ ercole completion bash > /usr/share/bash-completion/completions/ercole
 /usr/share/ercole/technologies/RedHat/EnterpriseLinux8.png
 /usr/share/ercole/technologies/MariaDBFoundation/MariaDB.png
 /usr/share/ercole/technologies/PostgreSQL/PostgreSQL.png
+/usr/share/ercole/technologies/MongoDB/MongoDB.png
 /usr/share/ercole/technologies/Unknown/Unknown.png
 /usr/share/ercole/technologies/VMWare/VMWare.png
 /usr/share/ercole/templates/template_alerts.xlsx
