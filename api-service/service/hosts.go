@@ -346,7 +346,7 @@ func (as *APIService) ListLocations(user interface{}) ([]string, error) {
 
 	var m = make(map[string]bool)
 
-	for _, groupName := range user.(*model.User).Groups {
+	for _, groupName := range user.(dto.AllowedUser).Groups {
 		group, err := as.Database.GetGroup(groupName)
 		if err != nil {
 			return nil, err

@@ -17,17 +17,12 @@ package service
 
 import (
 	"github.com/ercole-io/ercole/v2/model"
-	"github.com/ercole-io/ercole/v2/utils"
 )
 
-func (as *APIService) GetNodes(user *model.User) ([]model.Node, error) {
-	if user == nil {
-		return nil, utils.ErrInvalidUser
-	}
-
+func (as *APIService) GetNodes(groups []string) ([]model.Node, error) {
 	userRoles := make([]string, 0)
 
-	for _, groupName := range user.Groups {
+	for _, groupName := range groups {
 		group, err := as.Database.GetGroup(groupName)
 		if err != nil {
 			return nil, err
