@@ -1,4 +1,4 @@
-// Copyright (c) 2022 Sorint.lab S.p.A.
+// Copyright (c) 2023 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -263,6 +263,12 @@ type APIServiceInterface interface {
 	// SearchOracleDatabases search databases
 	SearchPostgreSqlInstancesAsXLSX(filter dto.SearchPostgreSqlInstancesFilter) (*excelize.File, error)
 
+	// MONGODB
+	// SearchMongoDBInstances search databases
+	SearchMongoDBInstances(filter dto.SearchMongoDBInstancesFilter) (*dto.MongoDBInstanceResponse, error)
+	// SearchOracleDatabases search databases
+	SearchMongoDBInstancesAsXLSX(filter dto.SearchMongoDBInstancesFilter) (*excelize.File, error)
+
 	// ROLES
 	GetRole(name string) (*model.Role, error)
 	GetRoles() ([]model.Role, error)
@@ -297,7 +303,7 @@ type APIServiceInterface interface {
 	GetLDAPUsers(user string) ([]model.UserLDAP, error)
 	AddUserByLDAP(userLDAP model.UserLDAP, groups []string) error
 
-	GetNodes(groups []string) ([]model.Node, error) 
+	GetNodes(groups []string) ([]model.Node, error)
 	GetNode(name string) (*model.Node, error)
 	AddNode(node model.Node) error
 	UpdateNode(node model.Node) error

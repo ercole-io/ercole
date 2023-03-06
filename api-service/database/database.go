@@ -1,4 +1,4 @@
-// Copyright (c) 2022 Sorint.lab S.p.A.
+// Copyright (c) 2023 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -217,6 +217,9 @@ type MongoDatabaseInterface interface {
 
 	// POSTGRESQL
 	SearchPostgreSqlInstances(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) (*dto.PostgreSqlInstanceResponse, error)
+
+	// MONGODB
+	SearchMongoDBInstances(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) (*dto.MongoDBInstanceResponse, error)
 
 	// ROLES
 	GetRole(name string) (*model.Role, error)
