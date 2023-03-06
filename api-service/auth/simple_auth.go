@@ -32,6 +32,7 @@ import (
 	"github.com/ercole-io/ercole/v2/api-service/service"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
+	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/gorilla/context"
 )
@@ -167,7 +168,7 @@ func (ap *BasicAuthenticationProvider) AuthenticateMiddleware(next http.Handler)
 
 			ercoleGroups := ap.Service.GetMatchedGroupsName(claims.Groups)
 
-			context.Set(r, "user", dto.AllowedUser{Username: claims.Subject, Groups: ercoleGroups})
+			context.Set(r, "user", model.User{Username: claims.Subject, Groups: ercoleGroups})
 
 			next.ServeHTTP(w, r)
 			return
