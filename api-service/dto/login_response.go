@@ -15,20 +15,17 @@
 
 package dto
 
-type LoginResponse struct {
-	Token       string      `json:"token"`
-	AllowedUser AllowedUser `json:"allowedUser"`
-}
+import "github.com/ercole-io/ercole/v2/model"
 
-type AllowedUser struct {
-	Username string   `json:"username"`
-	Groups   []string `json:"groups"`
+type LoginResponse struct {
+	Token       string     `json:"token"`
+	AllowedUser model.User `json:"allowedUser"`
 }
 
 func ToLoginResponse(token string, user *User) LoginResponse {
 	return LoginResponse{
 		Token: token,
-		AllowedUser: AllowedUser{
+		AllowedUser: model.User{
 			Username: user.Username,
 			Groups:   user.Groups,
 		},

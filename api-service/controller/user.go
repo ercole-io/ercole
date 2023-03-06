@@ -133,12 +133,10 @@ func (ctrl *APIController) NewPassword(w http.ResponseWriter, r *http.Request) {
 func (ctrl *APIController) ChangePassword(w http.ResponseWriter, r *http.Request) {
 	username := mux.Vars(r)["username"]
 
-	user := context.Get(r, "user")
-	if user != nil {
-		if !user.(*model.User).IsAdmin() && user.(*model.User).Username != username {
-			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnauthorized, utils.ErrInvalidUser)
-			return
-		}
+	user := context.Get(r, "user").(model.User)
+	if !user.IsAdmin() && user.Username != username {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnauthorized, utils.ErrInvalidUser)
+		return
 	}
 
 	type changes struct {
@@ -164,11 +162,14 @@ func (ctrl *APIController) ChangePassword(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	u := user.(*model.User)
-	if err := ctrl.Service.RemoveLimitedGroup(*u); err != nil {
+	if err := ctrl.Service.RemoveLimitedGroup(user); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
 		return
 	}
 
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func (ctrl *APIController) GetInfo(w http.ResponseWriter, r *http.Request) {
+	utils.WriteJSONResponse(w, http.StatusOK, context.Get(r, "user"))
 }

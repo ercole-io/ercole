@@ -25,13 +25,13 @@ const SuperUser = "ercole"
 
 type User struct {
 	Username  string     `json:"username" bson:"username"`
-	Password  string     `json:"password" bson:"password"`
+	Password  string     `json:"password,omitempty" bson:"password"`
 	Salt      string     `json:"-" bson:"salt"`
-	LastLogin *time.Time `json:"lastLogin" bson:"lastLogin"`
-	FirstName string     `json:"firstName" bson:"firstName"`
-	LastName  string     `json:"lastName" bson:"lastName"`
+	LastLogin *time.Time `json:"lastLogin,omitempty" bson:"lastLogin"`
+	FirstName string     `json:"firstName,omitempty" bson:"firstName"`
+	LastName  string     `json:"lastName,omitempty" bson:"lastName"`
 	Groups    []string   `json:"groups" bson:"groups"`
-	Provider  string     `json:"provider" bson:"provider"`
+	Provider  string     `json:"provider,omitempty" bson:"provider"`
 }
 
 func (u *User) IsGroup(group string) bool {
