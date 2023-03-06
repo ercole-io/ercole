@@ -71,6 +71,7 @@ func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 
 	// USERS
 	router.HandleFunc(userGroup, ctrl.GetUsers).Methods("GET")
+	router.HandleFunc(fmt.Sprintf("%s/info", userGroup), ctrl.GetInfo).Methods("GET")
 	router.HandleFunc(fmt.Sprintf("%s/{username}", userGroup), ctrl.GetUser).Methods("GET")
 	router.HandleFunc(fmt.Sprintf("%s/{username}/change-password", userGroup), ctrl.ChangePassword).Methods("POST")
 
