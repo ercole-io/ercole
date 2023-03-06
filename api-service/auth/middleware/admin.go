@@ -15,7 +15,7 @@ func Admin(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		user := claims.(*model.User)
+		user := claims.(model.User)
 		if !user.IsAdmin() {
 			w.WriteHeader(http.StatusUnauthorized)
 			return

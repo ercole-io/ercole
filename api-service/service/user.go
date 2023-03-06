@@ -73,6 +73,11 @@ func (as *APIService) RemoveLimitedGroup(updatedUser model.User) error {
 		updatedUser.Groups = utils.RemoveString(updatedUser.Groups, model.GroupLimited)
 	}
 
+	// FIX: necessary remove Provider from model.User
+	if updatedUser.Provider == "" {
+		updatedUser.Provider = "basic"
+	}
+
 	return as.Database.UpdateUserGroups(updatedUser.Username, updatedUser.Provider, updatedUser.Groups)
 }
 
