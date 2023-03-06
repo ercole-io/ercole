@@ -1,4 +1,4 @@
-// Copyright (c) 2022 Sorint.lab S.p.A.
+// Copyright (c) 2023 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -178,6 +178,9 @@ func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 
 	// POSTGRESQL
 	router.HandleFunc("/hosts/technologies/postgresql/databases", ctrl.SearchPostgreSqlInstances).Methods("GET")
+
+	// MONGODB
+	router.HandleFunc("/hosts/technologies/mongodb/databases", ctrl.SearchMongoDBInstances).Methods("GET")
 
 	// ALERTS
 	router.HandleFunc("/alerts", ctrl.SearchAlerts).Methods("GET")

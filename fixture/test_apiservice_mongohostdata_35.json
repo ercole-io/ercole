@@ -1,0 +1,140 @@
+{
+    "agentVersion": "latest",
+    "archived": false,
+    "clusterMembershipStatus": {
+        "hacmp": false,
+        "oracleClusterware": false,
+        "sunCluster": true,
+        "veritasClusterServer": false
+    },
+    "clusters": null,
+    "createdAt": {
+        "$date": {
+            "$numberLong": "1588765163259"
+        }
+    },
+    "environment": "PRD",
+    "features": {
+        "mongodb": {
+            "replicaSet": {
+                "primary": "",
+                "hosts": null,
+                "setName": ""
+            },
+            "shardList": {
+                "shards": null
+            },
+            "serverStatus": {
+                "version": "6.0.1",
+                "dbs": 2,
+                "connections": {
+                    "current": 44,
+                    "available": 838816,
+                    "totalCreated": 191,
+                    "active": 12,
+                    "threaded": 44,
+                    "exhaustIsMaster": 0,
+                    "exhaustHello": 10,
+                    "awaitingTopologyChanges": 11,
+                    "loadBalanced": 0
+                }
+            },
+            "dbStats": [
+                {
+                    "dbName": "test",
+                    "charset": "UTF8",
+                    "collections": 1,
+                    "views": 0,
+                    "objects": 0,
+                    "indexes": 1,
+                    "dataSize": 0,
+                    "indexSize": 4096,
+                    "storageSize": 4096,
+                    "totalSize": 8192,
+                    "fsUsedSize": 28221689856,
+                    "fsTotalSize": 269490393088,
+                    "freeStorageSize": 0,
+                    "indexFreeStorageSize": 0,
+                    "totalFreeStorageSize": 0,
+                    "users": 0,
+                    "shardDBs": null
+                }
+            ]
+        }
+    },
+    "filesystems": [
+        {
+            "availableSpace": {
+                "$numberLong": "5798205849"
+            },
+            "filesystem": "/dev/mapper/cl_itl--csllab--112-root",
+            "mountedOn": "/",
+            "size": {
+                "$numberLong": "13958643712"
+            },
+            "type": "ext4",
+            "usedSpace": {
+                "$numberLong": "7194070220"
+            }
+        },
+        {
+            "availableSpace": {
+                "$numberLong": "335544320"
+            },
+            "filesystem": "/dev/sda1",
+            "mountedOn": "/boot",
+            "size": {
+                "$numberLong": "511705088"
+            },
+            "type": "ext4",
+            "usedSpace": {
+                "$numberLong": "139460608"
+            }
+        }
+    ],
+    "hostname": "test-db2",
+    "info": {
+        "cpuCores": {
+            "$numberInt": "1"
+        },
+        "cpuFrequency": "2.53GHz",
+        "cpuModel": "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
+        "cpuSockets": {
+            "$numberInt": "2"
+        },
+        "cpuThreads": {
+            "$numberInt": "2"
+        },
+        "coresPerSocket": {
+            "$numberInt": "1"
+        },
+        "hardwareAbstraction": "VIRT",
+        "hardwareAbstractionTechnology": "OVM",
+        "hostname": "test-db2",
+        "kernel": "Linux",
+        "kernelVersion": "3.10.0-514.el7.x86_64",
+        "memoryTotal": {
+            "$numberDouble": "3.0"
+        },
+        "os": "Red Hat Enterprise Linux",
+        "osVersion": "7.6",
+        "swapTotal": {
+            "$numberDouble": "1.0"
+        },
+        "threadsPerCore": {
+            "$numberInt": "2"
+        }
+    },
+    "location": "Germany",
+    "schemaVersion": {
+        "$numberDouble": "1.0"
+    },
+    "serverSchemaVersion": {
+        "$numberInt": "1"
+    },
+    "serverVersion": "latest",
+    "tags": [],
+    "_id": {
+        "$oid": "5eb2a1eba77f5e4badf8a2cc"
+    }
+}
