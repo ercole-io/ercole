@@ -627,9 +627,7 @@
                                                                     "indexes",
                                                                     "lob",
                                                                     "tables",
-                                                                    "total",
-                                                                    "user",
-                                                                    "accountStatus"
+                                                                    "total"
                                                                 ],
                                                                 "properties": {
                                                                     "indexes": {
