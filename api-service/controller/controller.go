@@ -1,4 +1,4 @@
-// Copyright (c) 2022 Sorint.lab S.p.A.
+// Copyright (c) 2023 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -181,6 +181,10 @@ type APIControllerInterface interface {
 	// POSTGRESQL
 	// SearchPostgreSqlInstances search instances data using the filters in the request
 	SearchPostgreSqlInstances(w http.ResponseWriter, r *http.Request)
+
+	// MONGODB
+	// SearchMongoDBInstances search instances data using the filters in the request
+	SearchMongoDBInstances(w http.ResponseWriter, r *http.Request)
 
 	// MYSQL CONTRACTS
 	AddMySQLContract(w http.ResponseWriter, r *http.Request)
