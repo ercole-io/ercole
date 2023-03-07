@@ -152,6 +152,7 @@ func (md *MongoDatabase) getHosts(mode string, filters dto.SearchHostsFilters, o
 						model.TechnologyMicrosoftSQLServer:   "$features.microsoft.sqlServer.instances.name",
 						model.TechnologyOracleMySQL:          "$features.mysql.instances.name",
 						model.TechnologyPostgreSQLPostgreSQL: "$features.postgresql.instances.name",
+						model.TechnologyMongoDBMongoDB:       "$features.mongodb.dbStats.dbName",
 					},
 				})),
 				mu.APOptionalStage(mode == "lms", mu.MAPipeline(

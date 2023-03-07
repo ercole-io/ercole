@@ -1,4 +1,4 @@
-// Copyright (c) 2022 Sorint.lab S.p.A.
+// Copyright (c) 2023 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ func (as *APIService) GetDatabaseConnectionStatus() bool {
 func (as *APIService) SearchDatabases(filter dto.GlobalFilter) ([]dto.Database, error) {
 	type getter func(filter dto.GlobalFilter) ([]dto.Database, error)
 
-	getters := []getter{as.getOracleDatabases, as.getMySQLDatabases, as.getSqlServerDatabases, as.getPostgreSqlDatabases}
+	getters := []getter{as.getOracleDatabases, as.getMySQLDatabases, as.getSqlServerDatabases, as.getPostgreSqlDatabases, as.getMongoDBDatabases}
 
 	dbs := make([]dto.Database, 0)
 
@@ -175,6 +175,36 @@ func (as *APIService) getPostgreSqlDatabases(filter dto.GlobalFilter) ([]dto.Dat
 		db := dto.Database{
 			Name:        instance.Name,
 			Type:        model.TechnologyPostgreSQLPostgreSQL,
+			Version:     instance.Version,
+			Hostname:    instance.Hostname,
+			Environment: instance.Environment,
+			Location:    instance.Location,
+			Charset:     instance.Charset,
+		}
+		dbs = append(dbs, db)
+	}
+
+	return dbs, nil
+}
+
+func (as *APIService) getMongoDBDatabases(filter dto.GlobalFilter) ([]dto.Database, error) {
+	sodf := dto.SearchMongoDBInstancesFilter{
+		GlobalFilter: filter,
+		PageNumber:   -1,
+		PageSize:     -1,
+	}
+
+	mongoDBInstances, err := as.SearchMongoDBInstances(sodf)
+	if err != nil {
+		return nil, err
+	}
+
+	dbs := make([]dto.Database, 0)
+
+	for _, instance := range mongoDBInstances.Content {
+		db := dto.Database{
+			Name:        instance.Name,
+			Type:        model.TechnologyMongoDBMongoDB,
 			Version:     instance.Version,
 			Hostname:    instance.Hostname,
 			Environment: instance.Environment,
