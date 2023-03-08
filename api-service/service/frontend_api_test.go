@@ -1,4 +1,4 @@
-// Copyright (c) 2022 Sorint.lab S.p.A.
+// Copyright (c) 2023 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -61,6 +61,12 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 					"compliance": 1,
 					"unpaidDues": 0,
 					"product":    model.TechnologyPostgreSQLPostgreSQL,
+					"hostsCount": 0,
+				},
+				{
+					"compliance": 1,
+					"unpaidDues": 0,
+					"product":    model.TechnologyMongoDBMongoDB,
 					"hostsCount": 0,
 				},
 				{

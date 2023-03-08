@@ -1,4 +1,4 @@
-// Copyright (c) 2022 Sorint.lab S.p.A.
+// Copyright (c) 2023 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -65,6 +65,19 @@ func (as *APIService) ListManagedTechnologies(sortBy string, sortDesc bool, loca
 	}
 
 	statuses = append(statuses, postgreSQLStatus)
+
+	mongoDBStatus := model.TechnologyStatus{
+		Product:            model.TechnologyMongoDBMongoDB,
+		ConsumedByHosts:    0,
+		CoveredByContracts: 0,
+		TotalCost:          0,
+		PaidCost:           0,
+		Compliance:         1,
+		UnpaidDues:         0,
+		HostsCount:         0,
+	}
+
+	statuses = append(statuses, mongoDBStatus)
 
 	mariaDBStatus := model.TechnologyStatus{
 		Product:            model.TechnologyMariaDBFoundationMariaDB,
