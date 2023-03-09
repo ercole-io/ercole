@@ -65,6 +65,7 @@ func (m *MongodbSuite) TestGetHostsCountUsingTechnologies() {
 			model.TechnologyOracleMySQL:          1,
 			model.TechnologyMicrosoftSQLServer:   0,
 			model.TechnologyPostgreSQLPostgreSQL: 0,
+			model.TechnologyMongoDBMongoDB:       0,
 		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))

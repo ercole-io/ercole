@@ -74,7 +74,7 @@ func (as *APIService) ListManagedTechnologies(sortBy string, sortDesc bool, loca
 		PaidCost:           0,
 		Compliance:         1,
 		UnpaidDues:         0,
-		HostsCount:         0,
+		HostsCount:         int(hostsCountByTechnology[model.TechnologyMongoDBMongoDB]),
 	}
 
 	statuses = append(statuses, mongoDBStatus)
