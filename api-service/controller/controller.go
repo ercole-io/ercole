@@ -165,6 +165,7 @@ type APIControllerInterface interface {
 	GetOraclePatchList(w http.ResponseWriter, r *http.Request)
 	GetOracleOptionList(w http.ResponseWriter, r *http.Request)
 	GetOracleChanges(w http.ResponseWriter, r *http.Request)
+	GetOraclePDBChanges(w http.ResponseWriter, r *http.Request)
 	GetOracleBackupList(w http.ResponseWriter, r *http.Request)
 	GetOracleServiceList(w http.ResponseWriter, r *http.Request)
 	ListOracleDatabasePartitionings(w http.ResponseWriter, r *http.Request)
@@ -214,7 +215,7 @@ type APIControllerInterface interface {
 	AddUser(w http.ResponseWriter, r *http.Request)
 	UpdateUser(w http.ResponseWriter, r *http.Request)
 	RemoveUser(w http.ResponseWriter, r *http.Request)
-	GetInfo(w http.ResponseWriter, r *http.Request) 
+	GetInfo(w http.ResponseWriter, r *http.Request)
 
 	GetLDAPUsers(w http.ResponseWriter, r *http.Request)
 	AddUserLDAP(w http.ResponseWriter, r *http.Request)
