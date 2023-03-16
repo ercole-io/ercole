@@ -35,11 +35,25 @@ func (as *APIService) SearchOracleDatabaseAddms(search string, sortBy string, so
 
 // SearchOracleDatabaseSegmentAdvisors search segment advisors
 func (as *APIService) SearchOracleDatabaseSegmentAdvisors(search string, sortBy string, sortDesc bool, location string, environment string, olderThan time.Time) ([]dto.OracleDatabaseSegmentAdvisor, error) {
-	return as.Database.SearchOracleDatabaseSegmentAdvisors(strings.Split(search, " "), sortBy, sortDesc, location, environment, olderThan)
+	result := make([]dto.OracleDatabaseSegmentAdvisor, 0)
+
+	if dbSegmentAdvisors, err := as.Database.SearchOracleDatabaseSegmentAdvisors(strings.Split(search, " "), sortBy, sortDesc, location, environment, olderThan); err != nil {
+		return nil, err
+	} else {
+		result = append(result, dbSegmentAdvisors...)
+	}
+
+	if pdbSegmentAdvisors, err := as.Database.SearchOraclePdbSegmentAdvisors(sortBy, sortDesc, location, environment, olderThan); err != nil {
+		return nil, err
+	} else {
+		result = append(result, pdbSegmentAdvisors...)
+	}
+
+	return result, nil
 }
 
 func (as *APIService) SearchOracleDatabaseSegmentAdvisorsAsXLSX(filter dto.GlobalFilter) (*excelize.File, error) {
-	segmentAdvisors, err := as.Database.SearchOracleDatabaseSegmentAdvisors([]string{}, "", false, filter.Location, filter.Environment, filter.OlderThan)
+	segmentAdvisors, err := as.SearchOracleDatabaseSegmentAdvisors("", "", false, filter.Location, filter.Environment, filter.OlderThan)
 	if err != nil {
 		return nil, err
 	}
@@ -51,6 +65,7 @@ func (as *APIService) SearchOracleDatabaseSegmentAdvisorsAsXLSX(filter dto.Globa
 		"Retrieve",
 		"Hostname",
 		"DB Names",
+		"PDB Name",
 		"Segment Owner",
 		"Segment Name",
 		"Segment Type",
@@ -78,6 +93,7 @@ func (as *APIService) SearchOracleDatabaseSegmentAdvisorsAsXLSX(filter dto.Globa
 
 		sheets.SetCellValue(sheet, nextAxis(), val.Hostname)
 		sheets.SetCellValue(sheet, nextAxis(), val.Dbname)
+		sheets.SetCellValue(sheet, nextAxis(), val.PdbName)
 		sheets.SetCellValue(sheet, nextAxis(), val.SegmentOwner)
 		sheets.SetCellValue(sheet, nextAxis(), val.SegmentName)
 		sheets.SetCellValue(sheet, nextAxis(), val.SegmentType)

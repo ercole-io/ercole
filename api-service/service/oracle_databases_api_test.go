@@ -138,9 +138,12 @@ func TestSearchOracleDatabaseSegmentAdvisorsXLSX_Success(t *testing.T) {
 	}
 
 	db.EXPECT().SearchOracleDatabaseSegmentAdvisors(
-		[]string{}, "",
+		[]string{""}, "",
 		false, "Italy", "TST", utils.P("2019-12-05T14:02:03Z"),
-	).Return(data, nil).Times(1)
+	).Return(data, nil).AnyTimes()
+
+	db.EXPECT().SearchOraclePdbSegmentAdvisors("",
+		false, "Italy", "TST", utils.P("2019-12-05T14:02:03Z")).Return([]dto.OracleDatabaseSegmentAdvisor{}, nil).AnyTimes()
 
 	filter := dto.GlobalFilter{
 		Location:    "Italy",
@@ -156,20 +159,22 @@ func TestSearchOracleDatabaseSegmentAdvisorsXLSX_Success(t *testing.T) {
 	assert.Equal(t, "0.086", actual.GetCellValue("Segment_Advisor", "C2"))
 	assert.Equal(t, "test-db3", actual.GetCellValue("Segment_Advisor", "D2"))
 	assert.Equal(t, "foobar3", actual.GetCellValue("Segment_Advisor", "E2"))
-	assert.Equal(t, "Brittany-424f6a749eef846fa40a1ad1ee3d3674", actual.GetCellValue("Segment_Advisor", "F2"))
-	assert.Equal(t, "pasta-973e4d1f937da4d9bc1b092f934ab0ec", actual.GetCellValue("Segment_Advisor", "G2"))
-	assert.Equal(t, "TABLE", actual.GetCellValue("Segment_Advisor", "H2"))
-	assert.Equal(t, "iyyiuyyoy", actual.GetCellValue("Segment_Advisor", "I2"))
+	assert.Equal(t, "", actual.GetCellValue("Segment_Advisor", "F2"))
+	assert.Equal(t, "Brittany-424f6a749eef846fa40a1ad1ee3d3674", actual.GetCellValue("Segment_Advisor", "G2"))
+	assert.Equal(t, "pasta-973e4d1f937da4d9bc1b092f934ab0ec", actual.GetCellValue("Segment_Advisor", "H2"))
+	assert.Equal(t, "TABLE", actual.GetCellValue("Segment_Advisor", "I2"))
+	assert.Equal(t, "iyyiuyyoy", actual.GetCellValue("Segment_Advisor", "J2"))
 
 	assert.Equal(t, "4.3", actual.GetCellValue("Segment_Advisor", "A3"))
 	assert.Equal(t, "0", actual.GetCellValue("Segment_Advisor", "B3"))
 	assert.Equal(t, "", actual.GetCellValue("Segment_Advisor", "C3"))
 	assert.Equal(t, "test-db3", actual.GetCellValue("Segment_Advisor", "D3"))
 	assert.Equal(t, "foobar3", actual.GetCellValue("Segment_Advisor", "E3"))
-	assert.Equal(t, "Brittany-424f6a749eef846fa40a1ad1ee3d3674", actual.GetCellValue("Segment_Advisor", "F3"))
-	assert.Equal(t, "pasta-973e4d1f937da4d9bc1b092f934ab0ec", actual.GetCellValue("Segment_Advisor", "G3"))
-	assert.Equal(t, "TABLE", actual.GetCellValue("Segment_Advisor", "H3"))
-	assert.Equal(t, "iyyiuyyoy", actual.GetCellValue("Segment_Advisor", "I3"))
+	assert.Equal(t, "", actual.GetCellValue("Segment_Advisor", "F3"))
+	assert.Equal(t, "Brittany-424f6a749eef846fa40a1ad1ee3d3674", actual.GetCellValue("Segment_Advisor", "G3"))
+	assert.Equal(t, "pasta-973e4d1f937da4d9bc1b092f934ab0ec", actual.GetCellValue("Segment_Advisor", "H3"))
+	assert.Equal(t, "TABLE", actual.GetCellValue("Segment_Advisor", "I3"))
+	assert.Equal(t, "iyyiuyyoy", actual.GetCellValue("Segment_Advisor", "J3"))
 
 }
 
@@ -182,9 +187,13 @@ func TestSearchOracleDatabaseSegmentAdvisorsXLSX_Fail(t *testing.T) {
 	}
 
 	db.EXPECT().SearchOracleDatabaseSegmentAdvisors(
-		[]string{}, "",
+		[]string{""}, "",
 		false, "Italy", "TST", utils.P("2019-12-05T14:02:03Z"),
-	).Return(nil, aerrMock).Times(1)
+	).Return(nil, aerrMock).AnyTimes()
+
+	db.EXPECT().SearchOraclePdbSegmentAdvisors("",
+		false, "Italy", "TST", utils.P("2019-12-05T14:02:03Z"),
+	).Return(nil, aerrMock).AnyTimes()
 
 	filter := dto.GlobalFilter{
 		Location:    "Italy",
