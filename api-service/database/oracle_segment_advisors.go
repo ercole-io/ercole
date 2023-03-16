@@ -83,3 +83,44 @@ func (md *MongoDatabase) SearchOracleDatabaseSegmentAdvisors(keywords []string, 
 
 	return segmentAdvisors, nil
 }
+
+func (md *MongoDatabase) SearchOraclePdbSegmentAdvisors(sortBy string, sortDesc bool,
+	location string, environment string, olderThan time.Time) ([]dto.OracleDatabaseSegmentAdvisor, error) {
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
+		context.TODO(),
+		mu.MAPipeline(
+			FilterByOldnessSteps(olderThan),
+			FilterByLocationAndEnvironmentSteps(location, environment),
+			bson.M{"$unwind": bson.M{"path": "$features.oracle.database.databases"}},
+			bson.M{"$unwind": bson.M{"path": "$features.oracle.database.databases.pdbs"}},
+			bson.M{"$unwind": bson.M{"path": "$features.oracle.database.databases.pdbs.segmentAdvisors"}},
+			bson.M{
+				"$project": bson.M{
+					"hostname":       1,
+					"location":       1,
+					"environment":    1,
+					"createdAt":      1,
+					"dbname":         "$features.oracle.database.databases.name",
+					"reclaimable":    "$features.oracle.database.databases.pdbs.segmentAdvisors.reclaimable",
+					"segmentOwner":   "$features.oracle.database.databases.pdbs.segmentAdvisors.segmentOwner",
+					"segmentName":    "$features.oracle.database.databases.pdbs.segmentAdvisors.segmentName",
+					"segmentType":    "$features.oracle.database.databases.pdbs.segmentAdvisors.segmentType",
+					"segmentsSize":   "$features.oracle.database.databases.pdbs.segmentsSize",
+					"partitionName":  "$features.oracle.database.databases.pdbs.segmentAdvisors.partitionName",
+					"recommendation": "$features.oracle.database.databases.pdbs.segmentAdvisors.recommendation",
+					"pdbName":        "$features.oracle.database.databases.pdbs.name",
+				},
+			},
+			mu.APOptionalSortingStage(sortBy, sortDesc),
+		))
+	if err != nil {
+		return nil, err
+	}
+
+	segmentAdvisors := make([]dto.OracleDatabaseSegmentAdvisor, 0)
+	if err := cur.All(context.TODO(), &segmentAdvisors); err != nil {
+		return nil, err
+	}
+
+	return segmentAdvisors, nil
+}

@@ -116,4 +116,5 @@ type OracleDatabaseSegmentAdvisor struct {
 	Environment    string    `json:"environment"`
 	Hostname       string    `json:"hostname"`
 	Location       string    `json:"location"`
+	PdbName        string    `json:"pdbName,omitempty"`
 }
