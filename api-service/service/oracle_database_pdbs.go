@@ -1,4 +1,4 @@
-// Copyright (c) 2022 Sorint.lab S.p.A.
+// Copyright (c) 2023 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,6 +16,8 @@
 package service
 
 import (
+	"time"
+
 	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
@@ -87,4 +89,8 @@ func (as *APIService) CreateOracleDatabasePdbsXlsx(filter dto.GlobalFilter) (*ex
 	}
 
 	return sheets, err
+}
+
+func (as *APIService) GetOraclePDBChanges(filter dto.GlobalFilter, hostname string, start time.Time, end time.Time) ([]dto.OraclePdbChange, error) {
+	return as.Database.FindOraclePDBChangesByHostname(filter, hostname, start, end)
 }

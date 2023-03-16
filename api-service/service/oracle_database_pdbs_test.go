@@ -48,3 +48,31 @@ func TestListOracleDatabasePdbs_Success(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, expected, res)
 }
+
+func TestGetOraclePDBChanges_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+		Config:   config.Configuration{},
+	}
+
+	updated := thisMoment
+	expected := []dto.OraclePdbChange{
+		{
+			PdbName:      "test_pdb",
+			Updated:      updated,
+			DatafileSize: 0,
+			SegmentsSize: 0,
+			Allocable:    0,
+		},
+	}
+
+	db.EXPECT().FindOraclePDBChangesByHostname(dto.GlobalFilter{}, "test_pdb", utils.MIN_TIME, utils.MAX_TIME).Return(expected, nil)
+
+	res, err := as.GetOraclePDBChanges(dto.GlobalFilter{}, "test_pdb", utils.MIN_TIME, utils.MAX_TIME)
+
+	require.NoError(t, err)
+	assert.Equal(t, expected, res)
+}

@@ -180,6 +180,7 @@ type APIServiceInterface interface {
 	// ORACLE DATABASE PLUGGABLE DBS
 	ListOracleDatabasePdbs(filter dto.GlobalFilter) ([]dto.OracleDatabasePluggableDatabase, error)
 	CreateOracleDatabasePdbsXlsx(filter dto.GlobalFilter) (*excelize.File, error)
+	GetOraclePDBChanges(filter dto.GlobalFilter, hostname string, start time.Time, end time.Time) ([]dto.OraclePdbChange, error)
 
 	// ORACLE DATABASE BACKUP
 	GetOracleBackupList(filter dto.GlobalFilter) ([]dto.OracleDatabaseBackupDto, error)
