@@ -152,7 +152,7 @@ func (md *MongoDatabase) getHosts(mode string, filters dto.SearchHostsFilters, o
 						model.TechnologyMicrosoftSQLServer:   "$features.microsoft.sqlServer.instances.name",
 						model.TechnologyOracleMySQL:          "$features.mysql.instances.name",
 						model.TechnologyPostgreSQLPostgreSQL: "$features.postgresql.instances.name",
-						model.TechnologyMongoDBMongoDB:       "$features.mongodb.dbStats.dbName",
+						model.TechnologyMongoDBMongoDB:       "$features.mongodb.instances.name",
 					},
 				})),
 				mu.APOptionalStage(mode == "lms", mu.MAPipeline(
@@ -869,7 +869,7 @@ func (md *MongoDatabase) getHostTechnology(hostname string, olderThan time.Time)
 					mu.APOCond(mu.APOGreater(mu.APOSize(mu.APOIfNull("$features.postgresql.instances", bson.A{})), 0), 1, 0),
 				),
 				model.TechnologyMongoDBMongoDB: mu.APOSum(
-					mu.APOCond(mu.APOGreater(mu.APOSize(mu.APOIfNull("$features.mongodb.dbStats", bson.A{})), 0), 1, 0),
+					mu.APOCond(mu.APOGreater(mu.APOSize(mu.APOIfNull("$features.mongodb.instances", bson.A{})), 0), 1, 0),
 				),
 			}),
 			mu.APUnset("_id"),

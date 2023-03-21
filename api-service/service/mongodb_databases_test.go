@@ -35,20 +35,22 @@ func TestSearchMongoDBInstances_Success(t *testing.T) {
 
 	expectedContent := []dto.MongoDBInstance{
 		{
-			Hostname:    "test-db",
-			Name:        "ercole",
-			Charset:     "UTF8",
-			Version:     "6.0.1",
-			Environment: "PRD",
-			Location:    "Germany",
+			Hostname:     "test-db",
+			Environment:  "PRD",
+			Location:     "Germany",
+			InstanceName: "host:27017",
+			DBName:       "ercole",
+			Charset:      "UTF8",
+			Version:      "6.0.1",
 		},
 		{
-			Hostname:    "test-db",
-			Name:        "ercole",
-			Charset:     "UTF8",
-			Version:     "6.0.1",
-			Environment: "PRD",
-			Location:    "Germany",
+			Hostname:     "test-db",
+			Environment:  "PRD",
+			Location:     "Germany",
+			InstanceName: "host:27017",
+			DBName:       "ercole",
+			Charset:      "UTF8",
+			Version:      "6.0.1",
 		},
 	}
 
