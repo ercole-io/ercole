@@ -43,10 +43,13 @@ func TestSearchMongoDBInstances_JSONPaged(t *testing.T) {
 
 	resContent := []dto.MongoDBInstance{
 		{
-			Hostname: "test-db",
-			Name:     "ercole",
-			Charset:  "UTF8",
-			Version:  "6.0.1",
+			Hostname:     "test-db",
+			Environment:  "TST",
+			Location:     "Italy",
+			InstanceName: "",
+			DBName:       "",
+			Charset:      "UTF8",
+			Version:      "6.0.1",
 		},
 	}
 
@@ -97,16 +100,22 @@ func TestSearchMongoDBInstances_JSONUnpaged(t *testing.T) {
 
 	resContent := []dto.MongoDBInstance{
 		{
-			Hostname: "test-db",
-			Name:     "ercole",
-			Charset:  "UTF8",
-			Version:  "6.0.1",
+			Hostname:     "test-db",
+			Environment:  "TST",
+			Location:     "Italy",
+			InstanceName: "",
+			DBName:       "",
+			Charset:      "UTF8",
+			Version:      "6.0.1",
 		},
 		{
-			Hostname: "test-db2",
-			Name:     "ercole",
-			Charset:  "UTF8",
-			Version:  "6.0.1",
+			Hostname:     "test-db2",
+			Environment:  "TST",
+			Location:     "Italy",
+			InstanceName: "",
+			DBName:       "",
+			Charset:      "UTF8",
+			Version:      "6.0.1",
 		},
 	}
 

@@ -27,12 +27,13 @@ type MongoDBInstanceResponse struct {
 }
 
 type MongoDBInstance struct {
-	Hostname    string `json:"hostname" bson:"hostname"`
-	Environment string `json:"environment" bson:"environment"`
-	Location    string `json:"location" bson:"location"`
-	Name        string `json:"dbName" bson:"dbName"`
-	Charset     string `json:"charset" bson:"charset"`
-	Version     string `json:"version" bson:"version"`
+	Hostname     string `json:"hostname" bson:"hostname"`
+	Environment  string `json:"environment" bson:"environment"`
+	Location     string `json:"location" bson:"location"`
+	InstanceName string `json:"name" bson:"name"`
+	DBName       string `json:"dbName" bson:"dbName"`
+	Charset      string `json:"charset" bson:"charset"`
+	Version      string `json:"version" bson:"version"`
 }
 
 type SearchMongoDBInstancesFilter struct {

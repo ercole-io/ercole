@@ -46,18 +46,20 @@ func (md *MongoDatabase) SearchMongoDBInstances(keywords []string, sortBy string
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			mu.APUnwind("$features.mongodb.dbStats"),
+			mu.APUnwind("$features.mongodb.instances"),
+			mu.APUnwind("$features.mongodb.instances.dbStats"),
 			mu.APProject(bson.M{
 				"hostname":    1,
 				"environment": 1,
 				"location":    1,
-				"version":     "$features.mongodb.serverStatus.version",
-				"instance":    "$features.mongodb.dbStats",
+				"instance":    "$features.mongodb.instances",
 			}),
 			mu.APSearchFilterStage([]interface{}{"$hostname", "$name"}, keywords),
 			mu.APAddFields(bson.M{
-				"dbName":  "$instance.dbName",
-				"charset": "$instance.charset",
+				"name":    "$instance.name",
+				"dbName":  "$instance.dbStats.dbName",
+				"charset": "$instance.dbStats.charset",
+				"version": "$instance.version",
 			}),
 			mu.APReplaceWith(mu.APOMergeObjects("$$ROOT", "$instance")),
 			mu.APUnset("instance"),
@@ -86,13 +88,12 @@ func (md *MongoDatabase) SearchMongoDBInstances(keywords []string, sortBy string
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			mu.APUnwind("$features.mongodb.dbStats"),
+			mu.APUnwind("$features.mongodb.instances"),
 			mu.APProject(bson.M{
 				"hostname":    1,
 				"environment": 1,
 				"location":    1,
-				"version":     "$features.mongodb.serverStatus.version",
-				"instance":    "$features.mongodb.dbStats",
+				"instance":    "$features.mongodb.instances",
 			}),
 			mu.APSearchFilterStage([]interface{}{"$hostname", "$name"}, keywords),
 			mu.APFacet(bson.M{

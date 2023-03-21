@@ -15,18 +15,14 @@
 
 package model
 
-type ServerStatus struct {
-	Version     string `json:"version" bson:"version"`
-	Dbs         int    `json:"dbs" bson:"dbs"`
-	Connections struct {
-		Current                 int `json:"current" bson:"current"`
-		Available               int `json:"available" bson:"available"`
-		TotalCreated            int `json:"totalCreated" bson:"totalCreated"`
-		Active                  int `json:"active" bson:"active"`
-		Threaded                int `json:"threaded" bson:"threaded"`
-		ExhaustIsMaster         int `json:"exhaustIsMaster" bson:"exhaustIsMaster"`
-		ExhaustHello            int `json:"exhaustHello" bson:"exhaustHello"`
-		AwaitingTopologyChanges int `json:"awaitingTopologyChanges" bson:"awaitingTopologyChanges"`
-		LoadBalanced            int `json:"loadBalanced" bson:"loadBalanced"`
-	} `json:"connections" bson:"connections"`
+type ServerStatusConnection struct {
+	Current                 int32 `json:"current" bson:"current"`
+	Available               int32 `json:"available" bson:"available"`
+	TotalCreated            int32 `json:"totalCreated" bson:"totalCreated"`
+	Active                  int32 `json:"active" bson:"active"`
+	Threaded                int32 `json:"threaded" bson:"threaded"`
+	ExhaustIsMaster         int32 `json:"exhaustIsMaster" bson:"exhaustIsMaster"`
+	ExhaustHello            int32 `json:"exhaustHello" bson:"exhaustHello"`
+	AwaitingTopologyChanges int32 `json:"awaitingTopologyChanges" bson:"awaitingTopologyChanges"`
+	LoadBalanced            int32 `json:"loadBalanced" bson:"loadBalanced"`
 }
