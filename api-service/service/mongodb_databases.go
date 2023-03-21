@@ -42,8 +42,10 @@ func (as *APIService) SearchMongoDBInstancesAsXLSX(filter dto.SearchMongoDBInsta
 	sheet := "Instances"
 	headers := []string{
 		"Hostname",
+		"Environment",
 		"Location",
 		"Name",
+		"DBName",
 		"Charset",
 		"Version",
 	}
@@ -58,8 +60,10 @@ func (as *APIService) SearchMongoDBInstancesAsXLSX(filter dto.SearchMongoDBInsta
 		nextAxis := axisHelp.NewRow()
 
 		file.SetCellValue(sheet, nextAxis(), val.Hostname)
+		file.SetCellValue(sheet, nextAxis(), val.Environment)
 		file.SetCellValue(sheet, nextAxis(), val.Location)
-		file.SetCellValue(sheet, nextAxis(), val.Name)
+		file.SetCellValue(sheet, nextAxis(), val.InstanceName)
+		file.SetCellValue(sheet, nextAxis(), val.DBName)
 		file.SetCellValue(sheet, nextAxis(), val.Charset)
 		file.SetCellValue(sheet, nextAxis(), val.Version)
 	}

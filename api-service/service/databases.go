@@ -200,18 +200,22 @@ func (as *APIService) getMongoDBDatabases(filter dto.GlobalFilter) ([]dto.Databa
 	}
 
 	dbs := make([]dto.Database, 0)
+	setUnique := make(map[string]dto.MongoDBInstance)
 
 	for _, instance := range mongoDBInstances.Content {
-		db := dto.Database{
-			Name:        instance.Name,
-			Type:        model.TechnologyMongoDBMongoDB,
-			Version:     instance.Version,
-			Hostname:    instance.Hostname,
-			Environment: instance.Environment,
-			Location:    instance.Location,
-			Charset:     instance.Charset,
+		if _, ok := setUnique[instance.InstanceName]; !ok {
+			db := dto.Database{
+				Name:        instance.InstanceName,
+				Type:        model.TechnologyMongoDBMongoDB,
+				Version:     instance.Version,
+				Hostname:    instance.Hostname,
+				Environment: instance.Environment,
+				Location:    instance.Location,
+				Charset:     instance.Charset,
+			}
+			dbs = append(dbs, db)
+			setUnique[instance.InstanceName] = instance
 		}
-		dbs = append(dbs, db)
 	}
 
 	return dbs, nil

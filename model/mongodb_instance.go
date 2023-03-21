@@ -15,6 +15,12 @@
 
 package model
 
-type MongoDBFeature struct {
-	Instances []MongoDBInstance `json:"instances" bson:"instances"`
+type MongoDBInstance struct {
+	Name             string                 `json:"name" bson:"name"`
+	Version          string                 `json:"version" bson:"version"`
+	Dbs              int                    `json:"dbs" bson:"dbs"`
+	ReplicaSet       HelloResult            `json:"replicaSet" bson:"replicaSet"`
+	ShardList        ShardStatus            `json:"shardList" bson:"shardList"`
+	StatusConnection ServerStatusConnection `json:"statusConnection" bson:"statusConnection"`
+	Stats            []DBStats              `json:"dbStats" bson:"dbStats"`
 }

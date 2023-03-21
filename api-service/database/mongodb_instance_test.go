@@ -97,12 +97,13 @@ func (m *MongodbSuite) TestSearchMongoDBInstances() {
 
 		var expectedContent []dto.MongoDBInstance = []dto.MongoDBInstance{
 			{
-				Hostname:    "test-db",
-				Environment: "TST",
-				Location:    "Germany",
-				Name:        "ercole",
-				Charset:     "UTF8",
-				Version:     "6.0.1",
+				Hostname:     "test-db",
+				Environment:  "TST",
+				Location:     "Germany",
+				InstanceName: "host:27017",
+				DBName:       "ercole",
+				Charset:      "UTF8",
+				Version:      "6.0.1",
 			},
 		}
 
@@ -127,12 +128,13 @@ func (m *MongodbSuite) TestSearchMongoDBInstances() {
 		m.Require().NoError(err)
 		var expectedContent []dto.MongoDBInstance = []dto.MongoDBInstance{
 			{
-				Hostname:    "test-db2",
-				Environment: "PRD",
-				Location:    "Germany",
-				Name:        "test",
-				Charset:     "UTF8",
-				Version:     "6.0.1",
+				Hostname:     "test-db2",
+				Environment:  "PRD",
+				Location:     "Germany",
+				InstanceName: "host:27017",
+				DBName:       "ercole",
+				Charset:      "UTF8",
+				Version:      "6.0.1",
 			},
 		}
 
@@ -178,12 +180,13 @@ func (m *MongodbSuite) TestSearchMongoDBInstances() {
 		m.Require().NoError(err)
 		var expectedContent []dto.MongoDBInstance = []dto.MongoDBInstance{
 			{
-				Hostname:    "test-db2",
-				Environment: "PRD",
-				Location:    "Germany",
-				Name:        "test",
-				Charset:     "UTF8",
-				Version:     "6.0.1",
+				Hostname:     "test-db2",
+				Environment:  "PRD",
+				Location:     "Germany",
+				InstanceName: "host:27017",
+				DBName:       "ercole",
+				Charset:      "UTF8",
+				Version:      "6.0.1",
 			},
 		}
 
@@ -208,20 +211,22 @@ func (m *MongodbSuite) TestSearchMongoDBInstances() {
 		m.Require().NoError(err)
 		var expectedContent []dto.MongoDBInstance = []dto.MongoDBInstance{
 			{
-				Hostname:    "test-db",
-				Environment: "TST",
-				Location:    "Germany",
-				Name:        "ercole",
-				Charset:     "UTF8",
-				Version:     "6.0.1",
+				Hostname:     "test-db",
+				Environment:  "TST",
+				Location:     "Germany",
+				InstanceName: "host:27017",
+				DBName:       "ercole",
+				Charset:      "UTF8",
+				Version:      "6.0.1",
 			},
 			{
-				Hostname:    "test-db2",
-				Environment: "PRD",
-				Location:    "Germany",
-				Name:        "test",
-				Charset:     "UTF8",
-				Version:     "6.0.1",
+				Hostname:     "test-db2",
+				Environment:  "PRD",
+				Location:     "Germany",
+				InstanceName: "host:27017",
+				DBName:       "ercole",
+				Charset:      "UTF8",
+				Version:      "6.0.1",
 			},
 		}
 
