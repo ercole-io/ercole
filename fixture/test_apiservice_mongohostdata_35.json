@@ -16,48 +16,51 @@
     "environment": "PRD",
     "features": {
         "mongodb": {
-            "replicaSet": {
-                "primary": "",
-                "hosts": null,
-                "setName": ""
-            },
-            "shardList": {
-                "shards": null
-            },
-            "serverStatus": {
-                "version": "6.0.1",
-                "dbs": 2,
-                "connections": {
-                    "current": 44,
-                    "available": 838816,
-                    "totalCreated": 191,
-                    "active": 12,
-                    "threaded": 44,
-                    "exhaustIsMaster": 0,
-                    "exhaustHello": 10,
-                    "awaitingTopologyChanges": 11,
-                    "loadBalanced": 0
-                }
-            },
-            "dbStats": [
+            "instances": [
                 {
-                    "dbName": "test",
-                    "charset": "UTF8",
-                    "collections": 1,
-                    "views": 0,
-                    "objects": 0,
-                    "indexes": 1,
-                    "dataSize": 0,
-                    "indexSize": 4096,
-                    "storageSize": 4096,
-                    "totalSize": 8192,
-                    "fsUsedSize": 28221689856,
-                    "fsTotalSize": 269490393088,
-                    "freeStorageSize": 0,
-                    "indexFreeStorageSize": 0,
-                    "totalFreeStorageSize": 0,
-                    "users": 0,
-                    "shardDBs": null
+                    "name": "host:27017",
+                    "version": "6.0.1",
+                    "dbs": 2,
+                    "replicaSet": {
+                        "primary": "",
+                        "hosts": null,
+                        "setName": ""
+                    },
+                    "shardList": {
+                        "shards": null
+                    },
+                    "statusConnection": {
+                        "current": 44,
+                        "available": 838816,
+                        "totalCreated": 191,
+                        "active": 12,
+                        "threaded": 44,
+                        "exhaustIsMaster": 0,
+                        "exhaustHello": 10,
+                        "awaitingTopologyChanges": 11,
+                        "loadBalanced": 0
+                    },
+                    "dbStats": [
+                        {
+                            "dbName": "ercole",
+                            "charset": "UTF8",
+                            "collections": 1,
+                            "views": 0,
+                            "objects": 0,
+                            "indexes": 1,
+                            "dataSize": 0,
+                            "indexSize": 4096,
+                            "storageSize": 4096,
+                            "totalSize": 8192,
+                            "fsUsedSize": 28221689856,
+                            "fsTotalSize": 269490393088,
+                            "freeStorageSize": 0,
+                            "indexFreeStorageSize": 0,
+                            "totalFreeStorageSize": 0,
+                            "users": 0,
+                            "shardDBs": null
+                        }
+                    ]
                 }
             ]
         }

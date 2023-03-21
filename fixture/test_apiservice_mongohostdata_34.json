@@ -16,48 +16,51 @@
     "environment": "TST",
     "features": {
         "mongodb": {
-            "replicaSet": {
-                "primary": "",
-                "hosts": null,
-                "setName": ""
-            },
-            "shardList": {
-                "shards": null
-            },
-            "serverStatus": {
-                "version": "6.0.1",
-                "dbs": 2,
-                "connections": {
-                    "current": 44,
-                    "available": 838816,
-                    "totalCreated": 191,
-                    "active": 12,
-                    "threaded": 44,
-                    "exhaustIsMaster": 0,
-                    "exhaustHello": 10,
-                    "awaitingTopologyChanges": 11,
-                    "loadBalanced": 0
-                }
-            },
-            "dbStats": [
+            "instances": [
                 {
-                    "dbName": "ercole",
-                    "charset": "UTF8",
-                    "collections": 20,
-                    "views": 1,
-                    "objects": 751,
-                    "indexes": 24,
-                    "dataSize": 1366415,
-                    "indexSize": 708608,
-                    "storageSize": 1150976,
-                    "totalSize": 1859584,
-                    "fsUsedSize": 28221689856,
-                    "fsTotalSize": 269490393088,
-                    "freeStorageSize": 495616,
-                    "indexFreeStorageSize": 249856,
-                    "totalFreeStorageSize": 745472,
-                    "users": 2,
-                    "shardDBs": null
+                    "name": "host:27017",
+                    "version": "6.0.1",
+                    "dbs": 2,
+                    "replicaSet": {
+                        "primary": "",
+                        "hosts": null,
+                        "setName": ""
+                    },
+                    "shardList": {
+                        "shards": null
+                    },
+                    "statusConnection": {
+                        "current": 44,
+                        "available": 838816,
+                        "totalCreated": 191,
+                        "active": 12,
+                        "threaded": 44,
+                        "exhaustIsMaster": 0,
+                        "exhaustHello": 10,
+                        "awaitingTopologyChanges": 11,
+                        "loadBalanced": 0
+                    },
+                    "dbStats": [
+                        {
+                            "dbName": "ercole",
+                            "charset": "UTF8",
+                            "collections": 20,
+                            "views": 1,
+                            "objects": 751,
+                            "indexes": 24,
+                            "dataSize": 1366415,
+                            "indexSize": 708608,
+                            "storageSize": 1150976,
+                            "totalSize": 1859584,
+                            "fsUsedSize": 28221689856,
+                            "fsTotalSize": 269490393088,
+                            "freeStorageSize": 495616,
+                            "indexFreeStorageSize": 249856,
+                            "totalFreeStorageSize": 745472,
+                            "users": 2,
+                            "shardDBs": null
+                        }
+                    ]
                 }
             ]
         }
