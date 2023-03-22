@@ -98,7 +98,9 @@ func (job *OciDataRetrieveJob) getOciProfileCompartments(tenancyOCID string, cus
 	}
 
 	req := identity.ListCompartmentsRequest{
-		CompartmentId: &tenancyOCID,
+		CompartmentId:          &tenancyOCID,
+		AccessLevel:            identity.ListCompartmentsAccessLevelAny,
+		CompartmentIdInSubtree: common.Bool(true),
 	}
 
 	resp, err := client.ListCompartments(context.Background(), req)
