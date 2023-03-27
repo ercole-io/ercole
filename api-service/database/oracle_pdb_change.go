@@ -48,6 +48,7 @@ func (md *MongoDatabase) FindOraclePDBChangesByHostname(filter dto.GlobalFilter,
 		bson.D{
 			{Key: "$project",
 				Value: bson.D{
+					{Key: "dbname", Value: "$features.oracle.database.databases.name"},
 					{Key: "pdbname", Value: "$features.oracle.database.databases.pdbs.name"},
 					{Key: "updated", Value: "$createdAt"},
 					{Key: "datafileSize", Value: "$features.oracle.database.databases.pdbs.datafileSize"},
