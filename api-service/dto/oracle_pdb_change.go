@@ -18,9 +18,10 @@ package dto
 import "time"
 
 type OraclePdbChange struct {
-	PdbName      string    `json:"pdbname" `
-	Updated      time.Time `json:"updated" `
-	DatafileSize float64   `json:"datafileSize" `
-	SegmentsSize float64   `json:"segmentsSize" `
-	Allocable    float64   `json:"allocable" `
+	DbName       string    `json:"dbname"`
+	PdbName      string    `json:"pdbname"`
+	Updated      time.Time `json:"updated"`
+	DatafileSize float64   `json:"datafileSize"`
+	SegmentsSize float64   `json:"segmentsSize"`
+	Allocable    float64   `json:"allocable"`
 }
