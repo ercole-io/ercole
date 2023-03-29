@@ -17,7 +17,6 @@ package auth
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -255,12 +254,10 @@ func TestGetToken_OK(t *testing.T) {
 
 	var claims jwt.RegisteredClaims
 
-	bodyJSON := map[string]interface{}{}
-	err = json.Unmarshal(rr.Body.Bytes(), &bodyJSON)
-	require.NoError(t, err)
+	require.NotEmpty(t, rr.Body.String())
 
 	jwt.TimeFunc = bap.TimeNow
-	_, err = jwt.ParseWithClaims(bodyJSON["token"].(string), &claims, func(_ *jwt.Token) (interface{}, error) {
+	_, err = jwt.ParseWithClaims(rr.Body.String(), &claims, func(_ *jwt.Token) (interface{}, error) {
 		return &privateKey.PublicKey, nil
 	})
 	require.NoError(t, err)
