@@ -34,6 +34,7 @@ import (
 	"github.com/ercole-io/ercole/v2/api-service/service"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
+	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/go-ldap/ldap"
 	"github.com/gorilla/context"
@@ -103,11 +104,6 @@ func (ap *LDAPAuthenticationProvider) Init() {
 
 // GetUserInfoIfCredentialsAreCorrect return the informations about the user if the provided credentials are correct, otherwise return nil
 func (ap *LDAPAuthenticationProvider) GetUserInfoIfCredentialsAreCorrect(username string, password string) (*dto.User, error) {
-	user, err := ap.Service.GetUser(username, LdapType)
-	if err != nil {
-		return nil, err
-	}
-
 	filter := fmt.Sprintf(ap.Config.LDAPUserFilter, ldap.EscapeFilter(username))
 	searchRequest := ldap.NewSearchRequest(
 		ap.Config.LDAPBase,
@@ -138,7 +134,7 @@ func (ap *LDAPAuthenticationProvider) GetUserInfoIfCredentialsAreCorrect(usernam
 		return nil, utils.NewError(err, "REBIND")
 	}
 
-	userDto := dto.ToUser(user)
+	userDto := dto.User{Username: username}
 
 	return &userDto, nil
 }
@@ -179,7 +175,12 @@ func (ap *LDAPAuthenticationProvider) GetToken(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	utils.WriteJSONResponse(w, http.StatusOK, dto.ToLoginResponse(token, userInfo))
+	if _, err := w.Write([]byte(token)); err != nil {
+		utils.WriteAndLogError(ap.Log, w, http.StatusInternalServerError, err)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 }
 
 // AuthenticateMiddleware return the middleware used to check if the users are authenticated
@@ -229,23 +230,7 @@ func (ap *LDAPAuthenticationProvider) AuthenticateMiddleware(next http.Handler) 
 				return
 			}
 
-			user, err := ap.Service.GetUser(claims.Subject, LdapType)
-			if err != nil {
-				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, err)
-				return
-			}
-
-			now := time.Now()
-
-			user.LastLogin = &now
-
-			errLastLogin := ap.Service.UpdateUserLastLogin(*user)
-			if errLastLogin != nil {
-				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, errLastLogin)
-				return
-			}
-
-			context.Set(r, "user", user)
+			context.Set(r, "user", model.User{Username: claims.Subject})
 
 			next.ServeHTTP(w, r)
 			return
