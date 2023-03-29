@@ -1,5 +1,5 @@
 # Build steps
-FROM golang:latest AS builder
+FROM golang:1.20 AS builder
 WORKDIR /app
 COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o ercole-services .
