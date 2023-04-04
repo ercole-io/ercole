@@ -31,7 +31,9 @@ func (as *APIService) ImportOracleDatabaseContracts(reader *csv.Reader) error {
 	}
 
 	for _, contract := range contracts {
-		contract.Hosts = strings.Split(string(contract.HostsLiteral), "|||")
+		if len(contract.HostsLiteral) > 0 {
+			contract.Hosts = strings.Split(string(contract.HostsLiteral), "|||")
+		}
 
 		if _, err := as.AddOracleDatabaseContract(contract); err != nil {
 			return err
@@ -49,8 +51,13 @@ func (as *APIService) ImportSQLServerDatabaseContracts(reader *csv.Reader) error
 	}
 
 	for _, contract := range contracts {
-		contract.Hosts = strings.Split(string(contract.HostsLiteral), "|||")
-		contract.Clusters = strings.Split(string(contract.ClusterLiteral), "|||")
+		if len(contract.HostsLiteral) > 0 {
+			contract.Hosts = strings.Split(string(contract.HostsLiteral), "|||")
+		}
+
+		if len(contract.ClusterLiteral) > 0 {
+			contract.Clusters = strings.Split(string(contract.ClusterLiteral), "|||")
+		}
 
 		if _, err := as.AddSqlServerDatabaseContract(contract); err != nil {
 			return err
@@ -68,8 +75,13 @@ func (as *APIService) ImportMySQLDatabaseContracts(reader *csv.Reader) error {
 	}
 
 	for _, contract := range contracts {
-		contract.Hosts = strings.Split(string(contract.HostsLiteral), "|||")
-		contract.Clusters = strings.Split(string(contract.ClusterLiteral), "|||")
+		if len(contract.HostsLiteral) > 0 {
+			contract.Hosts = strings.Split(string(contract.HostsLiteral), "|||")
+		}
+
+		if len(contract.ClusterLiteral) > 0 {
+			contract.Clusters = strings.Split(string(contract.ClusterLiteral), "|||")
+		}
 
 		if _, err := as.AddMySQLContract(contract); err != nil {
 			return err
