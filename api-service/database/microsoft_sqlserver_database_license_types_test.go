@@ -50,6 +50,18 @@ func (m *MongodbSuite) TestGetSqlServerDatabaseLicenseTypes() {
 				Version:         "2019",
 			},
 			model.SqlServerDatabaseLicenseType{
+				ID:              "LYQ7J4MTPCSOIKFDB",
+				ItemDescription: "SQL Server 2017 Standard Core",
+				Edition:         "STD",
+				Version:         "2017",
+			},
+			model.SqlServerDatabaseLicenseType{
+				ID:              "QQSWRN2BT8VM1NJIV",
+				ItemDescription: "SQL Server 2017 Enterprise Core",
+				Edition:         "ENT",
+				Version:         "2017",
+			},
+			model.SqlServerDatabaseLicenseType{
 				ID:              "AU1GNGYG2DBH317JG",
 				ItemDescription: "SQL Server 2016 Standard Core",
 				Edition:         "STD",
