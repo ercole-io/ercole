@@ -142,6 +142,7 @@ type APIServiceInterface interface {
 	DeleteHostFromOracleDatabaseContracts(hostname string) error
 
 	ImportOracleDatabaseContracts(reader *csv.Reader) error
+	GetLicenseContractSample(dbtype string) ([]byte, error)
 
 	// ORACLE DATABASE LICENSES
 
