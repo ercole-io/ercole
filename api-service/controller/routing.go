@@ -192,6 +192,7 @@ func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 
 	// UPLOADS
 	router.HandleFunc("/contracts/{databaseType}/upload", ctrl.ImportContractFromCSV).Methods("POST")
+	router.HandleFunc("/contracts/{databaseType}/sample", ctrl.GetContractSampleCSV).Methods("GET")
 
 	ctrl.setupSettingsRoutes(router.PathPrefix("/settings").Subrouter())
 	ctrl.setupFrontendAPIRoutes(router.PathPrefix("/frontend").Subrouter())

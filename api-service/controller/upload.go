@@ -18,6 +18,7 @@ package controller
 import (
 	"encoding/csv"
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/ercole-io/ercole/v2/utils"
@@ -65,4 +66,27 @@ func (ctrl *APIController) ImportContractFromCSV(w http.ResponseWriter, r *http.
 	}
 
 	w.WriteHeader(http.StatusOK)
+}
+
+func (ctrl *APIController) GetContractSampleCSV(w http.ResponseWriter, r *http.Request) {
+	databaseType := mux.Vars(r)["databaseType"]
+	if databaseType != ORACLE && databaseType != SQLSERVER && databaseType != MYSQL {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, errors.New("invalid database type in param"))
+		return
+	}
+
+	res, err := ctrl.Service.GetLicenseContractSample(databaseType)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=sample_%s_contracts.csv", databaseType))
+	w.Header().Set("Content-Type", "text/csv")
+	w.WriteHeader(http.StatusOK)
+
+	if _, err := w.Write(res); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
 }
