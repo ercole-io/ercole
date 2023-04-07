@@ -17,6 +17,7 @@ package service
 
 import (
 	"encoding/csv"
+	"fmt"
 	"strings"
 
 	"github.com/ercole-io/ercole/v2/model"
@@ -89,4 +90,20 @@ func (as *APIService) ImportMySQLDatabaseContracts(reader *csv.Reader) error {
 	}
 
 	return nil
+}
+
+func (as *APIService) GetLicenseContractSample(dbtype string) ([]byte, error) {
+	switch dbtype {
+	case "oracle":
+		empData := []model.OracleDatabaseContract{}
+		return gocsv.MarshalBytes(empData)
+	case "sqlserver":
+		empData := []model.SqlServerDatabaseContract{}
+		return gocsv.MarshalBytes(empData)
+	case "mysql":
+		empData := []model.MySQLContract{}
+		return gocsv.MarshalBytes(empData)
+	default:
+		return nil, fmt.Errorf("cannot match database type: %s", dbtype)
+	}
 }
