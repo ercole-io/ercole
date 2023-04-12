@@ -17,12 +17,11 @@ package dto
 
 // OracleDatabasePartitioning holds the informations about a partitioning.
 type OracleDatabasePartitioning struct {
-	Hostname      string  `json:"hostname" bson:"hostname"`
-	DatabaseName  string  `json:"databaseName" bson:"databaseName"`
-	Owner         string  `json:"owner" bson:"owner"`
-	SegmentName   string  `json:"segmentName" bson:"segmentName"`
-	PartitionName string  `json:"partitionName" bson:"partitionName"`
-	SegmentType   string  `json:"segmentType" bson:"segmentType"`
-	Mb            float64 `json:"mb" bson:"mb"`
-	Pdb           string  `json:"pdb,omitempty" bson:"pdb,omitempty"`
+	Hostname     string  `json:"hostname" bson:"hostname"`
+	DatabaseName string  `json:"databaseName" bson:"databaseName"`
+	Owner        string  `json:"owner" bson:"owner"`
+	SegmentName  string  `json:"segmentName" bson:"segmentName"`
+	Count        int     `json:"count" bson:"count"`
+	Mb           float64 `json:"mb" bson:"mb"`
+	Pdb          string  `json:"pdb,omitempty" bson:"pdb,omitempty"`
 }

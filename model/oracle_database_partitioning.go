@@ -17,9 +17,8 @@ package model
 
 // OracleDatabasePartitioning holds the informations about a partitioning.
 type OracleDatabasePartitioning struct {
-	Owner         string  `json:"owner" bson:"owner"`
-	SegmentName   string  `json:"segmentName" bson:"segmentName"`
-	PartitionName string  `json:"partitionName" bson:"partitionName"`
-	SegmentType   string  `json:"segmentType" bson:"segmentType"`
-	Mb            float64 `json:"mb" bson:"mb"`
+	Owner       string  `json:"owner" bson:"owner"`
+	SegmentName string  `json:"segmentName" bson:"segmentName"`
+	Count       int     `json:"count" bson:"count"`
+	Mb          float64 `json:"mb" bson:"mb"`
 }
