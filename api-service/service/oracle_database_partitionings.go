@@ -59,8 +59,7 @@ func (as *APIService) CreateOracleDatabasePartitioningsXlsx(filter dto.GlobalFil
 		"PDB Name",
 		"Owner",
 		"Segment Name",
-		"Partition Name",
-		"Segment Type",
+		"Count",
 		"Mb",
 	}
 
@@ -78,8 +77,7 @@ func (as *APIService) CreateOracleDatabasePartitioningsXlsx(filter dto.GlobalFil
 		sheets.SetCellValue(sheet, nextAxis(), "")
 		sheets.SetCellValue(sheet, nextAxis(), val.Owner)
 		sheets.SetCellValue(sheet, nextAxis(), val.SegmentName)
-		sheets.SetCellValue(sheet, nextAxis(), val.PartitionName)
-		sheets.SetCellValue(sheet, nextAxis(), val.SegmentType)
+		sheets.SetCellValue(sheet, nextAxis(), val.Count)
 		sheets.SetCellValue(sheet, nextAxis(), val.Mb)
 	}
 
@@ -90,8 +88,7 @@ func (as *APIService) CreateOracleDatabasePartitioningsXlsx(filter dto.GlobalFil
 		sheets.SetCellValue(sheet, nextAxis(), valPdb.Pdb)
 		sheets.SetCellValue(sheet, nextAxis(), valPdb.Owner)
 		sheets.SetCellValue(sheet, nextAxis(), valPdb.SegmentName)
-		sheets.SetCellValue(sheet, nextAxis(), valPdb.PartitionName)
-		sheets.SetCellValue(sheet, nextAxis(), valPdb.SegmentType)
+		sheets.SetCellValue(sheet, nextAxis(), valPdb.Count)
 		sheets.SetCellValue(sheet, nextAxis(), valPdb.Mb)
 	}
 

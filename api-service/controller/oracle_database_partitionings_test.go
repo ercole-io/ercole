@@ -44,13 +44,12 @@ func TestListOracleDatabasePartitionings_Success(t *testing.T) {
 
 	result := []dto.OracleDatabasePartitioning{
 		{
-			Hostname:      "hostname",
-			DatabaseName:  "databasename",
-			Owner:         "ownername",
-			SegmentName:   "segmentname",
-			PartitionName: "partitionname",
-			SegmentType:   "segmentype",
-			Mb:            100,
+			Hostname:     "hostname",
+			DatabaseName: "databasename",
+			Owner:        "ownername",
+			SegmentName:  "segmentname",
+			Count:        1,
+			Mb:           100,
 		},
 	}
 
@@ -96,8 +95,7 @@ func TestGetOracleDatabasePartitioningsXLSX_Success(t *testing.T) {
 		"PDB Name",
 		"Owner",
 		"Segment Name",
-		"Partition Name",
-		"Segment Type",
+		"Count",
 		"Mb",
 	}
 
@@ -129,7 +127,6 @@ func TestGetOracleDatabasePartitioningsXLSX_Success(t *testing.T) {
 	assert.Equal(t, "PDB Name", sp.GetCellValue("Partitioning", "C1"))
 	assert.Equal(t, "Owner", sp.GetCellValue("Partitioning", "D1"))
 	assert.Equal(t, "Segment Name", sp.GetCellValue("Partitioning", "E1"))
-	assert.Equal(t, "Partition Name", sp.GetCellValue("Partitioning", "F1"))
-	assert.Equal(t, "Segment Type", sp.GetCellValue("Partitioning", "G1"))
-	assert.Equal(t, "Mb", sp.GetCellValue("Partitioning", "H1"))
+	assert.Equal(t, "Count", sp.GetCellValue("Partitioning", "F1"))
+	assert.Equal(t, "Mb", sp.GetCellValue("Partitioning", "G1"))
 }
