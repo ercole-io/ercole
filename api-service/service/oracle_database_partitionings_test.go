@@ -41,8 +41,7 @@ func TestListOracleDatabasePartitionings_Success(t *testing.T) {
 			DatabaseName:  "databasename",
 			Owner:         "ownername",
 			SegmentName:   "segmentname",
-			PartitionName: "partitionname",
-			SegmentType:   "segmentype",
+			Count: 1,
 			Mb:            100,
 		},
 	}
@@ -54,8 +53,7 @@ func TestListOracleDatabasePartitionings_Success(t *testing.T) {
 			Pdb:           "pdbname",
 			Owner:         "ownername",
 			SegmentName:   "segmentname",
-			PartitionName: "partitionname",
-			SegmentType:   "segmentype",
+			Count: 1,
 			Mb:            100,
 		},
 	}

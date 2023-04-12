@@ -141,7 +141,7 @@
                                     "$numberDouble": "0.0"
                                 },
                                 "name": "Oracle EXE",
-                                "ignored": false, 
+                                "ignored": false,
                                 "licenseTypeID": "",
                                 "ignoredComment": ""
                             },
@@ -150,7 +150,7 @@
                                     "$numberDouble": "0.5"
                                 },
                                 "name": "Oracle ENT",
-                                "ignored": false, 
+                                "ignored": false,
                                 "licenseTypeID": "",
                                 "ignoredComment": ""
                             },
@@ -159,7 +159,7 @@
                                     "$numberDouble": "0.0"
                                 },
                                 "name": "Oracle STD",
-                                "ignored": false, 
+                                "ignored": false,
                                 "licenseTypeID": "",
                                 "ignoredComment": ""
                             },
@@ -168,7 +168,7 @@
                                     "$numberDouble": "0.0"
                                 },
                                 "name": "WebLogic Server Management Pack Enterprise Edition",
-                                "ignored": false, 
+                                "ignored": false,
                                 "licenseTypeID": "",
                                 "ignoredComment": ""
                             },
@@ -177,7 +177,7 @@
                                     "$numberDouble": "0.0"
                                 },
                                 "name": "Tuning Pack",
-                                "ignored": false, 
+                                "ignored": false,
                                 "licenseTypeID": "",
                                 "ignoredComment": ""
                             },
@@ -186,7 +186,7 @@
                                     "$numberDouble": "0.0"
                                 },
                                 "name": "Spatial and Graph",
-                                "ignored": false, 
+                                "ignored": false,
                                 "licenseTypeID": "",
                                 "ignoredComment": ""
                             },
@@ -195,7 +195,7 @@
                                     "$numberDouble": "0.0"
                                 },
                                 "name": "Secure Backup",
-                                "ignored": false, 
+                                "ignored": false,
                                 "licenseTypeID": "",
                                 "ignoredComment": ""
                             },
@@ -204,7 +204,7 @@
                                     "$numberDouble": "0.0"
                                 },
                                 "name": "Real Application Testing",
-                                "ignored": false, 
+                                "ignored": false,
                                 "licenseTypeID": "",
                                 "ignoredComment": ""
                             },
@@ -213,7 +213,7 @@
                                     "$numberDouble": "0.0"
                                 },
                                 "name": "Real Application Clusters",
-                                "ignored": false, 
+                                "ignored": false,
                                 "licenseTypeID": "",
                                 "ignoredComment": ""
                             },
@@ -222,7 +222,7 @@
                                     "$numberDouble": "0.0"
                                 },
                                 "name": "Real Application Clusters One Node",
-                                "ignored": false, 
+                                "ignored": false,
                                 "licenseTypeID": "",
                                 "ignoredComment": ""
                             },
@@ -231,7 +231,7 @@
                                     "$numberDouble": "0.0"
                                 },
                                 "name": "RAC or RAC One Node",
-                                "ignored": false, 
+                                "ignored": false,
                                 "licenseTypeID": "",
                                 "ignoredComment": ""
                             },
@@ -240,7 +240,7 @@
                                     "$numberDouble": "0.0"
                                 },
                                 "name": "Provisioning and Patch Automation Pack",
-                                "ignored": false, 
+                                "ignored": false,
                                 "licenseTypeID": "",
                                 "ignoredComment": ""
                             },
@@ -249,7 +249,7 @@
                                     "$numberDouble": "0.0"
                                 },
                                 "name": "Provisioning and Patch Automation Pack for Database",
-                                "ignored": false, 
+                                "ignored": false,
                                 "licenseTypeID": "",
                                 "ignoredComment": ""
                             },
@@ -258,7 +258,7 @@
                                     "$numberDouble": "0.0"
                                 },
                                 "name": "Pillar Storage",
-                                "ignored": false, 
+                                "ignored": false,
                                 "licenseTypeID": "",
                                 "ignoredComment": ""
                             },
@@ -267,7 +267,7 @@
                                     "$numberDouble": "0.0"
                                 },
                                 "name": "Partitioning",
-                                "ignored": false, 
+                                "ignored": false,
                                 "licenseTypeID": "",
                                 "ignoredComment": ""
                             },
@@ -276,7 +276,7 @@
                                     "$numberDouble": "0.0"
                                 },
                                 "name": "OLAP",
-                                "ignored": false, 
+                                "ignored": false,
                                 "licenseTypeID": "",
                                 "ignoredComment": ""
                             },
@@ -285,7 +285,7 @@
                                     "$numberDouble": "0.0"
                                 },
                                 "name": "Multitenant",
-                                "ignored": false, 
+                                "ignored": false,
                                 "licenseTypeID": "",
                                 "ignoredComment": ""
                             },
@@ -294,7 +294,7 @@
                                     "$numberDouble": "0.0"
                                 },
                                 "name": "Label Security",
-                                "ignored": false, 
+                                "ignored": false,
                                 "licenseTypeID": "",
                                 "ignoredComment": ""
                             },
@@ -303,7 +303,7 @@
                                     "$numberDouble": "0.0"
                                 },
                                 "name": "HW",
-                                "ignored": false, 
+                                "ignored": false,
                                 "licenseTypeID": "",
                                 "ignoredComment": ""
                             },
@@ -312,7 +312,7 @@
                                     "$numberDouble": "0.0"
                                 },
                                 "name": "GoldenGate",
-                                "ignored": false, 
+                                "ignored": false,
                                 "licenseTypeID": "",
                                 "ignoredComment": ""
                             },
@@ -321,7 +321,7 @@
                                     "$numberDouble": "0.0"
                                 },
                                 "name": "Exadata",
-                                "ignored": false, 
+                                "ignored": false,
                                 "licenseTypeID": "",
                                 "ignoredComment": ""
                             },
@@ -330,7 +330,7 @@
                                     "$numberDouble": "0.5"
                                 },
                                 "name": "Diagnostics Pack",
-                                "ignored": false, 
+                                "ignored": false,
                                 "licenseTypeID": "",
                                 "ignoredComment": ""
                             },
@@ -339,7 +339,7 @@
                                     "$numberDouble": "0.0"
                                 },
                                 "name": "Database Vault",
-                                "ignored": false, 
+                                "ignored": false,
                                 "licenseTypeID": "",
                                 "ignoredComment": ""
                             },
@@ -348,7 +348,7 @@
                                     "$numberDouble": "0.0"
                                 },
                                 "name": "Database In-Memory",
-                                "ignored": false, 
+                                "ignored": false,
                                 "licenseTypeID": "",
                                 "ignoredComment": ""
                             },
@@ -357,7 +357,7 @@
                                     "$numberDouble": "0.0"
                                 },
                                 "name": "Database Gateway",
-                                "ignored": false, 
+                                "ignored": false,
                                 "licenseTypeID": "",
                                 "ignoredComment": ""
                             },
@@ -366,7 +366,7 @@
                                     "$numberDouble": "0.0"
                                 },
                                 "name": "Data Masking Pack",
-                                "ignored": false, 
+                                "ignored": false,
                                 "licenseTypeID": "",
                                 "ignoredComment": ""
                             },
@@ -375,7 +375,7 @@
                                     "$numberDouble": "0.0"
                                 },
                                 "name": "Configuration Management Pack for Oracle Database",
-                                "ignored": false, 
+                                "ignored": false,
                                 "licenseTypeID": "",
                                 "ignoredComment": ""
                             },
@@ -384,7 +384,7 @@
                                     "$numberDouble": "0.0"
                                 },
                                 "name": "Change Management Pack",
-                                "ignored": false, 
+                                "ignored": false,
                                 "licenseTypeID": "",
                                 "ignoredComment": ""
                             },
@@ -393,7 +393,7 @@
                                     "$numberDouble": "0.0"
                                 },
                                 "name": "Advanced Security",
-                                "ignored": false, 
+                                "ignored": false,
                                 "licenseTypeID": "",
                                 "ignoredComment": ""
                             },
@@ -402,7 +402,7 @@
                                     "$numberDouble": "0.0"
                                 },
                                 "name": "Advanced Compression",
-                                "ignored": false, 
+                                "ignored": false,
                                 "licenseTypeID": "",
                                 "ignoredComment": ""
                             },
@@ -411,7 +411,7 @@
                                     "$numberDouble": "0.0"
                                 },
                                 "name": "Advanced Analytics",
-                                "ignored": false, 
+                                "ignored": false,
                                 "licenseTypeID": "",
                                 "ignoredComment": ""
                             },
@@ -420,7 +420,7 @@
                                     "$numberDouble": "0.0"
                                 },
                                 "name": "Active Data Guard",
-                                "ignored": false, 
+                                "ignored": false,
                                 "licenseTypeID": "",
                                 "ignoredComment": ""
                             },
@@ -429,7 +429,7 @@
                                     "$numberDouble": "0.0"
                                 },
                                 "name": "Active Data Guard or Real Application Clusters",
-                                "ignored": false, 
+                                "ignored": false,
                                 "licenseTypeID": "",
                                 "ignoredComment": ""
                             }
@@ -469,7 +469,7 @@
                                     "$numberInt": "192"
                                 },
                                 "user": "RAF",
-                                "accountStatus": "status" 
+                                "accountStatus": "status"
                             },
                             {
                                 "indexes": {
@@ -644,8 +644,9 @@
                             {
                                 "owner": "OWNER",
                                 "segmentName": "SEGMENTNAME",
-                                "partitionName": "PARTITIONAME",
-                                "segmentType": "INDEX",
+                                "count": {
+                                    "$numberInt": "1"
+                                },
                                 "mb": {
                                     "$numberDouble": "32767.9844"
                                 }
