@@ -17,26 +17,22 @@ package model
 
 // OracleExadataComponent holds informations about a device in a exadata
 type OracleExadataComponent struct {
-	Hostname             string                   `json:"hostname" bson:"hostname"`
-	ServerType           string                   `json:"serverType" bson:"serverType"`
-	Model                string                   `json:"model" bson:"model"`
-	SwVersion            string                   `json:"swVersion" bson:"swVersion"`
-	SwReleaseDate        string                   `json:"swReleaseDate" bson:"swReleaseDate"`
-	RunningCPUCount      *int                     `json:"runningCPUCount" bson:"runningCPUCount"`
-	TotalCPUCount        *int                     `json:"totalCPUCount" bson:"totalCPUCount"`
-	Memory               *int                     `json:"memory" bson:"memory"`
-	Status               *string                  `json:"status" bson:"status"`
-	RunningPowerSupply   *int                     `json:"runningPowerSupply" bson:"runningPowerSupply"`
-	TotalPowerSupply     *int                     `json:"totalPowerSupply" bson:"totalPowerSupply"`
-	PowerStatus          *string                  `json:"powerStatus" bson:"powerStatus"`
-	RunningFanCount      *int                     `json:"runningFanCount" bson:"runningFanCount"`
-	TotalFanCount        *int                     `json:"totalFanCount" bson:"totalFanCount"`
-	FanStatus            *string                  `json:"fanStatus" bson:"fanStatus"`
-	TempActual           *float64                 `json:"tempActual" bson:"tempActual"`
-	TempStatus           *string                  `json:"tempStatus" bson:"tempStatus"`
-	CellsrvServiceStatus *string                  `json:"cellsrvServiceStatus" bson:"cellsrvServiceStatus"`
-	MsServiceStatus      *string                  `json:"msServiceStatus" bson:"msServiceStatus"`
-	RsServiceStatus      *string                  `json:"rsServiceStatus" bson:"rsServiceStatus"`
-	FlashcacheMode       *string                  `json:"flashcacheMode" bson:"flashcacheMode"`
-	CellDisks            *[]OracleExadataCellDisk `json:"cellDisks" bson:"cellDisks"`
+	HostType          string                     `json:"hostType" bson:"hostType"`
+	Hostname          string                     `json:"hostname" bson:"hostname"`
+	CPUEnabled        int                        `json:"cpuEnabled" bson:"cpuEnabled"`
+	TotalCPU          int                        `json:"totalCPU" bson:"totalCPU"`
+	Memory            int                        `json:"memory" bson:"memory"`
+	ImageVersion      string                     `json:"imageVersion" bson:"imageVersion"`
+	Kernel            string                     `json:"kernel" bson:"kernel"`
+	Model             string                     `json:"model" bson:"model"`
+	FanUsed           int                        `json:"fanUsed" bson:"fanUsed"`
+	FanTotal          int                        `json:"fanTotal" bson:"fanTotal"`
+	PsuUsed           int                        `json:"psuUsed" bson:"psuUsed"`
+	PsuTotal          int                        `json:"psuTotal" bson:"psuTotal"`
+	MsStatus          string                     `json:"msStatus" bson:"msStatus"`
+	RsStatus          string                     `json:"rsStatus" bson:"rsStatus"`
+	CellServiceStatus string                     `json:"cellServiceStatus" bson:"cellServiceStatus"`
+	SwVersion         string                     `json:"swVersion" bson:"swVersion"`
+	VMs               []OracleExadataVM          `json:"VMs,omitempty" bson:"VMs"`
+	StorageCells      []OracleExadataStorageCell `json:"storageCells,omitempty" bson:"storageCells"`
 }

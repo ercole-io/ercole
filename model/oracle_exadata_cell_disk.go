@@ -15,10 +15,12 @@
 
 package model
 
-// OracleExadataCellDisk holds info about a exadata cell disk
-type OracleExadataCellDisk struct {
-	ErrCount int    `json:"errCount" bson:"errCount"`
-	Name     string `json:"name" bson:"name"`
-	Status   string `json:"status" bson:"status"`
-	UsedPerc int    `json:"usedPerc" bson:"usedPerc"`
+// OracleExadataStorageCell holds info about a exadata cell disk
+type OracleExadataStorageCell struct {
+	Type       string `json:"type" bson:"type"`
+	CellDisk   string `json:"cellDisk" bson:"cellDisk"`
+	Size       string `json:"size" bson:"size"`
+	FreeSpace  string `json:"freeSpace" bson:"freeSpace"`
+	Status     string `json:"status" bson:"status"`
+	ErrorCount int    `json:"errorCount" bson:"errorCount"`
 }
