@@ -15,12 +15,25 @@
 
 package model
 
+import "time"
+
 // OracleExadataStorageCell holds info about a exadata cell disk
 type OracleExadataStorageCell struct {
-	Type       string `json:"type" bson:"type"`
-	CellDisk   string `json:"cellDisk" bson:"cellDisk"`
-	Size       string `json:"size" bson:"size"`
-	FreeSpace  string `json:"freeSpace" bson:"freeSpace"`
-	Status     string `json:"status" bson:"status"`
-	ErrorCount int    `json:"errorCount" bson:"errorCount"`
+	Type            string     `json:"type" bson:"type"`
+	CellDisk        string     `json:"cellDisk" bson:"cellDisk"`
+	Size            string     `json:"size" bson:"size"`
+	FreeSpace       string     `json:"freeSpace" bson:"freeSpace"`
+	Status          string     `json:"status" bson:"status"`
+	ErrorCount      int        `json:"errorCount" bson:"errorCount"`
+	GridDisk        string     `json:"gridDisk" bson:"gridDisk"`
+	CachingPolicy   string     `json:"cachingPolicy" bson:"cachingPolicy"`
+	AsmDiskName     string     `json:"asmDiskName" bson:"asmDiskName"`
+	AsmDiskGroup    string     `json:"asmDiskGroup" bson:"asmDiskGroup"`
+	AsmDiskSize     string     `json:"asmDiskSize" bson:"asmDiskSize"`
+	AsmDiskStatus   string     `json:"asmDiskStatus" bson:"asmDiskStatus"`
+	DbName          string     `json:"dbName" bson:"dbName"`
+	DbID            int        `json:"dbID" bson:"dbID"`
+	FlashCacheLimit int        `json:"flashCacheLimit" bson:"flashCacheLimit"`
+	IormShare       int        `json:"iormShare" bson:"iormShare"`
+	LastIOReq       *time.Time `json:"lastIOReq" bson:"lastIOReq"`
 }
