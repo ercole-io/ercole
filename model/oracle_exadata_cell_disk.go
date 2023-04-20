@@ -20,6 +20,7 @@ import "time"
 // OracleExadataStorageCell holds info about a exadata cell disk
 type OracleExadataStorageCell struct {
 	Type            string     `json:"type" bson:"type"`
+	Hostname        string     `json:"hostname" bson:"hostname"`
 	CellDisk        string     `json:"cellDisk" bson:"cellDisk"`
 	Size            string     `json:"size" bson:"size"`
 	FreeSpace       string     `json:"freeSpace" bson:"freeSpace"`
