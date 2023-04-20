@@ -396,7 +396,6 @@
                                                 }
                                             }
                                         ]
-                                        
                                     },
                                     "psus": {
                                         "type": "array",
@@ -707,7 +706,6 @@
                                                             }
                                                         }
                                                     ]
-                                                    
                                                 },
                                                 "segmentAdvisors": {
                                                     "anyOf": [
@@ -742,7 +740,6 @@
                                                             }
                                                         }
                                                     ]
-                                                    
                                                 }
                                             }
                                         }
@@ -835,269 +832,56 @@
                             "items": {
                                 "type": "object",
                                 "required": [
-                                    "hostname",
-                                    "serverType",
-                                    "model",
-                                    "swVersion",
-                                    "swReleaseDate",
-                                    "runningCPUCount",
-                                    "totalCPUCount",
-                                    "memory",
-                                    "status",
-                                    "runningPowerSupply",
-                                    "totalPowerSupply",
-                                    "powerStatus",
-                                    "runningFanCount",
-                                    "totalFanCount",
-                                    "fanStatus",
-                                    "tempActual",
-                                    "tempStatus",
-                                    "cellsrvServiceStatus",
-                                    "msServiceStatus",
-                                    "rsServiceStatus",
-                                    "flashcacheMode",
-                                    "cellDisks"
+                                    "hostType"
                                 ],
                                 "properties": {
+                                    "hostType": {
+                                        "type": "string"
+                                    },
                                     "hostname": {
                                         "type": "string",
                                         "minLength": 1,
                                         "maxLength": 253,
                                         "format": "idn-hostname"
                                     },
-                                    "serverType": {
-                                        "type": "string",
-                                        "enum": [
-                                            "DBServer",
-                                            "IBSwitch",
-                                            "StorageServer"
-                                        ]
+                                    "cpuEnabled": {
+                                        "type": "integer"
                                     },
-                                    "model": {
-                                        "type": "string",
-                                        "minLength": 1,
-                                        "maxLength": 32
+                                    "totalCPU": {
+                                        "type": "integer"
+                                    },
+                                    "memory": {
+                                        "type": "integer"
+                                    },
+                                    "imageVersion": {
+                                        "type": "string"
+                                    },
+                                    "kernel": {
+                                        "type": "string"
+                                    },
+                                    "fanUsed": {
+                                        "type": "integer"
+                                    },
+                                    "fanTotal": {
+                                        "type": "integer"
+                                    },
+                                    "psuUsed": {
+                                        "type": "integer"
+                                    },
+                                    "psuTotal": {
+                                        "type": "integer"
+                                    },
+                                    "msStatus": {
+                                        "type": "string"
+                                    },
+                                    "rsStatus": {
+                                        "type": "string"
+                                    },
+                                    "cellServiceStatus": {
+                                        "type": "string"
                                     },
                                     "swVersion": {
                                         "type": "string"
-                                    },
-                                    "swReleaseDate": {
-                                        "type": "string",
-                                        "format": "date"
-                                    },
-                                    "runningCPUCount": {
-                                        "anyOf": [
-                                            {
-                                                "type": "null"
-                                            },
-                                            {
-                                                "type": "integer",
-                                                "minimum": 1
-                                            }
-                                        ]
-                                    },
-                                    "totalCPUCount": {
-                                        "anyOf": [
-                                            {
-                                                "type": "null"
-                                            },
-                                            {
-                                                "type": "integer",
-                                                "minimum": 1
-                                            }
-                                        ]
-                                    },
-                                    "memory": {
-                                        "anyOf": [
-                                            {
-                                                "type": "null"
-                                            },
-                                            {
-                                                "type": "integer",
-                                                "$comment": "memory in GB",
-                                                "minimum": 1
-                                            }
-                                        ]
-                                    },
-                                    "status": {
-                                        "anyOf": [
-                                            {
-                                                "type": "null"
-                                            },
-                                            {
-                                                "type": "string",
-                                                "enum": [
-                                                    "online",
-                                                    "offline"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    "runningPowerSupply": {
-                                        "anyOf": [
-                                            {
-                                                "type": "null"
-                                            },
-                                            {
-                                                "type": "integer",
-                                                "minimum": 1
-                                            }
-                                        ]
-                                    },
-                                    "totalPowerSupply": {
-                                        "anyOf": [
-                                            {
-                                                "type": "null"
-                                            },
-                                            {
-                                                "type": "integer",
-                                                "minimum": 1
-                                            }
-                                        ]
-                                    },
-                                    "powerStatus": {
-                                        "anyOf": [
-                                            {
-                                                "type": "null"
-                                            },
-                                            {
-                                                "type": "string"
-                                            }
-                                        ]
-                                    },
-                                    "runningFanCount": {
-                                        "anyOf": [
-                                            {
-                                                "type": "null"
-                                            },
-                                            {
-                                                "type": "integer",
-                                                "minimum": 1
-                                            }
-                                        ]
-                                    },
-                                    "totalFanCount": {
-                                        "anyOf": [
-                                            {
-                                                "type": "null"
-                                            },
-                                            {
-                                                "type": "integer",
-                                                "minimum": 1
-                                            }
-                                        ]
-                                    },
-                                    "fanStatus": {
-                                        "anyOf": [
-                                            {
-                                                "type": "null"
-                                            },
-                                            {
-                                                "type": "string"
-                                            }
-                                        ]
-                                    },
-                                    "tempActual": {
-                                        "anyOf": [
-                                            {
-                                                "type": "null"
-                                            },
-                                            {
-                                                "type": "number"
-                                            }
-                                        ]
-                                    },
-                                    "tempStatus": {
-                                        "anyOf": [
-                                            {
-                                                "type": "null"
-                                            },
-                                            {
-                                                "type": "string"
-                                            }
-                                        ]
-                                    },
-                                    "cellsrvServiceStatus": {
-                                        "anyOf": [
-                                            {
-                                                "type": "null"
-                                            },
-                                            {
-                                                "type": "string"
-                                            }
-                                        ]
-                                    },
-                                    "msServiceStatus": {
-                                        "anyOf": [
-                                            {
-                                                "type": "null"
-                                            },
-                                            {
-                                                "type": "string"
-                                            }
-                                        ]
-                                    },
-                                    "rsServiceStatus": {
-                                        "anyOf": [
-                                            {
-                                                "type": "null"
-                                            },
-                                            {
-                                                "type": "string"
-                                            }
-                                        ]
-                                    },
-                                    "flashcacheMode": {
-                                        "anyOf": [
-                                            {
-                                                "type": "null"
-                                            },
-                                            {
-                                                "type": "string",
-                                                "enum": [
-                                                    "WriteBack",
-                                                    "WriteThrough"
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    "cellDisks": {
-                                        "anyOf": [
-                                            {
-                                                "type": "null"
-                                            },
-                                            {
-                                                "type": "array",
-                                                "items": {
-                                                    "type": "object",
-                                                    "required": [
-                                                        "errCount",
-                                                        "name",
-                                                        "status",
-                                                        "usedPerc"
-                                                    ],
-                                                    "properties": {
-                                                        "errCount": {
-                                                            "type": "integer",
-                                                            "minimum": 0
-                                                        },
-                                                        "name": {
-                                                            "type": "string",
-                                                            "minLength": 1,
-                                                            "maxLength": 64
-                                                        },
-                                                        "status": {
-                                                            "type": "string"
-                                                        },
-                                                        "usedPerc": {
-                                                            "type": "integer",
-                                                            "minimum": 0,
-                                                            "maximum": 100
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        ]
                                     }
                                 }
                             }
