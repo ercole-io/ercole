@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2023 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -14,6 +14,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package model
+
+import "time"
 
 // OracleExadataComponent holds informations about a device in a exadata
 type OracleExadataComponent struct {
@@ -35,4 +37,14 @@ type OracleExadataComponent struct {
 	SwVersion         string                     `json:"swVersion" bson:"swVersion"`
 	VMs               []OracleExadataVM          `json:"VMs,omitempty" bson:"VMs"`
 	StorageCells      []OracleExadataStorageCell `json:"storageCells,omitempty" bson:"storageCells"`
+	Database          OracleExadataDatabase      `json:"database,omitempty" bson:"database"`
+}
+
+type OracleExadataDatabase struct {
+	Type            string     `json:"type" bson:"type"`
+	DbName          string     `json:"dbName" bson:"dbName"`
+	DbID            int        `json:"dbID" bson:"dbID"`
+	FlashCacheLimit int        `json:"flashCacheLimit" bson:"flashCacheLimit"`
+	IormShare       int        `json:"iormShare" bson:"iormShare"`
+	LastIOReq       *time.Time `json:"lastIOReq" bson:"lastIOReq"`
 }
