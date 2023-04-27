@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2023 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,26 +15,28 @@
 
 package model
 
-import "time"
-
 // OracleExadataStorageCell holds info about a exadata cell disk
 type OracleExadataStorageCell struct {
-	Type            string     `json:"type" bson:"type"`
-	Hostname        string     `json:"hostname" bson:"hostname"`
-	CellDisk        string     `json:"cellDisk" bson:"cellDisk"`
-	Size            string     `json:"size" bson:"size"`
-	FreeSpace       string     `json:"freeSpace" bson:"freeSpace"`
-	Status          string     `json:"status" bson:"status"`
-	ErrorCount      int        `json:"errorCount" bson:"errorCount"`
-	GridDisk        string     `json:"gridDisk" bson:"gridDisk"`
-	CachingPolicy   string     `json:"cachingPolicy" bson:"cachingPolicy"`
-	AsmDiskName     string     `json:"asmDiskName" bson:"asmDiskName"`
-	AsmDiskGroup    string     `json:"asmDiskGroup" bson:"asmDiskGroup"`
-	AsmDiskSize     string     `json:"asmDiskSize" bson:"asmDiskSize"`
-	AsmDiskStatus   string     `json:"asmDiskStatus" bson:"asmDiskStatus"`
-	DbName          string     `json:"dbName" bson:"dbName"`
-	DbID            int        `json:"dbID" bson:"dbID"`
-	FlashCacheLimit int        `json:"flashCacheLimit" bson:"flashCacheLimit"`
-	IormShare       int        `json:"iormShare" bson:"iormShare"`
-	LastIOReq       *time.Time `json:"lastIOReq" bson:"lastIOReq"`
+	Type       string                  `json:"type" bson:"type"`
+	Hostname   string                  `json:"hostname" bson:"hostname"`
+	CellDisk   string                  `json:"cellDisk" bson:"cellDisk"`
+	Size       string                  `json:"size" bson:"size"`
+	FreeSpace  string                  `json:"freeSpace" bson:"freeSpace"`
+	Status     string                  `json:"status" bson:"status"`
+	ErrorCount int                     `json:"errorCount" bson:"errorCount"`
+	GridDisks  []OracleExadataGridDisk `json:"gridDisks,omitempty" bson:"gridDisks"`
+}
+
+type OracleExadataGridDisk struct {
+	Type          string `json:"type" bson:"type"`
+	Hostname      string `json:"hostname" bson:"hostname"`
+	GridDisk      string `json:"gridDisk" bson:"gridDisk"`
+	Size          string `json:"size" bson:"size"`
+	Status        string `json:"status" bson:"status"`
+	ErrorCount    int    `json:"errorCount" bson:"errorCount"`
+	CachingPolicy string `json:"cachingPolicy" bson:"cachingPolicy"`
+	AsmDiskName   string `json:"asmDiskName" bson:"asmDiskName"`
+	AsmDiskGroup  string `json:"asmDiskGroup" bson:"asmDiskGroup"`
+	AsmDiskSize   string `json:"asmDiskSize" bson:"asmDiskSize"`
+	AsmDiskStatus string `json:"asmDiskStatus" bson:"asmDiskStatus"`
 }
