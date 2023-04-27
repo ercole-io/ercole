@@ -318,7 +318,6 @@ local task_build_push_image(push) =
       ],
       docker_registries_auth: {
         'index.docker.io': {
-	  type: 'basic',
 	  username: { from_variable: 'docker-username' },
 	  password: { from_variable: 'docker-password' },
 	},
