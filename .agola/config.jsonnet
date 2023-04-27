@@ -210,8 +210,8 @@ local task_build_push_image(push) =
             type: 'pod',
             arch: 'amd64',
             containers: [
-              { image: 'golang:1.20' },
-              { image: 'mongo:4' },
+              { image: 'docker.io/library/golang:1.20' },
+              { image: 'docker.io/library/mongo:4' },
             ],
           },
           steps: [
