@@ -244,7 +244,7 @@ func (m *MongodbSuite) TestGetHostnames() {
 
 		list, err := m.db.GetHostnames()
 		require.NoError(t, err)
-		assert.Equal(t, []string{"test-small", "test-small2", "test-small3"}, list)
+		assert.Equal(t, []string{"test-small2", "test-small3"}, list)
 	})
 
 	m.T().Run("should_return_empty", func(t *testing.T) {
