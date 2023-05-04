@@ -37,8 +37,8 @@ func (ctrl *DataController) InsertHostData(w http.ResponseWriter, r *http.Reques
 	}
 	defer r.Body.Close()
 
-	if raw, err = ctrl.sanitizeJsonHostdata(raw); err != nil {
-		if errors.Is(err, utils.ErrInvalidHostdata) {
+	if raw, err = ctrl.sanitizeJson(raw); err != nil {
+		if errors.Is(err, utils.ErrInvalidJSON) {
 			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 			ctrl.Service.AlertInvalidHostData(err, nil)
 
@@ -46,7 +46,7 @@ func (ctrl *DataController) InsertHostData(w http.ResponseWriter, r *http.Reques
 		}
 
 		ctrl.Log.Error(err)
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, nil)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 
 		return
 	}
@@ -87,11 +87,11 @@ func (ctrl *DataController) InsertHostData(w http.ResponseWriter, r *http.Reques
 	utils.WriteJSONResponse(w, http.StatusOK, nil)
 }
 
-func (ctrl *DataController) sanitizeJsonHostdata(raw []byte) ([]byte, error) {
+func (ctrl *DataController) sanitizeJson(raw []byte) ([]byte, error) {
 	var m map[string]interface{}
 
 	if err := json.Unmarshal(raw, &m); err != nil {
-		return nil, utils.ErrInvalidHostdata
+		return nil, utils.ErrInvalidJSON
 	}
 
 	sanitizer := sanitizer.NewSanitizer(ctrl.Log)

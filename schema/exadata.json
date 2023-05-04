@@ -1,0 +1,291 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "required": [
+        "hostname",
+        "racID"
+    ],
+    "properties": {
+        "hostname": {
+            "type": "string",
+            "minLength": 1
+        },
+        "racID": {
+            "type": "string",
+            "minLength": 1,
+            "uniqueItems": true
+        },
+        "components": {
+            "anyOf": [
+                {
+                    "type": "null"
+                },
+                {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "required": [
+                            "hostType"
+                        ],
+                        "properties": {
+                            "hostType": {
+                                "type": "string",
+                                "minLength": 1
+                            },
+                            "hostname": {
+                                "type": "string",
+                                "minLength": 1
+                            },
+                            "cpuEnabled": {
+                                "type": "integer"
+                            },
+                            "totalCPU": {
+                                "type": "integer"
+                            },
+                            "memory": {
+                                "type": "integer"
+                            },
+                            "imageVersion": {
+                                "type": "string",
+                                "minLength": 1
+                            },
+                            "kernel": {
+                                "type": "string",
+                                "minLength": 1
+                            },
+                            "model": {
+                                "type": "string",
+                                "minLength": 1
+                            },
+                            "fanUsed": {
+                                "type": "integer"
+                            },
+                            "fanTotal": {
+                                "type": "integer"
+                            },
+                            "psuUsed": {
+                                "type": "integer"
+                            },
+                            "psuTotal": {
+                                "type": "integer"
+                            },
+                            "msStatus": {
+                                "type": "string",
+                                "minLength": 1
+                            },
+                            "rsStatus": {
+                                "type": "string",
+                                "minLength": 1
+                            },
+                            "cellServiceStatus": {
+                                "type": "string",
+                                "minLength": 1
+                            },
+                            "swVersion": {
+                                "type": "string",
+                                "minLength": 1
+                            },
+                            "vms": {
+                                "anyOf": [
+                                    {
+                                        "type": "null"
+                                    },
+                                    {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "required": [
+                                                "type"
+                                            ],
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "minLength": 1
+                                                },
+                                                "physicalHost": {
+                                                    "type": "string",
+                                                    "minLength": 1
+                                                },
+                                                "status": {
+                                                    "type": "string",
+                                                    "minLength": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "minLength": 1
+                                                },
+                                                "cpuCurrent": {
+                                                    "type": "integer"
+                                                },
+                                                "cpuRestart": {
+                                                    "type": "integer"
+                                                },
+                                                "ramCurrent": {
+                                                    "type": "integer"
+                                                },
+                                                "ramRestart": {
+                                                    "type": "integer"
+                                                },
+                                                "cpuOnline": {
+                                                    "type": "integer"
+                                                },
+                                                "cpuMaxUsable": {
+                                                    "type": "integer"
+                                                },
+                                                "ramOnline": {
+                                                    "type": "integer"
+                                                },
+                                                "ramMaxUsable": {
+                                                    "type": "integer"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "storageCells": {
+                                "anyOf": [
+                                    {
+                                        "type": "null"
+                                    },
+                                    {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "required": [
+                                                "type"
+                                            ],
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "minLength": 1
+                                                },
+                                                "hostname": {
+                                                    "type": "string",
+                                                    "minLength": 1
+                                                },
+                                                "cellDisk": {
+                                                    "type": "string",
+                                                    "minLength": 1
+                                                },
+                                                "size": {
+                                                    "type": "string",
+                                                    "minLength": 1
+                                                },
+                                                "freeSpace": {
+                                                    "type": "string",
+                                                    "minLength": 1
+                                                },
+                                                "status": {
+                                                    "type": "string",
+                                                    "minLength": 1
+                                                },
+                                                "errorCount": {
+                                                    "type": "integer"
+                                                },
+                                                "gridDisks": {
+                                                    "anyOf": [
+                                                        {
+                                                            "type": "null"
+                                                        },
+                                                        {
+                                                            "type": "object",
+                                                            "required": [
+                                                                "type"
+                                                            ],
+                                                            "properties": {
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "minLength": 1
+                                                                },
+                                                                "hostname": {
+                                                                    "type": "string",
+                                                                    "minLength": 1
+                                                                },
+                                                                "gridDisk": {
+                                                                    "type": "string",
+                                                                    "minLength": 1
+                                                                },
+                                                                "size": {
+                                                                    "type": "string",
+                                                                    "minLength": 1
+                                                                },
+                                                                "status": {
+                                                                    "type": "string",
+                                                                    "minLength": 1
+                                                                },
+                                                                "errorCount": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "cachingPolicy": {
+                                                                    "type": "string",
+                                                                    "minLength": 1
+                                                                },
+                                                                "asmDiskName": {
+                                                                    "type": "string",
+                                                                    "minLength": 1
+                                                                },
+                                                                "asmDiskGroup": {
+                                                                    "type": "string",
+                                                                    "minLength": 1
+                                                                },
+                                                                "asmDiskSize": {
+                                                                    "type": "string",
+                                                                    "minLength": 1
+                                                                },
+                                                                "asmDiskStatus": {
+                                                                    "type": "string",
+                                                                    "minLength": 1
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "database": {
+                                "anyOf": [
+                                    {
+                                        "type": "null"
+                                    },
+                                    {
+                                        "type": "object",
+                                        "required": [
+                                            "type"
+                                        ],
+                                        "properties": {
+                                            "type": {
+                                                "type": "string",
+                                                "minLength": 1
+                                            },
+                                            "dbName": {
+                                                "type": "string",
+                                                "minLength": 1
+                                            },
+                                            "dbID": {
+                                                "type": "integer"
+                                            },
+                                            "flashCacheLimit": {
+                                                "type": "integer"
+                                            },
+                                            "iormShare": {
+                                                "type": "integer"
+                                            },
+                                            "lastIOReq": {
+                                                "type": "string",
+                                                "minLength": 1
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}

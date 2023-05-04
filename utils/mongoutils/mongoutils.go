@@ -69,3 +69,13 @@ func LoadFixtureMongoHostDataMapAsHostData(t *testing.T, filename string) model.
 
 	return hd
 }
+
+func LoadFixtureExadata(t *testing.T, filename string) model.OracleExadataInstance {
+	var exd model.OracleExadataInstance
+	raw, err := ioutil.ReadFile(filename)
+
+	require.NoError(t, err)
+	require.NoError(t, json.Unmarshal(raw, &exd))
+
+	return exd
+}

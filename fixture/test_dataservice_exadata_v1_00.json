@@ -1,0 +1,24 @@
+{
+    "hostname": "pippo1",
+    "racID": "cmFjSURfdGVzdA",
+    "components": [
+        {
+            "hostType": "kvm_host",
+            "hostname": "",
+            "cpuEnabled": 0,
+            "totalCPU": 0,
+            "memory": 0,
+            "imageVersion": "",
+            "kernel": "",
+            "model": "",
+            "fanUsed": 0,
+            "fanTotal": 0,
+            "psuUsed": 0,
+            "psuTotal": 0,
+            "msStatus": "",
+            "rsStatus": "",
+            "cellServiceStatus": "",
+            "swVersion": ""
+        }
+    ]
+}

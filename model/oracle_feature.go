@@ -17,5 +17,4 @@ package model
 
 type OracleFeature struct {
 	Database *OracleDatabaseFeature `json:"database,omitempty" bson:"database,omitempty"`
-	Exadata  *OracleExadataFeature  `json:"exadata,omitempty" bson:"exadata,omitempty"`
 }
