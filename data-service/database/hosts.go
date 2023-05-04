@@ -217,7 +217,7 @@ func (md *MongoDatabase) GetHostnames() ([]string, error) {
 		Distinct(
 			context.TODO(),
 			"hostname",
-			bson.M{})
+			bson.M{"archived":false})
 	if err != nil {
 		return nil, utils.NewError(err, "DB ERROR")
 	}
