@@ -35,6 +35,7 @@ type HostDataServiceInterface interface {
 	CompareCmdbInfo(cmdbInfo dto.CmdbInfo) error
 	InsertOracleLicenseTypes(licenseTypes []model.OracleDatabaseLicenseType) error
 	SanitizeLicenseTypes(raw []byte) ([]model.OracleDatabaseLicenseType, error)
+	SaveExadata(exadata *model.OracleExadataInstance) error
 }
 
 type HostDataService struct {

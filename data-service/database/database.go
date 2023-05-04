@@ -53,6 +53,10 @@ type MongoDatabaseInterface interface {
 	GetHostnames() ([]string, error)
 	GetOracleDatabaseLicenseTypes() ([]model.OracleDatabaseLicenseType, error)
 	InsertOracleLicenseType(licenseType model.OracleDatabaseLicenseType) error
+
+	FindExadataByRacID(racID string) (*model.OracleExadataInstance, error)
+	AddExadata(exadata model.OracleExadataInstance) error
+	UpdateExadata(exadata model.OracleExadataInstance) error
 }
 
 type MongoDatabase struct {
