@@ -35,7 +35,7 @@ type OracleExadataComponent struct {
 	RsStatus          string                     `json:"rsStatus" bson:"rsStatus"`
 	CellServiceStatus string                     `json:"cellServiceStatus" bson:"cellServiceStatus"`
 	SwVersion         string                     `json:"swVersion" bson:"swVersion"`
-	VMs               []OracleExadataVM          `json:"VMs,omitempty" bson:"VMs"`
+	VMs               []OracleExadataVM          `json:"vms,omitempty" bson:"vms"`
 	StorageCells      []OracleExadataStorageCell `json:"storageCells,omitempty" bson:"storageCells"`
 	Database          OracleExadataDatabase      `json:"database,omitempty" bson:"database"`
 }

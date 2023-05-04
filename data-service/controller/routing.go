@@ -45,6 +45,7 @@ func (ctrl *DataController) setupProtectedRoutes(router *mux.Router) {
 	router.HandleFunc("/hosts", ctrl.InsertHostData).Methods("POST")
 	router.HandleFunc("/cmdbs", ctrl.CompareCmdbInfo).Methods("POST")
 	router.HandleFunc("/oracle/license-types", ctrl.InsertOracleLicenseTypes).Methods("POST")
+	router.HandleFunc("/exadatas", ctrl.InsertExadata).Methods("POST")
 }
 
 // AuthenticateMiddleware return the middleware used to authenticate (request) users

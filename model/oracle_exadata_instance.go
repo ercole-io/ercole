@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2023 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,7 +15,9 @@
 
 package model
 
-// OracleExadataFeature holds specific informations about a exadata.
-type OracleExadataFeature struct {
+// OracleExadataInstance holds specific informations about a exadata.
+type OracleExadataInstance struct {
+	Hostname   string                   `json:"hostname" bson:"hostname"`
+	RacID      string                   `json:"racID" bson:"racID"`
 	Components []OracleExadataComponent `json:"components" bson:"components"`
 }

@@ -50,6 +50,8 @@ var ErrNotInClusterHostNotFound = errors.New("Not in cluster host not found")
 
 var ErrInvalidHostdata = errors.New("Invalid hostdata")
 
+var ErrInvalidJSON = errors.New("invalid JSON")
+
 var ErrInvalidLocation = errors.New("Invalid location")
 
 var ErrInvalidLicenseType = errors.New("Invalid license type")
@@ -88,3 +90,5 @@ var ErrConnectLDAPServer = errors.New("Cannot connect to LDAP server")
 var ErrSuperUserCannotBeDeleted = errors.New("Super User cannot be deleted")
 
 var ErrPermissionDenied = "Permission denied"
+
+var ErrInvalidExadata = errors.New("invalid exadata")
