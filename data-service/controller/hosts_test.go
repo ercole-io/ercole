@@ -96,7 +96,7 @@ func TestUpdateHostInfo_UnprocessableEntity1(t *testing.T) {
 	as.EXPECT().
 		AlertInvalidHostData(gomock.Any(), nil).
 		Do(func(err error, _ interface{}) {
-			assert.ErrorIs(t, err, utils.ErrInvalidHostdata)
+			assert.ErrorIs(t, err, utils.ErrInvalidJSON)
 		})
 
 	rr := httptest.NewRecorder()
