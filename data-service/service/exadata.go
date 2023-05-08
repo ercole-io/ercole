@@ -24,7 +24,7 @@ import (
 )
 
 func (hds *HostDataService) SaveExadata(exadata *model.OracleExadataInstance) error {
-	existingExadata, err := hds.Database.FindExadataByRacID(exadata.RacID)
+	existingExadata, err := hds.Database.FindExadataByRackID(exadata.RackID)
 	if err != nil {
 		if err != mongo.ErrNoDocuments {
 			return err

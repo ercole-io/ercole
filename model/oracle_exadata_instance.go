@@ -18,6 +18,6 @@ package model
 // OracleExadataInstance holds specific informations about a exadata.
 type OracleExadataInstance struct {
 	Hostname   string                   `json:"hostname" bson:"hostname"`
-	RacID      string                   `json:"racID" bson:"racID"`
+	RackID     string                   `json:"rackID" bson:"rackID"`
 	Components []OracleExadataComponent `json:"components" bson:"components"`
 }
