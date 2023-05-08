@@ -24,7 +24,7 @@ import (
 
 const exdataCollection = "exadatas"
 
-func (md *MongoDatabase) FindExadataByRacID(racID string) (*model.OracleExadataInstance, error) {
+func (md *MongoDatabase) FindExadataByRackID(racID string) (*model.OracleExadataInstance, error) {
 	res := md.Client.Database(md.Config.Mongodb.DBName).Collection(exdataCollection).
 		FindOne(context.TODO(), bson.M{"racID": racID})
 	if res.Err() != nil {
@@ -52,7 +52,7 @@ func (md *MongoDatabase) AddExadata(exadata model.OracleExadataInstance) error {
 
 func (md *MongoDatabase) UpdateExadata(exadata model.OracleExadataInstance) error {
 	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(exdataCollection).
-		UpdateOne(context.TODO(), bson.M{"racID": exadata.RacID},
+		UpdateOne(context.TODO(), bson.M{"rackID": exadata.RackID},
 			bson.M{"$set": bson.M{"hostname": exadata.Hostname, "components": exadata.Components}})
 	if err != nil {
 		return err

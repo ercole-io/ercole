@@ -52,7 +52,7 @@ func TestSaveExadata_Success(t *testing.T) {
 
 	t.Run("New exadata", func(t *testing.T) {
 		gomock.InOrder(
-			db.EXPECT().FindExadataByRacID(exd.RacID).Return(nil, nil),
+			db.EXPECT().FindExadataByRackID(exd.RackID).Return(nil, nil),
 			db.EXPECT().AddExadata(exd).Return(nil),
 		)
 
@@ -69,7 +69,7 @@ func TestSaveExadata_Success(t *testing.T) {
 		})
 
 		gomock.InOrder(
-			db.EXPECT().FindExadataByRacID(newExd.RacID).Return(nil, nil),
+			db.EXPECT().FindExadataByRackID(newExd.RackID).Return(nil, nil),
 			db.EXPECT().AddExadata(newExd).Return(nil),
 		)
 
