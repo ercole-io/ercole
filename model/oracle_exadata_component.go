@@ -15,10 +15,9 @@
 
 package model
 
-import "time"
-
 // OracleExadataComponent holds informations about a device in a exadata
 type OracleExadataComponent struct {
+	RackID            string                     `json:"rackID" bson:"rackID"`
 	HostType          string                     `json:"hostType" bson:"hostType"`
 	Hostname          string                     `json:"hostname" bson:"hostname"`
 	CPUEnabled        int                        `json:"cpuEnabled" bson:"cpuEnabled"`
@@ -37,14 +36,4 @@ type OracleExadataComponent struct {
 	SwVersion         string                     `json:"swVersion" bson:"swVersion"`
 	VMs               []OracleExadataVM          `json:"vms,omitempty" bson:"vms"`
 	StorageCells      []OracleExadataStorageCell `json:"storageCells,omitempty" bson:"storageCells"`
-	Database          OracleExadataDatabase      `json:"database,omitempty" bson:"database"`
-}
-
-type OracleExadataDatabase struct {
-	Type            string     `json:"type" bson:"type"`
-	DbName          string     `json:"dbName" bson:"dbName"`
-	DbID            int        `json:"dbID" bson:"dbID"`
-	FlashCacheLimit int        `json:"flashCacheLimit" bson:"flashCacheLimit"`
-	IormShare       int        `json:"iormShare" bson:"iormShare"`
-	LastIOReq       *time.Time `json:"lastIOReq" bson:"lastIOReq"`
 }

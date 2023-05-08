@@ -15,22 +15,27 @@
 
 package model
 
+import "time"
+
 // OracleExadataStorageCell holds info about a exadata cell disk
 type OracleExadataStorageCell struct {
 	Type       string                  `json:"type" bson:"type"`
 	Hostname   string                  `json:"hostname" bson:"hostname"`
 	CellDisk   string                  `json:"cellDisk" bson:"cellDisk"`
+	Cell       string                  `json:"cell" bson:"cell"`
 	Size       string                  `json:"size" bson:"size"`
 	FreeSpace  string                  `json:"freeSpace" bson:"freeSpace"`
 	Status     string                  `json:"status" bson:"status"`
 	ErrorCount int                     `json:"errorCount" bson:"errorCount"`
 	GridDisks  []OracleExadataGridDisk `json:"gridDisks,omitempty" bson:"gridDisks"`
+	Database   OracleExadataDatabase   `json:"database,omitempty" bson:"database"`
 }
 
 type OracleExadataGridDisk struct {
 	Type          string `json:"type" bson:"type"`
 	Hostname      string `json:"hostname" bson:"hostname"`
 	GridDisk      string `json:"gridDisk" bson:"gridDisk"`
+	CellDisk      string `json:"cellDisk" bson:"cellDisk"`
 	Size          string `json:"size" bson:"size"`
 	Status        string `json:"status" bson:"status"`
 	ErrorCount    int    `json:"errorCount" bson:"errorCount"`
@@ -39,4 +44,14 @@ type OracleExadataGridDisk struct {
 	AsmDiskGroup  string `json:"asmDiskGroup" bson:"asmDiskGroup"`
 	AsmDiskSize   string `json:"asmDiskSize" bson:"asmDiskSize"`
 	AsmDiskStatus string `json:"asmDiskStatus" bson:"asmDiskStatus"`
+}
+
+type OracleExadataDatabase struct {
+	Type            string     `json:"type" bson:"type"`
+	DbName          string     `json:"dbName" bson:"dbName"`
+	Cell            string     `json:"cell" bson:"cell"`
+	DbID            int        `json:"dbID" bson:"dbID"`
+	FlashCacheLimit int        `json:"flashCacheLimit" bson:"flashCacheLimit"`
+	IormShare       int        `json:"iormShare" bson:"iormShare"`
+	LastIOReq       *time.Time `json:"lastIOReq" bson:"lastIOReq"`
 }
