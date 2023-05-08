@@ -3,14 +3,14 @@
     "type": "object",
     "required": [
         "hostname",
-        "racID"
+        "rackID"
     ],
     "properties": {
         "hostname": {
             "type": "string",
             "minLength": 1
         },
-        "racID": {
+        "rackID": {
             "type": "string",
             "minLength": 1,
             "uniqueItems": true
