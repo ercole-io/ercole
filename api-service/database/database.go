@@ -67,8 +67,6 @@ type MongoDatabaseInterface interface {
 	SearchOracleDatabasePatchAdvisors(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, windowTime time.Time, location string, environment string, olderThan time.Time, status string) (*dto.PatchAdvisorResponse, error)
 	// SearchOracleDatabases search databases
 	SearchOracleDatabases(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) (*dto.OracleDatabaseResponse, error)
-	// SearchOracleExadata search exadata
-	SearchOracleExadata(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) (*dto.OracleExadataResponse, error)
 	// SearchOracleDatabaseUsedLicenses search consumed licenses
 	SearchOracleDatabaseUsedLicenses(hostname string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) (*dto.OracleDatabaseUsedLicenseSearchResponse, error)
 
@@ -112,16 +110,6 @@ type MongoDatabaseInterface interface {
 	GetTotalOracleDatabaseDatafileSizeStats(location string, environment string, olderThan time.Time) (float64, error)
 	// GetTotalOracleDatabaseSegmentSizeStats return the total size of segments of databases
 	GetTotalOracleDatabaseSegmentSizeStats(location string, environment string, olderThan time.Time) (float64, error)
-	// GetTotalOracleExadataMemorySizeStats return the total size of memory of exadata
-	GetTotalOracleExadataMemorySizeStats(location string, environment string, olderThan time.Time) (float64, error)
-	// GetTotalOracleExadataCPUStats return the total cpu of exadata
-	GetTotalOracleExadataCPUStats(location string, environment string, olderThan time.Time) (interface{}, error)
-	// GetAverageOracleExadataStorageUsageStats return the average usage of cell disks of exadata
-	GetAverageOracleExadataStorageUsageStats(location string, environment string, olderThan time.Time) (float64, error)
-	// GetOracleExadataStorageErrorCountStatusStats return a array containing the number of cell disks of exadata per error count status
-	GetOracleExadataStorageErrorCountStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, error)
-	// GetOracleExadataPatchStatusStats return a array containing the number of exadata per patch status
-	GetOracleExadataPatchStatusStats(location string, environment string, windowTime time.Time, olderThan time.Time) ([]interface{}, error)
 	//GetOracleDatabaseLicenseTypes return an array of OracleDatabaseLicenseType
 	GetOracleDatabaseLicenseTypes() ([]model.OracleDatabaseLicenseType, error)
 	//GetOracleDatabaseLicenseType return a OracleDatabaseLicenseType
@@ -253,6 +241,9 @@ type MongoDatabaseInterface interface {
 	AddNode(node model.Node) error
 	UpdateNode(node model.Node) error
 	RemoveNode(name string) error
+
+	// EXADATA
+	ListExadataInstances() ([]model.OracleExadataInstance, error)
 }
 
 // MongoDatabase is a implementation
