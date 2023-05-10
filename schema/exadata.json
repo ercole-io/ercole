@@ -168,6 +168,10 @@
                                                     "type": "string",
                                                     "minLength": 1
                                                 },
+                                                "cell": {
+                                                    "type": "string",
+                                                    "minLength": 1
+                                                },
                                                 "size": {
                                                     "type": "string",
                                                     "minLength": 1
@@ -189,6 +193,71 @@
                                                             "type": "null"
                                                         },
                                                         {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "object",
+                                                                "required": [
+                                                                    "type"
+                                                                ],
+                                                                "properties": {
+                                                                    "type": {
+                                                                        "type": "string",
+                                                                        "minLength": 1
+                                                                    },
+                                                                    "hostname": {
+                                                                        "type": "string",
+                                                                        "minLength": 1
+                                                                    },
+                                                                    "gridDisk": {
+                                                                        "type": "string",
+                                                                        "minLength": 1
+                                                                    },
+                                                                    "cellDisk": {
+                                                                        "type": "string",
+                                                                        "minLength": 1
+                                                                    },
+                                                                    "size": {
+                                                                        "type": "string",
+                                                                        "minLength": 1
+                                                                    },
+                                                                    "status": {
+                                                                        "type": "string",
+                                                                        "minLength": 1
+                                                                    },
+                                                                    "errorCount": {
+                                                                        "type": "integer"
+                                                                    },
+                                                                    "cachingPolicy": {
+                                                                        "type": "string",
+                                                                        "minLength": 1
+                                                                    },
+                                                                    "asmDiskName": {
+                                                                        "type": "string",
+                                                                        "minLength": 1
+                                                                    },
+                                                                    "asmDiskGroup": {
+                                                                        "type": "string",
+                                                                        "minLength": 1
+                                                                    },
+                                                                    "asmDiskSize": {
+                                                                        "type": "string",
+                                                                        "minLength": 1
+                                                                    },
+                                                                    "asmDiskStatus": {
+                                                                        "type": "string",
+                                                                        "minLength": 1
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "database": {
+                                                    "anyOf": [
+                                                        {
+                                                            "type": "null"
+                                                        },
+                                                        {
                                                             "type": "object",
                                                             "required": [
                                                                 "type"
@@ -198,42 +267,20 @@
                                                                     "type": "string",
                                                                     "minLength": 1
                                                                 },
-                                                                "hostname": {
+                                                                "dbName": {
                                                                     "type": "string",
                                                                     "minLength": 1
                                                                 },
-                                                                "gridDisk": {
-                                                                    "type": "string",
-                                                                    "minLength": 1
-                                                                },
-                                                                "size": {
-                                                                    "type": "string",
-                                                                    "minLength": 1
-                                                                },
-                                                                "status": {
-                                                                    "type": "string",
-                                                                    "minLength": 1
-                                                                },
-                                                                "errorCount": {
+                                                                "dbID": {
                                                                     "type": "integer"
                                                                 },
-                                                                "cachingPolicy": {
-                                                                    "type": "string",
-                                                                    "minLength": 1
+                                                                "flashCacheLimit": {
+                                                                    "type": "integer"
                                                                 },
-                                                                "asmDiskName": {
-                                                                    "type": "string",
-                                                                    "minLength": 1
+                                                                "iormShare": {
+                                                                    "type": "integer"
                                                                 },
-                                                                "asmDiskGroup": {
-                                                                    "type": "string",
-                                                                    "minLength": 1
-                                                                },
-                                                                "asmDiskSize": {
-                                                                    "type": "string",
-                                                                    "minLength": 1
-                                                                },
-                                                                "asmDiskStatus": {
+                                                                "lastIOReq": {
                                                                     "type": "string",
                                                                     "minLength": 1
                                                                 }
@@ -241,42 +288,6 @@
                                                         }
                                                     ]
                                                 }
-                                            }
-                                        }
-                                    }
-                                ]
-                            },
-                            "database": {
-                                "anyOf": [
-                                    {
-                                        "type": "null"
-                                    },
-                                    {
-                                        "type": "object",
-                                        "required": [
-                                            "type"
-                                        ],
-                                        "properties": {
-                                            "type": {
-                                                "type": "string",
-                                                "minLength": 1
-                                            },
-                                            "dbName": {
-                                                "type": "string",
-                                                "minLength": 1
-                                            },
-                                            "dbID": {
-                                                "type": "integer"
-                                            },
-                                            "flashCacheLimit": {
-                                                "type": "integer"
-                                            },
-                                            "iormShare": {
-                                                "type": "integer"
-                                            },
-                                            "lastIOReq": {
-                                                "type": "string",
-                                                "minLength": 1
                                             }
                                         }
                                     }
