@@ -49,8 +49,6 @@ type APIControllerInterface interface {
 	GetHost(w http.ResponseWriter, r *http.Request)
 	// SearchAlerts search alerts using the filters in the request
 	SearchAlerts(w http.ResponseWriter, r *http.Request)
-	// SearchOracleExadata search exadata data using the filters in the request
-	SearchOracleExadata(w http.ResponseWriter, r *http.Request)
 	// SearchOracleDatabaseUsedLicenses search licenses consumed by the hosts using the filters in the request
 	SearchOracleDatabaseUsedLicenses(w http.ResponseWriter, r *http.Request)
 
@@ -87,16 +85,6 @@ type APIControllerInterface interface {
 	// GetDatabasArchivelogStatusStats return all statistics about the archivelog status of the databases using the filters in the request
 	GetOracleDatabaseArchivelogStatusStats(w http.ResponseWriter, r *http.Request)
 	GetOracleDatabasesStatistics(w http.ResponseWriter, r *http.Request)
-	// GetTotalOracleExadataMemorySizeStats return the total size of memory of exadata using the filters in the request
-	GetTotalOracleExadataMemorySizeStats(w http.ResponseWriter, r *http.Request)
-	// GetTotalOracleExadataCPUStats return the total cpu of exadata using the filters in the request
-	GetTotalOracleExadataCPUStats(w http.ResponseWriter, r *http.Request)
-	// GetAverageOracleExadataStorageUsageStats return the average usage of cell disks of exadata using the filters in the request
-	GetAverageOracleExadataStorageUsageStats(w http.ResponseWriter, r *http.Request)
-	// GetOracleExadataStorageErrorCountStatusStats return all statistics about the ErrorCount status of the storage of the exadata using the filters in the request
-	GetOracleExadataStorageErrorCountStatusStats(w http.ResponseWriter, r *http.Request)
-	// GetOracleExadataPatchStatusStats return all statistics about the patch status of the exadata using the filters in the request
-	GetOracleExadataPatchStatusStats(w http.ResponseWriter, r *http.Request)
 	// GetOracleDatabaseLicensesCompliance return licenses usage status and compliance
 	GetOracleDatabaseLicensesCompliance(w http.ResponseWriter, r *http.Request)
 
@@ -226,6 +214,10 @@ type APIControllerInterface interface {
 	AddNode(w http.ResponseWriter, r *http.Request)
 	UpdateNode(w http.ResponseWriter, r *http.Request)
 	RemoveNode(w http.ResponseWriter, r *http.Request)
+
+	// EXADATA
+
+	ListExadata(w http.ResponseWriter, r *http.Request)
 }
 
 // APIController is the struct used to handle the requests from agents and contains the concrete implementation of APIControllerInterface

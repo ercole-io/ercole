@@ -873,6 +873,8 @@ components:
       properties:
         hostname:
           type: string
+        rackID:
+          type: string
         components:
           type: array
           items:
@@ -882,6 +884,8 @@ components:
     ExadataComponent:
       type: object
       properties:
+        rackID:
+          type: string
         hostType:
           type: string
         hostname:

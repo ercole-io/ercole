@@ -142,13 +142,6 @@ func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 	router.HandleFunc("/hosts/technologies/oracle/databases/service-list", ctrl.GetOracleServiceList).Methods("GET")
 	router.HandleFunc("/hosts/technologies/oracle/databases/partitionings", ctrl.ListOracleDatabasePartitionings).Methods("GET")
 
-	router.HandleFunc("/hosts/technologies/oracle/exadata", ctrl.SearchOracleExadata).Methods("GET")
-	router.HandleFunc("/hosts/technologies/oracle/exadata/total-memory-size", ctrl.GetTotalOracleExadataMemorySizeStats).Methods("GET")
-	router.HandleFunc("/hosts/technologies/oracle/exadata/total-cpu", ctrl.GetTotalOracleExadataCPUStats).Methods("GET")
-	router.HandleFunc("/hosts/technologies/oracle/exadata/average-storage-usage", ctrl.GetAverageOracleExadataStorageUsageStats).Methods("GET")
-	router.HandleFunc("/hosts/technologies/oracle/exadata/storage-error-count-status", ctrl.GetOracleExadataStorageErrorCountStatusStats).Methods("GET")
-	router.HandleFunc("/hosts/technologies/oracle/exadata/patch-status", ctrl.GetOracleExadataPatchStatusStats).Methods("GET")
-
 	// ORACLE CONTRACTS
 	router.HandleFunc("/contracts/oracle/database", ctrl.AddOracleDatabaseContract).Methods("POST")
 	router.HandleFunc("/contracts/oracle/database", ctrl.UpdateOracleDatabaseContract).Methods("PUT")
@@ -193,6 +186,9 @@ func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 	// UPLOADS
 	router.HandleFunc("/contracts/{databaseType}/upload", ctrl.ImportContractFromCSV).Methods("POST")
 	router.HandleFunc("/contracts/{databaseType}/sample", ctrl.GetContractSampleCSV).Methods("GET")
+
+	// EXADATA
+	router.HandleFunc("/exadata", ctrl.ListExadata).Methods("GET")
 
 	ctrl.setupSettingsRoutes(router.PathPrefix("/settings").Subrouter())
 	ctrl.setupFrontendAPIRoutes(router.PathPrefix("/frontend").Subrouter())

@@ -69,9 +69,6 @@ type APIServiceInterface interface {
 	SearchOracleDatabases(filter dto.SearchOracleDatabasesFilter) (*dto.OracleDatabaseResponse, error)
 	// SearchOracleDatabases search databases
 	SearchOracleDatabasesAsXLSX(filter dto.SearchOracleDatabasesFilter) (*excelize.File, error)
-	// SearchOracleExadata search exadata
-	SearchOracleExadata(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) (*dto.OracleExadataResponse, error)
-	SearchOracleExadataAsXLSX(filter dto.GlobalFilter) (*excelize.File, error)
 	// SearchOracleDatabaseUsedLicenses return the list of consumed licenses
 	SearchOracleDatabaseUsedLicenses(hostname string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) (*dto.OracleDatabaseUsedLicenseSearchResponse, error)
 
@@ -112,16 +109,6 @@ type APIServiceInterface interface {
 	GetOracleDatabaseRACStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, error)
 	// GetOracleDatabaseArchivelogStatusStats return a array containing the number of databases per archivelog status
 	GetOracleDatabaseArchivelogStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, error)
-	// GetTotalOracleExadataMemorySizeStats return the total size of memory of exadata
-	GetTotalOracleExadataMemorySizeStats(location string, environment string, olderThan time.Time) (float64, error)
-	// GetTotalOracleExadataCPUStats return the total cpu of exadata
-	GetTotalOracleExadataCPUStats(location string, environment string, olderThan time.Time) (interface{}, error)
-	// GetAverageOracleExadataStorageUsageStats return the average usage of cell disks of exadata
-	GetAverageOracleExadataStorageUsageStats(location string, environment string, olderThan time.Time) (float64, error)
-	// GetOracleExadataStorageErrorCountStatusStats return a array containing the number of cell disks of exadata per error count status
-	GetOracleExadataStorageErrorCountStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, error)
-	// GetOracleExadataPatchStatusStats return a array containing the number of exadata per patch status
-	GetOracleExadataPatchStatusStats(location string, environment string, windowTime time.Time, olderThan time.Time) ([]interface{}, error)
 	// GetDefaultDatabaseTags return the default list of database tags from configuration
 	GetDefaultDatabaseTags() ([]string, error)
 	// GetErcoleFeatures return a map of active/inactive features
@@ -310,6 +297,10 @@ type APIServiceInterface interface {
 	AddNode(node model.Node) error
 	UpdateNode(node model.Node) error
 	RemoveNode(name string) error
+
+	// EXADATA
+
+	ListExadataInstances() ([]model.OracleExadataInstance, error)
 }
 
 // APIService is the concrete implementation of APIServiceInterface.
