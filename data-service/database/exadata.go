@@ -24,9 +24,9 @@ import (
 
 const exdataCollection = "exadatas"
 
-func (md *MongoDatabase) FindExadataByRackID(racID string) (*model.OracleExadataInstance, error) {
+func (md *MongoDatabase) FindExadataByRackID(rackID string) (*model.OracleExadataInstance, error) {
 	res := md.Client.Database(md.Config.Mongodb.DBName).Collection(exdataCollection).
-		FindOne(context.TODO(), bson.M{"racID": racID})
+		FindOne(context.TODO(), bson.M{"rackID": rackID})
 	if res.Err() != nil {
 		return nil, res.Err()
 	}
