@@ -24,18 +24,18 @@ import (
 
 // OracleDatabaseContract holds informations about a sigle OracleDatabaseContract
 type OracleDatabaseContract struct {
-	ID                primitive.ObjectID `json:"id" bson:"_id"`
-	ContractID        string             `json:"contractID" bson:"contractID" csv:"contract_id"`
-	CSI               string             `json:"csi" bson:"csi" csv:"csi"`
-	LicenseTypeID     string             `json:"licenseTypeID" bson:"licenseTypeID" csv:"license_type_id"`
-	ReferenceNumber   string             `json:"referenceNumber" bson:"referenceNumber" csv:"reference_number"`
-	Unlimited         bool               `json:"unlimited" bson:"unlimited" csv:"unlimited"`
-	Count             int                `json:"count" bson:"count" csv:"count"`
-	Basket            bool               `json:"basket" bson:"basket" csv:"basket"`
-	Restricted        bool               `json:"restricted" bson:"restricted" csv:"restricted"`
+	ID                primitive.ObjectID `json:"id" bson:"_id" csv:"-"`
+	ContractID        string             `json:"contractID" bson:"contractID" csv:"Contract Number"`
+	CSI               string             `json:"csi" bson:"csi" csv:"CSI"`
+	LicenseTypeID     string             `json:"licenseTypeID" bson:"licenseTypeID" csv:"Part Number"`
+	ReferenceNumber   string             `json:"referenceNumber" bson:"referenceNumber" csv:"-"`
+	Unlimited         bool               `json:"unlimited" bson:"unlimited" csv:"ULA"`
+	Count             int                `json:"count" bson:"count" csv:"Count"`
+	Basket            bool               `json:"basket" bson:"basket" csv:"-"`
+	Restricted        bool               `json:"restricted" bson:"restricted" csv:"-"`
 	SupportExpiration *time.Time         `json:"supportExpiration" bson:"supportExpiration" csv:"-"`
 	Hosts             []string           `json:"hosts" bson:"hosts" csv:"-"`
-	HostsLiteral      LiteralStrSlice        `json:"-" bson:"-" csv:"hosts"`
+	HostsLiteral      LiteralStrSlice        `json:"-" bson:"-" csv:"-"`
 }
 
 
