@@ -23,16 +23,16 @@ import (
 
 // SqlServerDatabaseContract holds informations about a single SqlServerDatabaseContract
 type SqlServerDatabaseContract struct {
-	ID                primitive.ObjectID `json:"id" bson:"_id"`
-	Type              string             `json:"type" bson:"type" csv:"type"`
-	ContractID        string             `json:"contractID" bson:"contractID" csv:"contract_id"`
-	LicenseTypeID     string             `json:"licenseTypeID" bson:"licenseTypeID" csv:"license_type_id"`
-	LicensesNumber    int                `json:"licensesNumber" bson:"licensesNumber" csv:"licenses_number"`
+	ID                primitive.ObjectID `json:"id" bson:"_id" csv:"-"`
+	Type              string             `json:"type" bson:"type" csv:"Type"`
+	ContractID        string             `json:"contractID" bson:"contractID" csv:"Contract ID"`
+	LicenseTypeID     string             `json:"licenseTypeID" bson:"licenseTypeID" csv:"License Type"`
+	LicensesNumber    int                `json:"licensesNumber" bson:"licensesNumber" csv:"Number of Licenses"`
 	SupportExpiration *time.Time         `json:"supportExpiration" bson:"supportExpiration" csv:"-"`
 	Hosts             []string           `json:"hosts" bson:"hosts" csv:"-"`
 	Clusters          []string           `json:"clusters" bson:"clusters" csv:"-"`
-	HostsLiteral      LiteralStrSlice    `json:"-" bson:"-" csv:"hosts"`
-	ClusterLiteral    LiteralStrSlice    `json:"-" bson:"-" csv:"clusters"`
+	HostsLiteral      LiteralStrSlice    `json:"-" bson:"-" csv:"-"`
+	ClusterLiteral    LiteralStrSlice    `json:"-" bson:"-" csv:"-"`
 }
 
 const (
