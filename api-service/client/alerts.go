@@ -18,6 +18,7 @@ package client
 import (
 	"context"
 	"encoding/json"
+	"net/url"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
@@ -38,7 +39,10 @@ func (c *Client) GetAlertsByFilter(filter dto.AlertsFilter) ([]model.Alert, erro
 
 	var alerts []model.Alert
 
-	err = c.getParsedResponse(context.TODO(), "/alerts", body, &alerts)
+	params := url.Values{}
+	params.Add("location", "All")
+
+	err = c.getParsedResponseWithParams(context.TODO(), "/alerts", body, &alerts, params)
 	if err != nil {
 		return nil, err
 	}
