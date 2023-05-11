@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 
@@ -76,6 +77,46 @@ func (c *Client) doRequest(ctx context.Context, path, method string, body []byte
 	return resp, nil
 }
 
+func (c *Client) doRequestWithParams(ctx context.Context, path, method string, body []byte, params url.Values) (*http.Response, error) {
+	url := utils.NewAPIUrl(
+		c.remoteEndpoint,
+		c.config.AuthenticationProvider.Username,
+		c.config.AuthenticationProvider.Password,
+		path,
+		params)
+
+	req, err := http.NewRequest(method, url.String(), bytes.NewReader(body))
+	if err != nil {
+		return nil, err
+	}
+
+	req = req.WithContext(ctx)
+
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+func (c *Client) getResponseWithParams(ctx context.Context, path, method string, body []byte, params url.Values) (*http.Response, error) {
+	resp, err := c.doRequestWithParams(ctx, path, method, body, params)
+	if err != nil {
+		return nil, err
+	} else if resp.StatusCode < 200 || resp.StatusCode > 299 {
+		defer resp.Body.Close()
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return resp, err
+		}
+
+		return resp, fmt.Errorf("api error (code: %d): %s", resp.StatusCode, string(body))
+	}
+
+	return resp, nil
+}
+
 func (c *Client) getResponse(ctx context.Context, path, method string, body []byte) (*http.Response, error) {
 	resp, err := c.doRequest(ctx, path, method, body)
 	if err != nil {
@@ -95,6 +136,18 @@ func (c *Client) getResponse(ctx context.Context, path, method string, body []by
 
 func (c *Client) getParsedResponse(ctx context.Context, path string, body []byte, response interface{}) error {
 	resp, err := c.getResponse(ctx, path, "GET", body)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	d := json.NewDecoder(resp.Body)
+
+	return d.Decode(response)
+}
+
+func (c *Client) getParsedResponseWithParams(ctx context.Context, path string, body []byte, response interface{}, params url.Values) error {
+	resp, err := c.getResponseWithParams(ctx, path, "GET", body, params)
 	if err != nil {
 		return err
 	}
