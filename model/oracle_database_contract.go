@@ -30,14 +30,13 @@ type OracleDatabaseContract struct {
 	LicenseTypeID     string             `json:"licenseTypeID" bson:"licenseTypeID" csv:"Part Number"`
 	ReferenceNumber   string             `json:"referenceNumber" bson:"referenceNumber" csv:"-"`
 	Unlimited         bool               `json:"unlimited" bson:"unlimited" csv:"ULA"`
-	Count             int                `json:"count" bson:"count" csv:"Count"`
+	Count             int                `json:"count" bson:"count" csv:"License number"`
 	Basket            bool               `json:"basket" bson:"basket" csv:"-"`
 	Restricted        bool               `json:"restricted" bson:"restricted" csv:"-"`
 	SupportExpiration *time.Time         `json:"supportExpiration" bson:"supportExpiration" csv:"-"`
 	Hosts             []string           `json:"hosts" bson:"hosts" csv:"-"`
-	HostsLiteral      LiteralStrSlice        `json:"-" bson:"-" csv:"-"`
+	HostsLiteral      LiteralStrSlice    `json:"-" bson:"-" csv:"-"`
 }
-
 
 func (contract OracleDatabaseContract) Check() error {
 	if contract.Restricted && contract.Basket {
