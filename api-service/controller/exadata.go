@@ -18,6 +18,7 @@ package controller
 import (
 	"net/http"
 
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
@@ -28,5 +29,5 @@ func (ctrl *APIController) ListExadata(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.WriteJSONResponse(w, http.StatusOK, res)
+	utils.WriteJSONResponse(w, http.StatusOK, dto.ToOracleExadataInstances(res))
 }
