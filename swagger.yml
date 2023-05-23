@@ -879,6 +879,18 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ExadataComponent"
+        totalMemory:
+          type: integer
+        usedMemory:
+          type: integer
+        freeMemory:
+          type: integer
+        totalCPU:
+          type: integer
+        usedCPU:
+          type: integer
+        freeCPU:
+          type: integer
       required:
         - racID
     ExadataComponent:
@@ -926,6 +938,14 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ExadataStorageCell"
+        usedRAM:
+          type: integer
+        freeRAM:
+          type: integer
+        usedCPU:
+          type: integer
+        freeCPU:
+          type: integer
       required:
         - hostType
     ExadataVM:
