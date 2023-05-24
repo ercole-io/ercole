@@ -217,6 +217,10 @@ local task_build_push_image(push) =
           steps: [
             { type: 'clone' },
             { type: 'restore_cache', keys: ['cache-sum-{{ md5sum "go.sum" }}', 'cache-date-'], dest_dir: '/go/pkg/mod/cache' },
+
+            { type: 'run', name: 'clone gitleaks', command: 'git clone https://github.com/gitleaks/gitleaks.git ../gitleaks' },
+            { type: 'run', name: 'build gitleaks', command: 'cd ../gitleaks; make build' },
+            { type: 'run', name: 'detect security leaks', command: '../gitleaks/gitleaks detect -v -c gitleaks.toml' },
   
             { type: 'run', name: 'install golangci-lint', command: 'curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.52.2' },
             { type: 'run', name: 'run golangci-lint', command: 'golangci-lint run' },
