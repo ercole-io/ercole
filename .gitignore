@@ -26,3 +26,5 @@ distributed_files/*
 __debug_bin
 .idea
 debug
+
+gitleaks.toml
