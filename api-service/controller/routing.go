@@ -75,8 +75,6 @@ func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 	router.HandleFunc(fmt.Sprintf("%s/{username}", userGroup), ctrl.GetUser).Methods("GET")
 	router.HandleFunc(fmt.Sprintf("%s/{username}/change-password", userGroup), ctrl.ChangePassword).Methods("POST")
 
-	router.HandleFunc(fmt.Sprintf("%s/ldap/{user}", userGroup), ctrl.GetLDAPUsers).Methods("GET")
-
 	// GROUPS
 	router.HandleFunc("/groups", ctrl.InsertGroup).Methods("POST")
 	router.HandleFunc("/groups/{name}", ctrl.UpdateGroup).Methods("PUT")
@@ -213,12 +211,10 @@ func (ctrl *APIController) setupFrontendAPIRoutes(router *mux.Router) {
 
 func (ctrl *APIController) setupAdminRoutes(router *mux.Router) {
 	router.HandleFunc(userGroup, ctrl.AddUser).Methods("POST")
-	router.HandleFunc(fmt.Sprintf("/{provider}%s/{username}", userGroup), middleware.Admin(ctrl.UpdateUser)).Methods("PUT")
-	router.HandleFunc(fmt.Sprintf("/{provider}%s/{username}", userGroup), middleware.Admin(ctrl.RemoveUser)).Methods("DELETE")
+	router.HandleFunc(fmt.Sprintf("%s/{username}", userGroup), middleware.Admin(ctrl.UpdateUser)).Methods("PUT")
+	router.HandleFunc(fmt.Sprintf("%s/{username}", userGroup), middleware.Admin(ctrl.RemoveUser)).Methods("DELETE")
 	router.HandleFunc(fmt.Sprintf("%s/{username}/reset-password", userGroup), middleware.Admin(ctrl.NewPassword)).Methods("POST")
 	router.HandleFunc(fmt.Sprintf("%s/{username}/change-password", userGroup), middleware.Admin(ctrl.ChangePassword)).Methods("POST")
-
-	router.HandleFunc(fmt.Sprintf("/ldap%s", userGroup), ctrl.AddUserLDAP).Methods("POST")
 
 	// ROLES
 	router.HandleFunc("/roles/{name}", middleware.Admin(ctrl.GetRole)).Methods("GET")

@@ -130,7 +130,6 @@ func InsertSuperUser(conf config.Mongodb, pwd string) error {
 		FirstName: "ercole",
 		LastName:  "ercole",
 		LastLogin: nil,
-		Provider:  "basic",
 		Groups:    []string{model.GroupAdmin},
 	}
 
