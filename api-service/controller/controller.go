@@ -206,9 +206,6 @@ type APIControllerInterface interface {
 	RemoveUser(w http.ResponseWriter, r *http.Request)
 	GetInfo(w http.ResponseWriter, r *http.Request)
 
-	GetLDAPUsers(w http.ResponseWriter, r *http.Request)
-	AddUserLDAP(w http.ResponseWriter, r *http.Request)
-
 	GetNodes(w http.ResponseWriter, r *http.Request)
 	GetNode(w http.ResponseWriter, r *http.Request)
 	AddNode(w http.ResponseWriter, r *http.Request)

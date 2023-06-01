@@ -19,7 +19,6 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/ercole-io/ercole/v2/api-service/auth"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
@@ -40,7 +39,7 @@ func (ctrl *APIController) GetUsers(w http.ResponseWriter, r *http.Request) {
 func (ctrl *APIController) GetUser(w http.ResponseWriter, r *http.Request) {
 	username := mux.Vars(r)["username"]
 
-	user, err := ctrl.Service.GetUser(username, auth.BasicType)
+	user, err := ctrl.Service.GetUser(username)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
@@ -62,8 +61,6 @@ func (ctrl *APIController) AddUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user.Provider = auth.BasicType
-
 	if err := ctrl.Service.AddUser(*user); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
@@ -74,7 +71,6 @@ func (ctrl *APIController) AddUser(w http.ResponseWriter, r *http.Request) {
 
 func (ctrl *APIController) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	username := mux.Vars(r)["username"]
-	provider := mux.Vars(r)["provider"]
 
 	user := model.User{Username: username}
 	if err := utils.Decode(r.Body, &user); err != nil {
@@ -82,7 +78,7 @@ func (ctrl *APIController) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := ctrl.Service.UpdateUserGroups(username, provider, user.Groups); err != nil {
+	if err := ctrl.Service.UpdateUserGroups(username, user.Groups); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
@@ -92,14 +88,13 @@ func (ctrl *APIController) UpdateUser(w http.ResponseWriter, r *http.Request) {
 
 func (ctrl *APIController) RemoveUser(w http.ResponseWriter, r *http.Request) {
 	username := mux.Vars(r)["username"]
-	provider := mux.Vars(r)["provider"]
 
 	if username == model.SuperUser {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, utils.ErrSuperUserCannotBeDeleted)
 		return
 	}
 
-	if err := ctrl.Service.RemoveUser(username, provider); err != nil {
+	if err := ctrl.Service.RemoveUser(username); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
@@ -110,7 +105,7 @@ func (ctrl *APIController) RemoveUser(w http.ResponseWriter, r *http.Request) {
 func (ctrl *APIController) NewPassword(w http.ResponseWriter, r *http.Request) {
 	username := mux.Vars(r)["username"]
 
-	user, err := ctrl.Service.GetUser(username, "basic")
+	user, err := ctrl.Service.GetUser(username)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return

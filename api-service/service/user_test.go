@@ -64,9 +64,9 @@ func TestGetUser_Success(t *testing.T) {
 		Groups:    []string{"ercole"},
 	}
 
-	db.EXPECT().GetUser("username", "basic").Return(expected, nil)
+	db.EXPECT().GetUser("username").Return(expected, nil)
 
-	res, err := as.GetUser("username", "basic")
+	res, err := as.GetUser("username")
 	require.NoError(t, err)
 	assert.Equal(t, expected, res)
 }
@@ -84,9 +84,9 @@ func TestUpdateUserGroups(t *testing.T) {
 			Username: "username",
 			Groups:   []string{"group1", "group2"},
 		}
-		db.EXPECT().UpdateUserGroups(user.Username, "basic", user.Groups).Return(nil)
+		db.EXPECT().UpdateUserGroups(user.Username, user.Groups).Return(nil)
 
-		err := as.UpdateUserGroups(user.Username, "basic", user.Groups)
+		err := as.UpdateUserGroups(user.Username, user.Groups)
 
 		assert.Nil(t, err)
 	})
@@ -95,9 +95,9 @@ func TestUpdateUserGroups(t *testing.T) {
 		user := model.User{
 			Groups: []string{"group1", "group2"},
 		}
-		db.EXPECT().UpdateUserGroups("", "basic", user.Groups).Return(errMock)
+		db.EXPECT().UpdateUserGroups("", user.Groups).Return(errMock)
 
-		err := as.UpdateUserGroups("", "basic", user.Groups)
+		err := as.UpdateUserGroups("", user.Groups)
 
 		require.EqualError(t, err, "MockError")
 	})
@@ -146,9 +146,9 @@ func TestRemoveUser(t *testing.T) {
 	}
 
 	t.Run("Success", func(t *testing.T) {
-		db.EXPECT().RemoveUser("username", "basic").Return(nil)
+		db.EXPECT().RemoveUser("username").Return(nil)
 
-		err := as.RemoveUser("username", "basic")
+		err := as.RemoveUser("username")
 		assert.Nil(t, err)
 	})
 }

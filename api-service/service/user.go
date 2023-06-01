@@ -30,8 +30,8 @@ func (as *APIService) ListUsers() ([]model.User, error) {
 	return as.Database.ListUsers()
 }
 
-func (as *APIService) GetUser(username string, provider string) (*model.User, error) {
-	return as.Database.GetUser(username, provider)
+func (as *APIService) GetUser(username string) (*model.User, error) {
+	return as.Database.GetUser(username)
 }
 
 func (as *APIService) AddUser(user model.User) error {
@@ -44,9 +44,7 @@ func (as *APIService) AddUser(user model.User) error {
 		user.Password, user.Salt = cr.GenerateHashAndSalt(user.Password, salt)
 	}
 
-	if !user.IsLDAP() {
-		user.Groups = append(user.Groups, model.GroupLimited)
-	}
+	user.Groups = append(user.Groups, model.GroupLimited)
 
 	raw, err := json.Marshal(user)
 	if err != nil {
@@ -60,8 +58,8 @@ func (as *APIService) AddUser(user model.User) error {
 	return as.Database.AddUser(user)
 }
 
-func (as *APIService) UpdateUserGroups(username string, provider string, groups []string) error {
-	return as.Database.UpdateUserGroups(username, provider, groups)
+func (as *APIService) UpdateUserGroups(username string, groups []string) error {
+	return as.Database.UpdateUserGroups(username, groups)
 }
 
 func (as *APIService) UpdateUserLastLogin(updatedUser model.User) error {
@@ -73,12 +71,7 @@ func (as *APIService) RemoveLimitedGroup(updatedUser model.User) error {
 		updatedUser.Groups = utils.RemoveString(updatedUser.Groups, model.GroupLimited)
 	}
 
-	// FIX: necessary remove Provider from model.User
-	if updatedUser.Provider == "" {
-		updatedUser.Provider = "basic"
-	}
-
-	return as.Database.UpdateUserGroups(updatedUser.Username, updatedUser.Provider, updatedUser.Groups)
+	return as.Database.UpdateUserGroups(updatedUser.Username, updatedUser.Groups)
 }
 
 func (as *APIService) AddLimitedGroup(updatedUser model.User) error {
@@ -86,11 +79,11 @@ func (as *APIService) AddLimitedGroup(updatedUser model.User) error {
 		updatedUser.Groups = append(updatedUser.Groups, model.GroupLimited)
 	}
 
-	return as.Database.UpdateUserGroups(updatedUser.Username, updatedUser.Provider, updatedUser.Groups)
+	return as.Database.UpdateUserGroups(updatedUser.Username, updatedUser.Groups)
 }
 
-func (as *APIService) RemoveUser(username string, provider string) error {
-	return as.Database.RemoveUser(username, provider)
+func (as *APIService) RemoveUser(username string) error {
+	return as.Database.RemoveUser(username)
 }
 
 func (as *APIService) NewPassword(username string) (string, error) {
@@ -126,7 +119,7 @@ func (as *APIService) MatchPassword(user *model.User, password string) bool {
 }
 
 func (as *APIService) UpdatePassword(username string, oldPass string, newPass string) error {
-	user, err := as.GetUser(username, "basic")
+	user, err := as.GetUser(username)
 	if err != nil {
 		return err
 	}

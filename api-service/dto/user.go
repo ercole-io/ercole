@@ -24,7 +24,6 @@ type User struct {
 	FirstName string   `json:"firstName"`
 	LastName  string   `json:"lastName"`
 	Groups    []string `json:"groups"`
-	Provider  string   `json:"provider"`
 }
 
 type Users []User
@@ -40,7 +39,6 @@ func ToUser(userModel *model.User) User {
 			FirstName: userModel.FirstName,
 			LastName:  userModel.LastName,
 			Groups:    userModel.Groups,
-			Provider:  userModel.Provider,
 		}
 	}
 

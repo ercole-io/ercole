@@ -7724,16 +7724,11 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/Group"
-  "/admin/{provider}/users/{username}":
+  "/admin/users/{username}":
     parameters:
       - schema:
           type: string
         name: username
-        in: path
-        required: true
-      - schema:
-          type: string
-        name: provider
         in: path
         required: true
     put:
