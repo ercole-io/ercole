@@ -19,6 +19,8 @@ import "github.com/ercole-io/ercole/v2/model"
 
 type OracleExadataInstance struct {
 	Hostname    string                   `json:"hostname"`
+	Environment string                   `json:"environment"`
+	Location    string                   `json:"location"`
 	RackID      string                   `json:"rackID"`
 	Components  []OracleExadataComponent `json:"components"`
 	TotalMemory int                      `json:"totalMemory"`
@@ -32,8 +34,10 @@ type OracleExadataInstance struct {
 func ToOracleExadataInstance(inst *model.OracleExadataInstance) OracleExadataInstance {
 	if inst != nil {
 		res := OracleExadataInstance{
-			Hostname: inst.Hostname,
-			RackID:   inst.RackID,
+			Hostname:    inst.Hostname,
+			RackID:      inst.RackID,
+			Location:    inst.Location,
+			Environment: inst.Environment,
 		}
 
 		for _, cmp := range inst.Components {
