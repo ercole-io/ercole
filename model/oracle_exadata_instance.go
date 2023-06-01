@@ -24,7 +24,9 @@ const (
 
 // OracleExadataInstance holds specific informations about a exadata.
 type OracleExadataInstance struct {
-	Hostname   string                   `json:"hostname" bson:"hostname"`
-	RackID     string                   `json:"rackID" bson:"rackID"`
-	Components []OracleExadataComponent `json:"components" bson:"components"`
+	Hostname    string                   `json:"hostname" bson:"hostname"`
+	Environment string                   `json:"environment" bson:"environment"`
+	Location    string                   `json:"location" bson:"location"`
+	RackID      string                   `json:"rackID" bson:"rackID"`
+	Components  []OracleExadataComponent `json:"components" bson:"components"`
 }
