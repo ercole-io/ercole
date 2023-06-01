@@ -10,6 +10,16 @@
             "type": "string",
             "minLength": 1
         },
+        "environment": {
+            "type": "string"
+        },
+        "location": {
+            "type": "string"
+        },
+        "createdAt": {
+            "type": "string",
+            "format": "date"
+        },
         "rackID": {
             "type": "string",
             "minLength": 1,

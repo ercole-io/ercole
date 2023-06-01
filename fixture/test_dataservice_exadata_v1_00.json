@@ -1,6 +1,8 @@
 {
     "hostname": "pippo1",
-    "racID": "cmFjSURfdGVzdA",
+    "location":"Italy",
+    "environment":"PROD",
+    "rackID": "cmFjSURfdGVzdA",
     "components": [
         {
             "hostType": "kvm_host",

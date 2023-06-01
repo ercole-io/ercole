@@ -23,7 +23,13 @@ import (
 )
 
 func (ctrl *APIController) ListExadata(w http.ResponseWriter, r *http.Request) {
-	res, err := ctrl.Service.ListExadataInstances()
+	filter, err := dto.GetGlobalFilter(r)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	res, err := ctrl.Service.ListExadataInstances(*filter)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return

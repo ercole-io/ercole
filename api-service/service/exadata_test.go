@@ -18,8 +18,10 @@ package service
 import (
 	"testing"
 
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -47,9 +49,11 @@ func TestListExadataInstances_Success(t *testing.T) {
 		},
 	}
 
-	db.EXPECT().ListExadataInstances().Return(expected, nil)
+	f := dto.GlobalFilter{OlderThan: utils.MAX_TIME}
 
-	res, err := as.ListExadataInstances()
+	db.EXPECT().ListExadataInstances(f).Return(expected, nil)
+
+	res, err := as.ListExadataInstances(f)
 	require.NoError(t, err)
 	assert.Equal(t, expected, res)
 }

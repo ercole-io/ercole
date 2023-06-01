@@ -17,18 +17,22 @@ package database
 import (
 	"context"
 
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
 const exadataCollection = "exadatas"
 
-func (md *MongoDatabase) ListExadataInstances() ([]model.OracleExadataInstance, error) {
+func (md *MongoDatabase) ListExadataInstances(f dto.GlobalFilter) ([]model.OracleExadataInstance, error) {
 	ctx := context.TODO()
 
 	result := make([]model.OracleExadataInstance, 0)
 
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(exadataCollection).Aggregate(ctx, bson.A{})
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(exadataCollection).Aggregate(ctx,
+		bson.A{
+			Filter(f),
+		})
 	if err != nil {
 		return nil, err
 	}

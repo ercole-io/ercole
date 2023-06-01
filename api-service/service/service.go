@@ -300,7 +300,7 @@ type APIServiceInterface interface {
 
 	// EXADATA
 
-	ListExadataInstances() ([]model.OracleExadataInstance, error)
+	ListExadataInstances(filter dto.GlobalFilter) ([]model.OracleExadataInstance, error)
 }
 
 // APIService is the concrete implementation of APIServiceInterface.

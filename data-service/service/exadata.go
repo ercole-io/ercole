@@ -17,6 +17,7 @@ package service
 
 import (
 	"reflect"
+	"time"
 
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/imdario/mergo"
@@ -38,6 +39,8 @@ func (hds *HostDataService) SaveExadata(exadata *model.OracleExadataInstance) er
 
 		return hds.Database.UpdateExadata(*exadata)
 	}
+
+	exadata.CreatedAt = &time.Time{}
 
 	return hds.Database.AddExadata(*exadata)
 }
