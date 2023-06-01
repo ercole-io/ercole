@@ -15,12 +15,17 @@
 
 package dto
 
-import "github.com/ercole-io/ercole/v2/model"
+import (
+	"time"
+
+	"github.com/ercole-io/ercole/v2/model"
+)
 
 type OracleExadataInstance struct {
 	Hostname    string                   `json:"hostname"`
 	Environment string                   `json:"environment"`
 	Location    string                   `json:"location"`
+	CreatedAt   *time.Time               `json:"createdAt"`
 	RackID      string                   `json:"rackID"`
 	Components  []OracleExadataComponent `json:"components"`
 	TotalMemory int                      `json:"totalMemory"`

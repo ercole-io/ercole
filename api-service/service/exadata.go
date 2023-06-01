@@ -15,8 +15,11 @@
 
 package service
 
-import "github.com/ercole-io/ercole/v2/model"
+import (
+	"github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/model"
+)
 
-func (as *APIService) ListExadataInstances() ([]model.OracleExadataInstance, error) {
-	return as.Database.ListExadataInstances()
+func (as *APIService) ListExadataInstances(filter dto.GlobalFilter) ([]model.OracleExadataInstance, error) {
+	return as.Database.ListExadataInstances(filter)
 }

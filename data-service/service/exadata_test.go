@@ -17,6 +17,7 @@ package service
 
 import (
 	"testing"
+	"time"
 
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
@@ -49,6 +50,7 @@ func TestSaveExadata_Success(t *testing.T) {
 		Log:            logger.NewLogger("TEST"),
 	}
 	exd := mongoutils.LoadFixtureExadata(t, "../../fixture/test_dataservice_exadata_v1_00.json")
+	exd.CreatedAt = &time.Time{}
 
 	t.Run("New exadata", func(t *testing.T) {
 		gomock.InOrder(

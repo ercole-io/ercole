@@ -243,7 +243,7 @@ type MongoDatabaseInterface interface {
 	RemoveNode(name string) error
 
 	// EXADATA
-	ListExadataInstances() ([]model.OracleExadataInstance, error)
+	ListExadataInstances(filter dto.GlobalFilter) ([]model.OracleExadataInstance, error)
 }
 
 // MongoDatabase is a implementation

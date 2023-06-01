@@ -15,6 +15,8 @@
 
 package model
 
+import "time"
+
 const (
 	KVM_HOST = "KVM_HOST"
 	DOM0     = "DOM0"
@@ -27,6 +29,7 @@ type OracleExadataInstance struct {
 	Hostname    string                   `json:"hostname" bson:"hostname"`
 	Environment string                   `json:"environment" bson:"environment"`
 	Location    string                   `json:"location" bson:"location"`
+	CreatedAt   *time.Time               `json:"createdAt" bson:"createdAt"`
 	RackID      string                   `json:"rackID" bson:"rackID"`
 	Components  []OracleExadataComponent `json:"components" bson:"components"`
 }

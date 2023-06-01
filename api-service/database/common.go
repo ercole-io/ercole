@@ -23,6 +23,7 @@ import (
 	"github.com/amreo/mu"
 	"go.mongodb.org/mongo-driver/bson"
 
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
@@ -118,4 +119,22 @@ func PagingMetadataStage(page int, size int) interface{} {
 
 func FindByHostname(hostname string) bson.A {
 	return mu.MAPipeline(mu.APOptionalStage(hostname != "", mu.APMatch(bson.M{"hostname": hostname})))
+}
+
+func Filter(filter dto.GlobalFilter) bson.M {
+	res := bson.M{}
+
+	if filter.Location != "" {
+		res["location"] = filter.Location
+	}
+
+	if filter.Environment != "" {
+		res["environment"] = filter.Environment
+	}
+
+	if filter.OlderThan != utils.MAX_TIME {
+		res["createdAt"] = bson.M{"$lte": filter.OlderThan}
+	}
+
+	return bson.M{"$match": res}
 }
