@@ -68,6 +68,8 @@ var enableChartService bool
 var enableRepoService bool
 var enableThunderService bool
 
+var noRemoteDb bool
+
 // serveCmd represents the serve command
 var serveCmd = &cobra.Command{
 	Use:   "serve",
@@ -91,6 +93,8 @@ func init() {
 	serveCmd.Flags().BoolVarP(&enableChartService, "enable-chart-service", "t", false, "Enable the chart service")
 	serveCmd.Flags().BoolVarP(&enableRepoService, "enable-repo-service", "r", false, "Enable the repo service")
 	serveCmd.Flags().BoolVarP(&enableThunderService, "enable-thunder-service", "s", false, "Enable the thunder service")
+
+	serveCmd.Flags().BoolVar(&noRemoteDb, "no-remote-db", false, "Ignore the config saved on db")
 }
 
 // serve setup and start the services
@@ -167,7 +171,7 @@ func serveDataService(config config.Configuration, wg *sync.WaitGroup) {
 	}
 	db.Init()
 
-	if configDB, err := db.ReadConfig(); err == nil && configDB != nil {
+	if configDB, err := db.ReadConfig(); err == nil && configDB != nil && !noRemoteDb {
 		config = *configDB
 	}
 
@@ -223,7 +227,7 @@ func serveAlertService(config config.Configuration, wg *sync.WaitGroup) {
 	}
 	db.Init()
 
-	if configDB, err := db.ReadConfig(); err == nil && configDB != nil {
+	if configDB, err := db.ReadConfig(); err == nil && configDB != nil && !noRemoteDb {
 		config = *configDB
 	}
 
@@ -276,7 +280,7 @@ func serveAPIService(config config.Configuration, wg *sync.WaitGroup) {
 	}
 	db.Init()
 
-	if configDB, err := db.ReadConfig(); err == nil && configDB != nil {
+	if configDB, err := db.ReadConfig(); err == nil && configDB != nil && !noRemoteDb {
 		config = *configDB
 	}
 
@@ -340,7 +344,7 @@ func serveChartService(config config.Configuration, wg *sync.WaitGroup) {
 	}
 	dbAPI.Init()
 
-	if configDB, err := db.ReadConfig(); err == nil && configDB != nil {
+	if configDB, err := db.ReadConfig(); err == nil && configDB != nil && !noRemoteDb {
 		config = *configDB
 	}
 
@@ -439,7 +443,7 @@ func serveThunderService(config config.Configuration, wg *sync.WaitGroup) {
 	}
 	api_service.Init()
 
-	if configDB, err := db.ReadConfig(); err == nil && configDB != nil {
+	if configDB, err := db.ReadConfig(); err == nil && configDB != nil && !noRemoteDb {
 		config = *configDB
 	}
 
