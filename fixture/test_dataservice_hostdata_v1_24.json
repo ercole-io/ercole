@@ -1,0 +1,184 @@
+{
+    "hostname": "itl-csllab-112.sorint.localpippo",
+    "environment": "TST",
+    "location": "Germany",
+    "info": {
+        "hostname": "itl-csllab-112.sorint.localpippo",
+        "cpuModel": "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
+        "cpuCores": 1,
+        "cpuThreads": 2,
+        "kernel": "3.10.0-514.el7.x86_64",
+        "os": "Red Hat Enterprise Linux",
+        "memoryTotal": 3,
+        "swapTotal": 1,
+        "cpuFrequency": "2.53GHz",
+        "cpuSockets": 2,
+        "coresPerSocket": 1,
+        "threadsPerCore": 2,
+        "kernelVersion": "3.10.0-514.el7.x86_64",
+        "osVersion": "7.6",
+        "hardwareAbstraction": "VIRT",
+        "hardwareAbstractionTechnology": "VMWARE"
+    },
+    "agentVersion": "latest",
+    "tags": [],
+    "schemaVersion": 1,
+    "clusterMembershipStatus": {
+        "oracleClusterware": false,
+        "veritasClusterServer": false,
+        "sunCluster": false,
+        "hacmp": false
+    },
+    "filesystems": [
+        {
+            "filesystem": "/dev/mapper/cl_itl--csllab--112-root",
+            "size": 13958643712,
+            "mountedOn": "/",
+            "availableSpace": 5798205849,
+            "usedSpace": 7194070220,
+            "type": "ext4"
+        }
+    ],
+    "features": {
+        "oracle": {
+            "database": {
+                "unlistedRunningDatabases": [],
+                "databases": [
+                    {
+                        "instanceNumber": 1,
+                        "name": "ERCOLE",
+                        "instanceName": "ERCOLE1",
+                        "uniqueName": "ERCOLE",
+                        "status": "OPEN",
+                        "dbID": 1,
+                        "role": "PRIMARY",
+                        "version": "12.2.0.1.0 Standard Edition",
+                        "platform": "Linux x86 64-bit",
+                        "archivelog": false,
+                        "charset": "AL32UTF8",
+                        "nCharset": "AL16UTF16",
+                        "blockSize": 8192,
+                        "cpuCount": 2,
+                        "sgaTarget": 0.0,
+                        "pgaTarget": 0.0,
+                        "memoryTarget": 1.484,
+                        "sgaMaxSize": 1.484,
+                        "segmentsSize": 3.0,
+                        "allocable": 129.0,
+                        "elapsed": 12059.18,
+                        "dbTime": 184.81,
+                        "dailyCPUUsage": 0.5,
+                        "work": 1.0,
+                        "asm": false,
+                        "dataguard": false,
+                        "patches": [],
+                        "tablespaces": [
+                            {
+                                "name": "SYSTEM",
+                                "maxSize": 32767.9844,
+                                "total": 850.0,
+                                "used": 842.875,
+                                "usedPerc": 2.57,
+                                "status": "ONLINE"
+                            },
+                            {
+                                "name": "USERS",
+                                "maxSize": 32767.9844,
+                                "total": 1024.0,
+                                "used": 576.0,
+                                "usedPerc": 1.76,
+                                "status": "ONLINE"
+                            },
+                            {
+                                "name": "UNDOTBS1",
+                                "maxSize": 32767.9844,
+                                "total": 895.0,
+                                "used": 41.25,
+                                "usedPerc": 0.13,
+                                "status": "ONLINE"
+                            },
+                            {
+                                "name": "SYSAUX",
+                                "maxSize": 32767.9844,
+                                "total": 1870.0,
+                                "used": 1749.625,
+                                "usedPerc": 5.34,
+                                "status": "ONLINE"
+                            }
+                        ],
+                        "schemas": [
+                            {
+                                "user": "ERCOLE",
+                                "total": 384,
+                                "tables": 384,
+                                "indexes": 0,
+                                "lob": 0,
+                                "accountStatus": "status"
+                            },
+                            {
+                                "user": "SYSRAC",
+                                "total": 0,
+                                "tables": 0,
+                                "indexes": 0,
+                                "lob": 0,
+                                "accountStatus": "status"
+                            }
+                        ],
+                        "licenses": [
+                            {
+                                "licenseTypeID": "A90619",
+                                "count": 1,
+                                "name": "Real Application Clusters"
+                            },
+                            {
+                                "licenseTypeID":"A90649",
+                                "name": "Diagnostics Pack",
+                                "count": 0.5
+                            }
+                        ],
+                        "addms": [],
+                        "segmentAdvisors": [],
+                        "backups": [],
+                        "datafileSize": 6.0,
+                        "psus": [],
+                        "featureUsageStats": [
+                            {
+                                "product": "Diagnostics Pack",
+                                "feature": "ADDM",
+                                "detectedUsages": 91,
+                                "currentlyUsed": false,
+                                "firstUsageDate": "2019-06-24T17:34:20Z",
+                                "lastUsageDate": "2019-11-09T04:48:23Z",
+                                "extraFeatureInfo": ""
+                            },
+                            {
+                                "product": "Diagnostics Pack",
+                                "feature": "AWR Report",
+                                "detectedUsages": 90,
+                                "currentlyUsed": false,
+                                "firstUsageDate": "2019-06-27T15:15:44Z",
+                                "lastUsageDate": "2019-11-09T04:48:23Z",
+                                "extraFeatureInfo": ""
+                            },
+                            {
+                                "product": "Diagnostics Pack",
+                                "feature": "Automatic Workload Repository",
+                                "detectedUsages": 7,
+                                "currentlyUsed": false,
+                                "firstUsageDate": "2019-06-27T17:01:09Z",
+                                "lastUsageDate": "2019-07-02T05:35:05Z",
+                                "extraFeatureInfo": ""
+                            }
+                        ],
+                        "isCDB": false,
+                        "isRAC": true,
+                        "pdbs": [],
+                        "services": []
+                    }
+                ]
+            }
+        }
+    },
+    "clusters": null,
+    "grantDba": null
+}
