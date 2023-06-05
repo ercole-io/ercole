@@ -15,6 +15,8 @@
 
 package model
 
+import "github.com/ercole-io/ercole/v2/utils"
+
 // OracleDatabaseLicense holds information about an Oracle database license
 type OracleDatabaseLicense struct {
 	LicenseTypeID  string  `json:"licenseTypeID" bson:"licenseTypeID"`
@@ -76,4 +78,9 @@ func DiffLicenses(oldLicenses, newLicenses []OracleDatabaseLicense) map[string]i
 	}
 
 	return result
+}
+
+func (l *OracleDatabaseLicense) IsRAC() bool {
+	rac_licenses := []string{"A90619", "L10005", "L76094", "L76084"}
+	return utils.Contains(rac_licenses, l.LicenseTypeID)
 }

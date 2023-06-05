@@ -48,6 +48,8 @@ func (hds *HostDataService) oracleDatabasesChecks(previousHostdata, hostdata *mo
 
 	hds.ignorePreviousLicences(previousHostdata, hostdata)
 
+	hds.ignoreRacLicenses(hostdata)
+
 	var unlistedDatabasesAlerts []model.Alert
 
 	for _, dbname := range hostdata.Features.Oracle.Database.UnlistedRunningDatabases {
@@ -429,6 +431,17 @@ func (hds *HostDataService) ignorePreviousLicences(previous, new *model.HostData
 						db.Licenses[i].IgnoredComment = v.comment
 					}
 				}
+			}
+		}
+	}
+}
+
+func (hds *HostDataService) ignoreRacLicenses(host *model.HostDataBE) {
+	for _, db := range host.Features.Oracle.Database.Databases {
+		for i := range db.Licenses {
+			if db.Edition() == model.OracleDatabaseEditionStandard && db.Licenses[i].IsRAC() {
+				db.Licenses[i].Ignored = true
+				db.Licenses[i].IgnoredComment = "RAC license ignored by Ercole"
 			}
 		}
 	}

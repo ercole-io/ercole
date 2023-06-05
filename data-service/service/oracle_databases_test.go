@@ -998,3 +998,37 @@ func TestSearchAndAckOldMissingDatabasesAlerts(t *testing.T) {
 
 	hds.searchAndAckOldMissingDatabasesAlerts("pippo", newDbs)
 }
+
+func Test_ignoreRacLicenses_success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	asc := NewMockAlertSvcClientInterface(mockCtrl)
+	hds := HostDataService{
+		Config:         config.Configuration{},
+		ServerVersion:  "",
+		Database:       db,
+		AlertSvcClient: asc,
+		TimeNow:        utils.Btc(utils.P("2019-11-05T16:02:03Z")),
+		Log:            logger.NewLogger("TEST"),
+	}
+
+	host := mongoutils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_24.json")
+
+	snapHost := &host
+
+	hds.ignoreRacLicenses(&host)
+
+	for _, db := range host.Features.Oracle.Database.Databases {
+		if db.Edition() == model.OracleDatabaseEditionStandard {
+			for _, license := range db.Licenses {
+				if license.IsRAC() {
+					assert.Equal(t, license.Ignored, true)
+					assert.Equal(t, license.IgnoredComment, "RAC license ignored by Ercole")
+				}
+			}
+		}
+	}
+
+	assert.NotEqual(t, host, snapHost)
+}
