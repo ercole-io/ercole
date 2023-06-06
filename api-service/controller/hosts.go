@@ -308,3 +308,16 @@ func (ctrl *APIController) DismissHost(w http.ResponseWriter, r *http.Request) {
 
 	utils.WriteJSONResponse(w, http.StatusOK, nil)
 }
+
+func (ctrl *APIController) GetMissingDbHost(w http.ResponseWriter, r *http.Request) {
+	hostname := mux.Vars(r)["hostname"]
+
+	res, err := ctrl.Service.IsMissingDB(hostname)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, struct {
+		IsMissingDB bool
+	}{IsMissingDB: res})
+}

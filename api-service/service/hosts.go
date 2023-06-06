@@ -426,6 +426,10 @@ func (as *APIService) DismissHost(hostname string) error {
 	return nil
 }
 
+func (as *APIService) IsMissingDB(hostname string) (bool, error) {
+	return as.Database.IsMissingDB(hostname)
+}
+
 func checkHosts(as *APIService, hosts []string) error {
 	commonFilters := dto.NewSearchHostsFilters()
 	notInClusterHosts, err := as.SearchHosts("hostnames",

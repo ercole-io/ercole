@@ -2713,6 +2713,31 @@ paths:
           $ref: "#/components/responses/error"
         "500":
           $ref: "#/components/responses/error"
+  "/hosts/{hostname}/is-missing-db":
+    parameters:
+      - in: path
+        name: hostname
+        schema:
+          type: string
+        required: true
+        description: hostname of the requested host
+    get:
+      tags:
+        - api-service
+      operationId: GetMissingDbHost
+      summary: Check missing database
+      description: Check if the requested hostname has a missing database alert actived
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isMissingDB:
+                    type: boolean
+          
   ? "/hosts/{hostname}/technologies/oracle/databases/{dbname}/licenses/{licenseTypeID}/ignored/{ignored}"
   : parameters:
       - in: path
