@@ -906,6 +906,7 @@ func (md *MongoDatabase) IsMissingDB(hostname string) (bool, error) {
 			context.TODO(), bson.M{
 				"alertCode":          model.AlertCodeMissingDatabase,
 				"otherInfo.hostname": hostname,
+				"alertStatus":        bson.M{"$ne": "DISMISSED"},
 			})
 	if err != nil {
 		return false, utils.NewError(err, "DB ERROR")
