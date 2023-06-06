@@ -897,3 +897,19 @@ func (md *MongoDatabase) getHostTechnology(hostname string, olderThan time.Time)
 
 	return out, nil
 }
+
+// Check if there are any alerts related to the hostname
+func (md *MongoDatabase) IsMissingDB(hostname string) (bool, error) {
+	count, err := md.Client.Database(md.Config.Mongodb.DBName).
+		Collection(alertsCollection).
+		CountDocuments(
+			context.TODO(), bson.M{
+				"alertCode":          model.AlertCodeMissingDatabase,
+				"otherInfo.hostname": hostname,
+			})
+	if err != nil {
+		return false, utils.NewError(err, "DB ERROR")
+	}
+
+	return count > 0, nil
+}

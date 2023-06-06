@@ -103,6 +103,8 @@ type APIControllerInterface interface {
 	// DismissHost dismiss the specified host in the request
 	DismissHost(w http.ResponseWriter, r *http.Request)
 
+	GetMissingDbHost(w http.ResponseWriter, r *http.Request)
+
 	// GetInfoForFrontendDashboard return all informations needed for the frontend dashboard page
 	GetInfoForFrontendDashboard(w http.ResponseWriter, r *http.Request)
 

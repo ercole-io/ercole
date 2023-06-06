@@ -99,6 +99,8 @@ func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 	router.HandleFunc("/hosts/{hostname}", ctrl.DismissHost).Methods("DELETE")
 	router.HandleFunc("/hosts/{hostname}/technologies/oracle/databases/{dbname}/licenses/{licenseTypeID}/ignored/{ignored}", ctrl.UpdateLicenseIgnoredField).Methods("PUT")
 
+	router.HandleFunc("/hosts/{hostname}/is-missing-db", ctrl.GetMissingDbHost).Methods("GET")
+
 	router.HandleFunc("/hosts/technologies", ctrl.ListTechnologies).Methods("GET")
 
 	// ALL TECHNOLOGIES
