@@ -56,16 +56,13 @@
                                 "type": "integer"
                             },
                             "imageVersion": {
-                                "type": "string",
-                                "minLength": 1
+                                "type": "string"
                             },
                             "kernel": {
-                                "type": "string",
-                                "minLength": 1
+                                "type": "string"
                             },
                             "model": {
-                                "type": "string",
-                                "minLength": 1
+                                "type": "string"
                             },
                             "fanUsed": {
                                 "type": "integer"
@@ -80,20 +77,16 @@
                                 "type": "integer"
                             },
                             "msStatus": {
-                                "type": "string",
-                                "minLength": 1
+                                "type": "string"
                             },
                             "rsStatus": {
-                                "type": "string",
-                                "minLength": 1
+                                "type": "string"
                             },
                             "cellServiceStatus": {
-                                "type": "string",
-                                "minLength": 1
+                                "type": "string"
                             },
                             "swVersion": {
-                                "type": "string",
-                                "minLength": 1
+                                "type": "string"
                             },
                             "vms": {
                                 "anyOf": [
@@ -113,12 +106,10 @@
                                                     "minLength": 1
                                                 },
                                                 "physicalHost": {
-                                                    "type": "string",
-                                                    "minLength": 1
+                                                    "type": "string"
                                                 },
                                                 "status": {
-                                                    "type": "string",
-                                                    "minLength": 1
+                                                    "type": "string"
                                                 },
                                                 "name": {
                                                     "type": "string",
@@ -171,8 +162,7 @@
                                                     "minLength": 1
                                                 },
                                                 "hostname": {
-                                                    "type": "string",
-                                                    "minLength": 1
+                                                    "type": "string"
                                                 },
                                                 "cellDisk": {
                                                     "type": "string",
@@ -183,16 +173,13 @@
                                                     "minLength": 1
                                                 },
                                                 "size": {
-                                                    "type": "string",
-                                                    "minLength": 1
+                                                    "type": "string"
                                                 },
                                                 "freeSpace": {
-                                                    "type": "string",
-                                                    "minLength": 1
+                                                    "type": "string"
                                                 },
                                                 "status": {
-                                                    "type": "string",
-                                                    "minLength": 1
+                                                    "type": "string"
                                                 },
                                                 "errorCount": {
                                                     "type": "integer"
@@ -215,8 +202,7 @@
                                                                         "minLength": 1
                                                                     },
                                                                     "hostname": {
-                                                                        "type": "string",
-                                                                        "minLength": 1
+                                                                        "type": "string"
                                                                     },
                                                                     "gridDisk": {
                                                                         "type": "string",
@@ -227,35 +213,28 @@
                                                                         "minLength": 1
                                                                     },
                                                                     "size": {
-                                                                        "type": "string",
-                                                                        "minLength": 1
+                                                                        "type": "string"
                                                                     },
                                                                     "status": {
-                                                                        "type": "string",
-                                                                        "minLength": 1
+                                                                        "type": "string"
                                                                     },
                                                                     "errorCount": {
                                                                         "type": "integer"
                                                                     },
                                                                     "cachingPolicy": {
-                                                                        "type": "string",
-                                                                        "minLength": 1
+                                                                        "type": "string"
                                                                     },
                                                                     "asmDiskName": {
-                                                                        "type": "string",
-                                                                        "minLength": 1
+                                                                        "type": "string"
                                                                     },
                                                                     "asmDiskGroup": {
-                                                                        "type": "string",
-                                                                        "minLength": 1
+                                                                        "type": "string"
                                                                     },
                                                                     "asmDiskSize": {
-                                                                        "type": "string",
-                                                                        "minLength": 1
+                                                                        "type": "string"
                                                                     },
                                                                     "asmDiskStatus": {
-                                                                        "type": "string",
-                                                                        "minLength": 1
+                                                                        "type": "string"
                                                                     }
                                                                 }
                                                             }
@@ -269,17 +248,12 @@
                                                         },
                                                         {
                                                             "type": "object",
-                                                            "required": [
-                                                                "type"
-                                                            ],
                                                             "properties": {
                                                                 "type": {
-                                                                    "type": "string",
-                                                                    "minLength": 1
+                                                                    "type": "string"
                                                                 },
                                                                 "dbName": {
-                                                                    "type": "string",
-                                                                    "minLength": 1
+                                                                    "type": "string"
                                                                 },
                                                                 "dbID": {
                                                                     "type": "integer"
@@ -291,8 +265,13 @@
                                                                     "type": "integer"
                                                                 },
                                                                 "lastIOReq": {
-                                                                    "type": "string",
-                                                                    "minLength": 1
+                                                                    "anyOf": [
+                                                                        {"type": "null"},
+                                                                        {
+                                                                            "type": "string",
+                                                                            "format": "date-time"
+                                                                        }
+                                                                    ]
                                                                 }
                                                             }
                                                         }
