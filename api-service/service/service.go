@@ -281,19 +281,16 @@ type APIServiceInterface interface {
 	ChangeConfig(config config.Configuration) error
 
 	ListUsers() ([]model.User, error)
-	GetUser(username string, provider string) (*model.User, error)
+	GetUser(username string) (*model.User, error)
 	AddUser(user model.User) error
-	UpdateUserGroups(username string, provider string, groups []string) error
+	UpdateUserGroups(username string, groups []string) error
 	UpdateUserLastLogin(updatedUser model.User) error
 	RemoveLimitedGroup(updatedUser model.User) error
 	AddLimitedGroup(updatedUser model.User) error
-	RemoveUser(username string, provider string) error
+	RemoveUser(username string) error
 	NewPassword(username string) (string, error)
 	UpdatePassword(username string, oldPass string, newPass string) error
 	MatchPassword(user *model.User, password string) bool
-
-	GetLDAPUsers(user string) ([]model.UserLDAP, error)
-	AddUserByLDAP(userLDAP model.UserLDAP, groups []string) error
 
 	GetNodes(groups []string) ([]model.Node, error)
 	GetNode(name string) (*model.Node, error)

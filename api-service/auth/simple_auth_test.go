@@ -131,13 +131,12 @@ func TestGetUserInfoIfCredentialsAreCorrect_WhenAreCredentialsAreWrong(t *testin
 func TestGetUserInfoIfCredentialsAreCorrect_WhenAreCredentialsAreCorrect(t *testing.T) {
 	db.ConnectToMongodb()
 
-	defer serviceAuth.RemoveUser("foobar", "basic")
+	defer serviceAuth.RemoveUser("foobar")
 
 	user := model.User{
 		Username: "foobar",
 		Password: "C0rr3ctP4ssw0rd",
 		Groups:   []string{"Test"},
-		Provider: "basic",
 	}
 
 	serviceAuth.AddUser(user)
@@ -215,14 +214,13 @@ func TestGetToken_OK(t *testing.T) {
 
 	db.ConnectToMongodb()
 
-	defer serviceAuth.RemoveUser("foobar", "basic")
+	defer serviceAuth.RemoveUser("foobar")
 
 	serviceAuth.AddUser(
 		model.User{
 			Username: "foobar",
 			Password: "C0rr3ctP4ssw0rd",
 			Groups:   []string{"Test"},
-			Provider: "basic",
 		},
 	)
 
@@ -649,14 +647,13 @@ func TestAuthenticateMiddleware_BearerOk(t *testing.T) {
 
 	db.ConnectToMongodb()
 
-	defer serviceAuth.RemoveUser("foobar", "basic")
+	defer serviceAuth.RemoveUser("foobar")
 
 	serviceAuth.AddUser(
 		model.User{
 			Username: "foobar",
 			Password: "C0rr3ctP4ssw0rd",
 			Groups:   []string{"Test"},
-			Provider: "basic",
 		},
 	)
 

@@ -109,7 +109,7 @@ func (ap *LDAPAuthenticationProvider) GetUserInfoIfCredentialsAreCorrect(usernam
 		ap.Config.LDAPBase,
 		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
 		fmt.Sprintf("(&(objectClass=*)%s)", filter),
-		[]string{"givenName", "sn", "mail", "uid"},
+		[]string{"givenName", "sn", "mail", "uid", "ou"},
 		nil,
 	)
 
@@ -134,7 +134,17 @@ func (ap *LDAPAuthenticationProvider) GetUserInfoIfCredentialsAreCorrect(usernam
 		return nil, utils.NewError(err, "REBIND")
 	}
 
-	userDto := dto.User{Username: username}
+	ou := []string{}
+
+	for _, att := range sr.Entries[0].Attributes {
+		if att.Name == "ou" {
+			ou = att.Values
+		}
+	}
+
+	ercoleGroups := ap.Service.GetMatchedGroupsName(ou)
+
+	userDto := dto.User{Username: username, Groups: ercoleGroups}
 
 	return &userDto, nil
 }
@@ -230,7 +240,9 @@ func (ap *LDAPAuthenticationProvider) AuthenticateMiddleware(next http.Handler) 
 				return
 			}
 
-			context.Set(r, "user", model.User{Username: claims.Subject})
+			ercoleGroups := ap.Service.GetMatchedGroupsName(claims.Groups)
+
+			context.Set(r, "user", model.User{Username: claims.Subject, Groups: ercoleGroups})
 
 			next.ServeHTTP(w, r)
 			return
