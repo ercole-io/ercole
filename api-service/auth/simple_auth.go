@@ -68,7 +68,7 @@ func (ap *BasicAuthenticationProvider) Init() {
 
 // GetUserInfoIfCredentialsAreCorrect return the informations about the user if the provided credentials are correct, otherwise return nil
 func (ap *BasicAuthenticationProvider) GetUserInfoIfCredentialsAreCorrect(username string, password string) (*dto.User, error) {
-	user, err := ap.Service.GetUser(username, BasicType)
+	user, err := ap.Service.GetUser(username)
 	if err != nil {
 		return nil, err
 	}

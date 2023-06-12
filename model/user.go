@@ -31,7 +31,6 @@ type User struct {
 	FirstName string     `json:"firstName,omitempty" bson:"firstName"`
 	LastName  string     `json:"lastName,omitempty" bson:"lastName"`
 	Groups    []string   `json:"groups" bson:"groups"`
-	Provider  string     `json:"provider,omitempty" bson:"provider"`
 }
 
 func (u *User) IsGroup(group string) bool {
@@ -40,8 +39,4 @@ func (u *User) IsGroup(group string) bool {
 
 func (u *User) IsAdmin() bool {
 	return u.IsGroup(GroupAdmin)
-}
-
-func (u *User) IsLDAP() bool {
-	return u.Provider == "ldap"
 }

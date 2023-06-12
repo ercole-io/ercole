@@ -54,9 +54,9 @@ func (md *MongoDatabase) AddUser(user model.User) error {
 	return nil
 }
 
-func (md *MongoDatabase) GetUser(username string, provider string) (*model.User, error) {
+func (md *MongoDatabase) GetUser(username string) (*model.User, error) {
 	res := md.Client.Database(md.Config.Mongodb.DBName).Collection(userCollection).
-		FindOne(context.TODO(), bson.M{"username": primitive.Regex{Pattern: regexp.QuoteMeta(username), Options: "i"}, "provider": provider})
+		FindOne(context.TODO(), bson.M{"username": primitive.Regex{Pattern: regexp.QuoteMeta(username), Options: "i"}})
 	if res.Err() == mongo.ErrNoDocuments {
 		return nil, utils.ErrInvalidUser
 	} else if res.Err() != nil {
@@ -72,11 +72,11 @@ func (md *MongoDatabase) GetUser(username string, provider string) (*model.User,
 	return result, nil
 }
 
-func (md *MongoDatabase) UpdateUserGroups(username string, provider string, groups []string) error {
+func (md *MongoDatabase) UpdateUserGroups(username string, groups []string) error {
 	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(userCollection).
 		UpdateOne(
 			context.TODO(),
-			bson.M{"username": username, "provider": provider},
+			bson.M{"username": username},
 			bson.D{{Key: "$set", Value: bson.D{
 				primitive.E{Key: "groups", Value: groups},
 			}}},
@@ -94,7 +94,6 @@ func (md *MongoDatabase) UpdateUserLastLogin(user model.User) error {
 			context.TODO(),
 			bson.M{
 				"username": user.Username,
-				"provider": user.Provider,
 			},
 			bson.M{"$set": bson.M{
 				"lastLogin": user.LastLogin,
@@ -107,9 +106,9 @@ func (md *MongoDatabase) UpdateUserLastLogin(user model.User) error {
 	return nil
 }
 
-func (md *MongoDatabase) RemoveUser(username string, provider string) error {
+func (md *MongoDatabase) RemoveUser(username string) error {
 	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(userCollection).
-		DeleteOne(context.TODO(), bson.M{"username": primitive.Regex{Pattern: regexp.QuoteMeta(username), Options: "i"}, "provider": provider})
+		DeleteOne(context.TODO(), bson.M{"username": primitive.Regex{Pattern: regexp.QuoteMeta(username), Options: "i"}})
 	if err != nil {
 		return err
 	}

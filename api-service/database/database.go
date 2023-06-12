@@ -230,11 +230,11 @@ type MongoDatabaseInterface interface {
 
 	// USERS
 	ListUsers() ([]model.User, error)
-	GetUser(username string, provider string) (*model.User, error)
+	GetUser(username string) (*model.User, error)
 	AddUser(user model.User) error
-	UpdateUserGroups(username string, provider string, groups []string) error
+	UpdateUserGroups(username string, groups []string) error
 	UpdateUserLastLogin(user model.User) error
-	RemoveUser(username string, provider string) error
+	RemoveUser(username string) error
 	UpdatePassword(username string, password string, salt string) error
 
 	// TREE
