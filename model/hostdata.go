@@ -40,6 +40,7 @@ type HostData struct {
 	Clusters                []ClusterInfo           `json:"clusters"`
 	Cloud                   Cloud                   `json:"cloud"`
 	Errors                  []AgentError            `json:"errors"`
+	Consumption             Consumption             `json:"consumption"`
 }
 
 func (v *HostData) AddErrors(errs ...error) {
