@@ -377,6 +377,22 @@
                     ]
                 }
             }
+        },
+        "consumption":{
+            "type": "object",
+            "properties": {
+                "timeStart":{
+                    "type":"string",
+                    "format": "date-time"
+                },
+                "timeEnd": {
+                    "type":"string",
+                    "format": "date-time"
+                },
+                "cpuAvg": {
+                    "type":"number"
+                }
+            }
         }
     }
 }
