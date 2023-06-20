@@ -47,7 +47,7 @@ type HostDataBE struct {
 	Clusters                []ClusterInfo           `json:"clusters" bson:"clusters"`
 	Cloud                   Cloud                   `json:"cloud" bson:"cloud"`
 	Errors                  []AgentError            `json:"errors" bson:"errors"`
-	Consumption             Consumption             `json:"consumption"`
+	Consumptions            []Consumption           `json:"consumptions"`
 }
 
 func (v *HostDataBE) GetClusterCores(hostdatasPerHostname map[string]*HostDataBE) (int, error) {

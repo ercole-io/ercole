@@ -379,20 +379,28 @@
             }
         },
         "consumption":{
-            "type": "object",
-            "properties": {
-                "timeStart":{
-                    "type":"string",
-                    "format": "date-time"
-                },
-                "timeEnd": {
-                    "type":"string",
-                    "format": "date-time"
-                },
-                "cpuAvg": {
-                    "type":"number"
+            "anyOf": [
+                { "type":"null" },
+                {
+                    "type": "array",
+                    "items": {
+                        "type":"object",
+                        "properties": {
+                            "timeStart":{
+                                "type":"string",
+                                "format": "date-time"
+                            },
+                            "timeEnd": {
+                                "type":"string",
+                                "format": "date-time"
+                            },
+                            "cpuAvg": {
+                                "type":"number"
+                            }
+                        }
+                    }
                 }
-            }
+            ]
         }
     }
 }
