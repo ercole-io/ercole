@@ -740,6 +740,53 @@
                                                             }
                                                         }
                                                     ]
+                                                },
+                                                "storageProvisionings": {
+                                                    "anyOf": [
+                                                        {
+                                                            "type": "null"
+                                                        },
+                                                        {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "timeStart": {
+                                                                        "type": "string",
+                                                                        "format": "date-time"
+                                                                    },
+                                                                    "timeEnd": {
+                                                                        "type": "string",
+                                                                        "format": "date-time"
+                                                                    },
+                                                                    "cpuDbAvg": {
+                                                                        "type": "number"
+                                                                    },
+                                                                    "cpuDbMax": {
+                                                                        "type": "number"
+                                                                    },
+                                                                    "cpuHostAvg": {
+                                                                        "type": "number"
+                                                                    },
+                                                                    "cpuHostMax": {
+                                                                        "type": "number"
+                                                                    },
+                                                                    "iopsAvg": {
+                                                                        "type": "number"
+                                                                    },
+                                                                    "iopsMax": {
+                                                                        "type": "number"
+                                                                    },
+                                                                    "iombAvg": {
+                                                                        "type": "number"
+                                                                    },
+                                                                    "iombMax": {
+                                                                        "type": "number"
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
                                                 }
                                             }
                                         }
@@ -794,6 +841,53 @@
                                                             "type": "string"
                                                         },
                                                         "mb": {
+                                                            "type": "number"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    "storageProvisionings": {
+                                        "anyOf": [
+                                            {
+                                                "type": "null"
+                                            },
+                                            {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "timeStart": {
+                                                            "type": "string",
+                                                            "format": "date-time"
+                                                        },
+                                                        "timeEnd": {
+                                                            "type": "string",
+                                                            "format": "date-time"
+                                                        },
+                                                        "cpuDbAvg": {
+                                                            "type": "number"
+                                                        },
+                                                        "cpuDbMax": {
+                                                            "type": "number"
+                                                        },
+                                                        "cpuHostAvg": {
+                                                            "type": "number"
+                                                        },
+                                                        "cpuHostMax": {
+                                                            "type": "number"
+                                                        },
+                                                        "iopsAvg": {
+                                                            "type": "number"
+                                                        },
+                                                        "iopsMax": {
+                                                            "type": "number"
+                                                        },
+                                                        "iombAvg": {
+                                                            "type": "number"
+                                                        },
+                                                        "iombMax": {
                                                             "type": "number"
                                                         }
                                                     }
