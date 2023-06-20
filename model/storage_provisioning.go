@@ -21,16 +21,22 @@ import "time"
 type StorageProvisioning struct {
 	TimeStart  *time.Time `json:"timeStart" bson:"timeStart"`
 	TimeEnd    *time.Time `json:"timeEnd" bson:"timeEnd"`
-	CpuDbAvg   float64    `json:"CpuDbAvg" bson:"CpuDbAvg"`
-	CpuDbMax   float64    `json:"CpuDbMax" bson:"CpuDbMax"`
-	CpuHostAvg float64    `json:"CpuHostAvg" bson:"CpuHostAvg"`
-	CpuHostMax float64    `json:"CpuHostMax" bson:"CpuHostMax"`
-	IopsAvg    float64    `json:"IopsAvg" bson:"IopsAvg"`
-	IopsMax    float64    `json:"IopsMax" bson:"IopsMax"`
-	IombAvg    float64    `json:"IombAvg" bson:"IombAvg"`
-	IombMax    float64    `json:"IombMax" bson:"IombMax"`
+	CpuDbAvg   float64    `json:"cpuDbAvg" bson:"cpuDbAvg"`
+	CpuDbMax   float64    `json:"cpuDbMax" bson:"cpuDbMax"`
+	CpuHostAvg float64    `json:"cpuHostAvg" bson:"cpuHostAvg"`
+	CpuHostMax float64    `json:"cpuHostMax" bson:"cpuHostMax"`
+	IopsAvg    float64    `json:"iopsAvg" bson:"iopsAvg"`
+	IopsMax    float64    `json:"iopsMax" bson:"iopsMax"`
+	IombAvg    float64    `json:"iombAvg" bson:"iombAvg"`
+	IombMax    float64    `json:"iombMax" bson:"iombMax"`
 }
 
 func (sp *StorageProvisioning) IsRange() bool {
-	return sp.TimeStart != nil && sp.TimeEnd != nil
+	if sp.TimeStart != nil && sp.TimeEnd != nil {
+		diff := sp.TimeEnd.Sub(*sp.TimeStart)
+
+		return int64(diff.Hours()/24) > 1
+	}
+
+	return false
 }
