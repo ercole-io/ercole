@@ -144,6 +144,7 @@ func (md *MongoDatabase) getHosts(mode string, filters dto.SearchHostsFilters, o
 					"environment":             true,
 					"agentVersion":            true,
 					"info":                    true,
+					"consumptions":            true,
 					"clusterMembershipStatus": true,
 					"virtualizationNode":      true,
 					"cluster":                 true,
