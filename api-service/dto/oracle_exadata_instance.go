@@ -52,7 +52,7 @@ func ToOracleExadataInstance(inst *model.OracleExadataInstance) OracleExadataIns
 
 				for _, vm := range cmp.VMs {
 					if vm.Type == model.VM_KVM || vm.Type == model.VM_XEN {
-						res.UsedMemory += vm.RamCurrent + vm.RamOnline
+						res.UsedMemory += (vm.RamCurrent/1000) + (vm.RamOnline/1000)
 						res.UsedCPU += vm.CPUCurrent + vm.CPUOnline
 					}
 				}
