@@ -31,7 +31,7 @@ func ToOracleExadataComponent(componentModel *model.OracleExadataComponent) Orac
 
 		for _, vm := range componentModel.VMs {
 			if vm.Type == model.VM_KVM || vm.Type == model.VM_XEN {
-				res.UsedRAM += vm.RamCurrent + vm.RamOnline
+				res.UsedRAM += (vm.RamCurrent / 1000) + (vm.RamOnline / 1000)
 				res.UsedCPU += vm.CPUCurrent + vm.CPUOnline
 			}
 		}
