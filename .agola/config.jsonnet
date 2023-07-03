@@ -23,7 +23,7 @@ local task_build_go() = {
 
         echo ${SERVER_VERSION}
 
-        go build -ldflags "-X github.com/ercole-io/ercole/v2/cmd.serverVersion=${SERVER_VERSION}"
+        go build -ldflags "-X github.com/ercole-io/ercole/v2/cmd.serverVersion=${SERVER_VERSION} -linkmode external -extldflags -static"
       |||,
     },
     { type: 'save_to_workspace', contents: [{ source_dir: '.', dest_dir: '.', paths: ['ercole', 'package/**', 'resources/**', 'distributed_files/**'] }] },
