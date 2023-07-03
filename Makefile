@@ -1,7 +1,7 @@
 BINARY=ercole
 VERSION=`git log --format=%H -n 1`
 BUILD=`date -u +%Y-%m-%d-%H:%M:%S-UTC`
-LDFLAGS=-ldflags "-X github.com/ercole-io/ercole/v2/cmd.serverVersion=${VERSION}"
+LDFLAGS=-ldflags "-X github.com/ercole-io/ercole/v2/cmd.serverVersion=${VERSION} -linkmode external -extldflags -static"
 
 run: build
 	./ercole -c $(ERCOLE_CONF) serve
