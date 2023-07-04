@@ -28,7 +28,7 @@ local task_build_go() = {
     },
     { type: 'save_to_workspace', contents: [{ source_dir: '.', dest_dir: '.', paths: ['ercole', 'package/**', 'resources/**', 'distributed_files/**'] }] },
   ],
-  depends: ['test'],
+  depends: ['detect leaks'],
 };
 
 local task_pkg_build(setup) = {
