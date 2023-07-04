@@ -196,7 +196,7 @@ local task_build_push_image(push) =
     ]) + [
       { type: 'run', command: '/kaniko/executor --context=dir:///kaniko/ercole --dockerfile Dockerfile %s' % [options] },
     ],
-    depends: ['checkout code'],
+    depends: ['detect leaks'],
   };
 
 {
@@ -214,17 +214,10 @@ local task_build_push_image(push) =
               { image: 'mongo:4' },
             ],
           },
-          environment: {
-            GITLEAKS_CONF: { from_variable: 'gitleaks-config' },
-          },
           steps: [
             { type: 'clone' },
             { type: 'restore_cache', keys: ['cache-sum-{{ md5sum "go.sum" }}', 'cache-date-'], dest_dir: '/go/pkg/mod/cache' },
-
-            { type: 'run', name: 'clone gitleaks', command: 'git clone https://github.com/gitleaks/gitleaks.git ../gitleaks' },
-            { type: 'run', name: 'build gitleaks', command: 'cd ../gitleaks; make build; echo ${GITLEAKS_CONF} > gitleaks.toml' },
-            { type: 'run', name: 'detect security leaks', command: '../gitleaks/gitleaks detect -v -c ../gitleaks/gitleaks.toml' },
-  
+            
             { type: 'run', name: 'install golangci-lint', command: 'curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.52.2' },
             { type: 'run', name: 'run golangci-lint', command: 'golangci-lint run' },
 
@@ -281,6 +274,25 @@ local task_build_push_image(push) =
             { type: 'save_to_workspace', contents: [{ source_dir: '.', dest_dir: '.', paths: ['**'] }] },
           ],
           depends: ['test'],
+        },
+        {
+          name: 'detect leaks',
+          runtime: {
+            type: 'pod',
+            arch: 'amd64',
+            containers: [
+              { image: 'zricethezav/gitleaks:latest' },
+            ],
+          },
+          environment: {
+            GITLEAKS_CONF: { from_variable: 'gitleaks-config' },
+          },
+          steps: [
+            { type: 'restore_workspace', dest_dir: '.' },
+            { type: 'run', command: 'echo ${GITLEAKS_CONF} > gitleaks.toml'  },
+            { type: 'run', command: 'gitleaks detect --source . -v -c gitleaks.toml'  },
+          ],
+          depends: ['checkout code'],
         },
       ] + [
         task_build_push_image(false) + {
