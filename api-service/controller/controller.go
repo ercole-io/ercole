@@ -110,6 +110,9 @@ type APIControllerInterface interface {
 
 	// UpdateLicenseIgnoredField update license ignored field (true/false)
 	UpdateLicenseIgnoredField(w http.ResponseWriter, r *http.Request)
+
+	CanMigrateLicense(w http.ResponseWriter, r *http.Request)
+
 	// UpdateSqlServerLicenseIgnoredField update license ignored field (true/false)
 	UpdateSqlServerLicenseIgnoredField(w http.ResponseWriter, r *http.Request)
 	// UpdateMySqlLicenseIgnoredField update license ignored field (true/false)

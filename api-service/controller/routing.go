@@ -151,6 +151,9 @@ func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 	router.HandleFunc("/contracts/oracle/database/{id}/hosts", ctrl.AddHostToOracleDatabaseContract).Methods("POST")
 	router.HandleFunc("/contracts/oracle/database/{id}/hosts/{hostname}", ctrl.DeleteHostFromOracleDatabaseContract).Methods("DELETE")
 
+	// ORACLE LICENSE
+	router.HandleFunc("/hosts/{hostname}/technologies/oracle/databases/{dbname}/can-migrate", ctrl.CanMigrateLicense).Methods("GET")
+
 	// SQL SERVER CONTRACTS
 	router.HandleFunc("/contracts/microsoft/database", ctrl.AddSqlServerDatabaseContract).Methods("POST")
 	router.HandleFunc("/contracts/microsoft/database", ctrl.UpdateSqlServerDatabaseContract).Methods("PUT")

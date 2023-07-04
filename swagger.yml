@@ -5251,6 +5251,33 @@ paths:
       parameters: []
       tags:
         - api-service
+  "/hosts/{hostname}/technologies/oracle/databases/{dbname}/can-migrate":
+    parameters:
+      - schema:
+          type: string
+        name: hostname
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: dbname
+        in: path
+        required: true
+    get:
+      operationId: CanMigrateLicense
+      tags:
+        - api-service
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  Canbemigrate:
+                    type: boolean
+            
   /contracts/microsoft/database:
     get:
       summary: Search Microsoft database contracts

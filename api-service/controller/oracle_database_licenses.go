@@ -65,3 +65,22 @@ func (ctrl *APIController) UpdateLicenseIgnoredField(w http.ResponseWriter, r *h
 	//Write the data
 	utils.WriteJSONResponse(w, http.StatusOK, nil)
 }
+
+func (ctrl *APIController) CanMigrateLicense(w http.ResponseWriter, r *http.Request) {
+	hostname := mux.Vars(r)["hostname"]
+	dbname := mux.Vars(r)["dbname"]
+
+	res, err := ctrl.Service.CanMigrateLicense(hostname, dbname)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	resJSON := struct {
+		Canbemigrate bool
+	}{
+		Canbemigrate: res,
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, resJSON)
+}

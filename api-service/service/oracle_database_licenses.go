@@ -23,3 +23,7 @@ func (as *APIService) UpdateLicenseIgnoredField(hostname string, dbname string, 
 
 	return nil
 }
+
+func (as *APIService) CanMigrateLicense(hostname string, dbname string) (bool, error) {
+	return as.Database.CanMigrateLicense(hostname, dbname)
+}
