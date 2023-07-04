@@ -214,6 +214,8 @@ type APIServiceInterface interface {
 	// UpdateLicenseIgnoredField update license ignored field (true/false)
 	UpdateLicenseIgnoredField(hostname string, dbname string, licensetypeid string, ignored bool, ignoredComment string) error
 
+	CanMigrateLicense(hostname string, dbname string) (bool, error)
+
 	// UpdateSqlServerLicenseIgnoredField update license ignored field (true/false)
 	UpdateSqlServerLicenseIgnoredField(hostname string, instancename string, ignored bool, ignoredComment string) error
 

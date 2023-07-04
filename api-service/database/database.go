@@ -128,6 +128,8 @@ type MongoDatabaseInterface interface {
 	// UpdateLicenseIgnoredField update license ignored field (true/false)
 	UpdateLicenseIgnoredField(hostname string, dbname string, licenseTypeID string, ignored bool, ignoredComment string) error
 
+	CanMigrateLicense(hostname string, dbname string) (bool, error)
+
 	// InsertOracleDatabaseLicenseType insert an Oracle/Database license type into the database
 	InsertOracleDatabaseLicenseType(licenseType model.OracleDatabaseLicenseType) error
 	// UpdateOracleDatabaseLicenseType update an Oracle/Database license type in the database
