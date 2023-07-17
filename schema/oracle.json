@@ -739,7 +739,7 @@
                                                         }
                                                     ]
                                                 },
-                                                "storageProvisionings": {
+                                                "storageProvisioningsPdb": {
                                                     "anyOf": [
                                                         {
                                                             "type": "null"
@@ -758,19 +758,34 @@
                                                                         "format": "date-time"
                                                                     },
                                                                     "cpuDbAvg": {
-                                                                        "type": "number"
+                                                                        "anyOf": [
+                                                                            {"type": "null"},
+                                                                            {"type": "number"}
+                                                                        ]
                                                                     },
                                                                     "cpuDbMax": {
-                                                                        "type": "number"
+                                                                        "anyOf": [
+                                                                            {"type": "null"},
+                                                                            {"type": "number"}
+                                                                        ]
                                                                     },
                                                                     "iopsAvg": {
-                                                                        "type": "number"
+                                                                        "anyOf": [
+                                                                            {"type": "null"},
+                                                                            {"type": "number"}
+                                                                        ]
                                                                     },
                                                                     "iombAvg": {
-                                                                        "type": "number"
+                                                                        "anyOf": [
+                                                                            {"type": "null"},
+                                                                            {"type": "number"}
+                                                                        ]
                                                                     },
                                                                     "iombMax": {
-                                                                        "type": "number"
+                                                                        "anyOf": [
+                                                                            {"type": "null"},
+                                                                            {"type": "number"}
+                                                                        ]
                                                                     }
                                                                 }
                                                             }
@@ -856,28 +871,52 @@
                                                             "format": "date-time"
                                                         },
                                                         "cpuDbAvg": {
-                                                            "type": "number"
+                                                            "anyOf": [
+                                                                {"type": "null"},
+                                                                {"type": "number"}
+                                                            ]
                                                         },
                                                         "cpuDbMax": {
-                                                            "type": "number"
+                                                            "anyOf": [
+                                                                {"type": "null"},
+                                                                {"type": "number"}
+                                                            ]
                                                         },
                                                         "cpuHostAvg": {
-                                                            "type": "number"
+                                                            "anyOf": [
+                                                                {"type": "null"},
+                                                                {"type": "number"}
+                                                            ]
                                                         },
                                                         "cpuHostMax": {
-                                                            "type": "number"
+                                                            "anyOf": [
+                                                                {"type": "null"},
+                                                                {"type": "number"}
+                                                            ]
                                                         },
                                                         "iopsAvg": {
-                                                            "type": "number"
+                                                            "anyOf": [
+                                                                {"type": "null"},
+                                                                {"type": "number"}
+                                                            ]
                                                         },
                                                         "iopsMax": {
-                                                            "type": "number"
+                                                            "anyOf": [
+                                                                {"type": "null"},
+                                                                {"type": "number"}
+                                                            ]
                                                         },
                                                         "iombAvg": {
-                                                            "type": "number"
+                                                            "anyOf": [
+                                                                {"type": "null"},
+                                                                {"type": "number"}
+                                                            ]
                                                         },
                                                         "iombMax": {
-                                                            "type": "number"
+                                                            "anyOf": [
+                                                                {"type": "null"},
+                                                                {"type": "number"}
+                                                            ]
                                                         }
                                                     }
                                                 }
