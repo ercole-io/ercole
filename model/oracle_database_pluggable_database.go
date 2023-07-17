@@ -29,5 +29,5 @@ type OracleDatabasePluggableDatabase struct {
 	GrantDba             []OracleGrantDba               `json:"grantDba" bson:"grantDba"`
 	SegmentAdvisors      []OracleDatabaseSegmentAdvisor `json:"segmentAdvisors" bson:"segmentAdvisors"`
 	Partitionings        []OracleDatabasePartitioning   `json:"partitionings" bson:"partitionings"`
-	StorageProvisionings []StorageProvisioning          `json:"storageProvisionings" bson:"storageProvisionings"`
+	StorageProvisionings []StorageProvisioningPdb       `json:"storageProvisionings" bson:"storageProvisionings"`
 }
