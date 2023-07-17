@@ -21,14 +21,14 @@ import "time"
 type StorageProvisioning struct {
 	TimeStart  *time.Time `json:"timeStart" bson:"timeStart"`
 	TimeEnd    *time.Time `json:"timeEnd" bson:"timeEnd"`
-	CpuDbAvg   float64    `json:"cpuDbAvg" bson:"cpuDbAvg"`
-	CpuDbMax   float64    `json:"cpuDbMax" bson:"cpuDbMax"`
-	CpuHostAvg float64    `json:"cpuHostAvg" bson:"cpuHostAvg"`
-	CpuHostMax float64    `json:"cpuHostMax" bson:"cpuHostMax"`
-	IopsAvg    float64    `json:"iopsAvg" bson:"iopsAvg"`
-	IopsMax    float64    `json:"iopsMax" bson:"iopsMax"`
-	IombAvg    float64    `json:"iombAvg" bson:"iombAvg"`
-	IombMax    float64    `json:"iombMax" bson:"iombMax"`
+	CpuDbAvg   *float64   `json:"cpuDbAvg,omitempty" bson:"cpuDbAvg,omitempty"`
+	CpuDbMax   *float64   `json:"cpuDbMax,omitempty" bson:"cpuDbMax,omitempty"`
+	CpuHostAvg *float64   `json:"cpuHostAvg,omitempty" bson:"cpuHostAvg,omitempty"`
+	CpuHostMax *float64   `json:"cpuHostMax,omitempty" bson:"cpuHostMax,omitempty"`
+	IopsAvg    *float64   `json:"iopsAvg,omitempty" bson:"iopsAvg,omitempty"`
+	IopsMax    *float64   `json:"iopsMax,omitempty" bson:"iopsMax,omitempty"`
+	IombAvg    *float64   `json:"iombAvg,omitempty" bson:"iombAvg,omitempty"`
+	IombMax    *float64   `json:"iombMax,omitempty" bson:"iombMax,omitempty"`
 }
 
 func (sp *StorageProvisioning) IsRange() bool {

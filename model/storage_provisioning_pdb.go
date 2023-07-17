@@ -21,9 +21,9 @@ import "time"
 type StorageProvisioningPdb struct {
 	TimeStart *time.Time `json:"timeStart" bson:"timeStart"`
 	TimeEnd   *time.Time `json:"timeEnd" bson:"timeEnd"`
-	CpuDbAvg  float64    `json:"cpuDbAvg" bson:"cpuDbAvg"`
-	CpuDbMax  float64    `json:"cpuDbMax" bson:"cpuDbMax"`
-	IopsAvg   float64    `json:"iopsAvg" bson:"iopsAvg"`
-	IombAvg   float64    `json:"iombAvg" bson:"iombAvg"`
-	IombMax   float64    `json:"iombMax" bson:"iombMax"`
+	CpuDbAvg  *float64   `json:"cpuDbAvg,omitempty" bson:"cpuDbAvg,omitempty"`
+	CpuDbMax  *float64   `json:"cpuDbMax,omitempty" bson:"cpuDbMax,omitempty"`
+	IopsAvg   *float64   `json:"iopsAvg,omitempty" bson:"iopsAvg,omitempty"`
+	IombAvg   *float64   `json:"iombAvg,omitempty" bson:"iombAvg,omitempty"`
+	IombMax   *float64   `json:"iombMax,omitempty" bson:"iombMax,omitempty"`
 }
