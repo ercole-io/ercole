@@ -289,7 +289,7 @@ local task_build_push_image(push) =
           },
           steps: [
             { type: 'restore_workspace', dest_dir: '.' },
-            { type: 'run', command: 'echo ${GITLEAKS_CONF} > gitleaks.toml'  },
+            { type: 'run', command: 'echo -e ${GITLEAKS_CONF} > gitleaks.toml'  },
             { type: 'run', command: 'gitleaks detect --source . -v -c gitleaks.toml'  },
           ],
           depends: ['checkout code'],
