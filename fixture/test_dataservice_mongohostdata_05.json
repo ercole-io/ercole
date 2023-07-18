@@ -838,5 +838,6 @@
     "_id": {
         "$oid": "5dfba7a25484d7c669a9ccdc"
     },
-    "consumptions": []
+    "consumptions": [],
+    "diskConsumptions": []
 }

@@ -52,4 +52,5 @@ type HostData struct {
 	Alerts                  []model.Alert                 `json:"alerts" bson:"alerts"`
 	History                 []model.History               `json:"history" bson:"history"`
 	Consumptions            []model.Consumption           `json:"consumptions" bson:"consumptions"`
+	DiskConsumptions        []model.DiskConsumption       `json:"diskConsumptions" bson:"diskConsumptions"`
 }
