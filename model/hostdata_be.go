@@ -48,6 +48,7 @@ type HostDataBE struct {
 	Cloud                   Cloud                   `json:"cloud" bson:"cloud"`
 	Errors                  []AgentError            `json:"errors" bson:"errors"`
 	Consumptions            []Consumption           `json:"consumptions"`
+	DiskConsumptions        []DiskConsumption       `json:"diskConsumptions"`
 }
 
 func (v *HostDataBE) GetClusterCores(hostdatasPerHostname map[string]*HostDataBE) (int, error) {
