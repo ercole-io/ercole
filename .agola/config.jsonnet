@@ -224,7 +224,7 @@ local task_build_push_image(push) =
             { type: 'run', name: '', command: 'go install github.com/golang/mock/mockgen@v1.6.0' },
             { type: 'run', name: '', command: 'go generate -v ./...' },
             { type: 'run', name: '', command: 'go test -race -coverprofile=coverage.txt -covermode=atomic ./...' },
-
+            
             { type: 'save_cache', key: 'cache-sum-{{ md5sum "go.sum" }}', contents: [{ source_dir: '/go/pkg/mod/cache' }] },
             { type: 'save_cache', key: 'cache-date-{{ year }}-{{ month }}-{{ day }}', contents: [{ source_dir: '/go/pkg/mod/cache' }] },
           ],
@@ -289,7 +289,7 @@ local task_build_push_image(push) =
           },
           steps: [
             { type: 'restore_workspace', dest_dir: '.' },
-            { type: 'run', command: 'echo ${GITLEAKS_CONF} > gitleaks.toml'  },
+            { type: 'run', command: 'echo -e ${GITLEAKS_CONF} > gitleaks.toml'  },
             { type: 'run', command: 'gitleaks detect --source . -v -c gitleaks.toml'  },
           ],
           depends: ['checkout code'],
