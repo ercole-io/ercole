@@ -28,7 +28,7 @@ local task_build_go() = {
     },
     { type: 'save_to_workspace', contents: [{ source_dir: '.', dest_dir: '.', paths: ['ercole', 'package/**', 'resources/**', 'distributed_files/**'] }] },
   ],
-  depends: ['detect leaks'],
+  depends: ['checkout code'],
 };
 
 local task_pkg_build(setup) = {
@@ -196,7 +196,7 @@ local task_build_push_image(push) =
     ]) + [
       { type: 'run', command: '/kaniko/executor --context=dir:///kaniko/ercole --dockerfile Dockerfile %s' % [options] },
     ],
-    depends: ['detect leaks'],
+    depends: ['checkout code'],
   };
 
 {
@@ -228,6 +228,25 @@ local task_build_push_image(push) =
             { type: 'save_cache', key: 'cache-sum-{{ md5sum "go.sum" }}', contents: [{ source_dir: '/go/pkg/mod/cache' }] },
             { type: 'save_cache', key: 'cache-date-{{ year }}-{{ month }}-{{ day }}', contents: [{ source_dir: '/go/pkg/mod/cache' }] },
           ],
+        },
+        {
+          name: 'detect leaks',
+          runtime: {
+            type: 'pod',
+            arch: 'amd64',
+            containers: [
+              { image: 'zricethezav/gitleaks:latest' },
+            ],
+          },
+          environment: {
+            GITLEAKS_CONF: { from_variable: 'gitleaks-config' },
+          },
+          steps: [
+            { type: 'clone' },
+            { type: 'run', command: 'echo -e ${GITLEAKS_CONF} > gitleaks.toml'  },
+            { type: 'run', command: 'gitleaks detect --source . -v -c gitleaks.toml'  },
+          ],
+          depends: ['test'],
         },
       ] + [
         task_build_go(),
@@ -273,26 +292,7 @@ local task_build_push_image(push) =
             { type: 'clone' },
             { type: 'save_to_workspace', contents: [{ source_dir: '.', dest_dir: '.', paths: ['**'] }] },
           ],
-          depends: ['test'],
-        },
-        {
-          name: 'detect leaks',
-          runtime: {
-            type: 'pod',
-            arch: 'amd64',
-            containers: [
-              { image: 'zricethezav/gitleaks:latest' },
-            ],
-          },
-          environment: {
-            GITLEAKS_CONF: { from_variable: 'gitleaks-config' },
-          },
-          steps: [
-            { type: 'restore_workspace', dest_dir: '.' },
-            { type: 'run', command: 'echo -e ${GITLEAKS_CONF} > gitleaks.toml'  },
-            { type: 'run', command: 'gitleaks detect --source . -v -c gitleaks.toml'  },
-          ],
-          depends: ['checkout code'],
+          depends: ['detect leaks'],
         },
       ] + [
         task_build_push_image(false) + {
