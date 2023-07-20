@@ -28,7 +28,7 @@ local task_build_go() = {
     },
     { type: 'save_to_workspace', contents: [{ source_dir: '.', dest_dir: '.', paths: ['ercole', 'package/**', 'resources/**', 'distributed_files/**'] }] },
   ],
-  depends: ['checkout code'],
+  depends: ['test'],
 };
 
 local task_pkg_build(setup) = {
@@ -214,10 +214,17 @@ local task_build_push_image(push) =
               { image: 'mongo:4' },
             ],
           },
+          environment: {
+            GITLEAKS_CONF: { from_variable: 'gitleaks-config' },
+          },
           steps: [
             { type: 'clone' },
             { type: 'restore_cache', keys: ['cache-sum-{{ md5sum "go.sum" }}', 'cache-date-'], dest_dir: '/go/pkg/mod/cache' },
-            
+
+            { type: 'run', name: 'clone gitleaks', command: 'git clone https://github.com/gitleaks/gitleaks.git ../gitleaks' },
+            { type: 'run', name: 'build gitleaks', command: 'cd ../gitleaks; make build; echo ${GITLEAKS_CONF} > gitleaks.toml' },
+            { type: 'run', name: 'detect security leaks', command: '../gitleaks/gitleaks detect -v -c ../gitleaks/gitleaks.toml' },
+  
             { type: 'run', name: 'install golangci-lint', command: 'curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.52.2' },
             { type: 'run', name: 'run golangci-lint', command: 'golangci-lint run' },
 
@@ -228,25 +235,6 @@ local task_build_push_image(push) =
             { type: 'save_cache', key: 'cache-sum-{{ md5sum "go.sum" }}', contents: [{ source_dir: '/go/pkg/mod/cache' }] },
             { type: 'save_cache', key: 'cache-date-{{ year }}-{{ month }}-{{ day }}', contents: [{ source_dir: '/go/pkg/mod/cache' }] },
           ],
-        },
-        {
-          name: 'detect leaks',
-          runtime: {
-            type: 'pod',
-            arch: 'amd64',
-            containers: [
-              { image: 'zricethezav/gitleaks:latest' },
-            ],
-          },
-          environment: {
-            GITLEAKS_CONF: { from_variable: 'gitleaks-config' },
-          },
-          steps: [
-            { type: 'clone' },
-            { type: 'run', command: 'echo -e ${GITLEAKS_CONF} > gitleaks.toml'  },
-            { type: 'run', command: 'gitleaks detect --source . -v -c gitleaks.toml'  },
-          ],
-          depends: ['test'],
         },
       ] + [
         task_build_go(),
@@ -292,7 +280,7 @@ local task_build_push_image(push) =
             { type: 'clone' },
             { type: 'save_to_workspace', contents: [{ source_dir: '.', dest_dir: '.', paths: ['**'] }] },
           ],
-          depends: ['detect leaks'],
+          depends: ['test'],
         },
       ] + [
         task_build_push_image(false) + {
