@@ -739,7 +739,7 @@
                                                         }
                                                     ]
                                                 },
-                                                "storageProvisioningsPdb": {
+                                                "cpuDiskConsumptionPdb": {
                                                     "anyOf": [
                                                         {
                                                             "type": "null"
@@ -852,7 +852,7 @@
                                             }
                                         ]
                                     },
-                                    "storageProvisionings": {
+                                    "cpuDiskConsumptions": {
                                         "anyOf": [
                                             {
                                                 "type": "null"

@@ -17,8 +17,8 @@ package model
 
 import "time"
 
-// StorageProvisioning holds various informations about the input/output operations per seconds of the host/db.
-type StorageProvisioning struct {
+// CpuDiskConsumption holds various informations about the input/output operations per seconds of the host/db.
+type CpuDiskConsumption struct {
 	TimeStart  *time.Time `json:"timeStart" bson:"timeStart"`
 	TimeEnd    *time.Time `json:"timeEnd" bson:"timeEnd"`
 	CpuDbAvg   *float64   `json:"cpuDbAvg,omitempty" bson:"cpuDbAvg,omitempty"`
@@ -31,7 +31,7 @@ type StorageProvisioning struct {
 	IombMax    *float64   `json:"iombMax,omitempty" bson:"iombMax,omitempty"`
 }
 
-func (sp *StorageProvisioning) IsRange() bool {
+func (sp *CpuDiskConsumption) IsRange() bool {
 	if sp.TimeStart != nil && sp.TimeEnd != nil {
 		diff := sp.TimeEnd.Sub(*sp.TimeStart)
 

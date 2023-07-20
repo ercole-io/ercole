@@ -378,7 +378,7 @@
                 }
             }
         },
-        "consumption":{
+        "cpuConsumptions":{
             "anyOf": [
                 { "type":"null" },
                 {
@@ -395,7 +395,79 @@
                                 "format": "date-time"
                             },
                             "cpuAvg": {
-                                "type":"number"
+                                "anyOf": [
+                                    {"type": "null"},
+                                    {"type": "number"}
+                                ]
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "diskConsumptions":{
+            "anyOf": [
+                { "type":"null" },
+                {
+                    "type": "array",
+                    "items": {
+                        "type":"object",
+                        "properties": {
+                            "timeStart":{
+                                "type":"string",
+                                "format": "date-time"
+                            },
+                            "timeEnd": {
+                                "type":"string",
+                                "format": "date-time"
+                            },
+                            "cpuDbAvg": {
+                                "anyOf": [
+                                    {"type": "null"},
+                                    {"type": "number"}
+                                ]
+                            },
+                            "cpuDbMax": {
+                                "anyOf": [
+                                    {"type": "null"},
+                                    {"type": "number"}
+                                ]
+                            },
+                            "cpuHostAvg": {
+                                "anyOf": [
+                                    {"type": "null"},
+                                    {"type": "number"}
+                                ]
+                            },
+                            "cpuHostMax": {
+                                "anyOf": [
+                                    {"type": "null"},
+                                    {"type": "number"}
+                                ]
+                            },
+                            "iopsAvg": {
+                                "anyOf": [
+                                    {"type": "null"},
+                                    {"type": "number"}
+                                ]
+                            },
+                            "iopsMax": {
+                                "anyOf": [
+                                    {"type": "null"},
+                                    {"type": "number"}
+                                ]
+                            },
+                            "iombAvg": {
+                                "anyOf": [
+                                    {"type": "null"},
+                                    {"type": "number"}
+                                ]
+                            },
+                            "iombMax": {
+                                "anyOf": [
+                                    {"type": "null"},
+                                    {"type": "number"}
+                                ]
                             }
                         }
                     }
