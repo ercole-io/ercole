@@ -17,7 +17,7 @@ package model
 
 import "time"
 
-// Consumption holds all informations about cpu consumption of a specific host
+// DiskConsumption holds all informations about cpu consumption of a specific host
 type DiskConsumption struct {
 	TimeStart      *time.Time `json:"timeStart" bson:"timeStart"`
 	TimeEnd        *time.Time `json:"timeEnd" bson:"timeEnd"`

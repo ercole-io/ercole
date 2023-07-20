@@ -47,7 +47,7 @@ type HostDataBE struct {
 	Clusters                []ClusterInfo           `json:"clusters" bson:"clusters"`
 	Cloud                   Cloud                   `json:"cloud" bson:"cloud"`
 	Errors                  []AgentError            `json:"errors" bson:"errors"`
-	Consumptions            []Consumption           `json:"consumptions"`
+	CpuConsumptions            []CpuConsumption        `json:"cpuConsumptions"`
 	DiskConsumptions        []DiskConsumption       `json:"diskConsumptions"`
 }
 

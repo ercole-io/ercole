@@ -40,7 +40,7 @@ type HostData struct {
 	Clusters                []ClusterInfo           `json:"clusters"`
 	Cloud                   Cloud                   `json:"cloud"`
 	Errors                  []AgentError            `json:"errors"`
-	Consumptions            []Consumption           `json:"consumptions"`
+	CpuConsumptions         []CpuConsumption        `json:"cpuConsumptions"`
 	DiskConsumptions        []DiskConsumption       `json:"diskConsumptions"`
 }
 

@@ -17,8 +17,8 @@ package model
 
 import "time"
 
-// StorageProvisioningPdb holds various informations about the input/output operations per seconds of the pluggable database.
-type StorageProvisioningPdb struct {
+// CpuDiskConsumptionPdb holds various informations about the input/output operations per seconds of the pluggable database.
+type CpuDiskConsumptionPdb struct {
 	TimeStart *time.Time `json:"timeStart" bson:"timeStart"`
 	TimeEnd   *time.Time `json:"timeEnd" bson:"timeEnd"`
 	CpuDbAvg  *float64   `json:"cpuDbAvg,omitempty" bson:"cpuDbAvg,omitempty"`
