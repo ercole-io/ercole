@@ -387,12 +387,22 @@
                         "type":"object",
                         "properties": {
                             "timeStart":{
-                                "type":"string",
-                                "format": "date-time"
+                                "anyOf": [
+                                    {"type": "null"},
+                                    {
+                                        "type":"string",
+                                        "format": "date-time"
+                                    }
+                                ]
                             },
                             "timeEnd": {
-                                "type":"string",
-                                "format": "date-time"
+                                "anyOf": [
+                                    {"type": "null"},
+                                    {
+                                        "type":"string",
+                                        "format": "date-time"
+                                    }
+                                ]
                             },
                             "cpuAvg": {
                                 "anyOf": [
@@ -414,12 +424,22 @@
                         "type":"object",
                         "properties": {
                             "timeStart":{
-                                "type":"string",
-                                "format": "date-time"
+                                "anyOf": [
+                                    {"type": "null"},
+                                    {
+                                        "type":"string",
+                                        "format": "date-time"
+                                    }
+                                ]
                             },
                             "timeEnd": {
-                                "type":"string",
-                                "format": "date-time"
+                                "anyOf": [
+                                    {"type": "null"},
+                                    {
+                                        "type":"string",
+                                        "format": "date-time"
+                                    }
+                                ]
                             },
                             "cpuDbAvg": {
                                 "anyOf": [
