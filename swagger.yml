@@ -1030,22 +1030,23 @@ components:
       required:
         - type
     ExadataDatabase:
-      type: object
-      properties:
-        "type":
-          type: string
-        dbName:
-          type: string
-        dbID:
-          type: integer
-        flashCacheLimit:
-          type: integer
-        iormShare:
-          type: integer
-        lastIOReq:
-          type: string
-      required:
-        - type
+      type: array
+      items: 
+        properties:
+          "type":
+            type: string
+          dbName:
+            type: string
+          dbID:
+            type: integer
+          flashCacheLimit:
+            type: integer
+          iormShare:
+            type: integer
+          lastIOReq:
+            type: string
+        required:
+          - type
     HostData:
       description: A hostdata from FE
       type: object

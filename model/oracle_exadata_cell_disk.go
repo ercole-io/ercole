@@ -28,7 +28,7 @@ type OracleExadataStorageCell struct {
 	Status     string                  `json:"status" bson:"status"`
 	ErrorCount int                     `json:"errorCount" bson:"errorCount"`
 	GridDisks  []OracleExadataGridDisk `json:"gridDisks,omitempty" bson:"gridDisks"`
-	Database   OracleExadataDatabase   `json:"database,omitempty" bson:"database"`
+	Databases  []OracleExadataDatabase `json:"databases" bson:"databases"`
 }
 
 type OracleExadataGridDisk struct {

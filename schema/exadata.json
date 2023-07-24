@@ -241,37 +241,40 @@
                                                         }
                                                     ]
                                                 },
-                                                "database": {
+                                                "databases": {
                                                     "anyOf": [
                                                         {
                                                             "type": "null"
                                                         },
                                                         {
-                                                            "type": "object",
-                                                            "properties": {
-                                                                "type": {
-                                                                    "type": "string"
-                                                                },
-                                                                "dbName": {
-                                                                    "type": "string"
-                                                                },
-                                                                "dbID": {
-                                                                    "type": "integer"
-                                                                },
-                                                                "flashCacheLimit": {
-                                                                    "type": "integer"
-                                                                },
-                                                                "iormShare": {
-                                                                    "type": "integer"
-                                                                },
-                                                                "lastIOReq": {
-                                                                    "anyOf": [
-                                                                        {"type": "null"},
-                                                                        {
-                                                                            "type": "string",
-                                                                            "format": "date-time"
-                                                                        }
-                                                                    ]
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "type": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "dbName": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "dbID": {
+                                                                        "type": "integer"
+                                                                    },
+                                                                    "flashCacheLimit": {
+                                                                        "type": "integer"
+                                                                    },
+                                                                    "iormShare": {
+                                                                        "type": "integer"
+                                                                    },
+                                                                    "lastIOReq": {
+                                                                        "anyOf": [
+                                                                            {"type": "null"},
+                                                                            {
+                                                                                "type": "string",
+                                                                                "format": "date-time"
+                                                                            }
+                                                                        ]
+                                                                    }
                                                                 }
                                                             }
                                                         }
