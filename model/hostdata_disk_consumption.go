@@ -21,6 +21,7 @@ import "time"
 type DiskConsumption struct {
 	TimeStart      *time.Time `json:"timeStart" bson:"timeStart"`
 	TimeEnd        *time.Time `json:"timeEnd" bson:"timeEnd"`
+	Target         string     `json:"target,omitempty" bson:"target,omitempty"`
 	IopsHostDayAvg *float64   `json:"iopsHostDayAvg,omitempty" bson:"iopsHostDayAvg,omitempty"`
 	IombHostDayAvg *float64   `json:"iombHostDayAvg,omitempty" bson:"iombHostDayAvg,omitempty"`
 }

@@ -404,6 +404,9 @@
                                     }
                                 ]
                             },
+                            "target":{
+                                "type": "string"
+                            },
                             "cpuAvg": {
                                 "anyOf": [
                                     {"type": "null"},
@@ -440,6 +443,9 @@
                                         "format": "date-time"
                                     }
                                 ]
+                            },
+                            "target":{
+                                "type": "string"
                             },
                             "cpuDbAvg": {
                                 "anyOf": [

@@ -767,6 +767,9 @@
                                                                             }
                                                                         ]
                                                                     },
+                                                                    "target":{
+                                                                        "type": "string"
+                                                                    },
                                                                     "cpuDbAvg": {
                                                                         "anyOf": [
                                                                             {"type": "null"},
@@ -889,6 +892,9 @@
                                                                     "format": "date-time"
                                                                 }
                                                             ]
+                                                        },
+                                                        "target":{
+                                                            "type": "string"
                                                         },
                                                         "cpuDbAvg": {
                                                             "anyOf": [

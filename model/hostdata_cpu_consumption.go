@@ -21,5 +21,6 @@ import "time"
 type CpuConsumption struct {
 	TimeStart *time.Time `json:"timeStart" bson:"timeStart"`
 	TimeEnd   *time.Time `json:"timeEnd" bson:"timeEnd"`
+	Target    string     `json:"target,omitempty" bson:"target,omitempty"`
 	CpuAvg    *float64   `json:"cpuAvg,omitempty" bson:"cpuAvg,omitempty"`
 }
