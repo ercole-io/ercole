@@ -112,7 +112,7 @@ func (hds *HostDataService) setSqlServerLicenseTypes(hostdata *model.HostDataBE,
 				if instance.Edition != "ENT" && instance.Edition != "STD" {
 					license.Count = 0
 				} else {
-					license.Count = licenseCount
+					license.Count = licenseCount / 2
 				}
 			}
 		}
