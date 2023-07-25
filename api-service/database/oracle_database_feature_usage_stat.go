@@ -20,6 +20,7 @@ import (
 
 	"github.com/amreo/mu"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -61,4 +62,39 @@ func (md *MongoDatabase) GetOracleOptionList(filter dto.GlobalFilter) ([]dto.Ora
 	}
 
 	return result, nil
+}
+
+func (md *MongoDatabase) FindOracleOptionsByDbname(hostname string, dbname string) ([]model.OracleDatabaseFeatureUsageStat, error) {
+	projectionStage := bson.D{
+		{Key: "$project", Value: bson.D{
+			{Key: "product", Value: "$features.oracle.database.databases.featureUsageStats.product"},
+			{Key: "feature", Value: "$features.oracle.database.databases.featureUsageStats.feature"},
+			{Key: "detectedUsages", Value: "$features.oracle.database.databases.featureUsageStats.detectedUsages"},
+			{Key: "currentlyUsed", Value: "$features.oracle.database.databases.featureUsageStats.currentlyUsed"},
+			{Key: "firstUsageDate", Value: "$features.oracle.database.databases.featureUsageStats.firstUsageDate"},
+			{Key: "lastUsageDate", Value: "$features.oracle.database.databases.featureUsageStats.lastUsageDate"},
+			{Key: "extraFeatureInfo", Value: "$features.oracle.database.databases.featureUsageStats.extraFeatureInfo"},
+		}}}
+
+	stage := bson.A{
+		bson.M{"$match": bson.M{"archived": false}},
+		bson.M{"$match": bson.M{"hostname": hostname}},
+		bson.M{"$unwind": "$features.oracle.database.databases"},
+		bson.M{"$match": bson.M{"features.oracle.database.databases.name": dbname}},
+		bson.M{"$unwind": "$features.oracle.database.databases.featureUsageStats"},
+		projectionStage,
+	}
+
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").
+		Aggregate(context.TODO(), stage)
+	if err != nil {
+		return nil, err
+	}
+
+	res := make([]model.OracleDatabaseFeatureUsageStat, 0)
+	if err = cur.All(context.TODO(), &res); err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }

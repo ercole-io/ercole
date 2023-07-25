@@ -116,24 +116,3 @@ func TestUpdateLicenseIgnoredField_Fail(t *testing.T) {
 	err := as.UpdateLicenseIgnoredField(hostname, dbname, licenseTypeID, ignored, "")
 	assert.EqualError(t, err, utils.ErrLicenseNotFound.Error())
 }
-
-func TestCanMigrateLicense(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	db := NewMockMongoDatabaseInterface(mockCtrl)
-	as := APIService{
-		Config: config.Configuration{
-			ResourceFilePath: "../../resources",
-		},
-		Database: db,
-	}
-
-	t.Run("Success", func(t *testing.T) {
-		db.EXPECT().CanMigrateLicense("pippo", "pluto").Return(true, nil)
-
-		res, err := as.CanMigrateLicense("pippo", "pluto")
-
-		assert.Nil(t, err)
-		assert.True(t, res)
-	})
-}

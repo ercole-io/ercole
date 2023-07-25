@@ -24,6 +24,7 @@ import (
 
 	"github.com/gorilla/mux"
 
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 )
@@ -67,10 +68,16 @@ func (ctrl *APIController) UpdateLicenseIgnoredField(w http.ResponseWriter, r *h
 }
 
 func (ctrl *APIController) CanMigrateLicense(w http.ResponseWriter, r *http.Request) {
+	filter, err := dto.GetGlobalFilter(r)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
+		return
+	}
+
 	hostname := mux.Vars(r)["hostname"]
 	dbname := mux.Vars(r)["dbname"]
 
-	res, err := ctrl.Service.CanMigrateLicense(hostname, dbname)
+	res, err := ctrl.Service.CanMigrateLicense(hostname, dbname, *filter)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
