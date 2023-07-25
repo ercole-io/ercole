@@ -100,30 +100,3 @@ func (md *MongoDatabase) UpdateLicenseIgnoredField(hostname string, dbname strin
 
 	return nil
 }
-
-// If an oracle database has just an enterprise license can be migrated to a standard license.
-// CanMigrateLicense return if the database can be migrated or not.
-func (md *MongoDatabase) CanMigrateLicense(hostname string, dbname string) (bool, error) {
-	stage := bson.A{
-		bson.M{"$match": bson.M{"archived": false}},
-		bson.M{"$match": bson.M{"hostname": hostname}},
-		bson.M{"$unwind": "$features.oracle.database.databases"},
-		bson.M{"$match": bson.M{"features.oracle.database.databases.name": dbname}},
-		bson.M{"$unwind": "$features.oracle.database.databases.licenses"},
-		bson.M{"$match": bson.M{"features.oracle.database.databases.licenses.name": "Oracle ENT"}},
-		bson.M{"$project": bson.M{"license": "$features.oracle.database.databases.licenses"}},
-	}
-
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").
-		Aggregate(context.TODO(), stage)
-	if err != nil {
-		return false, err
-	}
-
-	var res []bson.D
-	if err = cur.All(context.TODO(), &res); err != nil {
-		return false, err
-	}
-
-	return len(res) > 0, nil
-}

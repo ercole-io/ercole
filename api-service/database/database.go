@@ -128,8 +128,6 @@ type MongoDatabaseInterface interface {
 	// UpdateLicenseIgnoredField update license ignored field (true/false)
 	UpdateLicenseIgnoredField(hostname string, dbname string, licenseTypeID string, ignored bool, ignoredComment string) error
 
-	CanMigrateLicense(hostname string, dbname string) (bool, error)
-
 	// InsertOracleDatabaseLicenseType insert an Oracle/Database license type into the database
 	InsertOracleDatabaseLicenseType(licenseType model.OracleDatabaseLicenseType) error
 	// UpdateOracleDatabaseLicenseType update an Oracle/Database license type in the database
@@ -141,6 +139,7 @@ type MongoDatabaseInterface interface {
 
 	GetOraclePatchList(filter dto.GlobalFilter) ([]dto.OracleDatabasePatchDto, error)
 	GetOracleOptionList(filter dto.GlobalFilter) ([]dto.OracleDatabaseFeatureUsageStatDto, error)
+	FindOracleOptionsByDbname(hostname string, dbname string) ([]model.OracleDatabaseFeatureUsageStat, error)
 	FindOracleChangesByHostname(filter dto.GlobalFilter, hostname string) ([]dto.OracleChangesDto, error)
 	GetOracleBackupList(filter dto.GlobalFilter) ([]dto.OracleDatabaseBackupDto, error)
 	GetOracleServiceList(filter dto.GlobalFilter) ([]dto.OracleDatabaseServiceDto, error)

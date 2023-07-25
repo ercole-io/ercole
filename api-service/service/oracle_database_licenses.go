@@ -15,6 +15,12 @@
 
 package service
 
+import (
+	"time"
+
+	"github.com/ercole-io/ercole/v2/api-service/dto"
+)
+
 // UpdateLicenseIgnoredField update license ignored field (true/false)
 func (as *APIService) UpdateLicenseIgnoredField(hostname string, dbname string, licenseTypeID string, ignored bool, ignoredComment string) error {
 	if err := as.Database.UpdateLicenseIgnoredField(hostname, dbname, licenseTypeID, ignored, ignoredComment); err != nil {
@@ -24,6 +30,36 @@ func (as *APIService) UpdateLicenseIgnoredField(hostname string, dbname string, 
 	return nil
 }
 
-func (as *APIService) CanMigrateLicense(hostname string, dbname string) (bool, error) {
-	return as.Database.CanMigrateLicense(hostname, dbname)
+// If an oracle database has an enterprise license and an option less than 3 months, then the db can be migrated.
+// CanMigrateLicense return if the database can be migrated or not.
+func (as *APIService) CanMigrateLicense(hostname string, dbname string, filter dto.GlobalFilter) (bool, error) {
+	isEnt := false
+
+	usedLicenses, err := as.getOracleDatabasesUsedLicenses(hostname, filter)
+	if err != nil {
+		return false, err
+	}
+
+	for _, l := range usedLicenses {
+		if l.Description == "Oracle Database Enterprise Edition" {
+			isEnt = true
+		}
+	}
+
+	if !isEnt {
+		return false, nil
+	}
+
+	opts, err := as.Database.FindOracleOptionsByDbname(hostname, dbname)
+	if err != nil {
+		return false, err
+	}
+
+	for _, opt := range opts {
+		if opt.LastUsageDate.After(time.Now().AddDate(0, -3, 0)) {
+			return true, nil
+		}
+	}
+
+	return false, nil
 }
