@@ -17,8 +17,15 @@
             "type": "string"
         },
         "createdAt": {
-            "type": "string",
-            "format": "date"
+            "anyOf": [
+                {
+                    "type":"null"
+                },
+                {
+                    "type": "string",
+                    "format": "date-time"
+                }
+            ]
         },
         "rackID": {
             "type": "string",
