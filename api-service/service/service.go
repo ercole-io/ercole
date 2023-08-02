@@ -26,6 +26,7 @@ import (
 	alertServiceClient "github.com/ercole-io/ercole/v2/alert-service/client"
 	"github.com/ercole-io/ercole/v2/api-service/database"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/api-service/dto/filter"
 	alert_filter "github.com/ercole-io/ercole/v2/api-service/dto/filter"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
@@ -204,6 +205,9 @@ type APIServiceInterface interface {
 	DismissHost(hostname string) error
 
 	IsMissingDB(hostname string) (bool, error)
+
+	ListHostMissingDb(f filter.Filter) ([]dto.HostMissingDb, error)
+	CountHosts(search *string) (int64, error)
 
 	// UpdateAlertsStatus update alerts status
 	UpdateAlertsStatus(alertsFilter dto.AlertsFilter, newStatus string) error

@@ -21,7 +21,7 @@ import (
 	"time"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
-	alert_filter "github.com/ercole-io/ercole/v2/api-service/dto/filter"
+	dto_filter "github.com/ercole-io/ercole/v2/api-service/dto/filter"
 	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
@@ -50,7 +50,7 @@ type MongoDatabaseInterface interface {
 	GetHostData(hostname string, olderThan time.Time) (*model.HostDataBE, error)
 	GetHostDatas(olderThan time.Time) ([]model.HostDataBE, error)
 	// SearchAlerts search alerts
-	SearchAlerts(alertFilter alert_filter.Alert) (*dto.Pagination, error)
+	SearchAlerts(alertFilter dto_filter.Alert) (*dto.Pagination, error)
 	// GetAlerts get alerts
 	GetAlerts(location, environment, status string, from, to, olderThan time.Time) ([]map[string]interface{}, error)
 	// SearchClusters search clusters
@@ -178,6 +178,9 @@ type MongoDatabaseInterface interface {
 	ExistNotInClusterHost(hostname string) (bool, error)
 	// Check if there are any alerts related to the hostname
 	IsMissingDB(hostname string) (bool, error)
+
+	ListHosts(f dto_filter.Filter) ([]model.HostDataBE, error)
+	CountHosts(search *string) (int64, error)
 
 	// MYSQL
 

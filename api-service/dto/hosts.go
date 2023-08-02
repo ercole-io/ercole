@@ -189,3 +189,9 @@ type HostDataSummary struct {
 	Cluster                 string                        `json:"cluster" bson:"cluster"`
 	Databases               map[string][]string           `json:"databases" bson:"databases"` // map[Technology] []database names
 }
+
+
+type HostMissingDb struct {
+	Host        model.HostDataBE
+	IsMissingDB bool
+}

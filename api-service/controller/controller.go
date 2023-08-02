@@ -105,6 +105,8 @@ type APIControllerInterface interface {
 
 	GetMissingDbHost(w http.ResponseWriter, r *http.Request)
 
+	ListHosts(w http.ResponseWriter, r *http.Request)
+
 	// GetInfoForFrontendDashboard return all informations needed for the frontend dashboard page
 	GetInfoForFrontendDashboard(w http.ResponseWriter, r *http.Request)
 

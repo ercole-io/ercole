@@ -15,6 +15,11 @@
 
 package filter
 
+import (
+	"net/http"
+	"strconv"
+)
+
 const limitDefault = 25
 
 const page = 1
@@ -25,9 +30,44 @@ type Filter struct {
 	Search *string `json:"search"`
 }
 
+func (f *Filter) GetSkip() int {
+	return (f.Page - 1) * f.Limit
+}
+
 func New() Filter {
 	return Filter{
 		Limit: limitDefault,
 		Page:  page,
 	}
+}
+
+func Get(r *http.Request) (*Filter, error) {
+	f := New()
+
+	search := r.URL.Query().Get("search")
+	if search != "" {
+		f.Search = &search
+	}
+
+	page := r.URL.Query().Get("page")
+	if page != "" {
+		p, err := strconv.Atoi(page)
+		if err != nil {
+			return nil, err
+		}
+
+		f.Page = p
+	}
+
+	limit := r.URL.Query().Get("limit")
+	if limit != "" {
+		l, err := strconv.Atoi(limit)
+		if err != nil {
+			return nil, err
+		}
+
+		f.Limit = l
+	}
+
+	return &f, nil
 }

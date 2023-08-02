@@ -29,6 +29,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
+	dto_filter "github.com/ercole-io/ercole/v2/api-service/dto/filter"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 )
@@ -914,4 +915,36 @@ func (md *MongoDatabase) IsMissingDB(hostname string) (bool, error) {
 	}
 
 	return count > 0, nil
+}
+
+func (md *MongoDatabase) ListHosts(f dto_filter.Filter) ([]model.HostDataBE, error) {
+	opts := options.Find().SetSort(bson.M{"createdAt": -1}).SetLimit(int64(f.Limit)).SetSkip(int64(f.GetSkip()))
+
+	stage := bson.D{{Key: "archived", Value: false}}
+
+	if f.Search != nil {
+		stage = append(stage, bson.E{Key: "hostname", Value: bson.D{bson.E{Key: "$regex", Value: f.Search}, bson.E{Key: "$options", Value: "i"}}})
+	}
+
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Find(context.TODO(), stage, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	res := make([]model.HostDataBE, 0)
+	if err = cur.All(context.TODO(), &res); err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
+func (md *MongoDatabase) CountHosts(search *string) (int64, error) {
+	f := bson.D{{Key: "archived", Value: false}}
+
+	if search != nil {
+		f = append(f, bson.E{Key: "hostname", Value: bson.D{bson.E{Key: "$regex", Value: search}, bson.E{Key: "$options", Value: "i"}}})
+	}
+
+	return md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").CountDocuments(context.TODO(), f)
 }

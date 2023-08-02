@@ -26,6 +26,7 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/api-service/dto/filter"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 )
@@ -320,4 +321,26 @@ func (ctrl *APIController) GetMissingDbHost(w http.ResponseWriter, r *http.Reque
 	utils.WriteJSONResponse(w, http.StatusOK, struct {
 		IsMissingDB bool
 	}{IsMissingDB: res})
+}
+
+func (ctrl *APIController) ListHosts(w http.ResponseWriter, r *http.Request) {
+	f, err := filter.Get(r)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
+		return
+	}
+
+	res, err := ctrl.Service.ListHostMissingDb(*f)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	count, err := ctrl.Service.CountHosts(f.Search)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, dto.ToPagination(res, int(count), f.Limit, f.Page))
 }

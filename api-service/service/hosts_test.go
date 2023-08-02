@@ -24,6 +24,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	dto "github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/api-service/dto/filter"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
@@ -1048,4 +1049,51 @@ func TestDismissHost_Fail(t *testing.T) {
 
 	err := as.DismissHost("foobar")
 	assert.Error(t, err)
+}
+
+func TestListHostMissingDbSuccess(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+	}
+
+	hosts := []model.HostDataBE{
+		{
+			Archived: false,
+			Hostname: "test0",
+		},
+		{
+			Archived: false,
+			Hostname: "test1",
+		},
+	}
+
+	f := filter.New()
+
+	db.EXPECT().ListHosts(f).Return(hosts, nil)
+
+	for _, h := range hosts {
+		db.EXPECT().IsMissingDB(h.Hostname).Return(false, nil)
+	}
+
+	expected := []dto.HostMissingDb{
+		{
+			Host: model.HostDataBE{
+				Hostname: "test0",
+			},
+			IsMissingDB: false,
+		},
+		{
+			Host: model.HostDataBE{
+				Hostname: "test1",
+			},
+			IsMissingDB: false,
+		}}
+
+	actual, err := as.ListHostMissingDb(f)
+
+	assert.Nil(t, err)
+	assert.Equal(t, expected, actual)
 }

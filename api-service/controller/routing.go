@@ -83,7 +83,8 @@ func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 	router.HandleFunc("/groups", ctrl.GetGroups).Methods("GET")
 
 	// HOSTS
-	router.HandleFunc("/hosts", ctrl.SearchHosts).Methods("GET")
+	router.HandleFunc("/hosts", ctrl.ListHosts).Methods("GET")
+	router.HandleFunc("/hosts-export", ctrl.SearchHosts).Methods("GET")
 	router.HandleFunc("/hosts/count", ctrl.GetHostsCountStats).Methods("GET")
 	router.HandleFunc("/hosts/environments/frequency", ctrl.GetEnvironmentStats).Methods("GET")
 	router.HandleFunc("/hosts/types", ctrl.GetTypeStats).Methods("GET")

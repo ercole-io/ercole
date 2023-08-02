@@ -25,6 +25,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/api-service/dto/filter"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/ercole-io/ercole/v2/utils/exutils"
@@ -428,6 +429,30 @@ func (as *APIService) DismissHost(hostname string) error {
 
 func (as *APIService) IsMissingDB(hostname string) (bool, error) {
 	return as.Database.IsMissingDB(hostname)
+}
+
+func (as *APIService) ListHostMissingDb(f filter.Filter) ([]dto.HostMissingDb, error) {
+	hosts, err := as.Database.ListHosts(f)
+	if err != nil {
+		return nil, err
+	}
+
+	res := make([]dto.HostMissingDb, 0, len(hosts))
+
+	for _, h := range hosts {
+		isMissingDb, err := as.IsMissingDB(h.Hostname)
+		if err != nil {
+			return nil, err
+		}
+
+		res = append(res, dto.HostMissingDb{Host: h, IsMissingDB: isMissingDb})
+	}
+
+	return res, nil
+}
+
+func (as *APIService) CountHosts(search *string) (int64, error) {
+	return as.Database.CountHosts(search)
 }
 
 func checkHosts(as *APIService, hosts []string) error {
