@@ -6,12 +6,16 @@ local go_runtime(version, arch) = {
   ],
 };
 
-local task_build_go() = {
-  name: 'build go',
-  runtime: go_runtime('1.20', 'amd64'),
+local task_build_go_rhel7() = {
+  name: 'build go rhel7',
+  runtime: {
+    type: 'pod',
+    containers: [
+      { image: 'fra.ocir.io/fremyxlx6yog/oraclelinux7:latest' },
+    ],
+  },
   steps: [
-    { type: 'clone' },
-    { type: 'restore_cache', keys: ['cache-sum-{{ md5sum "go.sum" }}', 'cache-date-'], dest_dir: '/go/pkg/mod/cache' },
+    { type: 'run', command: 'git clone https://github.com/ercole-io/ercole.git .' },
     {
       type: 'run',
       name: 'build',
@@ -23,12 +27,73 @@ local task_build_go() = {
 
         echo ${SERVER_VERSION}
 
-        go build -ldflags "-X github.com/ercole-io/ercole/v2/cmd.serverVersion=${SERVER_VERSION} -linkmode external -extldflags -static"
+        go build -ldflags "-X github.com/ercole-io/ercole/v2/cmd.serverVersion=${SERVER_VERSION}"
       |||,
     },
     { type: 'save_to_workspace', contents: [{ source_dir: '.', dest_dir: '.', paths: ['ercole', 'package/**', 'resources/**', 'distributed_files/**'] }] },
   ],
   depends: ['test'],
+};
+
+local task_build_go_rhel8() = {
+  name: 'build go rhel8',
+  runtime: {
+    type: 'pod',
+    containers: [
+      { image: 'fra.ocir.io/fremyxlx6yog/oraclelinux8:latest' },
+    ],
+  },
+  steps: [
+    { type: 'run', command: 'git clone https://github.com/ercole-io/ercole.git .' },
+    {
+      type: 'run',
+      name: 'build',
+      command: |||
+        if [ ${AGOLA_GIT_TAG} ];
+          then export SERVER_VERSION=${AGOLA_GIT_TAG} ;
+        else
+          export SERVER_VERSION=${AGOLA_GIT_COMMITSHA} ; fi
+
+        echo ${SERVER_VERSION}
+
+        go build -ldflags "-X github.com/ercole-io/ercole/v2/cmd.serverVersion=${SERVER_VERSION}"
+      |||,
+    },
+    { type: 'save_to_workspace', contents: [{ source_dir: '.', dest_dir: '.', paths: ['ercole', 'package/**', 'resources/**', 'distributed_files/**'] }] },
+  ],
+  depends: ['test'],
+};
+
+local version_rhel8() = {
+  name: 'version rhel8',
+  runtime: {
+    type: 'pod',
+    arch: 'amd64',
+    containers: [
+      { image: 'debian:buster' },
+    ],
+  },
+  steps: [
+    { type: 'restore_workspace', dest_dir: '.' },
+    { type: 'run', command: './ercole version' },
+  ],
+  depends: ['build go rhel8'],
+};
+
+local version_rhel7() = {
+  name: 'version rhel7',
+  runtime: {
+    type: 'pod',
+    arch: 'amd64',
+    containers: [
+      { image: 'debian:buster' },
+    ],
+  },
+  steps: [
+    { type: 'restore_workspace', dest_dir: '.' },
+    { type: 'run', command: './ercole version' },
+  ],
+  depends: ['build go rhel7'],
 };
 
 local task_pkg_build(setup) = {
@@ -68,7 +133,7 @@ local task_pkg_build(setup) = {
     { type: 'run', command: 'cp ~/rpmbuild/RPMS/x86_64/ercole-*.rpm ${WORKSPACE}/dist' },
     { type: 'save_to_workspace', contents: [{ source_dir: './dist/', dest_dir: '/dist/', paths: ['**'] }] },
   ],
-  depends: ['build go'],
+  depends: ['build go '+ setup.dist],
 };
 
 local task_deploy_repository(dist) = {
@@ -237,23 +302,13 @@ local task_build_push_image(push) =
           ],
         },
       ] + [
-        task_build_go(),
+        task_build_go_rhel7(),
       ] + [
-        {
-          name: 'version',
-          runtime: {
-            type: 'pod',
-            arch: 'amd64',
-            containers: [
-              { image: 'debian:buster' },
-            ],
-          },
-          steps: [
-            { type: 'restore_workspace', dest_dir: '.' },
-            { type: 'run', command: './ercole version' },
-          ],
-          depends: ['build go'],
-        },
+        task_build_go_rhel8(),
+      ] + [
+        version_rhel7()
+      ] + [
+        version_rhel8()
       ] + [
         task_pkg_build(setup)
         for setup in [
