@@ -52,6 +52,8 @@ type SearchHostsFilters struct {
 	GTECPUCores                   int
 	LTECPUThreads                 int
 	GTECPUThreads                 int
+
+	IsMissingDb *bool
 }
 
 func NewSearchHostsFilters() SearchHostsFilters {
@@ -173,6 +175,15 @@ func GetSearchHostFilters(r *http.Request) (*SearchHostsFilters, error) {
 		return nil, err
 	}
 
+	if r.URL.Query().Get("is-missing-db") == "" {
+		f.IsMissingDb = nil
+	} else {
+		f.IsMissingDb = new(bool)
+		if *f.IsMissingDb, err = utils.Str2bool(r.URL.Query().Get("is-missing-db"), false); err != nil {
+			return nil, err
+		}
+	}
+
 	return &f, nil
 }
 
@@ -189,7 +200,6 @@ type HostDataSummary struct {
 	Cluster                 string                        `json:"cluster" bson:"cluster"`
 	Databases               map[string][]string           `json:"databases" bson:"databases"` // map[Technology] []database names
 }
-
 
 type HostMissingDb struct {
 	Host        model.HostDataBE

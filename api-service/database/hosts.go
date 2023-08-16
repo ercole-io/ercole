@@ -125,6 +125,32 @@ func (md *MongoDatabase) getHosts(mode string, filters dto.SearchHostsFilters, o
 			mu.APOptionalStage(filters.VirtualizationNode != "", mu.APMatch(bson.M{
 				"virtualizationNode": primitive.Regex{Pattern: regexp.QuoteMeta(filters.VirtualizationNode), Options: "i"},
 			})),
+
+			mu.APLookupPipeline(
+				"alerts",
+				bson.M{"hn": "$hostname"},
+				"missingDbs",
+				mu.MAPipeline(
+					mu.APMatch(
+						mu.QOExpr(
+							mu.APOAnd(mu.APOEqual("$alertCode", "MISSING_DATABASE"),
+								mu.APONotEqual("$alertStatus", "DISMISSED"),
+								mu.APOEqual("$otherInfo.hostname", "$$hn"),
+							)),
+					),
+				),
+			),
+
+			mu.APAddFields(bson.M{
+				"isMissingDb": bson.M{
+					"$anyElementTrue": bson.A{"$missingDbs"},
+				},
+			}),
+
+			mu.APUnset("missingDbs"),
+
+			mu.APOptionalStage(filters.IsMissingDb != nil, mu.APMatch(bson.M{"isMissingDb": filters.IsMissingDb})),
+
 			mu.APOptionalStage(mode == "mongo" || mode == "hostnames", mu.APUnset("cluster", "virtualizationNode")),
 			mu.APOptionalStage(mode == "hostnames", mu.MAPipeline(
 				mu.APProject(bson.M{

@@ -1057,6 +1057,8 @@ components:
           type: string
         location:
           type: string
+        isMissingDB:
+          type: boolean
         version:
           type: string
         hostDataSchemaVersion:
@@ -2610,6 +2612,13 @@ paths:
           allowEmptyValue: true
           schema:
             type: number
+        - in: query
+          name: is-missing-db
+          schema:
+            type: string
+            enum:
+              - true
+              - false
         - $ref: "#/components/parameters/sort-by"
         - $ref: "#/components/parameters/sort-desc"
         - $ref: "#/components/parameters/page"
