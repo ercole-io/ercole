@@ -53,7 +53,11 @@ type SearchHostsFilters struct {
 	LTECPUThreads                 int
 	GTECPUThreads                 int
 
-	IsMissingDb *bool
+	IsMissingDb   *bool
+	CpuSockets    *int
+	AgentVersion  string
+	Clusters      string
+	KernelVersion string
 }
 
 func NewSearchHostsFilters() SearchHostsFilters {
@@ -183,6 +187,19 @@ func GetSearchHostFilters(r *http.Request) (*SearchHostsFilters, error) {
 			return nil, err
 		}
 	}
+
+	cs, err := utils.Str2int(r.URL.Query().Get("cpu-sockets"), -1)
+	if err != nil {
+		return nil, err
+	}
+
+	if cs != -1 {
+		f.CpuSockets = &cs
+	}
+
+	f.AgentVersion = r.URL.Query().Get("agent-version")
+	f.Clusters = r.URL.Query().Get("clusters")
+	f.KernelVersion = r.URL.Query().Get("kernel-version")
 
 	return &f, nil
 }

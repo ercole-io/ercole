@@ -66,7 +66,7 @@ func (md *MongoDatabase) getHosts(mode string, filters dto.SearchHostsFilters, o
 					"hostname": primitive.Regex{Pattern: regexp.QuoteMeta(filters.Hostname), Options: "i"},
 				})),
 				mu.APOptionalStage(filters.Database != "", mu.APMatch(bson.M{
-					"features.oracle.database.databases.Name": primitive.Regex{Pattern: regexp.QuoteMeta(filters.Database), Options: "i"},
+					"features.oracle.database.databases.name": primitive.Regex{Pattern: regexp.QuoteMeta(filters.Database), Options: "i"},
 				})),
 				mu.APOptionalStage(filters.HardwareAbstractionTechnology != "", mu.APMatch(bson.M{
 					"info.hardwareAbstractionTechnology": primitive.Regex{Pattern: regexp.QuoteMeta(filters.HardwareAbstractionTechnology), Options: "i"},
@@ -120,6 +120,11 @@ func (md *MongoDatabase) getHosts(mode string, filters dto.SearchHostsFilters, o
 				"$features.oracle.database.databases.uniqueName",
 				"$clusters.name",
 			}, filters.Search),
+
+			mu.APOptionalStage(filters.Clusters != "", mu.APSearchFilterStage([]interface{}{
+				"$clusters.name",
+			}, []string{filters.Clusters})),
+
 			AddAssociatedClusterNameAndVirtualizationNode(filters.OlderThan),
 			getClusterFilterStep(filters.Cluster),
 			mu.APOptionalStage(filters.VirtualizationNode != "", mu.APMatch(bson.M{
@@ -311,6 +316,11 @@ func (md *MongoDatabase) getHosts(mode string, filters dto.SearchHostsFilters, o
 						}),
 					}),
 				)),
+
+				mu.APOptionalStage(filters.CpuSockets != nil, mu.APMatch(bson.M{"info.cpuSockets": filters.CpuSockets})),
+				mu.APOptionalStage(filters.AgentVersion != "", mu.APMatch(bson.M{"agentVersion": primitive.Regex{Pattern: regexp.QuoteMeta(filters.AgentVersion), Options: "i"}})),
+				mu.APOptionalStage(filters.KernelVersion != "", mu.APMatch(bson.M{"info.kernelVersion": primitive.Regex{Pattern: regexp.QuoteMeta(filters.KernelVersion), Options: "i"}})),
+
 				mu.APOptionalSortingStage(filters.SortBy, filters.SortDesc),
 				mu.APOptionalPagingStage(filters.PageNumber, filters.PageSize),
 			)),

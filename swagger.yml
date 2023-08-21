@@ -2619,6 +2619,22 @@ paths:
             enum:
               - true
               - false
+        - in: query
+          name: cpu-sockets
+          schema:
+            type: integer
+        - in: query
+          name: agent-version
+          schema:
+            type: string
+        - in: query
+          name: cluster
+          schema:
+            type: string
+        - in: query
+          name: kernel-version
+          schema:
+            type: string
         - $ref: "#/components/parameters/sort-by"
         - $ref: "#/components/parameters/sort-desc"
         - $ref: "#/components/parameters/page"
