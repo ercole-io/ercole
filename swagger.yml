@@ -2628,7 +2628,7 @@ paths:
           schema:
             type: string
         - in: query
-          name: cluster
+          name: clusters
           schema:
             type: string
         - in: query
