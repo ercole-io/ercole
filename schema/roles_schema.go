@@ -30,17 +30,14 @@ import (
 //go:embed roles.json
 var roleSchema string
 
-var schemaR *gojsonschema.Schema
-
 func ValidateRole(raw []byte) error {
-	if schemaR == nil {
-		if err := loadRoleSchema(); err != nil {
-			return err
-		}
+	schemaLoader, err := loadRoleSchema()
+	if err != nil {
+		return nil
 	}
 
 	documentLoader := gojsonschema.NewBytesLoader(raw)
-	result, err := schemaR.Validate(documentLoader)
+	result, err := schemaLoader.Validate(documentLoader)
 
 	syntaxErr := &json.SyntaxError{}
 	if errors.As(err, &syntaxErr) {
@@ -67,14 +64,14 @@ func ValidateRole(raw []byte) error {
 	return nil
 }
 
-func loadRoleSchema() error {
+func loadRoleSchema() (*gojsonschema.Schema, error) {
 	sl := gojsonschema.NewSchemaLoader()
 
 	schemas := []string{roleSchema}
 	for i := range schemas {
 		jl := gojsonschema.NewStringLoader(schemas[i])
 		if err := sl.AddSchemas(jl); err != nil {
-			return utils.NewError(err, "Wrong role schema: [%s]", schemas[i])
+			return nil, utils.NewError(err, "Wrong role schema: [%s]", schemas[i])
 		}
 	}
 
@@ -82,10 +79,10 @@ func loadRoleSchema() error {
 
 	var err error
 
-	schemaR, err = sl.Compile(role)
+	schemaR, err := sl.Compile(role)
 	if err != nil {
-		return utils.NewError(err, "Wrong role schema: can't load or compile it")
+		return nil, utils.NewError(err, "Wrong role schema: can't load or compile it")
 	}
 
-	return nil
+	return schemaR, nil
 }

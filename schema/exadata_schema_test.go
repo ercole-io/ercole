@@ -13,31 +13,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-// Package controller contains structs and methods used to provide endpoints for storing hostdata informations
-package controller
+package schema
 
 import (
-	"net/http"
-	"time"
+	"testing"
 
-	"github.com/ercole-io/ercole/v2/data-service/service"
-	"github.com/ercole-io/ercole/v2/logger"
-
-	"github.com/ercole-io/ercole/v2/config"
+	"github.com/stretchr/testify/assert"
 )
 
-type DataControllerInterface interface {
-	InsertHostData(w http.ResponseWriter, r *http.Request)
-	CompareCmdbInfo(w http.ResponseWriter, r *http.Request)
-
-	InsertExadata(w http.ResponseWriter, r *http.Request)
-
-	AuthenticateMiddleware(h http.Handler) http.Handler
-}
-
-type DataController struct {
-	Config  config.Configuration
-	Service service.HostDataServiceInterface
-	TimeNow func() time.Time
-	Log     logger.Logger
+func TestLoadExadataSchema(t *testing.T) {
+	_, err := loadExadataSchema()
+	assert.Nil(t, err)
 }
