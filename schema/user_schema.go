@@ -31,14 +31,13 @@ import (
 var userSchema string
 
 func ValidateUser(raw []byte) error {
-	if schema == nil {
-		if err := loadUserSchema(); err != nil {
-			return err
-		}
+	schemaLoader, err := loadUserSchema()
+	if err != nil {
+		return nil
 	}
 
 	documentLoader := gojsonschema.NewBytesLoader(raw)
-	result, err := schema.Validate(documentLoader)
+	result, err := schemaLoader.Validate(documentLoader)
 
 	syntaxErr := &json.SyntaxError{}
 	if errors.As(err, &syntaxErr) {
@@ -65,14 +64,14 @@ func ValidateUser(raw []byte) error {
 	return nil
 }
 
-func loadUserSchema() error {
+func loadUserSchema() (*gojsonschema.Schema, error) {
 	sl := gojsonschema.NewSchemaLoader()
 
 	schemas := []string{userSchema}
 	for i := range schemas {
 		jl := gojsonschema.NewStringLoader(schemas[i])
 		if err := sl.AddSchemas(jl); err != nil {
-			return utils.NewError(err, "Wrong user schema: [%s]", schemas[i])
+			return nil, utils.NewError(err, "Wrong user schema: [%s]", schemas[i])
 		}
 	}
 
@@ -80,10 +79,10 @@ func loadUserSchema() error {
 
 	var err error
 
-	schema, err = sl.Compile(user)
+	uSchema, err := sl.Compile(user)
 	if err != nil {
-		return utils.NewError(err, "Wrong user schema: can't load or compile it")
+		return nil, utils.NewError(err, "Wrong user schema: can't load or compile it")
 	}
 
-	return nil
+	return uSchema, nil
 }
