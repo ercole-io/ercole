@@ -26,7 +26,6 @@ import (
 )
 
 func init() {
-
 	newNode := model.Node{
 		Name: "Capacity",
 		Roles: []string{
