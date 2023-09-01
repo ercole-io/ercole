@@ -36,6 +36,7 @@ func (ctrl *APIController) SearchHosts(w http.ResponseWriter, r *http.Request) {
 		[]string{
 			"application/json",
 			"application/vnd.oracle.lms+vnd.ms-excel.sheet.macroEnabled.12",
+			"application/vnd.mysql.lms+vnd.ms-excel.sheet.macroEnabled.12",
 			"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 			"application/vnd.ercole.mongohostdata+json",
 		},
@@ -43,6 +44,11 @@ func (ctrl *APIController) SearchHosts(w http.ResponseWriter, r *http.Request) {
 
 	if requestContentType == "application/vnd.oracle.lms+vnd.ms-excel.sheet.macroEnabled.12" {
 		ctrl.searchHostsLMS(w, r)
+		return
+	}
+
+	if requestContentType == "application/vnd.mysql.lms+vnd.ms-excel.sheet.macroEnabled.12" {
+		ctrl.searchHostsMysqlLMS(w, r)
 		return
 	}
 
@@ -148,6 +154,34 @@ func (ctrl *APIController) searchHostsLMS(w http.ResponseWriter, r *http.Request
 	lms, err := ctrl.Service.SearchHostsAsLMS(*filters)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
+
+	utils.WriteXLSMResponse(w, lms)
+}
+
+func (ctrl *APIController) searchHostsMysqlLMS(w http.ResponseWriter, r *http.Request) {
+	filters, err := dto.GetSearchHostsAsLMSFilters(r)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	if filters.Location == "" {
+		user := context.Get(r, "user")
+		locations, errLocation := ctrl.Service.ListLocations(user)
+
+		if errLocation != nil {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, errLocation)
+			return
+		}
+
+		filters.Location = strings.Join(locations, ",")
+	}
+
+	lms, err := ctrl.Service.GetHostsMysqlAsLMS(*filters)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 

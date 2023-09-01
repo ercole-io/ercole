@@ -241,6 +241,9 @@ type APIServiceInterface interface {
 	SearchMySQLInstancesAsXLSX(filter dto.GlobalFilter) (*excelize.File, error)
 	GetMySQLUsedLicenses(hostname string, filter dto.GlobalFilter) ([]dto.MySQLUsedLicense, error)
 	GetUsedLicensesPerDatabasesAsXLSX(filter dto.GlobalFilter) (*excelize.File, error)
+
+	GetHostsMysqlAsLMS(filters dto.SearchHostsAsLMS) (*excelize.File, error)
+
 	// MYSQL CONTRACTS
 
 	AddMySQLContract(contract model.MySQLContract) (*model.MySQLContract, error)
