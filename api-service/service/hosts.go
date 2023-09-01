@@ -161,6 +161,44 @@ func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsAsLMS) (*excelize.
 	return lms, nil
 }
 
+func (as *APIService) GetHostsMysqlAsLMS(filters dto.SearchHostsAsLMS) (*excelize.File, error) {
+	sheetDatabaseEbsDbTier := "Database_&_EBS_DB_Tier"
+
+	hosts, err := as.Database.SearchHostMysqlLMS(filters)
+	if err != nil {
+		return nil, err
+	}
+
+	lms, err := excelize.OpenFile(as.Config.ResourceFilePath + "/templates/template_lms.xlsm")
+	if err != nil {
+		aerr := utils.NewError(err, "READ_TEMPLATE")
+		return nil, aerr
+	}
+
+	for i, host := range hosts {
+		i += 4
+		lms.SetCellValue(sheetDatabaseEbsDbTier, fmt.Sprintf("B%d", i), host.PhysicalServerName)
+		lms.SetCellValue(sheetDatabaseEbsDbTier, fmt.Sprintf("C%d", i), host.VirtualServerName)
+		lms.SetCellValue(sheetDatabaseEbsDbTier, fmt.Sprintf("D%d", i), host.Virtualization)
+		lms.SetCellValue(sheetDatabaseEbsDbTier, fmt.Sprintf("E%d", i), host.DbInstanceName)
+		lms.SetCellValue(sheetDatabaseEbsDbTier, fmt.Sprintf("G%d", i), host.EnvironmentUsage)
+
+		lms.SetCellValue(sheetDatabaseEbsDbTier, fmt.Sprintf("N%d", i), host.ProductVersion)
+		lms.SetCellValue(sheetDatabaseEbsDbTier, fmt.Sprintf("O%d", i), host.ProductLicenseAllocated)
+		lms.SetCellValue(sheetDatabaseEbsDbTier, fmt.Sprintf("P%d", i), host.LicenseMetricAllocated)
+		lms.SetCellValue(sheetDatabaseEbsDbTier, fmt.Sprintf("Q%d", i), host.NumberOfLicenseUsed)
+
+		lms.SetCellValue(sheetDatabaseEbsDbTier, fmt.Sprintf("AC%d", i), host.ProcessorModel)
+		lms.SetCellValue(sheetDatabaseEbsDbTier, fmt.Sprintf("AD%d", i), host.Sockets)
+		lms.SetCellValue(sheetDatabaseEbsDbTier, fmt.Sprintf("AF%d", i), host.PhysiclaCores)
+		lms.SetCellValue(sheetDatabaseEbsDbTier, fmt.Sprintf("AG%d", i), host.ThreadsPerCore)
+
+		lms.SetCellValue(sheetDatabaseEbsDbTier, fmt.Sprintf("AJ%d", i), host.Os)
+	}
+
+	return lms, nil
+}
+
 func setCellValueLMS(lms *excelize.File, sheetName string, i int, csiByHostname map[string][]string, val map[string]interface{}) {
 	lms.SetCellValue(sheetName, fmt.Sprintf("B%d", i), val["physicalServerName"])
 	lms.SetCellValue(sheetName, fmt.Sprintf("C%d", i), val["virtualServerName"])

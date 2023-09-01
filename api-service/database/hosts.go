@@ -20,6 +20,7 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
+	"strings"
 	"time"
 
 	"github.com/amreo/mu"
@@ -914,4 +915,133 @@ func (md *MongoDatabase) IsMissingDB(hostname string) (bool, error) {
 	}
 
 	return count > 0, nil
+}
+
+func (md *MongoDatabase) SearchHostMysqlLMS(filter dto.SearchHostsAsLMS) ([]dto.MySqlHostLMS, error) {
+	ctx := context.TODO()
+
+	result := make([]dto.MySqlHostLMS, 0)
+
+	pipeline := bson.A{}
+
+	if !filter.From.IsZero() {
+		pipeline = append(pipeline, bson.D{{Key: "$match",
+			Value: bson.D{
+				{Key: "createdAt",
+					Value: bson.D{
+						{Key: "$gte", Value: filter.From},
+					},
+				},
+			},
+		}})
+	}
+
+	if !filter.To.IsZero() {
+		pipeline = append(pipeline, bson.D{{Key: "$match",
+			Value: bson.D{
+				{Key: "createdAt",
+					Value: bson.D{
+						{Key: "$lt", Value: filter.To},
+					},
+				},
+			},
+		}})
+	}
+
+	if filter.Location != "" {
+		pipeline = append(pipeline, bson.D{
+			{Key: "$match",
+				Value: bson.D{
+					{Key: "location",
+						Value: bson.D{
+							{Key: "$in",
+								Value: strings.Split(filter.Location, ","),
+							},
+						},
+					},
+				},
+			},
+		})
+	}
+
+	if filter.Environment != "" {
+		pipeline = append(pipeline, bson.D{{Key: "$match", Value: bson.D{{Key: "environment", Value: filter.Environment}}}})
+	}
+
+	pipeline = append(pipeline, bson.D{{Key: "$match", Value: bson.D{{Key: "archived", Value: false}}}},
+		bson.D{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$features.mysql.instances"}}}},
+		bson.D{
+			{Key: "$project",
+				Value: bson.D{
+					{Key: "physicalServerName",
+						Value: bson.D{
+							{Key: "$cond",
+								Value: bson.D{
+									{Key: "if",
+										Value: bson.D{
+											{Key: "$in",
+												Value: bson.A{
+													"$info.hardwareAbstractionTechnology",
+													bson.A{
+														"KVM",
+														"OVM",
+														"VMWARE",
+													},
+												},
+											},
+										},
+									},
+									{Key: "then", Value: "$clusters.name"},
+									{Key: "else", Value: ""},
+								},
+							},
+						},
+					},
+					{Key: "virtualServerName", Value: "$hostname"},
+					{Key: "virtualization", Value: "$info.hardwareAbstractionTechnology"},
+					{Key: "dbInstanceName", Value: "$features.mysql.instances.name"},
+					{Key: "environmentUsage", Value: "$environment"},
+					{Key: "productVersion", Value: "$features.mysql.instances.version"},
+					{Key: "productLicenseAllocated", Value: "$features.mysql.instances.edition"},
+					{Key: "licenseMetricAllocated", Value: "HOST"},
+					{Key: "numberOfLicensesUsed",
+						Value: bson.D{
+							{Key: "$cond",
+								Value: bson.D{
+									{Key: "if",
+										Value: bson.D{
+											{Key: "$eq",
+												Value: bson.A{
+													"$features.mysql.instances.license.ignored",
+													false,
+												},
+											},
+										},
+									},
+									{Key: "then", Value: "$features.mysql.instances.license.count"},
+									{Key: "else", Value: 0},
+								},
+							},
+						},
+					},
+					{Key: "processorModel", Value: "$info.cpuModel"},
+					{Key: "sockets", Value: "$info.cpuSockets"},
+					{Key: "physicalCores", Value: "$info.cpuCores"},
+					{Key: "threadsPerCore", Value: "$info.threadsPerCore"},
+					{Key: "os", Value: "$info.os"},
+				},
+			},
+		})
+
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").
+		Aggregate(ctx, pipeline)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := cur.All(ctx, &result); err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }

@@ -187,6 +187,8 @@ type MongoDatabaseInterface interface {
 	GetMySQLUsedLicenses(hostname string, filter dto.GlobalFilter) ([]dto.MySQLUsedLicense, error)
 	UpdateMySqlLicenseIgnoredField(hostname string, instancename string, ignored bool, ignoredComment string) error
 
+	SearchHostMysqlLMS(filter dto.SearchHostsAsLMS) ([]dto.MySqlHostLMS, error)
+
 	// MYSQL CONTRACTS
 
 	AddMySQLContract(contract model.MySQLContract) error
