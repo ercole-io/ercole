@@ -67,6 +67,7 @@ type OracleDatabase struct {
 	GrantDba            []OracleGrantDba                  `json:"grantDba" bson:"grantDba"`
 	Partitionings       []OracleDatabasePartitioning      `json:"partitionings" bson:"partitionings"`
 	CpuDiskConsumptions []CpuDiskConsumption              `json:"cpuDiskConsumptions" bson:"cpuDiskConsumptions"`
+	PgsqlMigrability    []PgsqlMigrability                `json:"pgsqlMigrability,omitempty" bson:"pgsqlMigrability,omitempty"`
 }
 
 var (

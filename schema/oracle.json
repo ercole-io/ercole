@@ -804,6 +804,40 @@
                                                             }
                                                         }
                                                     ]
+                                                },
+                                                "pgsqlMigrability":{
+                                                    "anyOf": [
+                                                        {"type": "null"},
+                                                        {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "metric":{
+                                                                        "anyOf": [
+                                                                            {"type": "null"},
+                                                                            {"type": "string"}
+                                                                        ]
+                                                                    },
+                                                                    "count":{
+                                                                        "type":"integer"
+                                                                    },
+                                                                    "schema":{
+                                                                        "anyOf": [
+                                                                            {"type": "null"},
+                                                                            {"type": "string"}
+                                                                        ]
+                                                                    },
+                                                                    "objectType":{
+                                                                        "anyOf": [
+                                                                            {"type": "null"},
+                                                                            {"type": "string"}
+                                                                        ]
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
                                                 }
                                             }
                                         }
@@ -942,6 +976,40 @@
                                                             "anyOf": [
                                                                 {"type": "null"},
                                                                 {"type": "number"}
+                                                            ]
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    "pgsqlMigrability":{
+                                        "anyOf": [
+                                            {"type": "null"},
+                                            {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "metric":{
+                                                            "anyOf": [
+                                                                {"type": "null"},
+                                                                {"type": "string"}
+                                                            ]
+                                                        },
+                                                        "count":{
+                                                            "type":"integer"
+                                                        },
+                                                        "schema":{
+                                                            "anyOf": [
+                                                                {"type": "null"},
+                                                                {"type": "string"}
+                                                            ]
+                                                        },
+                                                        "objectType":{
+                                                            "anyOf": [
+                                                                {"type": "null"},
+                                                                {"type": "string"}
                                                             ]
                                                         }
                                                     }

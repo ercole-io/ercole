@@ -17,17 +17,18 @@ package model
 
 // OracleDatabasePluggableDatabase holds information about an Oracle pluggable database.
 type OracleDatabasePluggableDatabase struct {
-	Name                 string                         `json:"name" bson:"name"`
-	Status               string                         `json:"status" bson:"status"`
-	SegmentsSize         float64                        `json:"segmentsSize" bson:"segmentsSize"`
-	DatafileSize         float64                        `json:"datafileSize" bson:"datafileSize"`
-	Allocable            float64                        `json:"allocable" bson:"allocable"`
-	Charset              string                         `json:"charset" bson:"charset"`
-	Tablespaces          []OracleDatabaseTablespace     `json:"tablespaces" bson:"tablespaces"`
-	Schemas              []OracleDatabaseSchema         `json:"schemas" bson:"schemas"`
-	Services             []OracleDatabaseService        `json:"services" bson:"services"`
-	GrantDba             []OracleGrantDba               `json:"grantDba" bson:"grantDba"`
-	SegmentAdvisors      []OracleDatabaseSegmentAdvisor `json:"segmentAdvisors" bson:"segmentAdvisors"`
-	Partitionings        []OracleDatabasePartitioning   `json:"partitionings" bson:"partitionings"`
+	Name                   string                         `json:"name" bson:"name"`
+	Status                 string                         `json:"status" bson:"status"`
+	SegmentsSize           float64                        `json:"segmentsSize" bson:"segmentsSize"`
+	DatafileSize           float64                        `json:"datafileSize" bson:"datafileSize"`
+	Allocable              float64                        `json:"allocable" bson:"allocable"`
+	Charset                string                         `json:"charset" bson:"charset"`
+	Tablespaces            []OracleDatabaseTablespace     `json:"tablespaces" bson:"tablespaces"`
+	Schemas                []OracleDatabaseSchema         `json:"schemas" bson:"schemas"`
+	Services               []OracleDatabaseService        `json:"services" bson:"services"`
+	GrantDba               []OracleGrantDba               `json:"grantDba" bson:"grantDba"`
+	SegmentAdvisors        []OracleDatabaseSegmentAdvisor `json:"segmentAdvisors" bson:"segmentAdvisors"`
+	Partitionings          []OracleDatabasePartitioning   `json:"partitionings" bson:"partitionings"`
 	CpuDiskConsumptionPdbs []CpuDiskConsumptionPdb        `json:"cpuDiskConsumptionPdbs" bson:"cpuDiskConsumptionPdbs"`
+	PgsqlMigrability       []PgsqlMigrability             `json:"pgsqlMigrability,omitempty" bson:"pgsqlMigrability,omitempty"`
 }
