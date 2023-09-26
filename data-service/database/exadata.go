@@ -53,7 +53,7 @@ func (md *MongoDatabase) AddExadata(exadata model.OracleExadataInstance) error {
 func (md *MongoDatabase) UpdateExadata(exadata model.OracleExadataInstance) error {
 	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(exdataCollection).
 		UpdateOne(context.TODO(), bson.M{"rackID": exadata.RackID},
-			bson.M{"$set": bson.M{"hostname": exadata.Hostname, "components": exadata.Components}})
+			bson.M{"$set": bson.M{"hostname": exadata.Hostname, "components": exadata.Components, "updateAt": exadata.UpdatedAt}})
 	if err != nil {
 		return err
 	}

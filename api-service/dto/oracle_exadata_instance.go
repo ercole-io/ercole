@@ -25,7 +25,8 @@ type OracleExadataInstance struct {
 	Hostname    string                   `json:"hostname"`
 	Environment string                   `json:"environment"`
 	Location    string                   `json:"location"`
-	CreatedAt   *time.Time               `json:"createdAt"`
+	CreatedAt   time.Time                `json:"createdAt"`
+	UpdateAt    time.Time                `json:"updateAt"`
 	RackID      string                   `json:"rackID"`
 	Components  []OracleExadataComponent `json:"components"`
 	TotalMemory int                      `json:"totalMemory"`
@@ -43,6 +44,8 @@ func ToOracleExadataInstance(inst *model.OracleExadataInstance) OracleExadataIns
 			RackID:      inst.RackID,
 			Location:    inst.Location,
 			Environment: inst.Environment,
+			CreatedAt:   inst.CreatedAt,
+			UpdateAt:    inst.UpdatedAt,
 		}
 
 		isBareMetal := false
