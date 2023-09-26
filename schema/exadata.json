@@ -16,17 +16,6 @@
         "location": {
             "type": "string"
         },
-        "createdAt": {
-            "anyOf": [
-                {
-                    "type":"null"
-                },
-                {
-                    "type": "string",
-                    "format": "date-time"
-                }
-            ]
-        },
         "rackID": {
             "type": "string",
             "minLength": 1,

@@ -30,7 +30,8 @@ type OracleExadataInstance struct {
 	Hostname    string                   `json:"hostname" bson:"hostname"`
 	Environment string                   `json:"environment" bson:"environment"`
 	Location    string                   `json:"location" bson:"location"`
-	CreatedAt   *time.Time               `json:"createdAt" bson:"createdAt"`
+	CreatedAt   time.Time                `json:"createdAt" bson:"createdAt"`
+	UpdatedAt   time.Time                `json:"updateAt" bson:"updateAt"`
 	RackID      string                   `json:"rackID" bson:"rackID"`
 	Components  []OracleExadataComponent `json:"components" bson:"components"`
 }
