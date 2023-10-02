@@ -464,8 +464,8 @@ func (as *APIService) DismissHost(hostname string) error {
 	return nil
 }
 
-func (as *APIService) IsMissingDB(hostname string) (bool, error) {
-	return as.Database.IsMissingDB(hostname)
+func (as *APIService) IsMissingDB(hostname string) ([]string, error) {
+	return as.Database.FindUnlistedRunningDatabases(hostname)
 }
 
 func checkHosts(as *APIService, hosts []string) error {

@@ -34,6 +34,8 @@ import (
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
+const usersCollection = "users"
+
 func (md *MongoDatabase) SearchHosts(mode string, filters dto.SearchHostsFilters) ([]map[string]interface{}, error) {
 	out := make([]map[string]interface{}, 0)
 	if err := md.getHosts(mode, filters, &out); err != nil {
@@ -900,21 +902,41 @@ func (md *MongoDatabase) getHostTechnology(hostname string, olderThan time.Time)
 	return out, nil
 }
 
-// Check if there are any alerts related to the hostname
-func (md *MongoDatabase) IsMissingDB(hostname string) (bool, error) {
-	count, err := md.Client.Database(md.Config.Mongodb.DBName).
-		Collection(alertsCollection).
-		CountDocuments(
-			context.TODO(), bson.M{
-				"alertCode":          model.AlertCodeMissingDatabase,
-				"otherInfo.hostname": hostname,
-				"alertStatus":        "NEW",
-			})
+// Check if there are any db instances not running on host
+func (md *MongoDatabase) FindUnlistedRunningDatabases(hostname string) ([]string, error) {
+	ctx := context.TODO()
+
+	result := make([]string, 0)
+
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(usersCollection).
+		Aggregate(ctx, bson.A{
+			bson.D{
+				{Key: "$match",
+					Value: bson.D{
+						{Key: "archived", Value: false},
+						{Key: "hostname", Value: hostname},
+					},
+				},
+			},
+			bson.D{
+				{Key: "$unwind",
+					Value: bson.D{
+						{Key: "path", Value: "$features.oracle.database.unlistedRunningDatabases"},
+						{Key: "preserveNullAndEmptyArrays", Value: false},
+					},
+				},
+			},
+			bson.D{{Key: "$project", Value: bson.D{{Key: "dbs", Value: "$features.oracle.database.unlistedRunningDatabases"}}}},
+		})
 	if err != nil {
-		return false, utils.NewError(err, "DB ERROR")
+		return nil, err
 	}
 
-	return count > 0, nil
+	if err := cur.All(ctx, &result); err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }
 
 func (md *MongoDatabase) SearchHostMysqlLMS(filter dto.SearchHostsAsLMS) ([]dto.MySqlHostLMS, error) {
