@@ -2740,7 +2740,7 @@ paths:
         - api-service
       operationId: GetMissingDbHost
       summary: Check missing database
-      description: Check if the requested hostname has a missing database alert actived
+      description: Check if there are any db instances not running on host
       responses:
         "200":
           description: Ok
@@ -2750,7 +2750,9 @@ paths:
                 type: object
                 properties:
                   isMissingDB:
-                    type: boolean
+                    type: array
+                    items:
+                      type: string
           
   ? "/hosts/{hostname}/technologies/oracle/databases/{dbname}/licenses/{licenseTypeID}/ignored/{ignored}"
   : parameters:

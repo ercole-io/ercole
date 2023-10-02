@@ -352,6 +352,6 @@ func (ctrl *APIController) GetMissingDbHost(w http.ResponseWriter, r *http.Reque
 	}
 
 	utils.WriteJSONResponse(w, http.StatusOK, struct {
-		IsMissingDB bool
+		IsMissingDB []string
 	}{IsMissingDB: res})
 }

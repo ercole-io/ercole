@@ -203,7 +203,7 @@ type APIServiceInterface interface {
 	// DismissHost dismiss the specified host
 	DismissHost(hostname string) error
 
-	IsMissingDB(hostname string) (bool, error)
+	IsMissingDB(hostname string) ([]string, error)
 
 	// UpdateAlertsStatus update alerts status
 	UpdateAlertsStatus(alertsFilter dto.AlertsFilter, newStatus string) error
