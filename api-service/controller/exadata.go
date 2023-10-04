@@ -35,5 +35,11 @@ func (ctrl *APIController) ListExadata(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.WriteJSONResponse(w, http.StatusOK, dto.ToOracleExadataInstances(res))
+	dtos, err := dto.ToOracleExadataInstances(res)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, dtos)
 }

@@ -15,19 +15,70 @@
 
 package dto
 
-import "github.com/ercole-io/ercole/v2/model"
+import (
+	"errors"
+	"fmt"
+
+	"github.com/ercole-io/ercole/v2/model"
+)
 
 type OracleExadataComponent struct {
-	model.OracleExadataComponent
+	RackID            string                     `json:"rackID"`
+	HostType          string                     `json:"hostType"`
+	Hostname          string                     `json:"hostname"`
+	CPUEnabled        int                        `json:"cpuEnabled"`
+	TotalCPU          int                        `json:"totalCPU"`
+	Memory            int                        `json:"memory"`
+	ImageVersion      string                     `json:"imageVersion"`
+	Kernel            string                     `json:"kernel"`
+	Model             string                     `json:"model"`
+	FanUsed           int                        `json:"fanUsed"`
+	FanTotal          int                        `json:"fanTotal"`
+	PsuUsed           int                        `json:"psuUsed"`
+	PsuTotal          int                        `json:"psuTotal"`
+	MsStatus          string                     `json:"msStatus"`
+	RsStatus          string                     `json:"rsStatus"`
+	CellServiceStatus string                     `json:"cellServiceStatus"`
+	SwVersion         string                     `json:"swVersion"`
+	VMs               []model.OracleExadataVM    `json:"vms,omitempty"`
+	StorageCells      []OracleExadataStorageCell `json:"storageCells,omitempty"`
+
 	UsedRAM int `json:"usedRAM"`
 	FreeRAM int `json:"freeRAM"`
 	UsedCPU int `json:"usedCPU"`
 	FreeCPU int `json:"freeCPU"`
+
+	FreeSizePercentage string `json:"freeSizePercentage"`
 }
 
-func ToOracleExadataComponent(componentModel *model.OracleExadataComponent) OracleExadataComponent {
+func ToOracleExadataComponent(componentModel *model.OracleExadataComponent) (*OracleExadataComponent, error) {
 	if componentModel != nil {
-		res := OracleExadataComponent{OracleExadataComponent: *componentModel}
+		storagedtos, err := ToOracleExadataStorageCells(componentModel.StorageCells)
+		if err != nil {
+			return nil, err
+		}
+
+		res := OracleExadataComponent{
+			RackID:            componentModel.RackID,
+			HostType:          componentModel.HostType,
+			Hostname:          componentModel.Hostname,
+			CPUEnabled:        componentModel.CPUEnabled,
+			TotalCPU:          componentModel.TotalCPU,
+			Memory:            componentModel.Memory,
+			ImageVersion:      componentModel.ImageVersion,
+			Kernel:            componentModel.Kernel,
+			Model:             componentModel.Model,
+			FanUsed:           componentModel.FanUsed,
+			FanTotal:          componentModel.FanTotal,
+			PsuUsed:           componentModel.PsuUsed,
+			PsuTotal:          componentModel.PsuTotal,
+			MsStatus:          componentModel.MsStatus,
+			RsStatus:          componentModel.RsStatus,
+			CellServiceStatus: componentModel.CellServiceStatus,
+			SwVersion:         componentModel.SwVersion,
+			VMs:               componentModel.VMs,
+			StorageCells:      storagedtos,
+		}
 
 		for _, vm := range componentModel.VMs {
 			if vm.Type == model.VM_KVM || vm.Type == model.VM_XEN {
@@ -41,8 +92,38 @@ func ToOracleExadataComponent(componentModel *model.OracleExadataComponent) Orac
 			res.FreeCPU = res.TotalCPU - res.UsedCPU
 		}
 
-		return res
+		perc, err := res.GetFreeSpacePercentage()
+		if err != nil {
+			return nil, err
+		}
+
+		res.FreeSizePercentage = perc
+
+		return &res, nil
 	}
 
-	return OracleExadataComponent{}
+	return nil, errors.New("cannot convert model OracleExadataComponent dto")
+}
+
+func (c *OracleExadataComponent) GetFreeSpacePercentage() (string, error) {
+	totsize := 0.0
+	totFreeSpace := 0.0
+
+	for _, storageCell := range c.StorageCells {
+		sizeTb, err := storageCell.Size.ToTb()
+		if err != nil {
+			return "", err
+		}
+
+		totsize += sizeTb.Quantity
+
+		freeSpaceTb, err := storageCell.FreeSpace.ToTb()
+		if err != nil {
+			return "", err
+		}
+
+		totFreeSpace += freeSpaceTb.Quantity
+	}
+
+	return fmt.Sprintf("%v%%", (totFreeSpace*100)/totsize), nil
 }

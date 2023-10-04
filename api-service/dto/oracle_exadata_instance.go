@@ -16,6 +16,7 @@
 package dto
 
 import (
+	"errors"
 	"time"
 
 	"github.com/ercole-io/ercole/v2/model"
@@ -37,7 +38,7 @@ type OracleExadataInstance struct {
 	FreeCPU     int                      `json:"freeCPU"`
 }
 
-func ToOracleExadataInstance(inst *model.OracleExadataInstance) OracleExadataInstance {
+func ToOracleExadataInstance(inst *model.OracleExadataInstance) (*OracleExadataInstance, error) {
 	if inst != nil {
 		res := OracleExadataInstance{
 			Hostname:    inst.Hostname,
@@ -70,7 +71,12 @@ func ToOracleExadataInstance(inst *model.OracleExadataInstance) OracleExadataIns
 				res.UsedCPU += cmp.CPUEnabled
 			}
 
-			res.Components = append(res.Components, ToOracleExadataComponent(&cmp))
+			d, err := ToOracleExadataComponent(&cmp)
+			if err != nil {
+				return nil, err
+			}
+			
+			res.Components = append(res.Components, *d)
 		}
 
 		// if exadata contains bare metal the freeMemory must be 0
@@ -80,18 +86,23 @@ func ToOracleExadataInstance(inst *model.OracleExadataInstance) OracleExadataIns
 
 		res.FreeCPU = res.TotalCPU - res.UsedCPU
 
-		return res
+		return &res, nil
 	}
 
-	return OracleExadataInstance{}
+	return nil, errors.New("cannot convert model to OracleExadataInstance dto")
 }
 
-func ToOracleExadataInstances(instancesModel []model.OracleExadataInstance) []OracleExadataInstance {
+func ToOracleExadataInstances(instancesModel []model.OracleExadataInstance) ([]OracleExadataInstance, error) {
 	res := make([]OracleExadataInstance, 0, len(instancesModel))
 
 	for _, instance := range instancesModel {
-		res = append(res, ToOracleExadataInstance(&instance))
+		dto, err := ToOracleExadataInstance(&instance)
+		if err != nil {
+			return nil, err
+		}
+		
+		res = append(res, *dto)
 	}
 
-	return res
+	return res, nil
 }
