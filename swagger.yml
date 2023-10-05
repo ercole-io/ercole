@@ -946,6 +946,8 @@ components:
           type: integer
         freeCPU:
           type: integer
+        freeSizePercentage:
+          type: string
       required:
         - hostType
     ExadataVM:
@@ -987,9 +989,9 @@ components:
         cellDisk:
           type: string
         size:
-          type: string
+          $ref: "#/components/schemas/ExadataMeasurement"
         freeSpace:
-          type: string
+          $ref: "#/components/schemas/ExadataMeasurement"
         status:
           type: string
         errorCount:
@@ -1000,6 +1002,8 @@ components:
             $ref: "#/components/schemas/ExadataGridDisk"
         database:
           $ref: "#/components/schemas/ExadataDatabase"
+        freeSizePercentage:
+          type: string
       required:
         - type
     ExadataGridDisk:
@@ -1047,6 +1051,15 @@ components:
             type: string
         required:
           - type
+    ExadataMeasurement:
+      type: object
+      properties:
+        unparsedValue:
+          type: string
+        symbol:
+          type: string
+        quantity:
+          type: number
     HostData:
       description: A hostdata from FE
       type: object
