@@ -60,7 +60,7 @@ func (m *OracleExadataMeasurement) ToTb() (*OracleExadataMeasurement, error) {
 		return nil, err
 	}
 
-	convertedValue := b.Format("%.8f", "TB", false)
+	convertedValue := b.Format(effectivebytes.Format, "TB", false)
 
 	q, err := effectivebytes.Float64(convertedValue)
 	if err != nil {

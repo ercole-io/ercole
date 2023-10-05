@@ -31,8 +31,6 @@ const (
 	MB
 	GB
 	TB
-	PB
-	EB
 )
 
 var longUnitMap = map[ByteSize]string{
@@ -79,7 +77,7 @@ var unitMap = map[string]ByteSize{
 
 var (
 	LongUnits bool   = false
-	Format    string = "%.2f"
+	Format    string = "%.8f"
 )
 
 func Parse(s string) (ByteSize, error) {
@@ -110,28 +108,8 @@ func Parse(s string) (ByteSize, error) {
 	}
 
 	bytesize := ByteSize(value * float64(unit))
+
 	return bytesize, nil
-}
-
-func (b *ByteSize) Set(s string) error {
-	bs, err := Parse(s)
-	if err != nil {
-		return err
-	}
-	*b = bs
-	return nil
-}
-
-func (b *ByteSize) Type() string { return "byte_size" }
-
-func (b *ByteSize) UnmarshalText(text []byte) error {
-	return b.Set(string(text))
-}
-
-func (b *ByteSize) Get() interface{} { return ByteSize(*b) }
-
-func New(s float64) ByteSize {
-	return ByteSize(s)
 }
 
 func (b ByteSize) Format(format string, unit string, longUnits bool) string {
@@ -171,8 +149,10 @@ func (b ByteSize) format(format string, unit string, longUnits bool) string {
 		if printS, _ := strconv.ParseFloat(strings.TrimSpace(value), 64); printS > 0 && printS != 1 {
 			s = "s"
 		}
+
 		return fmt.Sprintf(format+longUnitMap[unitSize]+s, float64(b)/float64(unitSize))
 	}
+
 	return fmt.Sprintf(format+shortUnitMap[unitSize], float64(b)/float64(unitSize))
 }
 
