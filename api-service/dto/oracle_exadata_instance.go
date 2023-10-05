@@ -39,57 +39,47 @@ type OracleExadataInstance struct {
 }
 
 func ToOracleExadataInstance(inst *model.OracleExadataInstance) (*OracleExadataInstance, error) {
-	if inst != nil {
-		res := OracleExadataInstance{
-			Hostname:    inst.Hostname,
-			RackID:      inst.RackID,
-			Location:    inst.Location,
-			Environment: inst.Environment,
-			CreatedAt:   inst.CreatedAt,
-			UpdateAt:    inst.UpdatedAt,
-		}
-
-		isBareMetal := false
-
-		for _, cmp := range inst.Components {
-			if cmp.HostType == model.DOM0 || cmp.HostType == model.KVM_HOST {
-				res.TotalMemory += cmp.Memory
-				res.TotalCPU += cmp.TotalCPU
-
-				for _, vm := range cmp.VMs {
-					if vm.Type == model.VM_KVM || vm.Type == model.VM_XEN {
-						res.UsedMemory += (vm.RamCurrent / 1000) + (vm.RamOnline / 1000)
-						res.UsedCPU += vm.CPUCurrent + vm.CPUOnline
-					}
-				}
-			}
-
-			if cmp.HostType == model.BARE_METAL {
-				isBareMetal = true
-				res.TotalMemory += cmp.Memory
-				res.TotalCPU += cmp.TotalCPU
-				res.UsedCPU += cmp.CPUEnabled
-			}
-
-			d, err := ToOracleExadataComponent(&cmp)
-			if err != nil {
-				return nil, err
-			}
-			
-			res.Components = append(res.Components, *d)
-		}
-
-		// if exadata contains bare metal the freeMemory must be 0
-		if !isBareMetal {
-			res.FreeMemory = res.TotalMemory - res.UsedMemory
-		}
-
-		res.FreeCPU = res.TotalCPU - res.UsedCPU
-
-		return &res, nil
+	if inst == nil {
+		return nil, errors.New("cannot convert nil model to OracleExadataInstance dto")
 	}
 
-	return nil, errors.New("cannot convert model to OracleExadataInstance dto")
+	res := OracleExadataInstance{
+		Hostname:    inst.Hostname,
+		RackID:      inst.RackID,
+		Location:    inst.Location,
+		Environment: inst.Environment,
+		CreatedAt:   inst.CreatedAt,
+		UpdateAt:    inst.UpdatedAt,
+	}
+
+	for _, cmp := range inst.Components {
+		res.TotalMemory += cmp.Memory
+		res.TotalCPU += cmp.TotalCPU
+
+		if cmp.HostType == model.BARE_METAL {
+			res.UsedCPU += cmp.CPUEnabled
+		} else if cmp.HostType == model.DOM0 || cmp.HostType == model.KVM_HOST {
+			for _, vm := range cmp.VMs {
+				if vm.Type == model.VM_KVM || vm.Type == model.VM_XEN {
+					res.UsedMemory += (vm.RamCurrent / 1000) + (vm.RamOnline / 1000)
+					res.UsedCPU += vm.CPUCurrent + vm.CPUOnline
+				}
+			}
+		}
+
+		d, err := ToOracleExadataComponent(&cmp)
+		if err != nil {
+			return nil, err
+		}
+
+		res.Components = append(res.Components, *d)
+	}
+
+	// Calculate free memory and CPU
+	res.FreeMemory = res.TotalMemory - res.UsedMemory
+	res.FreeCPU = res.TotalCPU - res.UsedCPU
+
+	return &res, nil
 }
 
 func ToOracleExadataInstances(instancesModel []model.OracleExadataInstance) ([]OracleExadataInstance, error) {
@@ -100,7 +90,7 @@ func ToOracleExadataInstances(instancesModel []model.OracleExadataInstance) ([]O
 		if err != nil {
 			return nil, err
 		}
-		
+
 		res = append(res, *dto)
 	}
 
