@@ -26,6 +26,7 @@ type OracleExadataComponent struct {
 	RackID            string                     `json:"rackID"`
 	HostType          string                     `json:"hostType"`
 	Hostname          string                     `json:"hostname"`
+	HostID            string                     `json:"hostID"`
 	CPUEnabled        int                        `json:"cpuEnabled"`
 	TotalCPU          int                        `json:"totalCPU"`
 	Memory            int                        `json:"memory"`
@@ -62,6 +63,7 @@ func ToOracleExadataComponent(componentModel *model.OracleExadataComponent) (*Or
 			RackID:            componentModel.RackID,
 			HostType:          componentModel.HostType,
 			Hostname:          componentModel.Hostname,
+			HostID:            componentModel.HostID,
 			CPUEnabled:        componentModel.CPUEnabled,
 			TotalCPU:          componentModel.TotalCPU,
 			Memory:            componentModel.Memory,

@@ -20,6 +20,7 @@ type OracleExadataComponent struct {
 	RackID            string                     `json:"rackID" bson:"rackID"`
 	HostType          string                     `json:"hostType" bson:"hostType"`
 	Hostname          string                     `json:"hostname" bson:"hostname"`
+	HostID            string                     `json:"hostID" bson:"hostID"`
 	CPUEnabled        int                        `json:"cpuEnabled" bson:"cpuEnabled"`
 	TotalCPU          int                        `json:"totalCPU" bson:"totalCPU"`
 	Memory            int                        `json:"memory" bson:"memory"`
