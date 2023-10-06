@@ -1,12 +1,14 @@
 {
-    "hostname": "pippo1",
-    "location":"Italy",
-    "environment":"PROD",
-    "rackID": "cmFjSURfdGVzdA",
+    "hostname": "hostname_test",
+    "environment": "TEST",
+    "location": "Italy",
+    "rackID": "0DOF8BF82M",
+    "createdAt": null,
     "components": [
         {
-            "hostType": "kvm_host",
-            "hostname": "",
+            "rackID": "0DOF8BF82M",
+            "hostType": "BARE_METAL",
+            "hostname": "exavm465AS",
             "cpuEnabled": 0,
             "totalCPU": 0,
             "memory": 0,
@@ -21,6 +23,64 @@
             "rsStatus": "",
             "cellServiceStatus": "",
             "swVersion": ""
+        },
+        {
+            "rackID": "0DOF8BF82M",
+            "hostType": "STORAGE_CELL",
+            "hostname": "exavm01cel01",
+            "cpuEnabled": 0,
+            "totalCPU": 0,
+            "memory": 0,
+            "imageVersion": "",
+            "kernel": "",
+            "model": "",
+            "fanUsed": 0,
+            "fanTotal": 0,
+            "psuUsed": 0,
+            "psuTotal": 0,
+            "msStatus": "",
+            "rsStatus": "",
+            "cellServiceStatus": "",
+            "swVersion": "",
+            "storageCells": [
+                {
+                    "type": "CELLDISK",
+                    "hostname": "",
+                    "cellDisk": "CD_00_exavm01cel01",
+                    "cell": "exavm01cel01",
+                    "size": "12.4737091064453125T",
+                    "freeSpace": "0",
+                    "status": "",
+                    "errorCount": 0,
+                    "gridDisks": [
+                        {
+                            "type": "GRIDDISK",
+                            "hostname": "",
+                            "gridDisk": "DATA_CD_00_exavm01cel01",
+                            "cellDisk": "CD_00_exavm01cel01",
+                            "size": "9.4794921875T",
+                            "status": "",
+                            "errorCount": 0,
+                            "cachingPolicy": "",
+                            "asmDiskName": "",
+                            "asmDiskGroup": "",
+                            "asmDiskSize": "",
+                            "asmDiskStatus": ""
+                        }
+                    ],
+                    "databases": [
+                        {
+                            "type": "DATABASE",
+                            "dbName": "C002BOTN",
+                            "cell": "exavm01cel01",
+                            "dbID": 0,
+                            "flashCacheLimit": 0,
+                            "iormShare": 0,
+                            "lastIOReq": "2023-08-23T15:53:40+02:00"
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }

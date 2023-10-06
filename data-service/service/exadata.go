@@ -16,32 +16,77 @@
 package service
 
 import (
-	"reflect"
+	"errors"
 
 	"github.com/ercole-io/ercole/v2/model"
-	"github.com/imdario/mergo"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func (hds *HostDataService) SaveExadata(exadata *model.OracleExadataInstance) error {
 	existingExadata, err := hds.Database.FindExadataByRackID(exadata.RackID)
+	if err != nil && err != mongo.ErrNoDocuments {
+		return err
+	}
+
+	if existingExadata != nil {
+		return hds.updateExistingExadata(existingExadata, exadata)
+	}
+
+	return hds.addNewExadata(exadata)
+}
+
+func (hds *HostDataService) updateExistingExadata(existingExadata, exadata *model.OracleExadataInstance) error {
+	newComponents, err := hds.getNewExadataComponent(existingExadata, exadata)
 	if err != nil {
-		if err != mongo.ErrNoDocuments {
+		return err
+	}
+
+	for _, component := range newComponents {
+		if err := hds.Database.PushComponentToExadataInstance(exadata.RackID, component); err != nil {
 			return err
 		}
 	}
 
-	if existingExadata != nil && !reflect.DeepEqual(existingExadata, exadata) {
-		if err := mergo.Merge(existingExadata, exadata); err != nil {
+	if existingExadata.Hostname != exadata.Hostname {
+		if err := hds.Database.UpdateExadataHostname(existingExadata.RackID, exadata.Hostname); err != nil {
 			return err
 		}
-
-		exadata.UpdatedAt = hds.TimeNow()
-
-		return hds.Database.UpdateExadata(*exadata)
 	}
 
+	return nil
+}
+
+func (hds *HostDataService) addNewExadata(exadata *model.OracleExadataInstance) error {
 	exadata.CreatedAt, exadata.UpdatedAt = hds.TimeNow(), hds.TimeNow()
-
 	return hds.Database.AddExadata(*exadata)
+}
+
+func (hds *HostDataService) getNewExadataComponent(old, new *model.OracleExadataInstance) ([]model.OracleExadataComponent, error) {
+	if old == nil {
+		return nil, errors.New("old exadata instance cannot be nil during comparision")
+	}
+
+	if new == nil {
+		return nil, errors.New("new exadata instance cannot be nil during comparision")
+	}
+
+	if old.RackID != new.RackID {
+		return nil, errors.New("cannot compare different exadata instances")
+	}
+
+	newInstances := make([]model.OracleExadataComponent, 0)
+
+	hostnames := make(map[string]bool)
+
+	for _, oc := range old.Components {
+		hostnames[oc.Hostname] = true
+	}
+
+	for _, nc := range new.Components {
+		if _, ok := hostnames[nc.Hostname]; !ok {
+			newInstances = append(newInstances, nc)
+		}
+	}
+
+	return newInstances, nil
 }

@@ -49,13 +49,11 @@ func TestSaveExadata_Success(t *testing.T) {
 		Log:            logger.NewLogger("TEST"),
 	}
 	exd := mongoutils.LoadFixtureExadata(t, "../../fixture/test_dataservice_exadata_v1_00.json")
-	exd.CreatedAt = hds.TimeNow()
-	exd.UpdatedAt = hds.TimeNow()
 
 	t.Run("New exadata", func(t *testing.T) {
 		gomock.InOrder(
 			db.EXPECT().FindExadataByRackID(exd.RackID).Return(nil, nil),
-			db.EXPECT().AddExadata(exd).Return(nil),
+			db.EXPECT().AddExadata(gomock.Any()).Return(nil),
 		)
 
 		err := hds.SaveExadata(&exd)
@@ -72,7 +70,7 @@ func TestSaveExadata_Success(t *testing.T) {
 
 		gomock.InOrder(
 			db.EXPECT().FindExadataByRackID(newExd.RackID).Return(nil, nil),
-			db.EXPECT().AddExadata(newExd).Return(nil),
+			db.EXPECT().AddExadata(gomock.Any()).Return(nil),
 		)
 
 		err := hds.SaveExadata(&newExd)

@@ -50,10 +50,36 @@ func (md *MongoDatabase) AddExadata(exadata model.OracleExadataInstance) error {
 	return nil
 }
 
-func (md *MongoDatabase) UpdateExadata(exadata model.OracleExadataInstance) error {
+func (md *MongoDatabase) UpdateExadataHostname(rackID, hostname string) error {
 	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(exdataCollection).
-		UpdateOne(context.TODO(), bson.M{"rackID": exadata.RackID},
-			bson.M{"$set": bson.M{"hostname": exadata.Hostname, "components": exadata.Components, "updateAt": exadata.UpdatedAt}})
+		UpdateOne(context.TODO(), bson.M{"rackID": rackID},
+			bson.M{"$set": bson.M{"hostname": hostname}})
+	if err != nil {
+		return err
+	}
+
+	return md.updateExadataTime(rackID)
+}
+
+func (md *MongoDatabase) PushComponentToExadataInstance(rackID string, component model.OracleExadataComponent) error {
+	filter := bson.M{"rackID": rackID}
+	update := bson.M{"$push": bson.M{"components": component}}
+
+	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(exdataCollection).
+		UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return err
+	}
+
+	return md.updateExadataTime(rackID)
+}
+
+func (md *MongoDatabase) updateExadataTime(rackID string) error {
+	now := md.TimeNow()
+
+	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(exdataCollection).
+		UpdateOne(context.TODO(), bson.M{"rackID": rackID},
+			bson.M{"$set": bson.M{"updateAt": now.String()}})
 	if err != nil {
 		return err
 	}
