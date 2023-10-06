@@ -902,6 +902,8 @@ components:
           type: string
         hostname:
           type: string
+        hostID:
+          type: string
         cpuEnabled:
           type: integer
         totalCPU:

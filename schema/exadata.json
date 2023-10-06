@@ -42,6 +42,9 @@
                                 "type": "string",
                                 "minLength": 1
                             },
+                            "hostID": {
+                                "type": "string"
+                            },
                             "cpuEnabled": {
                                 "type": "integer"
                             },
