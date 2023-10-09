@@ -74,12 +74,43 @@ func (md *MongoDatabase) PushComponentToExadataInstance(rackID string, component
 	return md.updateExadataTime(rackID)
 }
 
+
+func (md *MongoDatabase) SetExadataComponent(rackID string, component model.OracleExadataComponent) error {
+	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(exdataCollection).
+		UpdateOne(context.TODO(), bson.M{"rackID": rackID},
+			bson.M{"$set": bson.M{
+				"hostname":          component.Hostname,
+				"hostType":          component.HostType,
+				"cpuEnabled":        component.CPUEnabled,
+				"totalCPU":          component.TotalCPU,
+				"memory":            component.Memory,
+				"imageVersion":      component.ImageVersion,
+				"kernel":            component.Kernel,
+				"model":             component.Model,
+				"fanUsed":           component.FanUsed,
+				"fanTotal":          component.FanTotal,
+				"psuUsed":           component.PsuUsed,
+				"psuTotal":          component.PsuTotal,
+				"msStatus":          component.MsStatus,
+				"rsStatus":          component.RsStatus,
+				"cellServiceStatus": component.CellServiceStatus,
+				"swVersion":         component.SwVersion,
+				"vms":               component.VMs,
+				"storageCells":      component.StorageCells,
+			}})
+	if err != nil {
+		return err
+	}
+
+	return md.updateExadataTime(rackID)
+}
+
 func (md *MongoDatabase) updateExadataTime(rackID string) error {
 	now := md.TimeNow()
 
 	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(exdataCollection).
 		UpdateOne(context.TODO(), bson.M{"rackID": rackID},
-			bson.M{"$set": bson.M{"updateAt": now.String()}})
+			bson.M{"$set": bson.M{"updateAt": now}})
 	if err != nil {
 		return err
 	}
