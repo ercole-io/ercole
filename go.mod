@@ -38,8 +38,6 @@ require (
 
 require github.com/gocarina/gocsv v0.0.0-20230325173030-9a18a846a479
 
-require github.com/imdario/mergo v0.3.15
-
 require (
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/chzyer/readline v1.5.1 // indirect

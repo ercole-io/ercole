@@ -16,32 +16,98 @@
 package service
 
 import (
-	"reflect"
+	"errors"
 
 	"github.com/ercole-io/ercole/v2/model"
-	"github.com/imdario/mergo"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func (hds *HostDataService) SaveExadata(exadata *model.OracleExadataInstance) error {
 	existingExadata, err := hds.Database.FindExadataByRackID(exadata.RackID)
-	if err != nil {
-		if err != mongo.ErrNoDocuments {
-			return err
-		}
+	if err != nil && err != mongo.ErrNoDocuments {
+		return err
 	}
 
-	if existingExadata != nil && !reflect.DeepEqual(existingExadata, exadata) {
-		if err := mergo.Merge(existingExadata, exadata); err != nil {
-			return err
-		}
-
-		exadata.UpdatedAt = hds.TimeNow()
-
-		return hds.Database.UpdateExadata(*exadata)
+	if existingExadata != nil {
+		return hds.updateExistingExadata(existingExadata, exadata)
 	}
 
 	exadata.CreatedAt, exadata.UpdatedAt = hds.TimeNow(), hds.TimeNow()
 
 	return hds.Database.AddExadata(*exadata)
+}
+
+func (hds *HostDataService) updateExistingExadata(existingExadata, newExadata *model.OracleExadataInstance) error {
+	if existingExadata.Hostname != newExadata.Hostname {
+		if err := hds.Database.UpdateExadataHostname(existingExadata.RackID, newExadata.Hostname); err != nil {
+			return err
+		}
+	}
+
+	existingComponents, err := hds.getExistingExadataComponent(existingExadata, newExadata)
+	if err != nil {
+		return err
+	}
+
+	for _, ec := range existingComponents {
+		if err := hds.Database.SetExadataComponent(ec.RackID, ec); err != nil {
+			return err
+		}
+	}
+
+	newComponents, err := hds.getNewExadataComponent(existingExadata, newExadata)
+	if err != nil {
+		return err
+	}
+
+	for _, component := range newComponents {
+		if err := hds.Database.PushComponentToExadataInstance(newExadata.RackID, component); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (hds *HostDataService) getNewExadataComponent(old, new *model.OracleExadataInstance) ([]model.OracleExadataComponent, error) {
+	if old == nil || new == nil || old.RackID != new.RackID {
+		return nil, errors.New("invalid input for comparing exadata instances")
+	}
+
+	newInstances := make([]model.OracleExadataComponent, 0)
+
+	hostnames := make(map[string]bool)
+
+	for _, oc := range old.Components {
+		hostnames[oc.Hostname] = true
+	}
+
+	for _, nc := range new.Components {
+		if _, ok := hostnames[nc.Hostname]; !ok {
+			newInstances = append(newInstances, nc)
+		}
+	}
+
+	return newInstances, nil
+}
+func (hds *HostDataService) getExistingExadataComponent(old, new *model.OracleExadataInstance) ([]model.OracleExadataComponent, error) {
+	if old == nil || new == nil || old.RackID != new.RackID {
+		return nil, errors.New("invalid input for comparing exadata instances")
+	}
+
+	existingComponents := make([]model.OracleExadataComponent, 0)
+
+	hostnames := make(map[string]bool)
+
+	for _, oc := range old.Components {
+		hostnames[oc.Hostname] = true
+	}
+
+	for _, nc := range new.Components {
+		if _, ok := hostnames[nc.Hostname]; ok {
+			existingComponents = append(existingComponents, nc)
+		}
+	}
+
+	return existingComponents, nil
 }
