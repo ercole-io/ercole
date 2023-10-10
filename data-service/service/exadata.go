@@ -60,7 +60,6 @@ func (hds *HostDataService) updateExistingExadata(existingExadata, newExadata *m
 		return err
 	}
 
-	// fix
 	for _, component := range newComponents {
 		if err := hds.Database.PushComponentToExadataInstance(newExadata.RackID, component); err != nil {
 			return err
