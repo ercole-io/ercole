@@ -20,6 +20,7 @@ import (
 
 	"github.com/ercole-io/ercole/v2/model"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 const exdataCollection = "exadatas"
@@ -74,30 +75,43 @@ func (md *MongoDatabase) PushComponentToExadataInstance(rackID string, component
 	return md.updateExadataTime(rackID)
 }
 
-
 func (md *MongoDatabase) SetExadataComponent(rackID string, component model.OracleExadataComponent) error {
+	filter := bson.M{"rackID": rackID}
+
+	update := bson.M{
+		"$set": bson.M{
+			"components.$[elem].hostname":          component.Hostname,
+			"components.$[elem].hostType":          component.HostType,
+			"components.$[elem].cpuEnabled":        component.CPUEnabled,
+			"components.$[elem].totalCPU":          component.TotalCPU,
+			"components.$[elem].memory":            component.Memory,
+			"components.$[elem].imageVersion":      component.ImageVersion,
+			"components.$[elem].kernel":            component.Kernel,
+			"components.$[elem].model":             component.Model,
+			"components.$[elem].fanUsed":           component.FanUsed,
+			"components.$[elem].fanTotal":          component.FanTotal,
+			"components.$[elem].psuUsed":           component.PsuUsed,
+			"components.$[elem].psuTotal":          component.PsuTotal,
+			"components.$[elem].msStatus":          component.MsStatus,
+			"components.$[elem].rsStatus":          component.RsStatus,
+			"components.$[elem].cellServiceStatus": component.CellServiceStatus,
+			"components.$[elem].swVersion":         component.SwVersion,
+			"components.$[elem].vms":               component.VMs,
+			"components.$[elem].storageCells":      component.StorageCells,
+		},
+	}
+
+	arrayFilters := []interface{}{
+		bson.M{"elem.hostname": component.Hostname},
+	}
+
 	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(exdataCollection).
-		UpdateOne(context.TODO(), bson.M{"rackID": rackID},
-			bson.M{"$set": bson.M{
-				"hostname":          component.Hostname,
-				"hostType":          component.HostType,
-				"cpuEnabled":        component.CPUEnabled,
-				"totalCPU":          component.TotalCPU,
-				"memory":            component.Memory,
-				"imageVersion":      component.ImageVersion,
-				"kernel":            component.Kernel,
-				"model":             component.Model,
-				"fanUsed":           component.FanUsed,
-				"fanTotal":          component.FanTotal,
-				"psuUsed":           component.PsuUsed,
-				"psuTotal":          component.PsuTotal,
-				"msStatus":          component.MsStatus,
-				"rsStatus":          component.RsStatus,
-				"cellServiceStatus": component.CellServiceStatus,
-				"swVersion":         component.SwVersion,
-				"vms":               component.VMs,
-				"storageCells":      component.StorageCells,
-			}})
+		UpdateOne(
+			context.TODO(),
+			filter,
+			update,
+			options.Update().SetArrayFilters(options.ArrayFilters{Filters: arrayFilters}),
+		)
 	if err != nil {
 		return err
 	}

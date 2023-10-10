@@ -32,7 +32,9 @@ func (hds *HostDataService) SaveExadata(exadata *model.OracleExadataInstance) er
 		return hds.updateExistingExadata(existingExadata, exadata)
 	}
 
-	return hds.addNewExadata(exadata)
+	exadata.CreatedAt, exadata.UpdatedAt = hds.TimeNow(), hds.TimeNow()
+
+	return hds.Database.AddExadata(*exadata)
 }
 
 func (hds *HostDataService) updateExistingExadata(existingExadata, newExadata *model.OracleExadataInstance) error {
@@ -58,6 +60,7 @@ func (hds *HostDataService) updateExistingExadata(existingExadata, newExadata *m
 		return err
 	}
 
+	// fix
 	for _, component := range newComponents {
 		if err := hds.Database.PushComponentToExadataInstance(newExadata.RackID, component); err != nil {
 			return err
@@ -67,22 +70,9 @@ func (hds *HostDataService) updateExistingExadata(existingExadata, newExadata *m
 	return nil
 }
 
-func (hds *HostDataService) addNewExadata(exadata *model.OracleExadataInstance) error {
-	exadata.CreatedAt, exadata.UpdatedAt = hds.TimeNow(), hds.TimeNow()
-	return hds.Database.AddExadata(*exadata)
-}
-
 func (hds *HostDataService) getNewExadataComponent(old, new *model.OracleExadataInstance) ([]model.OracleExadataComponent, error) {
-	if old == nil {
-		return nil, errors.New("old exadata instance cannot be nil during comparision")
-	}
-
-	if new == nil {
-		return nil, errors.New("new exadata instance cannot be nil during comparision")
-	}
-
-	if old.RackID != new.RackID {
-		return nil, errors.New("cannot compare different exadata instances")
+	if old == nil || new == nil || old.RackID != new.RackID {
+		return nil, errors.New("invalid input for comparing exadata instances")
 	}
 
 	newInstances := make([]model.OracleExadataComponent, 0)
@@ -102,16 +92,8 @@ func (hds *HostDataService) getNewExadataComponent(old, new *model.OracleExadata
 	return newInstances, nil
 }
 func (hds *HostDataService) getExistingExadataComponent(old, new *model.OracleExadataInstance) ([]model.OracleExadataComponent, error) {
-	if old == nil {
-		return nil, errors.New("old exadata instance cannot be nil during comparision")
-	}
-
-	if new == nil {
-		return nil, errors.New("new exadata instance cannot be nil during comparision")
-	}
-
-	if old.RackID != new.RackID {
-		return nil, errors.New("cannot compare different exadata instances")
+	if old == nil || new == nil || old.RackID != new.RackID {
+		return nil, errors.New("invalid input for comparing exadata instances")
 	}
 
 	existingComponents := make([]model.OracleExadataComponent, 0)
