@@ -17,7 +17,6 @@ package dto
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/ercole-io/ercole/v2/model"
 )
@@ -33,7 +32,7 @@ type OracleExadataStorageCell struct {
 	ErrorCount         int                           `json:"errorCount"`
 	GridDisks          []model.OracleExadataGridDisk `json:"gridDisks,omitempty"`
 	Databases          []model.OracleExadataDatabase `json:"databases"`
-	FreeSizePercentage string                        `json:"freeSizePercentage"`
+	FreeSizePercentage int                           `json:"freeSizePercentage"`
 }
 
 func ToOracleExadataStorageCell(m *model.OracleExadataStorageCell) (res *OracleExadataStorageCell, err error) {
@@ -85,16 +84,18 @@ func ToOracleExadataStorageCells(m []model.OracleExadataStorageCell) ([]OracleEx
 	return res, nil
 }
 
-func (s *OracleExadataStorageCell) GetFreeSpacePercentage() (string, error) {
+func (s *OracleExadataStorageCell) GetFreeSpacePercentage() (int, error) {
 	realSize, err := s.Size.ToTb()
 	if err != nil {
-		return "", err
+		return 0, err
 	}
 
 	realFreeSpace, err := s.FreeSpace.ToTb()
 	if err != nil {
-		return "", err
+		return 0, err
 	}
 
-	return fmt.Sprintf("%v%%", (realFreeSpace.Quantity*100)/realSize.Quantity), nil
+	res := (realFreeSpace.Quantity * 100) / realSize.Quantity
+
+	return int(res), nil
 }
