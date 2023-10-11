@@ -949,7 +949,7 @@ components:
         freeCPU:
           type: integer
         freeSizePercentage:
-          type: string
+          type: integer
       required:
         - hostType
     ExadataVM:
@@ -1005,7 +1005,7 @@ components:
         database:
           $ref: "#/components/schemas/ExadataDatabase"
         freeSizePercentage:
-          type: string
+          type: integer
       required:
         - type
     ExadataGridDisk:

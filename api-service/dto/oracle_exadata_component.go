@@ -17,7 +17,7 @@ package dto
 
 import (
 	"errors"
-	"fmt"
+	"math"
 
 	"github.com/ercole-io/ercole/v2/model"
 )
@@ -49,7 +49,7 @@ type OracleExadataComponent struct {
 	UsedCPU int `json:"usedCPU"`
 	FreeCPU int `json:"freeCPU"`
 
-	FreeSizePercentage string `json:"freeSizePercentage"`
+	FreeSizePercentage int `json:"freeSizePercentage"`
 }
 
 func ToOracleExadataComponent(componentModel *model.OracleExadataComponent) (*OracleExadataComponent, error) {
@@ -107,25 +107,27 @@ func ToOracleExadataComponent(componentModel *model.OracleExadataComponent) (*Or
 	return nil, errors.New("cannot convert model OracleExadataComponent dto")
 }
 
-func (c *OracleExadataComponent) GetFreeSpacePercentage() (string, error) {
+func (c *OracleExadataComponent) GetFreeSpacePercentage() (int, error) {
 	totsize := 0.0
 	totFreeSpace := 0.0
 
 	for _, storageCell := range c.StorageCells {
 		sizeTb, err := storageCell.Size.ToTb()
 		if err != nil {
-			return "", err
+			return 0, err
 		}
 
 		totsize += sizeTb.Quantity
 
 		freeSpaceTb, err := storageCell.FreeSpace.ToTb()
 		if err != nil {
-			return "", err
+			return 0, err
 		}
 
 		totFreeSpace += freeSpaceTb.Quantity
 	}
 
-	return fmt.Sprintf("%v%%", (totFreeSpace*100)/totsize), nil
+	res := math.Round((totFreeSpace * 100) / totsize)
+
+	return int(res), nil
 }
