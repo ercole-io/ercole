@@ -4457,6 +4457,98 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ExadataInstance"
+
+  "/exadata/{rackID}/components/{hostID}/vms/{name}":
+    post:
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: rackID
+          required: true
+        - schema:
+            type: string
+          in: path
+          name: hostID
+          required: true
+        - schema:
+            type: string
+          in: path
+          name: name
+          required: true
+      tags:
+        - api-service
+      operationId: UpdateExadataVmClusterName
+      summary: Update cluster name on vm
+      responses:
+        "204":
+          description: No content
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                  clusterName:
+                    type: string
+
+  "/exadata/{rackID}/components/{hostID}":
+    post:
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: rackID
+          required: true
+        - schema:
+            type: string
+          in: path
+          name: hostID
+          required: true
+      tags:
+        - api-service
+      operationId: UpdateExadataStorageClusterName
+      summary: Update cluster name on storage
+      responses:
+        "204":
+          description: No content
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                  clusterName:
+                    type: string
+
+  "/exadata/{rackID}/rdma":
+    post:
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: rackID
+          required: true
+      tags:
+        - api-service
+      operationId: UpdateExadataRdma
+      summary: Update rdma on exadata
+      responses:
+        "204":
+          description: No content
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                  switchName:
+                    type: string
+                  model:
+                    type: string
+                  version: 
+                    type: string
+
   /hosts/technologies/oracle/exadata/total-memory-size:
     get:
       tags:
