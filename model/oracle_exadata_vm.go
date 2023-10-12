@@ -27,4 +27,5 @@ type OracleExadataVM struct {
 	CPUMaxUsable int    `json:"cpuMaxUsable" bson:"cpuMaxUsable"`
 	RamOnline    int    `json:"ramOnline" bson:"ramOnline"`
 	RamMaxUsable int    `json:"ramMaxUsable" bson:"ramMaxUsable"`
+	ClusterName  string `json:"clusterName" bson:"clusterName"`
 }

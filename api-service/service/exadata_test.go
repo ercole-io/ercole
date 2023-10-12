@@ -57,3 +57,34 @@ func TestListExadataInstances_Success(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, expected, res)
 }
+
+func TestUpdateExadataVmClusterName_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+		Config:   config.Configuration{},
+	}
+
+	original := model.OracleExadataInstance{
+		RackID: "rackID_test",
+		Components: []model.OracleExadataComponent{
+			{
+				HostID: "hostID_test",
+				VMs: []model.OracleExadataVM{
+					{
+						Name:        "vm_test",
+						ClusterName: "",
+					},
+				},
+			},
+		},
+	}
+
+	db.EXPECT().GetExadataInstance("rackID_test").Return(&original, nil).AnyTimes()
+	db.EXPECT().UpdateExadataInstance(original).Return(nil).AnyTimes()
+
+	err := as.UpdateExadataVmClusterName("rackID_test", "hostID_test", "vm_test", "updated_cluster_name")
+	require.NoError(t, err)
+}

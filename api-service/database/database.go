@@ -249,6 +249,8 @@ type MongoDatabaseInterface interface {
 
 	// EXADATA
 	ListExadataInstances(filter dto.GlobalFilter) ([]model.OracleExadataInstance, error)
+	GetExadataInstance(rackID string) (*model.OracleExadataInstance, error)
+	UpdateExadataInstance(instance model.OracleExadataInstance) error
 }
 
 // MongoDatabase is a implementation

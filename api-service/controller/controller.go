@@ -218,8 +218,8 @@ type APIControllerInterface interface {
 	RemoveNode(w http.ResponseWriter, r *http.Request)
 
 	// EXADATA
-
 	ListExadata(w http.ResponseWriter, r *http.Request)
+	UpdateExadataVmClusterName(w http.ResponseWriter, r *http.Request)
 }
 
 // APIController is the struct used to handle the requests from agents and contains the concrete implementation of APIControllerInterface

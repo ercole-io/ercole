@@ -304,8 +304,8 @@ type APIServiceInterface interface {
 	RemoveNode(name string) error
 
 	// EXADATA
-
 	ListExadataInstances(filter dto.GlobalFilter) ([]model.OracleExadataInstance, error)
+	UpdateExadataVmClusterName(rackID, hostID, vmname, clustername string) error
 }
 
 // APIService is the concrete implementation of APIServiceInterface.
