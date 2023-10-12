@@ -20,6 +20,7 @@ import (
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/gorilla/mux"
 )
 
 func (ctrl *APIController) ListExadata(w http.ResponseWriter, r *http.Request) {
@@ -42,4 +43,28 @@ func (ctrl *APIController) ListExadata(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.WriteJSONResponse(w, http.StatusOK, dtos)
+}
+
+func (ctrl *APIController) UpdateExadataVmClusterName(w http.ResponseWriter, r *http.Request) {
+	rackID := mux.Vars(r)["rackID"]
+	hostID := mux.Vars(r)["hostID"]
+	vmname := mux.Vars(r)["name"]
+
+	type vm struct {
+		ClusterName string
+	}
+
+	c := vm{}
+
+	if err := utils.Decode(r.Body, &c); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
+		return
+	}
+
+	if err := ctrl.Service.UpdateExadataVmClusterName(rackID, hostID, vmname, c.ClusterName); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }

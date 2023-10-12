@@ -979,6 +979,8 @@ components:
           type: integer
         ramMaxUsable:
           type: integer
+        clusterName:
+          type: string
       required:
         - "type"
     ExadataStorageCell:

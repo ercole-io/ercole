@@ -23,3 +23,22 @@ import (
 func (as *APIService) ListExadataInstances(filter dto.GlobalFilter) ([]model.OracleExadataInstance, error) {
 	return as.Database.ListExadataInstances(filter)
 }
+
+func (as *APIService) UpdateExadataVmClusterName(rackID, hostID, vmname, clustername string) error {
+	instance, err := as.Database.GetExadataInstance(rackID)
+	if err != nil {
+		return err
+	}
+
+	for i := range instance.Components {
+		if instance.Components[i].HostID == hostID {
+			for j := range instance.Components[i].VMs {
+				if instance.Components[i].VMs[j].Name == vmname {
+					instance.Components[i].VMs[j].ClusterName = clustername
+				}
+			}
+		}
+	}
+
+	return as.Database.UpdateExadataInstance(*instance)
+}
