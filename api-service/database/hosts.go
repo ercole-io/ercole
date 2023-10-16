@@ -1026,7 +1026,7 @@ func (md *MongoDatabase) SearchHostMysqlLMS(filter dto.SearchHostsAsLMS) ([]dto.
 					{Key: "productVersion", Value: "$features.mysql.instances.version"},
 					{Key: "productLicenseAllocated", Value: "$features.mysql.instances.edition"},
 					{Key: "licenseMetricAllocated", Value: "HOST"},
-					{Key: "numberOfLicensesUsed",
+					{Key: "numberOfLicenseUsed",
 						Value: bson.D{
 							{Key: "$cond",
 								Value: bson.D{
