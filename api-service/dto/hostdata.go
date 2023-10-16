@@ -51,6 +51,6 @@ type HostData struct {
 	OtherInfo               map[string]interface{}        `json:"-" bson:"-"`
 	Alerts                  []model.Alert                 `json:"alerts" bson:"alerts"`
 	History                 []model.History               `json:"history" bson:"history"`
-	CpuConsumptions         []model.CpuConsumption        `json:"cpuConsumptions" bson:"cpuConsumptions"`
-	DiskConsumptions        []model.DiskConsumption       `json:"diskConsumptions" bson:"diskConsumptions"`
+	CpuConsumptions         []model.CpuConsumption        `json:"cpuConsumptions" bson:"cpuconsumptions"`
+	DiskConsumptions        []model.DiskConsumption       `json:"diskConsumptions" bson:"diskconsumptions"`
 }
