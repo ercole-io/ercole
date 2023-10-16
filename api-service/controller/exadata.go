@@ -68,3 +68,26 @@ func (ctrl *APIController) UpdateExadataVmClusterName(w http.ResponseWriter, r *
 
 	w.WriteHeader(http.StatusNoContent)
 }
+
+func (ctrl *APIController) UpdateExadataComponentClusterName(w http.ResponseWriter, r *http.Request) {
+	rackID := mux.Vars(r)["rackID"]
+	hostID := mux.Vars(r)["hostID"]
+
+	type component struct {
+		ClusterName string
+	}
+
+	c := component{}
+
+	if err := utils.Decode(r.Body, &c); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
+		return
+	}
+
+	if err := ctrl.Service.UpdateExadataComponentClusterName(rackID, hostID, c.ClusterName); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
