@@ -194,6 +194,7 @@ func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 	router.HandleFunc("/exadata", ctrl.ListExadata).Methods("GET")
 	router.HandleFunc("/exadata/{rackID}/components/{hostID}/vms/{name}", ctrl.UpdateExadataVmClusterName).Methods("POST")
 	router.HandleFunc("/exadata/{rackID}/components/{hostID}", ctrl.UpdateExadataComponentClusterName).Methods("POST")
+	router.HandleFunc("/exadata/{rackID}/rdma", ctrl.UpdateExadataRdma).Methods("POST")
 
 	ctrl.setupSettingsRoutes(router.PathPrefix("/settings").Subrouter())
 	ctrl.setupFrontendAPIRoutes(router.PathPrefix("/frontend").Subrouter())

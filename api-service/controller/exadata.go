@@ -19,6 +19,7 @@ import (
 	"net/http"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/gorilla/mux"
 )
@@ -85,6 +86,24 @@ func (ctrl *APIController) UpdateExadataComponentClusterName(w http.ResponseWrit
 	}
 
 	if err := ctrl.Service.UpdateExadataComponentClusterName(rackID, hostID, c.ClusterName); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (ctrl *APIController) UpdateExadataRdma(w http.ResponseWriter, r *http.Request) {
+	rackID := mux.Vars(r)["rackID"]
+
+	rdma := model.OracleExadataRdma{}
+
+	if err := utils.Decode(r.Body, &rdma); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
+		return
+	}
+
+	if err := ctrl.Service.UpdateExadataRdma(rackID, rdma); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}

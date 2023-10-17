@@ -4548,7 +4548,7 @@ paths:
                     type: string
                   model:
                     type: string
-                  version: 
+                  swVersion: 
                     type: string
 
   /hosts/technologies/oracle/exadata/total-memory-size:
