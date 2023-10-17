@@ -34,4 +34,5 @@ type OracleExadataInstance struct {
 	UpdatedAt   time.Time                `json:"updateAt" bson:"updateAt"`
 	RackID      string                   `json:"rackID" bson:"rackID"`
 	Components  []OracleExadataComponent `json:"components" bson:"components"`
+	RDMA        *OracleExadataRdma       `json:"rdma,omitempty" bson:"rdma"`
 }

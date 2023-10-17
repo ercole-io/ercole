@@ -57,3 +57,14 @@ func (as *APIService) UpdateExadataComponentClusterName(RackID, hostID, clustern
 
 	return as.Database.UpdateExadataInstance(*instance)
 }
+
+func (as *APIService) UpdateExadataRdma(rackID string, rdma model.OracleExadataRdma) error {
+	instance, err := as.Database.GetExadataInstance(rackID)
+	if err != nil {
+		return err
+	}
+
+	instance.RDMA = &rdma
+
+	return as.Database.UpdateExadataInstance(*instance)
+}
