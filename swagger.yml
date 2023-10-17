@@ -950,6 +950,10 @@ components:
           type: integer
         freeSizePercentage:
           type: integer
+        totalSize:
+          $ref: "#/components/schemas/ExadataMeasurement"
+        totalFreeSpace:
+          $ref: "#/components/schemas/ExadataMeasurement"
       required:
         - hostType
     ExadataVM:
