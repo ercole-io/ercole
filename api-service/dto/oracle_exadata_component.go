@@ -17,6 +17,7 @@ package dto
 
 import (
 	"errors"
+	"fmt"
 	"math"
 
 	"github.com/ercole-io/ercole/v2/model"
@@ -49,7 +50,9 @@ type OracleExadataComponent struct {
 	UsedCPU int `json:"usedCPU"`
 	FreeCPU int `json:"freeCPU"`
 
-	FreeSizePercentage int `json:"freeSizePercentage"`
+	FreeSizePercentage int                       `json:"freeSizePercentage"`
+	TotalSize          *OracleExadataMeasurement `json:"totalSize"`
+	TotalFreeSpace     *OracleExadataMeasurement `json:"totalFreeSpace"`
 }
 
 func ToOracleExadataComponent(componentModel *model.OracleExadataComponent) (*OracleExadataComponent, error) {
@@ -101,6 +104,20 @@ func ToOracleExadataComponent(componentModel *model.OracleExadataComponent) (*Or
 
 		res.FreeSizePercentage = perc
 
+		totsize, err := res.GetTotalSize()
+		if err != nil {
+			return nil, err
+		}
+
+		res.TotalSize = totsize
+
+		totfreespace, err := res.GetTotalFreeSpace()
+		if err != nil {
+			return nil, err
+		}
+
+		res.TotalFreeSpace = totfreespace
+
 		return &res, nil
 	}
 
@@ -130,4 +147,38 @@ func (c *OracleExadataComponent) GetFreeSpacePercentage() (int, error) {
 	res := math.Round((totFreeSpace * 100) / totsize)
 
 	return int(res), nil
+}
+
+func (c *OracleExadataComponent) GetTotalSize() (*OracleExadataMeasurement, error) {
+	totsize := OracleExadataMeasurement{Symbol: "TB"}
+
+	for _, storageCell := range c.StorageCells {
+		sizeTb, err := storageCell.Size.ToTb()
+		if err != nil {
+			return nil, err
+		}
+
+		totsize.Quantity += sizeTb.Quantity
+	}
+
+	totsize.UnparsedValue = fmt.Sprintf("%v%s", totsize.Quantity, totsize.Symbol)
+
+	return &totsize, nil
+}
+
+func (c *OracleExadataComponent) GetTotalFreeSpace() (*OracleExadataMeasurement, error) {
+	totfreespace := OracleExadataMeasurement{Symbol: "TB"}
+
+	for _, storageCell := range c.StorageCells {
+		freespaceTb, err := storageCell.FreeSpace.ToTb()
+		if err != nil {
+			return nil, err
+		}
+
+		totfreespace.Quantity += freespaceTb.Quantity
+	}
+
+	totfreespace.UnparsedValue = fmt.Sprintf("%v%s", totfreespace.Quantity, totfreespace.Symbol)
+
+	return &totfreespace, nil
 }
