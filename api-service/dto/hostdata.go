@@ -53,4 +53,5 @@ type HostData struct {
 	History                 []model.History               `json:"history" bson:"history"`
 	CpuConsumptions         []model.CpuConsumption        `json:"cpuConsumptions" bson:"cpuconsumptions"`
 	DiskConsumptions        []model.DiskConsumption       `json:"diskConsumptions" bson:"diskconsumptions"`
+	PgsqlMigrability        []model.PgsqlMigrability      `json:"pgsqlMigrability" bson:"pgsqlMigrability"`
 }
