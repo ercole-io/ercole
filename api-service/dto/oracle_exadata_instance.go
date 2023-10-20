@@ -36,6 +36,7 @@ type OracleExadataInstance struct {
 	TotalCPU    int                      `json:"totalCPU"`
 	UsedCPU     int                      `json:"usedCPU"`
 	FreeCPU     int                      `json:"freeCPU"`
+	RDMA        *model.OracleExadataRdma `json:"rdma"`
 }
 
 func ToOracleExadataInstance(inst *model.OracleExadataInstance) (*OracleExadataInstance, error) {
@@ -50,6 +51,7 @@ func ToOracleExadataInstance(inst *model.OracleExadataInstance) (*OracleExadataI
 		Environment: inst.Environment,
 		CreatedAt:   inst.CreatedAt,
 		UpdateAt:    inst.UpdatedAt,
+		RDMA:        inst.RDMA,
 	}
 
 	for _, cmp := range inst.Components {
