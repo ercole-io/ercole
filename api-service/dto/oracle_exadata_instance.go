@@ -30,13 +30,19 @@ type OracleExadataInstance struct {
 	UpdateAt    time.Time                `json:"updateAt"`
 	RackID      string                   `json:"rackID"`
 	Components  []OracleExadataComponent `json:"components"`
-	TotalMemory int                      `json:"totalMemory"`
-	UsedMemory  int                      `json:"usedMemory"`
-	FreeMemory  int                      `json:"freeMemory"`
-	TotalCPU    int                      `json:"totalCPU"`
-	UsedCPU     int                      `json:"usedCPU"`
-	FreeCPU     int                      `json:"freeCPU"`
 	RDMA        *model.OracleExadataRdma `json:"rdma"`
+
+	TotalMemory int `json:"totalMemory"`
+	UsedMemory  int `json:"usedMemory"`
+	FreeMemory  int `json:"freeMemory"`
+
+	TotalCPU int `json:"totalCPU"`
+	UsedCPU  int `json:"usedCPU"`
+	FreeCPU  int `json:"freeCPU"`
+
+	TotalSize *OracleExadataMeasurement `json:"totalSize"`
+	UsedSize  *OracleExadataMeasurement `json:"usedSize"`
+	FreeSpace *OracleExadataMeasurement `json:"freeSpace"`
 }
 
 func ToOracleExadataInstance(inst *model.OracleExadataInstance) (*OracleExadataInstance, error) {
@@ -53,6 +59,10 @@ func ToOracleExadataInstance(inst *model.OracleExadataInstance) (*OracleExadataI
 		UpdateAt:    inst.UpdatedAt,
 		RDMA:        inst.RDMA,
 	}
+
+	res.TotalSize = &OracleExadataMeasurement{Symbol: "TB"}
+	res.UsedSize = &OracleExadataMeasurement{Symbol: "TB"}
+	res.FreeSpace = &OracleExadataMeasurement{Symbol: "TB"}
 
 	for _, cmp := range inst.Components {
 		res.TotalMemory += cmp.Memory
@@ -74,12 +84,26 @@ func ToOracleExadataInstance(inst *model.OracleExadataInstance) (*OracleExadataI
 			return nil, err
 		}
 
+		res.TotalSize.Quantity += d.TotalSize.Quantity
+		res.TotalSize.SetUnparsedValue()
+
+		res.FreeSpace.Quantity += d.TotalFreeSpace.Quantity
+		res.FreeSpace.SetUnparsedValue()
+
 		res.Components = append(res.Components, *d)
 	}
 
 	// Calculate free memory and CPU
 	res.FreeMemory = res.TotalMemory - res.UsedMemory
 	res.FreeCPU = res.TotalCPU - res.UsedCPU
+
+	// Calculate used size
+	res.UsedSize = &OracleExadataMeasurement{
+		Symbol:   "TB",
+		Quantity: res.TotalSize.Quantity - res.FreeSpace.Quantity,
+	}
+
+	res.UsedSize.SetUnparsedValue()
 
 	return &res, nil
 }
