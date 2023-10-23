@@ -306,7 +306,7 @@ type APIServiceInterface interface {
 	// EXADATA
 	ListExadataInstances(filter dto.GlobalFilter) ([]model.OracleExadataInstance, error)
 	UpdateExadataVmClusterName(rackID, hostID, vmname, clustername string) error
-	UpdateExadataComponentClusterName(RackID, hostID, clustername string) error
+	UpdateExadataComponentClusterName(RackID, hostID string, clusternames []string) error
 	UpdateExadataRdma(rackID string, rdma model.OracleExadataRdma) error
 }
 

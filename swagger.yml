@@ -989,8 +989,10 @@ components:
           type: integer
         ramMaxUsable:
           type: integer
-        clusterName:
-          type: string
+        clusterNames:
+          type: array
+          items:
+            type: string
       required:
         - "type"
     ExadataStorageCell:
@@ -4501,8 +4503,10 @@ paths:
             schema:
               type: object
               properties:
-                  clusterName:
-                    type: string
+                  clusterNames:
+                    type: array
+                    items:
+                      type: string
 
   "/exadata/{rackID}/components/{hostID}":
     post:
@@ -4530,8 +4534,10 @@ paths:
             schema:
               type: object
               properties:
-                  clusterName:
-                    type: string
+                  clusterNames:
+                    type: array
+                    items:
+                      type: string
 
   "/exadata/{rackID}/rdma":
     post:

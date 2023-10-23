@@ -44,7 +44,7 @@ type OracleExadataComponent struct {
 	SwVersion         string                     `json:"swVersion"`
 	VMs               []model.OracleExadataVM    `json:"vms,omitempty"`
 	StorageCells      []OracleExadataStorageCell `json:"storageCells,omitempty"`
-	ClusterName       string                     `json:"clusterName"`
+	ClusterNames      []string                   `json:"clusterNames"`
 
 	UsedRAM int `json:"usedRAM"`
 	FreeRAM int `json:"freeRAM"`
@@ -84,7 +84,7 @@ func ToOracleExadataComponent(componentModel *model.OracleExadataComponent) (*Or
 			SwVersion:         componentModel.SwVersion,
 			VMs:               componentModel.VMs,
 			StorageCells:      storagedtos,
-			ClusterName:       componentModel.ClusterName,
+			ClusterNames:      componentModel.ClusterNames,
 		}
 
 		for _, vm := range componentModel.VMs {

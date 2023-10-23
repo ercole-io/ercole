@@ -75,7 +75,7 @@ func (ctrl *APIController) UpdateExadataComponentClusterName(w http.ResponseWrit
 	hostID := mux.Vars(r)["hostID"]
 
 	type component struct {
-		ClusterName string
+		ClusterNames []string
 	}
 
 	c := component{}
@@ -85,7 +85,7 @@ func (ctrl *APIController) UpdateExadataComponentClusterName(w http.ResponseWrit
 		return
 	}
 
-	if err := ctrl.Service.UpdateExadataComponentClusterName(rackID, hostID, c.ClusterName); err != nil {
+	if err := ctrl.Service.UpdateExadataComponentClusterName(rackID, hostID, c.ClusterNames); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
