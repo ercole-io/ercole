@@ -17,6 +17,7 @@ package dto
 
 import (
 	"errors"
+	"fmt"
 	"regexp"
 
 	effectivebytes "github.com/ercole-io/ercole/v2/utils/effective_bytes"
@@ -72,4 +73,8 @@ func (m *OracleExadataMeasurement) ToTb() (*OracleExadataMeasurement, error) {
 		Symbol:        "TB",
 		Quantity:      q,
 	}, nil
+}
+
+func (m *OracleExadataMeasurement) SetUnparsedValue() {
+	m.UnparsedValue = fmt.Sprintf("%v%s", m.Quantity, m.Symbol)
 }

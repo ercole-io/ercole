@@ -891,6 +891,12 @@ components:
           type: integer
         freeCPU:
           type: integer
+        totalSize:
+          $ref: "#/components/schemas/ExadataMeasurement"
+        usedSize:
+          $ref: "#/components/schemas/ExadataMeasurement"
+        freeSpace:
+          $ref: "#/components/schemas/ExadataMeasurement"
       required:
         - racID
     ExadataComponent:
