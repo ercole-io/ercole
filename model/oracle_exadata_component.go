@@ -37,5 +37,5 @@ type OracleExadataComponent struct {
 	SwVersion         string                     `json:"swVersion" bson:"swVersion"`
 	VMs               []OracleExadataVM          `json:"vms,omitempty" bson:"vms"`
 	StorageCells      []OracleExadataStorageCell `json:"storageCells,omitempty" bson:"storageCells"`
-	ClusterName       string                     `json:"clusterName" bson:"clusterName"`
+	ClusterNames      []string                   `json:"clusterNames" bson:"clusterNames"`
 }

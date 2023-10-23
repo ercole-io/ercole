@@ -43,7 +43,7 @@ func (as *APIService) UpdateExadataVmClusterName(rackID, hostID, vmname, cluster
 	return as.Database.UpdateExadataInstance(*instance)
 }
 
-func (as *APIService) UpdateExadataComponentClusterName(RackID, hostID, clustername string) error {
+func (as *APIService) UpdateExadataComponentClusterName(RackID, hostID string, clusternames []string) error {
 	instance, err := as.Database.GetExadataInstance(RackID)
 	if err != nil {
 		return err
@@ -51,7 +51,7 @@ func (as *APIService) UpdateExadataComponentClusterName(RackID, hostID, clustern
 
 	for i := range instance.Components {
 		if instance.Components[i].HostID == hostID {
-			instance.Components[i].ClusterName = clustername
+			instance.Components[i].ClusterNames = clusternames
 		}
 	}
 
