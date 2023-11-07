@@ -30,31 +30,32 @@ type OracleDatabaseResponse struct {
 
 // OracleDatabase holds information about an Oracle database.
 type OracleDatabase struct {
-	Hostname     string                        `json:"hostname" bson:"hostname"`
-	Environment  string                        `json:"environment" bson:"environment"`
-	Location     string                        `json:"location" bson:"location"`
-	Name         string                        `json:"name" bson:"name"`
-	UniqueName   string                        `json:"uniqueName" bson:"uniqueName"`
-	Status       string                        `json:"status" bson:"status"`
-	IsCDB        bool                          `json:"isCDB" bson:"isCDB"`
-	Version      string                        `json:"version" bson:"version"`
-	Archivelog   bool                          `json:"archivelog" bson:"archivelog"`
-	Charset      string                        `json:"charset" bson:"charset"`
-	BlockSize    int                           `json:"blockSize" bson:"blockSize"`
-	CPUCount     int                           `json:"cpuCount" bson:"cpuCount"`
-	MemoryTarget float64                       `json:"memoryTarget" bson:"memoryTarget"`
-	Memory       float64                       `json:"memory" bson:"memory"`
-	SegmentsSize float64                       `json:"segmentsSize" bson:"segmentsSize"`
-	DatafileSize float64                       `json:"datafileSize" bson:"datafileSize"`
-	Work         *float64                      `json:"work" bson:"work"`
-	Dataguard    bool                          `json:"dataguard" bson:"dataguard"`
-	Rac          bool                          `json:"rac" bson:"rac"`
-	Ha           bool                          `json:"ha" bson:"ha"`
-	DbID         uint                          `json:"dbID" bson:"dbID"`
-	Role         string                        `json:"role" bson:"role"`
-	PDBs         []string                      `json:"pdbs" bson:"pdbs"`
-	Licenses     []model.OracleDatabaseLicense `json:"licenses" bson:"licenses"`
-	Services     []model.OracleDatabaseService `json:"services" bson:"services"`
+	Hostname         string                        `json:"hostname" bson:"hostname"`
+	Environment      string                        `json:"environment" bson:"environment"`
+	Location         string                        `json:"location" bson:"location"`
+	Name             string                        `json:"name" bson:"name"`
+	UniqueName       string                        `json:"uniqueName" bson:"uniqueName"`
+	Status           string                        `json:"status" bson:"status"`
+	IsCDB            bool                          `json:"isCDB" bson:"isCDB"`
+	Version          string                        `json:"version" bson:"version"`
+	Archivelog       bool                          `json:"archivelog" bson:"archivelog"`
+	Charset          string                        `json:"charset" bson:"charset"`
+	BlockSize        int                           `json:"blockSize" bson:"blockSize"`
+	CPUCount         int                           `json:"cpuCount" bson:"cpuCount"`
+	MemoryTarget     float64                       `json:"memoryTarget" bson:"memoryTarget"`
+	Memory           float64                       `json:"memory" bson:"memory"`
+	SegmentsSize     float64                       `json:"segmentsSize" bson:"segmentsSize"`
+	DatafileSize     float64                       `json:"datafileSize" bson:"datafileSize"`
+	Work             *float64                      `json:"work" bson:"work"`
+	Dataguard        bool                          `json:"dataguard" bson:"dataguard"`
+	Rac              bool                          `json:"rac" bson:"rac"`
+	Ha               bool                          `json:"ha" bson:"ha"`
+	DbID             uint                          `json:"dbID" bson:"dbID"`
+	Role             string                        `json:"role" bson:"role"`
+	PDBs             []string                      `json:"pdbs" bson:"pdbs"`
+	Licenses         []model.OracleDatabaseLicense `json:"licenses" bson:"licenses"`
+	Services         []model.OracleDatabaseService `json:"services" bson:"services"`
+	PgsqlMigrability []model.PgsqlMigrability      `json:"pgsqlMigrability,omitempty" bson:"pgsqlMigrability,omitempty"`
 }
 
 type SearchOracleDatabasesFilter struct {

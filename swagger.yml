@@ -744,6 +744,11 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/DatabaseChange"
+        pgsqlMigrability:
+          nullable: true
+          type: array
+          items:
+            $ref: "#/components/schemas/PgsqlMigrability"
       required:
         - Name
         - UniqueName
@@ -1255,6 +1260,21 @@ components:
         - hostDataSchemaVersion
         - info
         - extra
+    PgsqlMigrability:
+      type: object
+      properties:
+        metric:
+          type: string
+          nullable: true
+        count:
+          nullable: true
+          type: integer
+        schema:
+          nullable: true
+          type: string
+        objectType:
+          nullable: true
+          type: string
     SqlServerInstance:
       type: object
       properties:
