@@ -153,8 +153,22 @@ func (as *APIService) SearchOracleDatabasePatchAdvisorsAsXLSX(windowTime time.Ti
 
 // SearchOracleDatabases search databases
 func (as *APIService) SearchOracleDatabases(f dto.SearchOracleDatabasesFilter) (*dto.OracleDatabaseResponse, error) {
-	return as.Database.SearchOracleDatabases(strings.Split(f.Search, " "), f.SortBy, f.SortDesc,
+	response, err := as.Database.SearchOracleDatabases(strings.Split(f.Search, " "), f.SortBy, f.SortDesc,
 		f.PageNumber, f.PageSize, f.Location, f.Environment, f.OlderThan)
+	if err != nil {
+		return nil, err
+	}
+
+	for i := range response.Content {
+		color, err := as.GetOraclePsqlMigrabilitiesSemaphore(response.Content[i].Hostname, response.Content[i].Name)
+		if err != nil {
+			return nil, err
+		}
+
+		response.Content[i].PgsqlMigrabilitySemaphore = color
+	}
+
+	return response, nil
 }
 
 func (as *APIService) SearchOracleDatabasesAsXLSX(filter dto.SearchOracleDatabasesFilter) (*excelize.File, error) {

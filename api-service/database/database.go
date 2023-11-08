@@ -70,6 +70,8 @@ type MongoDatabaseInterface interface {
 	// SearchOracleDatabaseUsedLicenses search consumed licenses
 	SearchOracleDatabaseUsedLicenses(hostname string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) (*dto.OracleDatabaseUsedLicenseSearchResponse, error)
 
+	FindPsqlMigrabilities(hostname, dbname string) ([]model.PgsqlMigrability, error)
+
 	// ListAllLocations list locations
 	ListAllLocations(location string, environment string, olderThan time.Time) ([]string, error)
 	// ListEnvironments list environments

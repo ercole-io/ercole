@@ -34,6 +34,7 @@ import (
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
+const hostCollection = "hosts"
 const usersCollection = "users"
 
 func (md *MongoDatabase) SearchHosts(mode string, filters dto.SearchHostsFilters) ([]map[string]interface{}, error) {

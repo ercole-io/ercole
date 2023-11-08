@@ -72,6 +72,9 @@ type APIServiceInterface interface {
 	// SearchOracleDatabaseUsedLicenses return the list of consumed licenses
 	SearchOracleDatabaseUsedLicenses(hostname string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) (*dto.OracleDatabaseUsedLicenseSearchResponse, error)
 
+	GetOraclePsqlMigrabilities(hostname, dbname string) ([]model.PgsqlMigrability, error)
+	GetOraclePsqlMigrabilitiesSemaphore(hostname, dbname string) (string, error)
+
 	// ListAllLocations list locations
 	ListAllLocations(location string, environment string, olderThan time.Time) ([]string, error)
 	// ListLocations list locations
