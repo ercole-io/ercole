@@ -597,6 +597,8 @@ components:
     Database:
       type: object
       properties:
+        pgsqlMigrabilitySemaphore:
+          type: string
         InstanceNumber:
           type: string
           nullable: true
@@ -2315,6 +2317,20 @@ components:
           type: number
         pdb:
           type: string
+    PgsqlMigrability:
+      type: object
+      properties:
+        metric:
+          type: string
+          nullable: true
+        count:
+          type: integer
+        schema:
+          type: string
+          nullable: true
+        objectType:
+          type: string
+          nullable: true
   parameters:
     search:
       in: query
@@ -3356,6 +3372,57 @@ paths:
                 items:
                   $ref: "#/components/schemas/OracleDatabaseService"
       operationId: GetOracleServiceList
+  
+  "/hosts/{hostname}/technologies/oracle/databases/{dbname}/psql-migrabilities":
+    parameters:
+      - schema:
+          type: string
+        name: hostname
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: dbname
+        in: path
+        required: true
+    get:
+      operationId: GetOraclePsqlMigrabilities
+      tags:
+        - api-service
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: 
+                type: array
+                items:
+                  $ref: "#/components/schemas/PgsqlMigrability"
+
+  "/hosts/{hostname}/technologies/oracle/databases/{dbname}/psql-migrabilities/semaphore":
+    parameters:
+      - schema:
+          type: string
+        name: hostname
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: dbname
+        in: path
+        required: true
+    get:
+      operationId: GetOraclePsqlMigrabilitiesSemaphore
+      tags:
+        - api-service
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: 
+                type: string
+
   /hosts/technologies/oracle/databases/partitionings:
     get:
       summary: Get Oracle database partitioning list

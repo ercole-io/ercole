@@ -24,6 +24,7 @@ import (
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
@@ -354,6 +355,8 @@ func TestSearchOracleDatabases_Success(t *testing.T) {
 			TotalPages:    0,
 		},
 	}
+
+	db.EXPECT().FindPsqlMigrabilities(gomock.Any(), gomock.Any()).Return([]model.PgsqlMigrability{}, nil).AnyTimes()
 
 	db.EXPECT().SearchOracleDatabases(
 		[]string{"foo", "bar", "foobarx"}, "Memory",

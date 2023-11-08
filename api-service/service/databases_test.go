@@ -37,17 +37,18 @@ const (
 
 var oracleDbs = []dto.OracleDatabase{
 	{
-		Name:         "pippo",
-		Version:      "",
-		Hostname:     "",
-		Environment:  "",
-		Charset:      "",
-		Memory:       42.42,
-		DatafileSize: 75.42,
-		SegmentsSize: 99.42,
-		Archivelog:   true,
-		Ha:           false,
-		Dataguard:    true,
+		Name:                      "pippo",
+		Version:                   "",
+		Hostname:                  "",
+		Environment:               "",
+		Charset:                   "",
+		Memory:                    42.42,
+		DatafileSize:              75.42,
+		SegmentsSize:              99.42,
+		Archivelog:                true,
+		Ha:                        false,
+		Dataguard:                 true,
+		PgsqlMigrabilitySemaphore: "red",
 	},
 }
 
@@ -319,6 +320,8 @@ func TestSearchDatabases_Success(t *testing.T) {
 		Database: db,
 	}
 
+	db.EXPECT().FindPsqlMigrabilities(gomock.Any(), gomock.Any()).Return([]model.PgsqlMigrability{}, nil).AnyTimes()
+
 	db.EXPECT().SearchOracleDatabases([]string{""}, "", false, -1, -1, "Dubai", "TEST", thisMoment).
 		Return(&expectedRes, nil)
 
@@ -362,7 +365,6 @@ func TestSearchDatabases_Success(t *testing.T) {
 
 	db.EXPECT().SearchSqlServerInstances([]string{""}, "", false, -1, -1, "Dubai", "TEST", thisMoment).
 		Return(&expectedSqlServerRes, nil)
-
 	db.EXPECT().SearchPostgreSqlInstances([]string{""}, "", false, -1, -1, "Dubai", "TEST", thisMoment).
 		Return(&expectedPostgreSqlRes, nil)
 
@@ -486,6 +488,8 @@ func TestSearchDatabasesAsXLSX_Success(t *testing.T) {
 	db.EXPECT().SearchMySQLInstances(globalFilter).
 		Return(mysqlInstances, nil)
 
+	db.EXPECT().FindPsqlMigrabilities(gomock.Any(), gomock.Any()).Return([]model.PgsqlMigrability{}, nil).AnyTimes()
+
 	db.EXPECT().SearchSqlServerInstances([]string{""}, "", false, -1, -1, "Dubai", "TEST", thisMoment).
 		Return(&expectedSqlServerRes, nil)
 
@@ -573,6 +577,8 @@ func TestGetDatabasesStatistics_Success(t *testing.T) {
 	as := APIService{
 		Database: db,
 	}
+
+	db.EXPECT().FindPsqlMigrabilities(gomock.Any(), gomock.Any()).Return([]model.PgsqlMigrability{}, nil).AnyTimes()
 
 	db.EXPECT().SearchOracleDatabases([]string{""}, "", false, -1, -1, "Dubai", "TEST", thisMoment).
 		Return(&expectedRes, nil)

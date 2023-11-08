@@ -52,6 +52,9 @@ type APIControllerInterface interface {
 	// SearchOracleDatabaseUsedLicenses search licenses consumed by the hosts using the filters in the request
 	SearchOracleDatabaseUsedLicenses(w http.ResponseWriter, r *http.Request)
 
+	GetOraclePsqlMigrabilities(w http.ResponseWriter, r *http.Request)
+	GetOraclePsqlMigrabilitiesSemaphore(w http.ResponseWriter, r *http.Request)
+
 	// ListLocations list locations using the filters in the request
 	ListLocations(w http.ResponseWriter, r *http.Request)
 	// ListEnvironments list environments using the filters in the request
