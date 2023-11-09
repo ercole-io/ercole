@@ -90,7 +90,7 @@ local task_build_go_rhel9() = {
     },
     { type: 'save_to_workspace', contents: [{ source_dir: '.', dest_dir: '.', paths: ['ercole', 'package/**', 'resources/**', 'distributed_files/**'] }] },
   ],
-  
+  depends: ['test'],
 };
 
 local version_rhel8() = {
