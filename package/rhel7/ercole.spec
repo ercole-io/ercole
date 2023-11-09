@@ -125,8 +125,10 @@ ercole completion bash > /usr/share/bash-completion/completions/ercole
 /usr/share/ercole/examples/ercole-rhel6-x86_64.repo
 /usr/share/ercole/examples/ercole-rhel7-x86_64.repo
 /usr/share/ercole/examples/ercole-rhel8-x86_64.repo
+/usr/share/ercole/examples/ercole-rhel9-x86_64.repo
 /usr/share/ercole/examples/ercole-rhel7-noarch.repo
 /usr/share/ercole/examples/ercole-rhel8-noarch.repo
+/usr/share/ercole/examples/ercole-rhel9-noarch.repo
 /var/lib/ercole/distributed_files/ping.txt
 
 %changelog

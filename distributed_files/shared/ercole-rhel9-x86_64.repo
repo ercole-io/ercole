@@ -1,0 +1,7 @@
+[ercole]
+name=ercole-rhel8-x86_64
+baseurl=http://fillme:11114/rhel/rhel9/x86_64
+enabled=1
+gpgcheck=0
+skip_if_unavailable=1
+retries=2
