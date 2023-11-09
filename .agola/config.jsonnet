@@ -64,6 +64,35 @@ local task_build_go_rhel8() = {
   depends: ['test'],
 };
 
+local task_build_go_rhel9() = {
+  name: 'build go rhel9',
+  runtime: {
+    type: 'pod',
+    containers: [
+      { image: 'fra.ocir.io/fremyxlx6yog/oraclelinux9:latest' },
+    ],
+  },
+  steps: [
+    { type: 'run', command: 'git clone https://github.com/ercole-io/ercole.git .' },
+    {
+      type: 'run',
+      name: 'build',
+      command: |||
+        if [ ${AGOLA_GIT_TAG} ];
+          then export SERVER_VERSION=${AGOLA_GIT_TAG} ;
+        else
+          export SERVER_VERSION=${AGOLA_GIT_COMMITSHA} ; fi
+
+        echo ${SERVER_VERSION}
+
+        go build -ldflags "-X github.com/ercole-io/ercole/v2/cmd.serverVersion=${SERVER_VERSION}"
+      |||,
+    },
+    { type: 'save_to_workspace', contents: [{ source_dir: '.', dest_dir: '.', paths: ['ercole', 'package/**', 'resources/**', 'distributed_files/**'] }] },
+  ],
+  
+};
+
 local version_rhel8() = {
   name: 'version rhel8',
   runtime: {
@@ -94,6 +123,22 @@ local version_rhel7() = {
     { type: 'run', command: './ercole version' },
   ],
   depends: ['build go rhel7'],
+};
+
+local version_rhel9() = {
+  name: 'version rhel9',
+  runtime: {
+    type: 'pod',
+    arch: 'amd64',
+    containers: [
+      { image: 'debian:buster' },
+    ],
+  },
+  steps: [
+    { type: 'restore_workspace', dest_dir: '.' },
+    { type: 'run', command: './ercole version' },
+  ],
+  depends: ['build go rhel9'],
 };
 
 local task_pkg_build(setup) = {
@@ -306,21 +351,26 @@ local task_build_push_image(push) =
       ] + [
         task_build_go_rhel8(),
       ] + [
+        task_build_go_rhel9(),
+      ] + [
         version_rhel7()
       ] + [
         version_rhel8()
+      ] + [
+        version_rhel9()
       ] + [
         task_pkg_build(setup)
         for setup in [
           { pkg_build_image: 'amreo/rpmbuild-centos7', dist: 'rhel7' },
           { pkg_build_image: 'amreo/rpmbuild-centos8', dist: 'rhel8' },
+          { pkg_build_image: 'fra.ocir.io/fremyxlx6yog/rpmbuildrhel9', dist: 'rhel9' },
         ]       
       ] + [  
         task_deploy_repository(dist)
-        for dist in ['rhel7', 'rhel8']
+        for dist in ['rhel7', 'rhel8', 'rhel9']
       ] + [
         task_upload_asset(dist)
-        for dist in ['rhel7', 'rhel8']
+        for dist in ['rhel7', 'rhel8', 'rhel9']
       ] + [
         {
           name: 'checkout code',
