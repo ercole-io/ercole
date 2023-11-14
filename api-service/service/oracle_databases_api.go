@@ -180,6 +180,21 @@ func (as *APIService) SearchOracleDatabasesAsXLSX(filter dto.SearchOracleDatabas
 		return nil, err
 	}
 
+	convertedColor := map[string]string{
+		"red":    "1%",
+		"yellow": "50%",
+		"green":  "100%",
+	}
+
+	for i := range databases.Content {
+		color, err := as.GetOraclePsqlMigrabilitiesSemaphore(databases.Content[i].Hostname, databases.Content[i].Name)
+		if err != nil {
+			return nil, err
+		}
+
+		databases.Content[i].PgsqlMigrabilitySemaphore = convertedColor[color]
+	}
+
 	file, err := excelize.OpenFile(as.Config.ResourceFilePath + "/templates/template_databases.xlsx")
 	if err != nil {
 		return nil, err
@@ -219,6 +234,8 @@ func (as *APIService) SearchOracleDatabasesAsXLSX(filter dto.SearchOracleDatabas
 			file.SetCellValue("Databases", fmt.Sprintf("S%d", i), "False")
 			file.SetCellValue("Databases", fmt.Sprintf("T%d", i), "")
 		}
+
+		file.SetCellValue("Databases", fmt.Sprintf("U%d", i), val.PgsqlMigrabilitySemaphore)
 	}
 
 	return file, nil
