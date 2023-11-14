@@ -751,6 +751,8 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/PgsqlMigrability"
+        canbemigrate:
+          type: boolean
       required:
         - Name
         - UniqueName
@@ -2317,20 +2319,6 @@ components:
           type: number
         pdb:
           type: string
-    PgsqlMigrability:
-      type: object
-      properties:
-        metric:
-          type: string
-          nullable: true
-        count:
-          type: integer
-        schema:
-          type: string
-          nullable: true
-        objectType:
-          type: string
-          nullable: true
   parameters:
     search:
       in: query

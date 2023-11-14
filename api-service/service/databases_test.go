@@ -320,6 +320,15 @@ func TestSearchDatabases_Success(t *testing.T) {
 		Database: db,
 	}
 
+	db.EXPECT().SearchOracleDatabaseUsedLicenses(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+		Return(&dto.OracleDatabaseUsedLicenseSearchResponse{}, nil)
+
+	db.EXPECT().GetOracleDatabaseLicenseTypes().Return([]model.OracleDatabaseLicenseType{}, nil)
+
+	db.EXPECT().GetHostDatas(gomock.Any()).Return([]model.HostDataBE{}, nil)
+
+	db.EXPECT().GetClusters(gomock.Any()).Return([]dto.Cluster{}, nil)
+
 	db.EXPECT().FindPsqlMigrabilities(gomock.Any(), gomock.Any()).Return([]model.PgsqlMigrability{}, nil).AnyTimes()
 
 	db.EXPECT().SearchOracleDatabases([]string{""}, "", false, -1, -1, "Dubai", "TEST", thisMoment).
@@ -446,6 +455,15 @@ func TestSearchDatabasesAsXLSX_Success(t *testing.T) {
 			ResourceFilePath: "../../resources",
 		},
 	}
+	
+	db.EXPECT().SearchOracleDatabaseUsedLicenses(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+		Return(&dto.OracleDatabaseUsedLicenseSearchResponse{}, nil)
+
+	db.EXPECT().GetOracleDatabaseLicenseTypes().Return([]model.OracleDatabaseLicenseType{}, nil)
+
+	db.EXPECT().GetHostDatas(gomock.Any()).Return([]model.HostDataBE{}, nil)
+
+	db.EXPECT().GetClusters(gomock.Any()).Return([]dto.Cluster{}, nil)
 
 	db.EXPECT().SearchOracleDatabases([]string{""}, "", false, -1, -1, "Dubai", "TEST", thisMoment).
 		Return(&expectedRes, nil)
@@ -577,6 +595,15 @@ func TestGetDatabasesStatistics_Success(t *testing.T) {
 	as := APIService{
 		Database: db,
 	}
+
+	db.EXPECT().SearchOracleDatabaseUsedLicenses(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+		Return(&dto.OracleDatabaseUsedLicenseSearchResponse{}, nil)
+
+	db.EXPECT().GetOracleDatabaseLicenseTypes().Return([]model.OracleDatabaseLicenseType{}, nil)
+
+	db.EXPECT().GetHostDatas(gomock.Any()).Return([]model.HostDataBE{}, nil)
+
+	db.EXPECT().GetClusters(gomock.Any()).Return([]dto.Cluster{}, nil)
 
 	db.EXPECT().FindPsqlMigrabilities(gomock.Any(), gomock.Any()).Return([]model.PgsqlMigrability{}, nil).AnyTimes()
 

@@ -166,6 +166,13 @@ func (as *APIService) SearchOracleDatabases(f dto.SearchOracleDatabasesFilter) (
 		}
 
 		response.Content[i].PgsqlMigrabilitySemaphore = color
+
+		canbemigrate, err := as.CanMigrateLicense(response.Content[i].Hostname, response.Content[i].Name, f.GlobalFilter)
+		if err != nil {
+			return nil, err
+		}
+
+		response.Content[i].Canbemigrate = canbemigrate
 	}
 
 	return response, nil
