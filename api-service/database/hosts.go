@@ -35,7 +35,6 @@ import (
 )
 
 const hostCollection = "hosts"
-const usersCollection = "users"
 
 func (md *MongoDatabase) SearchHosts(mode string, filters dto.SearchHostsFilters) ([]map[string]interface{}, error) {
 	out := make([]map[string]interface{}, 0)
@@ -907,9 +906,9 @@ func (md *MongoDatabase) getHostTechnology(hostname string, olderThan time.Time)
 func (md *MongoDatabase) FindUnlistedRunningDatabases(hostname string) ([]string, error) {
 	ctx := context.TODO()
 
-	result := make([]string, 0)
+	out := make([]string, 0)
 
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(usersCollection).
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(hostCollection).
 		Aggregate(ctx, bson.A{
 			bson.D{
 				{Key: "$match",
@@ -927,17 +926,23 @@ func (md *MongoDatabase) FindUnlistedRunningDatabases(hostname string) ([]string
 					},
 				},
 			},
-			bson.D{{Key: "$project", Value: bson.D{{Key: "dbs", Value: "$features.oracle.database.unlistedRunningDatabases"}}}},
+			bson.D{{Key: "$project", Value: bson.D{{Key: "db", Value: "$features.oracle.database.unlistedRunningDatabases"}}}},
+			bson.D{{Key: "$group", Value: bson.D{{Key: "_id", Value: "$db"}}}},
 		})
 	if err != nil {
 		return nil, err
 	}
 
-	if err := cur.All(ctx, &result); err != nil {
-		return nil, err
+	for cur.Next(ctx) {
+		var item map[string]string
+		if cur.Decode(&item) != nil {
+			return nil, utils.NewError(err, "Decode ERROR")
+		}
+
+		out = append(out, item["_id"])
 	}
 
-	return result, nil
+	return out, nil
 }
 
 func (md *MongoDatabase) SearchHostMysqlLMS(filter dto.SearchHostsAsLMS) ([]dto.MySqlHostLMS, error) {

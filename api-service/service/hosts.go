@@ -338,7 +338,21 @@ func (as *APIService) getCSIsByHostname() (res map[string][]string, err error) {
 }
 
 func (as *APIService) GetHostDataSummaries(filters dto.SearchHostsFilters) ([]dto.HostDataSummary, error) {
-	return as.Database.GetHostDataSummaries(filters)
+	hosts, err := as.Database.GetHostDataSummaries(filters)
+	if err != nil {
+		return nil, err
+	}
+
+	for i := range hosts {
+		ismissingdb, err := as.IsMissingDB(hosts[i].Hostname)
+		if err != nil {
+			return nil, err
+		}
+
+		hosts[i].IsMissingDB = ismissingdb
+	}
+
+	return hosts, nil
 }
 
 // GetHost return the host specified in the hostname param
