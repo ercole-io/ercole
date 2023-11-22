@@ -30,10 +30,10 @@ import (
 	"github.com/ercole-io/ercole/v2/utils"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
-	gomock "github.com/golang/mock/gomock"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	gomock "go.uber.org/mock/gomock"
 )
 
 func TestAddOracleDatabaseContract_Success(t *testing.T) {

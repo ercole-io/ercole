@@ -20,7 +20,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
-	gomock "github.com/golang/mock/gomock"
+	gomock "go.uber.org/mock/gomock"
 
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
