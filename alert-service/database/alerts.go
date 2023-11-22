@@ -17,6 +17,7 @@ package database
 
 import (
 	"context"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -52,4 +53,22 @@ func (md *MongoDatabase) ExistNoDataAlertByHost(hostname string) (bool, error) {
 
 	//Return true if the count > 0
 	return val > 0, nil
+}
+
+func (md *MongoDatabase) AckOldAlerts() (*mongo.UpdateResult, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	expiredDate := md.TimeNow().AddDate(0, -2, 0)
+	filter := bson.M{"date": bson.M{"$lt": expiredDate}}
+	update := bson.M{"$set": bson.M{"alertStatus": "ACK"}}
+
+	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("alerts").
+		UpdateMany(ctx, filter, update)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }
