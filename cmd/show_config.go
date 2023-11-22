@@ -20,15 +20,29 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/pelletier/go-toml"
 	"github.com/spf13/cobra"
 )
+
+var tomlFlag bool
 
 // showConfigCmd represents the showConfig command
 var showConfigCmd = &cobra.Command{
 	Use:   "show-config",
 	Short: "Show the configuration",
 	Long:  `Show all ercole configuration`,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(_ *cobra.Command, _ []string) {
+
+		if tomlFlag {
+			enc := toml.NewEncoder(os.Stdout)
+			if err := enc.Encode(ercoleConfig); err != nil {
+				fmt.Fprintf(os.Stderr, "%s\n", err)
+				os.Exit(1)
+			}
+
+			os.Exit(0)
+		}
+
 		enc := json.NewEncoder(os.Stdout)
 		enc.SetIndent("", "    ")
 		if err := enc.Encode(ercoleConfig); err != nil {
@@ -40,4 +54,6 @@ var showConfigCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(showConfigCmd)
+
+	showConfigCmd.Flags().BoolVarP(&tomlFlag, "toml", "t", false, "Print the configuration as toml")
 }
