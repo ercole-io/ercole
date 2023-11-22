@@ -21,9 +21,9 @@ import (
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/utils"
-	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/mock/gomock"
 )
 
 func TestListOracleDatabasePartitionings_Success(t *testing.T) {
@@ -37,24 +37,24 @@ func TestListOracleDatabasePartitionings_Success(t *testing.T) {
 
 	expected := []dto.OracleDatabasePartitioning{
 		{
-			Hostname:      "hostname",
-			DatabaseName:  "databasename",
-			Owner:         "ownername",
-			SegmentName:   "segmentname",
-			Count: 1,
-			Mb:            100,
+			Hostname:     "hostname",
+			DatabaseName: "databasename",
+			Owner:        "ownername",
+			SegmentName:  "segmentname",
+			Count:        1,
+			Mb:           100,
 		},
 	}
 
 	expectedPDB := []dto.OracleDatabasePartitioning{
 		{
-			Hostname:      "hostname",
-			DatabaseName:  "databasename",
-			Pdb:           "pdbname",
-			Owner:         "ownername",
-			SegmentName:   "segmentname",
-			Count: 1,
-			Mb:            100,
+			Hostname:     "hostname",
+			DatabaseName: "databasename",
+			Pdb:          "pdbname",
+			Owner:        "ownername",
+			SegmentName:  "segmentname",
+			Count:        1,
+			Mb:           100,
 		},
 	}
 

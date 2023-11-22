@@ -19,10 +19,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.uber.org/mock/gomock"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
@@ -455,7 +455,7 @@ func TestSearchDatabasesAsXLSX_Success(t *testing.T) {
 			ResourceFilePath: "../../resources",
 		},
 	}
-	
+
 	db.EXPECT().SearchOracleDatabaseUsedLicenses(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 		Return(&dto.OracleDatabaseUsedLicenseSearchResponse{}, nil)
 
