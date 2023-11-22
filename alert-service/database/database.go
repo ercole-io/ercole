@@ -43,6 +43,8 @@ type MongoDatabaseInterface interface {
 	InsertAlert(alert model.Alert) (*mongo.InsertOneResult, error)
 	// ExistNoDataAlertByHost return true if the host has associated a new NO_DATA alert
 	ExistNoDataAlertByHost(hostname string) (bool, error)
+
+	AckOldAlerts() (*mongo.UpdateResult, error)
 }
 
 // MongoDatabase is a implementation

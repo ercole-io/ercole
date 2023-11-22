@@ -105,6 +105,13 @@ type AlertService struct {
 	QueueBufferSize int
 	// Emailer contains the settings about the emailer
 	Emailer Emailer
+
+	AckAlertJob AckAlertJob
+}
+
+type AckAlertJob struct {
+	Crontab      string
+	RunAtStartup bool
 }
 
 // APIService contains configuration about the api service

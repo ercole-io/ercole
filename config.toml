@@ -38,6 +38,10 @@ PublisherUsername = "publisher"
 PublisherPassword = "r4nd0mS3cR3tp4ssW0rd"
 QueueBufferSize = 10240
 
+  [AlertService.AckAlertJob]
+  Crontab = "@daily"
+  RunAtStartup = false
+
 [APIService]
 RemoteEndpoint = "http://127.0.0.1:11113"
 BindIP = "0.0.0.0"
