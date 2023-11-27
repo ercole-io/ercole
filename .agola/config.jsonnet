@@ -169,8 +169,12 @@ local task_pkg_build(setup) = {
 
         echo ${VERSION}
 
-        ln -s ${WORKSPACE} ~/rpmbuild/SOURCES/ercole-${VERSION}
-        cd ${WORKSPACE} && rpmbuild --define "_version ${VERSION}" -bb package/${DIST}/ercole.spec
+        SUPPORTED_VERSION=$(echo $VERSION | sed 's/-/_/g')
+
+        echo ${SUPPORTED_VERSION}
+
+        ln -s ${WORKSPACE} ~/rpmbuild/SOURCES/ercole-${SUPPORTED_VERSION}
+        cd ${WORKSPACE} && rpmbuild --define "_version ${SUPPORTED_VERSION}" -bb package/${DIST}/ercole.spec
       |||,
     },
     { type: 'run', command: 'ls ~/rpmbuild/RPMS/x86_64/ercole-*.rpm' },
