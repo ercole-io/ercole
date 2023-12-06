@@ -67,6 +67,11 @@ func (as *APIService) GetMatchedGroupsName(tags []string) []string {
 	res := make([]string, 0, len(tags))
 
 	for _, v := range tags {
+		if v == model.GroupLimited {
+			res = append(res, v)
+			continue
+		}
+
 		group, err := as.Database.GetGroupByTag(v)
 		if err != nil {
 			continue
