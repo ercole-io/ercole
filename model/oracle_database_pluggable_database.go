@@ -25,7 +25,7 @@ type OracleDatabasePluggableDatabase struct {
 	Charset                string                         `json:"charset" bson:"charset"`
 	Tablespaces            []OracleDatabaseTablespace     `json:"tablespaces" bson:"tablespaces"`
 	Schemas                []OracleDatabaseSchema         `json:"schemas" bson:"schemas"`
-	Services               []OracleDatabaseService        `json:"services" bson:"services"`
+	Services               []OracleDatabasePdbService     `json:"services" bson:"services"`
 	GrantDba               []OracleGrantDba               `json:"grantDba" bson:"grantDba"`
 	SegmentAdvisors        []OracleDatabaseSegmentAdvisor `json:"segmentAdvisors" bson:"segmentAdvisors"`
 	Partitionings          []OracleDatabasePartitioning   `json:"partitionings" bson:"partitionings"`

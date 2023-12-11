@@ -1,4 +1,4 @@
-// Copyright (c) 2022 Sorint.lab S.p.A.
+// Copyright (c) 2023 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,12 +16,8 @@
 package model
 
 // OracleDatabaseService holds information about an Oracle database service
-type OracleDatabaseService struct {
-	Name            *string     `json:"name" bson:"name,omitempty"`
-	FailoverMethod  *string     `json:"failoverMethod" bson:"failoverMethod,omitempty"`
-	FailoverType    *string     `json:"failoverType" bson:"failoverType,omitempty"`
-	FailoverRetries *int        `json:"failoverRetries" bson:"failoverRetries,omitempty"`
-	FailoverDelay   interface{} `json:"failoverDelay" bson:"failoverDelay,omitempty"`
-	Enabled         *bool       `json:"enabled" bson:"enabled,omitempty"`
-	DbName          string      `json:"dbname" bson:"dbname,omitempty"`
+type OracleDatabasePdbService struct {
+	Name    *string `json:"name" bson:"name,omitempty"`
+	Enabled *bool   `json:"enabled" bson:"enabled,omitempty"`
+	DbName  string  `json:"dbname" bson:"dbname,omitempty"`
 }
