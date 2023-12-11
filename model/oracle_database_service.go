@@ -23,5 +23,5 @@ type OracleDatabaseService struct {
 	FailoverRetries *int        `json:"failoverRetries" bson:"failoverRetries,omitempty"`
 	FailoverDelay   interface{} `json:"failoverDelay" bson:"failoverDelay,omitempty"`
 	Enabled         *bool       `json:"enabled" bson:"enabled,omitempty"`
-	DbName          string      `json:"dbname" bson:"dbname,omitempty"`
+	ContainerName   string      `json:"containerName" bson:"containerName,omitempty"`
 }

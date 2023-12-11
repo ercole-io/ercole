@@ -17,7 +17,10 @@ package model
 
 // OracleDatabaseService holds information about an Oracle database service
 type OracleDatabasePdbService struct {
-	Name    *string `json:"name" bson:"name,omitempty"`
-	Enabled *bool   `json:"enabled" bson:"enabled,omitempty"`
-	DbName  string  `json:"dbname" bson:"dbname,omitempty"`
+	Name            *string     `json:"name" bson:"name,omitempty"`
+	FailoverMethod  *string     `json:"failoverMethod" bson:"failoverMethod,omitempty"`
+	FailoverType    *string     `json:"failoverType" bson:"failoverType,omitempty"`
+	FailoverRetries *int        `json:"failoverRetries" bson:"failoverRetries,omitempty"`
+	FailoverDelay   interface{} `json:"failoverDelay" bson:"failoverDelay,omitempty"`
+	Enabled         *bool       `json:"enabled" bson:"enabled,omitempty"`
 }
