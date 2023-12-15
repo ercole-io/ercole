@@ -159,21 +159,21 @@ func (as *APIService) SearchOracleDatabases(f dto.SearchOracleDatabasesFilter) (
 		return nil, err
 	}
 
-	for i := range response.Content {
-		color, err := as.GetOraclePsqlMigrabilitiesSemaphore(response.Content[i].Hostname, response.Content[i].Name)
-		if err != nil {
-			return nil, err
-		}
+	// for i := range response.Content {
+	// 	color, err := as.GetOraclePsqlMigrabilitiesSemaphore(response.Content[i].Hostname, response.Content[i].Name)
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
 
-		response.Content[i].PgsqlMigrabilitySemaphore = color
+	// 	response.Content[i].PgsqlMigrabilitySemaphore = color
 
-		canbemigrate, err := as.CanMigrateLicense(response.Content[i].Hostname, response.Content[i].Name, f.GlobalFilter)
-		if err != nil {
-			return nil, err
-		}
+	// 	canbemigrate, err := as.CanMigrateLicense(response.Content[i].Hostname, response.Content[i].Name, f.GlobalFilter)
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
 
-		response.Content[i].Canbemigrate = canbemigrate
-	}
+	// 	response.Content[i].Canbemigrate = canbemigrate
+	// }
 
 	return response, nil
 }

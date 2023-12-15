@@ -301,11 +301,11 @@ func TestSearchOracleDatabases_Success(t *testing.T) {
 	db.EXPECT().SearchOracleDatabaseUsedLicenses(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 		Return(&dto.OracleDatabaseUsedLicenseSearchResponse{}, nil).AnyTimes()
 
-	db.EXPECT().GetOracleDatabaseLicenseTypes().Return([]model.OracleDatabaseLicenseType{}, nil).AnyTimes()
+	// db.EXPECT().GetOracleDatabaseLicenseTypes().Return([]model.OracleDatabaseLicenseType{}, nil).AnyTimes()
 
-	db.EXPECT().GetHostDatas(gomock.Any()).Return([]model.HostDataBE{}, nil).AnyTimes()
+	// db.EXPECT().GetHostDatas(gomock.Any()).Return([]model.HostDataBE{}, nil).AnyTimes()
 
-	db.EXPECT().GetClusters(gomock.Any()).Return([]dto.Cluster{}, nil).AnyTimes()
+	// db.EXPECT().GetClusters(gomock.Any()).Return([]dto.Cluster{}, nil).AnyTimes()
 
 	var work float64 = 1
 

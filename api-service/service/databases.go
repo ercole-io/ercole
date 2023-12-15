@@ -617,7 +617,7 @@ func (as *APIService) manageStandardDBVersionLicenses(usedLicenses []dto.Databas
 			host.Features.Oracle.Database.Databases != nil {
 			cluster, ok := clustersMap[usedlicense.ClusterName]
 			if !ok {
-				as.Log.Warnf("%s : %s", utils.ErrClusterNotFound, usedlicense.ClusterName)
+				// as.Log.Warnf("%s : %s", utils.ErrClusterNotFound, usedlicense.ClusterName)
 				continue
 			}
 
