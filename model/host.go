@@ -49,4 +49,5 @@ type Host struct {
 	OSVersion                     string  `json:"osVersion" bson:"osVersion"`
 	MemoryTotal                   float64 `json:"memoryTotal" bson:"memoryTotal"`
 	SwapTotal                     float64 `json:"swapTotal" bson:"swapTotal"`
+	ClusterwareVersion            string  `json:"clusterwareVersion" bson:"clusterwareVersion"`
 }
