@@ -384,6 +384,8 @@ components:
           type: boolean
         aixCluster:
           type: boolean
+        clusterwareVersion:
+          type: string
     Filesystems:
       type: array
       items:

@@ -820,6 +820,7 @@
         "swapTotal": {
             "$numberDouble": "1.0"
         },
+        "clusterwareVersion": "",
         "threadsPerCore": {
             "$numberInt": "2"
         }

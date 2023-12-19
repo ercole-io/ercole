@@ -147,6 +147,9 @@
                 "swapTotal": {
                     "type": "number",
                     "minimum": 0
+                },
+                "clusterwareVersion": {
+                    "type": "string"
                 }
             }
         },
