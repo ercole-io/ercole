@@ -2310,7 +2310,7 @@ components:
               type: integer
             enabled:
               type: boolean
-            dbname:
+            containerName:
               type: string
     OracleDatabasePartitioning:
       type: object
