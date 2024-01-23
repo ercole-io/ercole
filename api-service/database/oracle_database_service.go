@@ -48,6 +48,7 @@ func (md *MongoDatabase) GetOracleServiceList(filter dto.GlobalFilter) ([]dto.Or
 				"oracleDatabaseService.failoverRetries": "$features.oracle.database.databases.services.failoverRetries",
 				"oracleDatabaseService.failoverDelay":   "$features.oracle.database.databases.services.failoverDelay",
 				"oracleDatabaseService.enabled":         "$features.oracle.database.databases.services.enabled",
+				"oracleDatabaseService.containerName":   "$features.oracle.database.databases.services.containerName",
 			}},
 		),
 	)
