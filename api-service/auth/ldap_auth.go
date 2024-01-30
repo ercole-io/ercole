@@ -144,6 +144,10 @@ func (ap *LDAPAuthenticationProvider) GetUserInfoIfCredentialsAreCorrect(usernam
 
 	ercoleGroups := ap.Service.GetMatchedGroupsName(ou)
 
+	if len(ercoleGroups) == 0 {
+		return nil, utils.ErrGroupNotFound
+	}
+
 	userDto := dto.User{Username: username, Groups: ercoleGroups}
 
 	return &userDto, nil
