@@ -180,6 +180,7 @@ type MongoDatabaseInterface interface {
 	ExistNotInClusterHost(hostname string) (bool, error)
 	// Check if there are any db instances not running on host
 	FindUnlistedRunningDatabases(hostname string) ([]string, error)
+	FindUnretrievedDatabases(hostname string) ([]string, error)
 
 	// MYSQL
 
