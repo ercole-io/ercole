@@ -278,3 +278,8 @@ func HideMongoDBPassword(uri string) string {
 	m := regexp.MustCompile(`\/\/([^:]+):(.*)@`)
 	return m.ReplaceAllString(uri, "//***:***@")
 }
+
+// Truncate float in 2 decimals
+func TruncateFloat64(src float64) float64 {
+	return float64(int(src*100)) / 100
+}

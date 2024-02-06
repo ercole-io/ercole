@@ -19,20 +19,21 @@ import (
 	"errors"
 
 	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 type OracleExadataStorageCell struct {
-	Type               string                        `json:"type"`
-	Hostname           string                        `json:"hostname"`
-	CellDisk           string                        `json:"cellDisk"`
-	Cell               string                        `json:"cell"`
-	Size               *OracleExadataMeasurement     `json:"size"`
-	FreeSpace          *OracleExadataMeasurement     `json:"freeSpace"`
-	Status             string                        `json:"status"`
-	ErrorCount         int                           `json:"errorCount"`
-	GridDisks          []model.OracleExadataGridDisk `json:"gridDisks,omitempty"`
-	Databases          []model.OracleExadataDatabase `json:"databases"`
-	FreeSizePercentage int                           `json:"freeSizePercentage"`
+	Type       string                        `json:"type"`
+	Hostname   string                        `json:"hostname"`
+	CellDisk   string                        `json:"cellDisk"`
+	Cell       string                        `json:"cell"`
+	Size       *OracleExadataMeasurement     `json:"size"`
+	FreeSpace  *OracleExadataMeasurement     `json:"freeSpace"`
+	Status     string                        `json:"status"`
+	ErrorCount int                           `json:"errorCount"`
+	GridDisks  []model.OracleExadataGridDisk `json:"gridDisks,omitempty"`
+	Databases  []model.OracleExadataDatabase `json:"databases"`
+	FreeSizePercentage float64 `json:"freeSizePercentage"`
 }
 
 func ToOracleExadataStorageCell(m *model.OracleExadataStorageCell) (res *OracleExadataStorageCell, err error) {
@@ -84,7 +85,7 @@ func ToOracleExadataStorageCells(m []model.OracleExadataStorageCell) ([]OracleEx
 	return res, nil
 }
 
-func (s *OracleExadataStorageCell) GetFreeSpacePercentage() (int, error) {
+func (s *OracleExadataStorageCell) GetFreeSpacePercentage() (float64, error) {
 	realSize, err := s.Size.ToTb()
 	if err != nil {
 		return 0, err
@@ -95,7 +96,7 @@ func (s *OracleExadataStorageCell) GetFreeSpacePercentage() (int, error) {
 		return 0, err
 	}
 
-	res := (realFreeSpace.Quantity * 100) / realSize.Quantity
+	res := utils.TruncateFloat64((realFreeSpace.Quantity * 100) / realSize.Quantity)
 
-	return int(res), nil
+	return res, nil
 }

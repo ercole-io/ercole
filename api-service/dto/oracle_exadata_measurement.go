@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"regexp"
 
+	"github.com/ercole-io/ercole/v2/utils"
 	effectivebytes "github.com/ercole-io/ercole/v2/utils/effective_bytes"
 )
 
@@ -38,10 +39,12 @@ func ToOracleExadataMeasurement(s string) (res *OracleExadataMeasurement, err er
 
 	res.UnparsedValue = s
 
-	res.Quantity, err = effectivebytes.Float64(s)
+	f, err := effectivebytes.Float64(s)
 	if err != nil {
 		return nil, err
 	}
+
+	res.Quantity = utils.TruncateFloat64(f)
 
 	re := regexp.MustCompile(`[a-zA-Z]+`)
 	match := re.FindStringSubmatch(s)
@@ -68,10 +71,12 @@ func (m *OracleExadataMeasurement) ToTb() (*OracleExadataMeasurement, error) {
 		return nil, err
 	}
 
+	formattedvalue := utils.TruncateFloat64(q)
+
 	return &OracleExadataMeasurement{
 		UnparsedValue: b.String(),
 		Symbol:        "TB",
-		Quantity:      q,
+		Quantity:      formattedvalue,
 	}, nil
 }
 

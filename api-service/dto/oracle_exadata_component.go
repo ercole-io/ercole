@@ -18,9 +18,9 @@ package dto
 import (
 	"errors"
 	"fmt"
-	"math"
 
 	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 type OracleExadataComponent struct {
@@ -51,7 +51,7 @@ type OracleExadataComponent struct {
 	UsedCPU int `json:"usedCPU"`
 	FreeCPU int `json:"freeCPU"`
 
-	FreeSizePercentage int                       `json:"freeSizePercentage"`
+	FreeSizePercentage float64                   `json:"freeSizePercentage"`
 	TotalSize          *OracleExadataMeasurement `json:"totalSize"`
 	TotalFreeSpace     *OracleExadataMeasurement `json:"totalFreeSpace"`
 }
@@ -104,12 +104,14 @@ func ToOracleExadataComponent(componentModel *model.OracleExadataComponent) (*Or
 			return nil, err
 		}
 
-		res.FreeSizePercentage = perc
+		res.FreeSizePercentage = utils.TruncateFloat64(perc)
 
 		totsize, err := res.GetTotalSize()
 		if err != nil {
 			return nil, err
 		}
+
+		totsize.Quantity = utils.TruncateFloat64(totsize.Quantity)
 
 		res.TotalSize = totsize
 
@@ -117,6 +119,8 @@ func ToOracleExadataComponent(componentModel *model.OracleExadataComponent) (*Or
 		if err != nil {
 			return nil, err
 		}
+
+		totfreespace.Quantity = utils.TruncateFloat64(totfreespace.Quantity)
 
 		res.TotalFreeSpace = totfreespace
 
@@ -126,7 +130,7 @@ func ToOracleExadataComponent(componentModel *model.OracleExadataComponent) (*Or
 	return nil, errors.New("cannot convert model OracleExadataComponent dto")
 }
 
-func (c *OracleExadataComponent) GetFreeSpacePercentage() (int, error) {
+func (c *OracleExadataComponent) GetFreeSpacePercentage() (float64, error) {
 	totsize := 0.0
 	totFreeSpace := 0.0
 
@@ -136,19 +140,19 @@ func (c *OracleExadataComponent) GetFreeSpacePercentage() (int, error) {
 			return 0, err
 		}
 
-		totsize += sizeTb.Quantity
+		totsize += utils.TruncateFloat64(sizeTb.Quantity)
 
 		freeSpaceTb, err := storageCell.FreeSpace.ToTb()
 		if err != nil {
 			return 0, err
 		}
 
-		totFreeSpace += freeSpaceTb.Quantity
+		totFreeSpace += utils.TruncateFloat64(freeSpaceTb.Quantity)
 	}
 
-	res := math.Round((totFreeSpace * 100) / totsize)
+	res := utils.TruncateFloat64((totFreeSpace * 100) / totsize)
 
-	return int(res), nil
+	return res, nil
 }
 
 func (c *OracleExadataComponent) GetTotalSize() (*OracleExadataMeasurement, error) {
@@ -160,10 +164,10 @@ func (c *OracleExadataComponent) GetTotalSize() (*OracleExadataMeasurement, erro
 			return nil, err
 		}
 
-		totsize.Quantity += sizeTb.Quantity
+		totsize.Quantity += utils.TruncateFloat64(sizeTb.Quantity)
 	}
 
-	totsize.UnparsedValue = fmt.Sprintf("%v%s", totsize.Quantity, totsize.Symbol)
+	totsize.UnparsedValue = fmt.Sprintf("%v%s", utils.TruncateFloat64(totsize.Quantity), totsize.Symbol)
 
 	return &totsize, nil
 }
@@ -177,10 +181,10 @@ func (c *OracleExadataComponent) GetTotalFreeSpace() (*OracleExadataMeasurement,
 			return nil, err
 		}
 
-		totfreespace.Quantity += freespaceTb.Quantity
+		totfreespace.Quantity += utils.TruncateFloat64(freespaceTb.Quantity)
 	}
 
-	totfreespace.UnparsedValue = fmt.Sprintf("%v%s", totfreespace.Quantity, totfreespace.Symbol)
+	totfreespace.UnparsedValue = fmt.Sprintf("%v%s", utils.TruncateFloat64(totfreespace.Quantity), totfreespace.Symbol)
 
 	return &totfreespace, nil
 }

@@ -20,6 +20,7 @@ import (
 	"time"
 
 	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 type OracleExadataInstance struct {
@@ -65,8 +66,10 @@ func ToOracleExadataInstance(inst *model.OracleExadataInstance) (*OracleExadataI
 	res.FreeSpace = &OracleExadataMeasurement{Symbol: "TB"}
 
 	for _, cmp := range inst.Components {
-		res.TotalMemory += cmp.Memory
-		res.TotalCPU += cmp.TotalCPU
+		if cmp.HostType != "STORAGE_CELL" {
+			res.TotalMemory += cmp.Memory
+			res.TotalCPU += cmp.TotalCPU
+		}
 
 		if cmp.HostType == model.BARE_METAL {
 			res.UsedCPU += cmp.CPUEnabled
@@ -84,10 +87,10 @@ func ToOracleExadataInstance(inst *model.OracleExadataInstance) (*OracleExadataI
 			return nil, err
 		}
 
-		res.TotalSize.Quantity += d.TotalSize.Quantity
+		res.TotalSize.Quantity += utils.TruncateFloat64(d.TotalSize.Quantity)
 		res.TotalSize.SetUnparsedValue()
 
-		res.FreeSpace.Quantity += d.TotalFreeSpace.Quantity
+		res.FreeSpace.Quantity += utils.TruncateFloat64(d.TotalFreeSpace.Quantity)
 		res.FreeSpace.SetUnparsedValue()
 
 		res.Components = append(res.Components, *d)
@@ -100,7 +103,7 @@ func ToOracleExadataInstance(inst *model.OracleExadataInstance) (*OracleExadataI
 	// Calculate used size
 	res.UsedSize = &OracleExadataMeasurement{
 		Symbol:   "TB",
-		Quantity: res.TotalSize.Quantity - res.FreeSpace.Quantity,
+		Quantity: utils.TruncateFloat64(res.TotalSize.Quantity - res.FreeSpace.Quantity),
 	}
 
 	res.UsedSize.SetUnparsedValue()
