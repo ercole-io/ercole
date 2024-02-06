@@ -21,6 +21,8 @@ import (
 	"strconv"
 	"strings"
 	"unicode"
+
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 type ByteSize uint64
@@ -77,7 +79,7 @@ var unitMap = map[string]ByteSize{
 
 var (
 	LongUnits bool   = false
-	Format    string = "%.8f"
+	Format    string = "%.2f"
 )
 
 func Parse(s string) (ByteSize, error) {
@@ -107,7 +109,7 @@ func Parse(s string) (ByteSize, error) {
 		return 0, err
 	}
 
-	bytesize := ByteSize(value * float64(unit))
+	bytesize := ByteSize(utils.TruncateFloat64(value) * float64(unit))
 
 	return bytesize, nil
 }
@@ -153,7 +155,7 @@ func (b ByteSize) format(format string, unit string, longUnits bool) string {
 		return fmt.Sprintf(format+longUnitMap[unitSize]+s, float64(b)/float64(unitSize))
 	}
 
-	return fmt.Sprintf(format+shortUnitMap[unitSize], float64(b)/float64(unitSize))
+	return fmt.Sprintf(format+shortUnitMap[unitSize], utils.TruncateFloat64(float64(b)/float64(unitSize)))
 }
 
 func Float64(s string) (float64, error) {
@@ -177,5 +179,7 @@ func Float64(s string) (float64, error) {
 		return 0, err
 	}
 
-	return value, nil
+	formattedvalue := utils.TruncateFloat64(value)
+
+	return formattedvalue, nil
 }
