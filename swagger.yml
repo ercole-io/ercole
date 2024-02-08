@@ -910,6 +910,14 @@ components:
           $ref: "#/components/schemas/ExadataMeasurement"
       required:
         - racID
+    ExadataInstanceResponseList:
+      type: array
+      items:
+        properties:
+          rackID:
+            type: string
+          hostname:
+            type: string
     ExadataComponent:
       type: object
       properties:
@@ -1000,10 +1008,8 @@ components:
           type: integer
         ramMaxUsable:
           type: integer
-        clusterNames:
-          type: array
-          items:
-            type: string
+        clusterName:
+          type: string
       required:
         - "type"
     ExadataStorageCell:
@@ -4543,6 +4549,7 @@ paths:
           $ref: "#/components/responses/error"
         "500":
           $ref: "#/components/responses/error"
+
   /exadata:
     get:
       tags:
@@ -4555,7 +4562,26 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ExadataInstance"
+                $ref: "#/components/schemas/ExadataInstanceResponseList"
+  
+  /exadata/{rackID}:
+    get:
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: rackID
+          required: true
+      tags:
+        - api-service
+      summary: Get a Oracle Exadata Instance
+      responses:
+        "200":
+          description: OK
+          content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ExadataInstance"
 
   "/exadata/{rackID}/components/{hostID}/vms/{name}":
     post:
@@ -4588,10 +4614,8 @@ paths:
             schema:
               type: object
               properties:
-                  clusterNames:
-                    type: array
-                    items:
-                      type: string
+                  clusterName:
+                    type: string
 
   "/exadata/{rackID}/components/{hostID}":
     post:

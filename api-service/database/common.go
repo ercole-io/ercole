@@ -136,5 +136,9 @@ func Filter(filter dto.GlobalFilter) bson.M {
 		res["createdAt"] = bson.M{"$lte": filter.OlderThan}
 	}
 
+	if len(res) == 0 {
+		return bson.M{}
+	}
+
 	return bson.M{"$match": res}
 }
