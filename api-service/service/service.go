@@ -307,7 +307,8 @@ type APIServiceInterface interface {
 	RemoveNode(name string) error
 
 	// EXADATA
-	ListExadataInstances(filter dto.GlobalFilter) ([]model.OracleExadataInstance, error)
+	ListExadataInstances(filter dto.GlobalFilter) ([]dto.ExadataInstanceResponse, error)
+	GetExadataInstance(rackid string) (*model.OracleExadataInstance, error)
 	UpdateExadataVmClusterName(rackID, hostID, vmname, clustername string) error
 	UpdateExadataComponentClusterName(RackID, hostID string, clusternames []string) error
 	UpdateExadataRdma(rackID string, rdma model.OracleExadataRdma) error

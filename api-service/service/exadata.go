@@ -18,33 +18,31 @@ package service
 import (
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func (as *APIService) ListExadataInstances(filter dto.GlobalFilter) ([]model.OracleExadataInstance, error) {
+func (as *APIService) ListExadataInstances(filter dto.GlobalFilter) ([]dto.ExadataInstanceResponse, error) {
 	return as.Database.ListExadataInstances(filter)
 }
 
+func (as *APIService) GetExadataInstance(rackid string) (*model.OracleExadataInstance, error) {
+	return as.Database.FindExadataInstance(rackid)
+}
+
 func (as *APIService) UpdateExadataVmClusterName(rackID, hostID, vmname, clustername string) error {
-	instance, err := as.Database.GetExadataInstance(rackID)
-	if err != nil {
+	if _, err := as.Database.FindExadataVmClustername(rackID, hostID, vmname); err != nil {
+		if err == mongo.ErrNoDocuments {
+			return as.Database.InsertExadataVmClustername(rackID, hostID, vmname, clustername)
+		}
+
 		return err
 	}
 
-	for i := range instance.Components {
-		if instance.Components[i].HostID == hostID {
-			for j := range instance.Components[i].VMs {
-				if instance.Components[i].VMs[j].Name == vmname {
-					instance.Components[i].VMs[j].ClusterName = clustername
-				}
-			}
-		}
-	}
-
-	return as.Database.UpdateExadataInstance(*instance)
+	return as.Database.UpdateExadataVmClustername(rackID, hostID, vmname, clustername)
 }
 
 func (as *APIService) UpdateExadataComponentClusterName(RackID, hostID string, clusternames []string) error {
-	instance, err := as.Database.GetExadataInstance(RackID)
+	instance, err := as.Database.FindExadataInstance(RackID)
 	if err != nil {
 		return err
 	}
@@ -59,7 +57,7 @@ func (as *APIService) UpdateExadataComponentClusterName(RackID, hostID string, c
 }
 
 func (as *APIService) UpdateExadataRdma(rackID string, rdma model.OracleExadataRdma) error {
-	instance, err := as.Database.GetExadataInstance(rackID)
+	instance, err := as.Database.FindExadataInstance(rackID)
 	if err != nil {
 		return err
 	}

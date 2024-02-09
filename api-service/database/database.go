@@ -251,9 +251,13 @@ type MongoDatabaseInterface interface {
 	RemoveNode(name string) error
 
 	// EXADATA
-	ListExadataInstances(filter dto.GlobalFilter) ([]model.OracleExadataInstance, error)
-	GetExadataInstance(rackID string) (*model.OracleExadataInstance, error)
+	ListExadataInstances(f dto.GlobalFilter) ([]dto.ExadataInstanceResponse, error)
+	FindExadataInstance(rackID string) (*model.OracleExadataInstance, error)
 	UpdateExadataInstance(instance model.OracleExadataInstance) error
+
+	InsertExadataVmClustername(rackID, hostID, vmname, clustername string) error
+	FindExadataVmClustername(rackID, hostID, vmname string) (*model.OracleExadataVmClustername, error)
+	UpdateExadataVmClustername(rackID, hostID, vmname, clustername string) error
 }
 
 // MongoDatabase is a implementation

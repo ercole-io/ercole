@@ -222,6 +222,7 @@ type APIControllerInterface interface {
 
 	// EXADATA
 	ListExadata(w http.ResponseWriter, r *http.Request)
+	GetExadata(w http.ResponseWriter, r *http.Request) 
 	UpdateExadataVmClusterName(w http.ResponseWriter, r *http.Request)
 	UpdateExadataComponentClusterName(w http.ResponseWriter, r *http.Request)
 	UpdateExadataRdma(w http.ResponseWriter, r *http.Request)

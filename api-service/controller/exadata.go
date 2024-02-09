@@ -37,13 +37,25 @@ func (ctrl *APIController) ListExadata(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	dtos, err := dto.ToOracleExadataInstances(res)
+	utils.WriteJSONResponse(w, http.StatusOK, res)
+}
+
+func (ctrl *APIController) GetExadata(w http.ResponseWriter, r *http.Request) {
+	rackID := mux.Vars(r)["rackID"]
+
+	exa, err := ctrl.Service.GetExadataInstance(rackID)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
-	utils.WriteJSONResponse(w, http.StatusOK, dtos)
+	res, err := dto.ToOracleExadataInstance(exa)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, res)
 }
 
 func (ctrl *APIController) UpdateExadataVmClusterName(w http.ResponseWriter, r *http.Request) {

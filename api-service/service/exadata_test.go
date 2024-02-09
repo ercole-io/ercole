@@ -36,16 +36,10 @@ func TestListExadataInstances_Success(t *testing.T) {
 		Config:   config.Configuration{},
 	}
 
-	expected := []model.OracleExadataInstance{
+	expected := []dto.ExadataInstanceResponse{
 		{
 			Hostname: "exadataTest01",
 			RackID:   "RACTEST01",
-			Components: []model.OracleExadataComponent{
-				{
-					RackID:   "RACCMPTEST01",
-					HostType: "DOM0",
-				},
-			},
 		},
 	}
 
@@ -67,24 +61,36 @@ func TestUpdateExadataVmClusterName_Success(t *testing.T) {
 		Config:   config.Configuration{},
 	}
 
-	original := model.OracleExadataInstance{
-		RackID: "rackID_test",
-		Components: []model.OracleExadataComponent{
-			{
-				HostID: "hostID_test",
-				VMs: []model.OracleExadataVM{
-					{
-						Name:        "vm_test",
-						ClusterName: "",
-					},
-				},
-			},
-		},
+	original := model.OracleExadataVmClustername{
+		InstanceRackID: "rackID_test",
+		HostID:         "hostID_test",
+		VmName:         "vm_test",
+		Clustername:    "original_clustername",
 	}
 
-	db.EXPECT().GetExadataInstance("rackID_test").Return(&original, nil).AnyTimes()
-	db.EXPECT().UpdateExadataInstance(original).Return(nil).AnyTimes()
+	db.EXPECT().FindExadataVmClustername("rackID_test", "hostID_test", "vm_test").Return(&original, nil).AnyTimes()
+	db.EXPECT().UpdateExadataVmClustername("rackID_test", "hostID_test", "vm_test", "updated_cluster_name").Return(nil).AnyTimes()
 
 	err := as.UpdateExadataVmClusterName("rackID_test", "hostID_test", "vm_test", "updated_cluster_name")
 	require.NoError(t, err)
+}
+
+func TestGetExadataInstance_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+		Config:   config.Configuration{},
+	}
+
+	expected := &model.OracleExadataInstance{
+		RackID: "rackid_test",
+	}
+
+	db.EXPECT().FindExadataInstance("rackid_test").Return(expected, nil)
+
+	res, err := as.GetExadataInstance("rackid_test")
+	require.NoError(t, err)
+	assert.Equal(t, expected, res)
 }
