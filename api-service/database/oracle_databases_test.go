@@ -119,7 +119,7 @@ func (m *MongodbSuite) TestSearchOracleDatabases() {
 				Name:         "ERCOLE",
 				Rac:          false,
 				SegmentsSize: 3,
-				PDBs:         []string{},
+				PDBs:         []model.OracleDatabasePluggableDatabase{},
 				Licenses: []model.OracleDatabaseLicense{
 					{
 						Count:         0.5,
@@ -191,7 +191,7 @@ func (m *MongodbSuite) TestSearchOracleDatabases() {
 				Name:         "pokemons",
 				Rac:          true,
 				SegmentsSize: 3,
-				PDBs:         []string{"PDB1"},
+				PDBs:         []model.OracleDatabasePluggableDatabase{model.OracleDatabasePluggableDatabase{Name: "PDB1"}},
 				Licenses: []model.OracleDatabaseLicense{
 					{
 						Count:         0.5,
@@ -295,7 +295,7 @@ func (m *MongodbSuite) TestSearchOracleDatabases() {
 				Name:         "pokemons",
 				Rac:          true,
 				SegmentsSize: 3,
-				PDBs:         []string{"PDB1"},
+				PDBs:         []model.OracleDatabasePluggableDatabase{model.OracleDatabasePluggableDatabase{Name: "PDB1"}},
 				Licenses: []model.OracleDatabaseLicense{
 					{
 						Count:         0.5,
@@ -378,7 +378,7 @@ func (m *MongodbSuite) TestSearchOracleDatabases() {
 				Name:         "ERCOLE",
 				Rac:          false,
 				SegmentsSize: 3,
-				PDBs:         []string{},
+				PDBs:         []model.OracleDatabasePluggableDatabase{},
 				Licenses: []model.OracleDatabaseLicense{
 					{
 						Count:         0.5,
@@ -428,7 +428,7 @@ func (m *MongodbSuite) TestSearchOracleDatabases() {
 				Name:         "pokemons",
 				Rac:          true,
 				SegmentsSize: 3,
-				PDBs:         []string{"PDB1"},
+				PDBs:         []model.OracleDatabasePluggableDatabase{model.OracleDatabasePluggableDatabase{Name: "PDB1"}},
 				Licenses: []model.OracleDatabaseLicense{
 					{
 						Count:         0.5,

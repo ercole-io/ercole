@@ -398,14 +398,16 @@ func (ctrl *APIController) SearchOracleDatabases(w http.ResponseWriter, r *http.
 
 	if filter.Location == "" {
 		user := context.Get(r, "user")
-		locations, errLocation := ctrl.Service.ListLocations(user)
+		if user != nil {
+			locations, errLocation := ctrl.Service.ListLocations(user)
 
-		if errLocation != nil {
-			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, errLocation)
-			return
+			if errLocation != nil {
+				utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, errLocation)
+				return
+			}
+
+			filter.Location = strings.Join(locations, ",")
 		}
-
-		filter.Location = strings.Join(locations, ",")
 	}
 
 	switch choice {
