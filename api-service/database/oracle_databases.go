@@ -90,7 +90,7 @@ func (md *MongoDatabase) SearchOracleDatabases(keywords []string, sortBy string,
 			mu.APSet(bson.M{
 				"database.pdbs": mu.APOCond("$database.isCDB", bson.M{
 					"$concatArrays": bson.A{
-						mu.APOMap("$database.pdbs", "pdb", "$$pdb.name"),
+						mu.APOMap("$database.pdbs", "pdb", "$$pdb"),
 					},
 				}, []string{}),
 			}),
