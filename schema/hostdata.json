@@ -267,7 +267,6 @@
                     },
                     "usedSpace": {
                         "type": "integer",
-                        "minimum": 0,
                         "$comment": "used in bytes"
                     },
                     "availableSpace": {
