@@ -29,7 +29,7 @@ func (as *APIService) GetOraclePsqlMigrabilitiesSemaphore(hostname, dbname strin
 		return "", err
 	}
 
-	color := "red"
+	color := ""
 
 	for _, migrability := range psqlMigrabilities {
 		if migrability.Metric != nil && *migrability.Metric == "PLSQL LINES" {
@@ -38,6 +38,8 @@ func (as *APIService) GetOraclePsqlMigrabilitiesSemaphore(hostname, dbname strin
 				color = "green"
 			case migrability.Count >= 1000 && migrability.Count <= 10000:
 				color = "yellow"
+			case migrability.Count > 10000:
+				color = "red"
 			}
 		}
 	}
