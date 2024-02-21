@@ -53,8 +53,6 @@ func (md *MongoDatabase) FindExadataInstance(rackID string) (*model.OracleExadat
 
 	pipeline := bson.A{
 		bson.D{{Key: "$match", Value: bson.D{{Key: "rackID", Value: rackID}}}},
-		bson.D{{Key: "$unwind", Value: "$components"}},
-		bson.D{{Key: "$unwind", Value: "$components.vms"}},
 		bson.D{
 			{Key: "$lookup",
 				Value: bson.D{
@@ -68,93 +66,127 @@ func (md *MongoDatabase) FindExadataInstance(rackID string) (*model.OracleExadat
 		bson.D{
 			{Key: "$set",
 				Value: bson.D{
-					{Key: "components.vms.clusterName",
-						Value: bson.D{
-							{Key: "$cond",
-								Value: bson.D{
-									{Key: "if",
-										Value: bson.D{
-											{Key: "$eq",
-												Value: bson.A{
-													bson.D{{Key: "$size", Value: "$matchedDocument"}},
-													1,
-												},
-											},
-										},
-									},
-									{Key: "then",
-										Value: bson.D{
-											{Key: "$arrayElemAt",
-												Value: bson.A{
-													"$matchedDocument.clustername",
-													0,
-												},
-											},
-										},
-									},
-									{Key: "else", Value: ""},
-								},
-							},
-						},
-					},
-				},
-			},
-		},
-		bson.D{
-			{Key: "$group",
-				Value: bson.D{
-					{Key: "_id",
-						Value: bson.D{
-							{Key: "_id", Value: "$_id"},
-							{Key: "hostname", Value: "$hostname"},
-							{Key: "environment", Value: "$environment"},
-							{Key: "location", Value: "$location"},
-							{Key: "rackID", Value: "$rackID"},
-						},
-					},
 					{Key: "components",
 						Value: bson.D{
-							{Key: "$push",
+							{Key: "$map",
 								Value: bson.D{
-									{Key: "rackID", Value: "$components.rackID"},
-									{Key: "hostType", Value: "$components.hostType"},
-									{Key: "hostname", Value: "$components.hostname"},
-									{Key: "hostID", Value: "$components.hostID"},
-									{Key: "cpuEnabled", Value: "$components.cpuEnabled"},
-									{Key: "totalCPU", Value: "$components.totalCPU"},
-									{Key: "memory", Value: "$components.memory"},
-									{Key: "imageVersion", Value: "$components.imageVersion"},
-									{Key: "kernel", Value: "$components.kernel"},
-									{Key: "model", Value: "$components.model"},
-									{Key: "fanUsed", Value: "$components.fanUsed"},
-									{Key: "fanTotal", Value: "$components.fanTotal"},
-									{Key: "psuUsed", Value: "$components.psuUsed"},
-									{Key: "psuTotal", Value: "$components.psuTotal"},
-									{Key: "msStatus", Value: "$components.msStatus"},
-									{Key: "rsStatus", Value: "$components.rsStatus"},
-									{Key: "cellServiceStatus", Value: "$components.cellServiceStatus"},
-									{Key: "swVersion", Value: "$components.swVersion"},
-									{Key: "vms",
-										Value: bson.A{
-											bson.D{
-												{Key: "type", Value: "$components.vms.type"},
-												{Key: "physicalHost", Value: "$components.vms.physicalHost"},
-												{Key: "status", Value: "$components.vms.status"},
-												{Key: "name", Value: "$components.vms.name"},
-												{Key: "cpuCurrent", Value: "$components.vms.cpuCurrent"},
-												{Key: "cpuRestart", Value: "$components.vms.cpuRestart"},
-												{Key: "ramCurrent", Value: "$components.vms.ramCurrent"},
-												{Key: "ramRestart", Value: "$components.vms.ramRestart"},
-												{Key: "cpuOnline", Value: "$components.vms.cpuOnline"},
-												{Key: "cpuMaxUsable", Value: "$components.vms.cpuMaxUsable"},
-												{Key: "ramOnline", Value: "$components.vms.ramOnline"},
-												{Key: "ramMaxUsable", Value: "$components.vms.ramMaxUsable"},
-												{Key: "clusterName", Value: "$components.vms.clusterName"},
+									{Key: "input", Value: "$components"},
+									{Key: "as", Value: "component"},
+									{Key: "in",
+										Value: bson.D{
+											{Key: "$mergeObjects",
+												Value: bson.A{
+													"$$component",
+													bson.D{
+														{Key: "vms",
+															Value: bson.D{
+																{Key: "$map",
+																	Value: bson.D{
+																		{Key: "input", Value: "$$component.vms"},
+																		{Key: "as", Value: "vm"},
+																		{Key: "in",
+																			Value: bson.D{
+																				{Key: "$mergeObjects",
+																					Value: bson.A{
+																						"$$vm",
+																						bson.D{
+																							{Key: "clusterName",
+																								Value: bson.D{
+																									{Key: "$let",
+																										Value: bson.D{
+																											{Key: "vars",
+																												Value: bson.D{
+																													{Key: "matchedDocument",
+																														Value: bson.D{
+																															{Key: "$filter",
+																																Value: bson.D{
+																																	{Key: "input", Value: "$matchedDocument"},
+																																	{Key: "as", Value: "match"},
+																																	{Key: "cond",
+																																		Value: bson.D{
+																																			{Key: "$and",
+																																				Value: bson.A{
+																																					bson.D{
+																																						{Key: "$eq",
+																																							Value: bson.A{
+																																								"$$match.instancerackid",
+																																								"$rackID",
+																																							},
+																																						},
+																																					},
+																																					bson.D{
+																																						{Key: "$eq",
+																																							Value: bson.A{
+																																								"$$match.vmname",
+																																								"$$vm.name",
+																																							},
+																																						},
+																																					},
+																																					bson.D{
+																																						{Key: "$eq",
+																																							Value: bson.A{
+																																								"$$match.hostid",
+																																								"$$component.hostID",
+																																							},
+																																						},
+																																					},
+																																				},
+																																			},
+																																		},
+																																	},
+																																},
+																															},
+																														},
+																													},
+																												},
+																											},
+																											{Key: "in",
+																												Value: bson.D{
+																													{Key: "$cond",
+																														Value: bson.D{
+																															{Key: "if",
+																																Value: bson.D{
+																																	{Key: "$gt",
+																																		Value: bson.A{
+																																			bson.D{{Key: "$size", Value: "$$matchedDocument"}},
+																																			0,
+																																		},
+																																	},
+																																},
+																															},
+																															{Key: "then",
+																																Value: bson.D{
+																																	{Key: "$arrayElemAt",
+																																		Value: bson.A{
+																																			"$$matchedDocument.clustername",
+																																			0,
+																																		},
+																																	},
+																																},
+																															},
+																															{Key: "else", Value: ""},
+																														},
+																													},
+																												},
+																											},
+																										},
+																									},
+																								},
+																							},
+																						},
+																					},
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
 											},
 										},
 									},
-									{Key: "storageCells", Value: "$components.storageCells"},
-									{Key: "clusterNames", Value: "$components.clusterNames"},
 								},
 							},
 						},
@@ -162,18 +194,7 @@ func (md *MongoDatabase) FindExadataInstance(rackID string) (*model.OracleExadat
 				},
 			},
 		},
-		bson.D{
-			{Key: "$project",
-				Value: bson.D{
-					{Key: "_id", Value: "$_id._id"},
-					{Key: "hostname", Value: "$_id.hostname"},
-					{Key: "environment", Value: "$_id.environment"},
-					{Key: "location", Value: "$_id.location"},
-					{Key: "rackID", Value: "$_id.rackID"},
-					{Key: "components", Value: "$components"},
-				},
-			},
-		},
+		bson.D{{Key: "$unset", Value: "matchedDocument"}},
 	}
 
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(exadataCollection).Aggregate(ctx, pipeline)
