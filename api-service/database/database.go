@@ -254,6 +254,8 @@ type MongoDatabaseInterface interface {
 	ListExadataInstances(f dto.GlobalFilter) ([]dto.ExadataInstanceResponse, error)
 	FindExadataInstance(rackID string) (*model.OracleExadataInstance, error)
 	UpdateExadataInstance(instance model.OracleExadataInstance) error
+	FindAllExadataInstances() ([]model.OracleExadataInstance, error)
+	FindExadataClusterViews() ([]dto.OracleExadataClusterView, error)
 
 	InsertExadataVmClustername(rackID, hostID, vmname, clustername string) error
 	FindExadataVmClustername(rackID, hostID, vmname string) (*model.OracleExadataVmClustername, error)

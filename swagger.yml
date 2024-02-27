@@ -4563,6 +4563,20 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ExadataInstanceResponseList"
+
+  /exadata/export:
+    get:
+      tags:
+        - api-service
+      summary: Create a report conatins all the exadatas
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema:
+                type: object
+                properties: {}
   
   /exadata/{rackID}:
     get:

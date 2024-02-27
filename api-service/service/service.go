@@ -312,6 +312,7 @@ type APIServiceInterface interface {
 	UpdateExadataVmClusterName(rackID, hostID, vmname, clustername string) error
 	UpdateExadataComponentClusterName(RackID, hostID string, clusternames []string) error
 	UpdateExadataRdma(rackID string, rdma model.OracleExadataRdma) error
+	GetAllExadataInstanceAsXlsx() (*excelize.File, error)
 }
 
 // APIService is the concrete implementation of APIServiceInterface.
