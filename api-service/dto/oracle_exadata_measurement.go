@@ -83,3 +83,14 @@ func (m *OracleExadataMeasurement) ToTb() (*OracleExadataMeasurement, error) {
 func (m *OracleExadataMeasurement) SetUnparsedValue() {
 	m.UnparsedValue = fmt.Sprintf("%v%s", m.Quantity, m.Symbol)
 }
+
+func (m *OracleExadataMeasurement) String() string {
+	res, err := m.ToTb()
+	if err != nil {
+		return ""
+	}
+
+	res.SetUnparsedValue()
+
+	return res.UnparsedValue
+}

@@ -188,3 +188,34 @@ func (c *OracleExadataComponent) GetTotalFreeSpace() (*OracleExadataMeasurement,
 
 	return &totfreespace, nil
 }
+
+func (c *OracleExadataComponent) GetCpuUsagePercentage() float64 {
+	calc := (float64(c.UsedCPU) / float64(c.TotalCPU)) * 100
+	return utils.TruncateFloat64(calc)
+}
+
+func (c *OracleExadataComponent) GetRamUsagePercentage() float64 {
+	calc := (float64(c.UsedRAM) / float64(c.Memory)) * 100
+	return utils.TruncateFloat64(calc)
+}
+
+func (c *OracleExadataComponent) GetTotalUsed() *OracleExadataMeasurement {
+	tot, err := c.TotalSize.ToTb()
+	if err != nil {
+		return nil
+	}
+
+	free, err := c.TotalFreeSpace.ToTb()
+	if err != nil {
+		return nil
+	}
+
+	res := &OracleExadataMeasurement{
+		Symbol:   "TB",
+		Quantity: tot.Quantity - free.Quantity,
+	}
+
+	res.SetUnparsedValue()
+
+	return res
+}

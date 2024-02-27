@@ -1,0 +1,113 @@
+// Copyright (c) 2024 Sorint.lab S.p.A.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+package service
+
+import (
+	"github.com/360EntSecGroup-Skylar/excelize"
+	"github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/utils/exutils"
+)
+
+func (as APIService) GetAllExadataInstanceAsXlsx() (*excelize.File, error) {
+	exadataInstances, err := as.getAllExadataInstance()
+	if err != nil {
+		return nil, err
+	}
+
+	memorysheet := "Memory-CPU"
+	storagesheet := "Storage"
+	clustersheet := "Cluster View"
+
+	file, err := excelize.OpenFile(as.Config.ResourceFilePath + "/templates/template_exadatas.xlsx")
+	if err != nil {
+		return nil, err
+	}
+	
+	axisHelperMem := exutils.NewAxisHelper(1)
+	axisHelperStorage := exutils.NewAxisHelper(1)
+	axisHelperUnk := exutils.NewAxisHelper(1)
+	
+	for _, instance := range exadataInstances {
+		for _, component := range instance.Components {
+			switch {
+			case component.HostType != "STORAGE_CELL":
+				nextAxis := axisHelperMem.NewRow()
+				file.SetCellValue(memorysheet, nextAxis(), instance.Hostname)
+				file.SetCellValue(memorysheet, nextAxis(), instance.RackID)
+				file.SetCellValue(memorysheet, nextAxis(), component.Hostname)
+				file.SetCellValue(memorysheet, nextAxis(), component.HostType)
+				file.SetCellValue(memorysheet, nextAxis(), component.HostID)
+				file.SetCellValue(memorysheet, nextAxis(), component.Memory)
+				file.SetCellValue(memorysheet, nextAxis(), component.UsedRAM)
+				file.SetCellValue(memorysheet, nextAxis(), component.GetRamUsagePercentage())
+				file.SetCellValue(memorysheet, nextAxis(), component.TotalCPU)
+				file.SetCellValue(memorysheet, nextAxis(), component.UsedCPU)
+				file.SetCellValue(memorysheet, nextAxis(), component.GetCpuUsagePercentage())
+
+			case component.HostType == "STORAGE_CELL":
+				nextAxis := axisHelperStorage.NewRow()
+				file.SetCellValue(storagesheet, nextAxis(), instance.Hostname)
+				file.SetCellValue(storagesheet, nextAxis(), instance.RackID)
+				file.SetCellValue(storagesheet, nextAxis(), component.Hostname)
+				file.SetCellValue(storagesheet, nextAxis(), component.HostType)
+				file.SetCellValue(storagesheet, nextAxis(), component.HostID)
+				file.SetCellValue(storagesheet, nextAxis(), component.TotalSize.String())
+				file.SetCellValue(storagesheet, nextAxis(), component.GetTotalUsed())
+				file.SetCellValue(storagesheet, nextAxis(), component.TotalFreeSpace.String())
+			}
+		}
+	}
+
+	clusterViews, err := as.Database.FindExadataClusterViews()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, cv := range clusterViews {
+		nextAxisCls := axisHelperUnk.NewRow()
+		file.SetCellValue(clustersheet, nextAxisCls(), cv.Hostname)
+		file.SetCellValue(clustersheet, nextAxisCls(), cv.RackID)
+		file.SetCellValue(clustersheet, nextAxisCls(), cv.HostType)
+		file.SetCellValue(clustersheet, nextAxisCls(), cv.Clustername)
+
+		for i, vmname := range cv.VmNames {
+			if i > 1 {
+				file.InsertCol(clustersheet, "G")
+			}
+
+			file.SetCellValue(clustersheet, nextAxisCls(), vmname.(string))
+		}
+
+		file.SetCellValue(clustersheet, nextAxisCls(), cv.TotalRAM/1024)
+		file.SetCellValue(clustersheet, nextAxisCls(), cv.TotalCPU)
+	}
+
+	return file, err
+}
+
+func (as APIService) getAllExadataInstance() ([]dto.OracleExadataInstance, error) {
+	instances, err := as.Database.FindAllExadataInstances()
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := dto.ToOracleExadataInstances(instances)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, err
+}

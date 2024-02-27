@@ -16,6 +16,7 @@
 package controller
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
@@ -121,4 +122,20 @@ func (ctrl *APIController) UpdateExadataRdma(w http.ResponseWriter, r *http.Requ
 	}
 
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func (ctrl *APIController) ExportExadataInstances(w http.ResponseWriter, r *http.Request) {
+	contentType := r.Header.Get("Content-Type")
+	if contentType == "" || contentType != "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, errors.New("invalid Content-Type"))
+		return
+	}
+
+	res, err := ctrl.Service.GetAllExadataInstanceAsXlsx()
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	utils.WriteXLSXResponse(w, res)
 }
