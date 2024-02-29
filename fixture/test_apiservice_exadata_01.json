@@ -1,0 +1,113 @@
+{
+    "hostname": "exa01",
+    "environment": "TST",
+    "location": "Italy",
+    "rackID": "3M2ORPFI9Q",
+    "components": [
+      {
+        "rackID": "3M2ORPFI9Q",
+        "hostType": "KVM_HOST",
+        "hostname": "exa01db01",
+        "hostID": "hostID_01",
+        "cpuEnabled": 2,
+        "totalCPU": 2,
+        "memory": 100,
+        "vms": [
+          {
+            "type": "VM_KVM",
+            "physicalHost": "exa01db01",
+            "status": "Running",
+            "name": "vm.name.01",
+            "cpuCurrent": 2,
+            "cpuRestart": 2,
+            "ramCurrent": 2,
+            "ramRestart": 2,
+            "cpuOnline": 0,
+            "cpuMaxUsable": 0,
+            "ramOnline": 0,
+            "ramMaxUsable": 0
+          },
+          {
+            "type": "VM_KVM",
+            "physicalHost": "exa01db01",
+            "name": "vm.name.01"
+          }
+        ],
+        "storageCells": null,
+        "clusterNames": null
+      },
+      {
+        "rackID": "3M2ORPFI9Q",
+        "hostType": "KVM_HOST",
+        "hostname": "exa01db02",
+        "hostID": "hostID_02",
+        "cpuEnabled": 2,
+        "totalCPU": 2,
+        "memory": 100,
+        "vms": [
+          {
+            "type": "VM_KVM",
+            "physicalHost": "exa01db02",
+            "status": "Running",
+            "name": "vm.name.01",
+            "cpuCurrent": 2,
+            "cpuRestart": 2,
+            "ramCurrent": 2,
+            "ramRestart": 2,
+            "cpuOnline": 0,
+            "cpuMaxUsable": 0,
+            "ramOnline": 0,
+            "ramMaxUsable": 0
+          }
+        ],
+        "storageCells": null,
+        "clusterNames": null
+      },
+      {
+        "rackID": "3M2ORPFI9Q",
+        "hostType": "STORAGE_CELL",
+        "hostname": "exa01cel01",
+        "hostID": "HOST_01",
+        "cpuEnabled": 2,
+        "totalCPU": 2,
+        "memory": 100,
+        "vms": null,
+        "storageCells": [
+          {
+            "type": "CELLDISK",
+            "hostname": "",
+            "cellDisk": "CD_01_exa01cel01",
+            "cell": "exa01cel01",
+            "size": "12.45T",
+            "freeSpace": "741.75G",
+            "gridDisks": [
+              {
+                "type": "GRIDDISK",
+                "hostname": "",
+                "gridDisk": "GD_01_exa01cel01",
+                "cellDisk": "CD_01_exa01cel01",
+                "size": "3.35T"
+              }
+            ],
+            "databases": [
+              {
+                "type": "DATABASE",
+                "dbName": "DBNAME01",
+                "cell": "exa01cel01"
+              }
+            ]
+          }
+        ],
+        "clusterNames": [
+          "cluster01",
+          "cluster02",
+          "cluster03"
+        ]
+      }
+    ],
+    "rdma": {
+      "switchName": "SWNAME01",
+      "model": "12",
+      "swVersion": "23.2"
+    }
+  }

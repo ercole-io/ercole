@@ -15,13 +15,7 @@
 
 package dto
 
-import (
-	"errors"
-	"fmt"
-
-	"github.com/ercole-io/ercole/v2/model"
-	"github.com/ercole-io/ercole/v2/utils"
-)
+import "github.com/ercole-io/ercole/v2/api-service/domain"
 
 type OracleExadataComponent struct {
 	RackID            string                     `json:"rackID"`
@@ -30,7 +24,7 @@ type OracleExadataComponent struct {
 	HostID            string                     `json:"hostID"`
 	CPUEnabled        int                        `json:"cpuEnabled"`
 	TotalCPU          int                        `json:"totalCPU"`
-	Memory            int                        `json:"memory"`
+	Memory            string                     `json:"memory"`
 	ImageVersion      string                     `json:"imageVersion"`
 	Kernel            string                     `json:"kernel"`
 	Model             string                     `json:"model"`
@@ -42,180 +36,108 @@ type OracleExadataComponent struct {
 	RsStatus          string                     `json:"rsStatus"`
 	CellServiceStatus string                     `json:"cellServiceStatus"`
 	SwVersion         string                     `json:"swVersion"`
-	VMs               []model.OracleExadataVM    `json:"vms,omitempty"`
+	VMs               []OracleExadataVM          `json:"vms,omitempty"`
 	StorageCells      []OracleExadataStorageCell `json:"storageCells,omitempty"`
 	ClusterNames      []string                   `json:"clusterNames"`
 
-	UsedRAM int `json:"usedRAM"`
-	FreeRAM int `json:"freeRAM"`
-	UsedCPU int `json:"usedCPU"`
-	FreeCPU int `json:"freeCPU"`
+	UsedRAM           string `json:"usedRAM"`
+	FreeRAM           string `json:"freeRAM"`
+	UsedRAMPercentage string `json:"usedRAMPercentage"`
 
-	FreeSizePercentage float64                   `json:"freeSizePercentage"`
-	TotalSize          *OracleExadataMeasurement `json:"totalSize"`
-	TotalFreeSpace     *OracleExadataMeasurement `json:"totalFreeSpace"`
+	UsedCPU           int    `json:"usedCPU"`
+	FreeCPU           int    `json:"freeCPU"`
+	UsedCPUPercentage string `json:"usedCPUPercentage"`
+
+	TotalSize          string `json:"totalSize"`
+	TotalFreeSpace     string `json:"totalFreeSpace"`
+	UsedSizePercentage string `json:"usedSizePercentage"`
 }
 
-func ToOracleExadataComponent(componentModel *model.OracleExadataComponent) (*OracleExadataComponent, error) {
-	if componentModel != nil {
-		storagedtos, err := ToOracleExadataStorageCells(componentModel.StorageCells)
-		if err != nil {
-			return nil, err
-		}
-
-		res := OracleExadataComponent{
-			RackID:            componentModel.RackID,
-			HostType:          componentModel.HostType,
-			Hostname:          componentModel.Hostname,
-			HostID:            componentModel.HostID,
-			CPUEnabled:        componentModel.CPUEnabled,
-			TotalCPU:          componentModel.TotalCPU,
-			Memory:            componentModel.Memory,
-			ImageVersion:      componentModel.ImageVersion,
-			Kernel:            componentModel.Kernel,
-			Model:             componentModel.Model,
-			FanUsed:           componentModel.FanUsed,
-			FanTotal:          componentModel.FanTotal,
-			PsuUsed:           componentModel.PsuUsed,
-			PsuTotal:          componentModel.PsuTotal,
-			MsStatus:          componentModel.MsStatus,
-			RsStatus:          componentModel.RsStatus,
-			CellServiceStatus: componentModel.CellServiceStatus,
-			SwVersion:         componentModel.SwVersion,
-			VMs:               componentModel.VMs,
-			StorageCells:      storagedtos,
-			ClusterNames:      componentModel.ClusterNames,
-		}
-
-		for _, vm := range componentModel.VMs {
-			if vm.Type == model.VM_KVM || vm.Type == model.VM_XEN {
-				res.UsedRAM += (vm.RamCurrent / 1000) + (vm.RamOnline / 1000)
-				res.UsedCPU += vm.CPUCurrent + vm.CPUOnline
-			}
-		}
-
-		if res.HostType == model.DOM0 || res.HostType == model.KVM_HOST {
-			res.FreeRAM = res.Memory - res.UsedRAM
-			res.FreeCPU = res.TotalCPU - res.UsedCPU
-		}
-
-		perc, err := res.GetFreeSpacePercentage()
-		if err != nil {
-			return nil, err
-		}
-
-		res.FreeSizePercentage = utils.TruncateFloat64(perc)
-
-		totsize, err := res.GetTotalSize()
-		if err != nil {
-			return nil, err
-		}
-
-		totsize.Quantity = utils.TruncateFloat64(totsize.Quantity)
-
-		res.TotalSize = totsize
-
-		totfreespace, err := res.GetTotalFreeSpace()
-		if err != nil {
-			return nil, err
-		}
-
-		totfreespace.Quantity = utils.TruncateFloat64(totfreespace.Quantity)
-
-		res.TotalFreeSpace = totfreespace
-
-		return &res, nil
+func ToOracleExadataComponent(d domain.OracleExadataComponent) (*OracleExadataComponent, error) {
+	res := &OracleExadataComponent{
+		RackID:             d.RackID,
+		HostType:           d.HostType,
+		Hostname:           d.Hostname,
+		HostID:             d.HostID,
+		CPUEnabled:         d.CPUEnabled,
+		TotalCPU:           d.TotalCPU,
+		ImageVersion:       d.ImageVersion,
+		Kernel:             d.Kernel,
+		Model:              d.Model,
+		FanUsed:            d.FanUsed,
+		FanTotal:           d.FanTotal,
+		PsuUsed:            d.PsuUsed,
+		PsuTotal:           d.PsuTotal,
+		MsStatus:           d.MsStatus,
+		RsStatus:           d.RsStatus,
+		CellServiceStatus:  d.CellServiceStatus,
+		SwVersion:          d.SwVersion,
+		ClusterNames:       d.ClusterNames,
+		UsedCPU:            d.UsedCPU,
+		FreeCPU:            d.FreeCPU,
+		UsedSizePercentage: d.UsedSizePercentage,
+		UsedRAMPercentage:  d.UsedRAMPercentage,
+		UsedCPUPercentage:  d.UsedCPUPercentage,
 	}
 
-	return nil, errors.New("cannot convert model OracleExadataComponent dto")
-}
-
-func (c *OracleExadataComponent) GetFreeSpacePercentage() (float64, error) {
-	totsize := 0.0
-	totFreeSpace := 0.0
-
-	for _, storageCell := range c.StorageCells {
-		sizeTb, err := storageCell.Size.ToTb()
+	if d.Memory != nil {
+		hmem, err := d.Memory.Human("GIB")
 		if err != nil {
-			return 0, err
+			return nil, err
 		}
 
-		totsize += utils.TruncateFloat64(sizeTb.Quantity)
-
-		freeSpaceTb, err := storageCell.FreeSpace.ToTb()
-		if err != nil {
-			return 0, err
-		}
-
-		totFreeSpace += utils.TruncateFloat64(freeSpaceTb.Quantity)
+		res.Memory = hmem
 	}
 
-	res := utils.TruncateFloat64((totFreeSpace * 100) / totsize)
+	if d.UsedRAM != nil {
+		husedram, err := d.UsedRAM.Human("GIB")
+		if err != nil {
+			return nil, err
+		}
+
+		res.UsedRAM = husedram
+	}
+
+	if d.FreeRAM != nil {
+		hfreeram, err := d.FreeRAM.Human("GIB")
+		if err != nil {
+			return nil, err
+		}
+
+		res.FreeRAM = hfreeram
+	}
+
+	if d.TotalSize != nil {
+		htotalsize, err := d.TotalSize.Human("GIB")
+		if err != nil {
+			return nil, err
+		}
+
+		res.TotalSize = htotalsize
+	}
+
+	if d.TotalFreeSpace != nil {
+		htotalfreespace, err := d.TotalFreeSpace.Human("GIB")
+		if err != nil {
+			return nil, err
+		}
+
+		res.TotalFreeSpace = htotalfreespace
+	}
+
+	vms, err := domain.ToUpperLevelLayers[domain.OracleExadataVM, OracleExadataVM](d.VMs, ToOracleExadataVM)
+	if err != nil {
+		return nil, err
+	}
+
+	res.VMs = vms
+
+	storagecells, err := domain.ToUpperLevelLayers[domain.OracleExadataStorageCell, OracleExadataStorageCell](d.StorageCells, ToOracleExadataStorageCell)
+	if err != nil {
+		return nil, err
+	}
+
+	res.StorageCells = storagecells
 
 	return res, nil
-}
-
-func (c *OracleExadataComponent) GetTotalSize() (*OracleExadataMeasurement, error) {
-	totsize := OracleExadataMeasurement{Symbol: "TB"}
-
-	for _, storageCell := range c.StorageCells {
-		sizeTb, err := storageCell.Size.ToTb()
-		if err != nil {
-			return nil, err
-		}
-
-		totsize.Quantity += utils.TruncateFloat64(sizeTb.Quantity)
-	}
-
-	totsize.UnparsedValue = fmt.Sprintf("%v%s", utils.TruncateFloat64(totsize.Quantity), totsize.Symbol)
-
-	return &totsize, nil
-}
-
-func (c *OracleExadataComponent) GetTotalFreeSpace() (*OracleExadataMeasurement, error) {
-	totfreespace := OracleExadataMeasurement{Symbol: "TB"}
-
-	for _, storageCell := range c.StorageCells {
-		freespaceTb, err := storageCell.FreeSpace.ToTb()
-		if err != nil {
-			return nil, err
-		}
-
-		totfreespace.Quantity += utils.TruncateFloat64(freespaceTb.Quantity)
-	}
-
-	totfreespace.UnparsedValue = fmt.Sprintf("%v%s", utils.TruncateFloat64(totfreespace.Quantity), totfreespace.Symbol)
-
-	return &totfreespace, nil
-}
-
-func (c *OracleExadataComponent) GetCpuUsagePercentage() float64 {
-	calc := (float64(c.UsedCPU) / float64(c.TotalCPU)) * 100
-	return utils.TruncateFloat64(calc)
-}
-
-func (c *OracleExadataComponent) GetRamUsagePercentage() float64 {
-	calc := (float64(c.UsedRAM) / float64(c.Memory)) * 100
-	return utils.TruncateFloat64(calc)
-}
-
-func (c *OracleExadataComponent) GetTotalUsed() *OracleExadataMeasurement {
-	tot, err := c.TotalSize.ToTb()
-	if err != nil {
-		return nil
-	}
-
-	free, err := c.TotalFreeSpace.ToTb()
-	if err != nil {
-		return nil
-	}
-
-	res := &OracleExadataMeasurement{
-		Symbol:   "TB",
-		Quantity: tot.Quantity - free.Quantity,
-	}
-
-	res.SetUnparsedValue()
-
-	return res
 }

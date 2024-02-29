@@ -99,3 +99,8 @@ func (db *MongodbSuite) InsertAlert(alert model.Alert) {
 	_, err := db.db.Client.Database(db.db.Config.Mongodb.DBName).Collection("alerts").InsertOne(context.TODO(), alert)
 	db.Require().NoError(err)
 }
+
+func (db *MongodbSuite) InsertExadata(exadata model.RawObject) {
+	_, err := db.db.Client.Database(db.dbname).Collection("exadatas").InsertOne(context.TODO(), exadata)
+	db.Require().NoError(err)
+}

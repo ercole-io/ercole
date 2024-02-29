@@ -25,6 +25,7 @@ import (
 
 	alertServiceClient "github.com/ercole-io/ercole/v2/alert-service/client"
 	"github.com/ercole-io/ercole/v2/api-service/database"
+	"github.com/ercole-io/ercole/v2/api-service/domain"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	alert_filter "github.com/ercole-io/ercole/v2/api-service/dto/filter"
 	"github.com/ercole-io/ercole/v2/config"
@@ -308,7 +309,7 @@ type APIServiceInterface interface {
 
 	// EXADATA
 	ListExadataInstances(filter dto.GlobalFilter) ([]dto.ExadataInstanceResponse, error)
-	GetExadataInstance(rackid string) (*model.OracleExadataInstance, error)
+	GetExadataInstance(rackid string) (*domain.OracleExadataInstance, error)
 	UpdateExadataVmClusterName(rackID, hostID, vmname, clustername string) error
 	UpdateExadataComponentClusterName(RackID, hostID string, clusternames []string) error
 	UpdateExadataRdma(rackID string, rdma model.OracleExadataRdma) error

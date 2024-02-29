@@ -17,7 +17,9 @@ package service
 
 import (
 	"github.com/360EntSecGroup-Skylar/excelize"
+	"github.com/ercole-io/ercole/v2/api-service/domain"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils/exutils"
 )
 
@@ -35,15 +37,15 @@ func (as APIService) GetAllExadataInstanceAsXlsx() (*excelize.File, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	axisHelperMem := exutils.NewAxisHelper(1)
 	axisHelperStorage := exutils.NewAxisHelper(1)
 	axisHelperUnk := exutils.NewAxisHelper(1)
-	
+
 	for _, instance := range exadataInstances {
 		for _, component := range instance.Components {
 			switch {
-			case component.HostType != "STORAGE_CELL":
+			case component.HostType != model.STORAGE_CELL:
 				nextAxis := axisHelperMem.NewRow()
 				file.SetCellValue(memorysheet, nextAxis(), instance.Hostname)
 				file.SetCellValue(memorysheet, nextAxis(), instance.RackID)
@@ -52,21 +54,21 @@ func (as APIService) GetAllExadataInstanceAsXlsx() (*excelize.File, error) {
 				file.SetCellValue(memorysheet, nextAxis(), component.HostID)
 				file.SetCellValue(memorysheet, nextAxis(), component.Memory)
 				file.SetCellValue(memorysheet, nextAxis(), component.UsedRAM)
-				file.SetCellValue(memorysheet, nextAxis(), component.GetRamUsagePercentage())
+				file.SetCellValue(memorysheet, nextAxis(), component.UsedRAMPercentage)
 				file.SetCellValue(memorysheet, nextAxis(), component.TotalCPU)
 				file.SetCellValue(memorysheet, nextAxis(), component.UsedCPU)
-				file.SetCellValue(memorysheet, nextAxis(), component.GetCpuUsagePercentage())
+				file.SetCellValue(memorysheet, nextAxis(), component.UsedCPUPercentage)
 
-			case component.HostType == "STORAGE_CELL":
+			case component.HostType == model.STORAGE_CELL:
 				nextAxis := axisHelperStorage.NewRow()
 				file.SetCellValue(storagesheet, nextAxis(), instance.Hostname)
 				file.SetCellValue(storagesheet, nextAxis(), instance.RackID)
 				file.SetCellValue(storagesheet, nextAxis(), component.Hostname)
 				file.SetCellValue(storagesheet, nextAxis(), component.HostType)
 				file.SetCellValue(storagesheet, nextAxis(), component.HostID)
-				file.SetCellValue(storagesheet, nextAxis(), component.TotalSize.String())
-				file.SetCellValue(storagesheet, nextAxis(), component.GetTotalUsed())
-				file.SetCellValue(storagesheet, nextAxis(), component.TotalFreeSpace.String())
+				file.SetCellValue(storagesheet, nextAxis(), component.TotalSize)
+				file.SetCellValue(storagesheet, nextAxis(), component.UsedSizePercentage)
+				file.SetCellValue(storagesheet, nextAxis(), component.TotalFreeSpace)
 			}
 		}
 	}
@@ -104,7 +106,12 @@ func (as APIService) getAllExadataInstance() ([]dto.OracleExadataInstance, error
 		return nil, err
 	}
 
-	res, err := dto.ToOracleExadataInstances(instances)
+	doms, err := domain.ToUpperLevelLayers[model.OracleExadataInstance, domain.OracleExadataInstance](instances, domain.ToOracleExadataInstance)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := domain.ToUpperLevelLayers[domain.OracleExadataInstance, dto.OracleExadataInstance](doms, dto.ToOracleExadataInstance)
 	if err != nil {
 		return nil, err
 	}

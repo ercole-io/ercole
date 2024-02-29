@@ -16,11 +16,10 @@
 package dto
 
 import (
-	"errors"
 	"time"
 
+	"github.com/ercole-io/ercole/v2/api-service/domain"
 	"github.com/ercole-io/ercole/v2/model"
-	"github.com/ercole-io/ercole/v2/utils"
 )
 
 type OracleExadataInstance struct {
@@ -33,95 +32,99 @@ type OracleExadataInstance struct {
 	Components  []OracleExadataComponent `json:"components"`
 	RDMA        *model.OracleExadataRdma `json:"rdma"`
 
-	TotalMemory int `json:"totalMemory"`
-	UsedMemory  int `json:"usedMemory"`
-	FreeMemory  int `json:"freeMemory"`
+	TotalMemory           string `json:"totalMemory"`
+	UsedMemory            string `json:"usedMemory"`
+	FreeMemory            string `json:"freeMemory"`
+	UsedMemoryMPercentage string `json:"usedMemoryPercentage"`
 
-	TotalCPU int `json:"totalCPU"`
-	UsedCPU  int `json:"usedCPU"`
-	FreeCPU  int `json:"freeCPU"`
+	TotalCPU          int    `json:"totalCPU"`
+	UsedCPU           int    `json:"usedCPU"`
+	FreeCPU           int    `json:"freeCPU"`
+	UsedCPUPercentage string `json:"usedCPUPercentage"`
 
-	TotalSize *OracleExadataMeasurement `json:"totalSize"`
-	UsedSize  *OracleExadataMeasurement `json:"usedSize"`
-	FreeSpace *OracleExadataMeasurement `json:"freeSpace"`
+	TotalSize          string `json:"totalSize"`
+	UsedSize           string `json:"usedSize"`
+	FreeSpace          string `json:"freeSpace"`
+	UsedSizePercentage string `json:"usedSizePercentage"`
 }
 
-func ToOracleExadataInstance(inst *model.OracleExadataInstance) (*OracleExadataInstance, error) {
-	if inst == nil {
-		return nil, errors.New("cannot convert nil model to OracleExadataInstance dto")
+func ToOracleExadataInstance(d domain.OracleExadataInstance) (*OracleExadataInstance, error) {
+	res := &OracleExadataInstance{
+		Hostname:              d.Hostname,
+		Environment:           d.Environment,
+		Location:              d.Location,
+		CreatedAt:             d.CreatedAt,
+		UpdateAt:              d.UpdatedAt,
+		RackID:                d.RackID,
+		RDMA:                  d.RDMA,
+		TotalCPU:              d.TotalCPU,
+		UsedCPU:               d.UsedCPU,
+		FreeCPU:               d.FreeCPU,
+		UsedMemoryMPercentage: d.UsedMemoryPercentage,
+		UsedCPUPercentage:     d.UsedCPUPercentage,
+		UsedSizePercentage:    d.UsedSizePercentage,
 	}
 
-	res := OracleExadataInstance{
-		Hostname:    inst.Hostname,
-		RackID:      inst.RackID,
-		Location:    inst.Location,
-		Environment: inst.Environment,
-		CreatedAt:   inst.CreatedAt,
-		UpdateAt:    inst.UpdatedAt,
-		RDMA:        inst.RDMA,
-	}
-
-	res.TotalSize = &OracleExadataMeasurement{Symbol: "TB"}
-	res.UsedSize = &OracleExadataMeasurement{Symbol: "TB"}
-	res.FreeSpace = &OracleExadataMeasurement{Symbol: "TB"}
-
-	for _, cmp := range inst.Components {
-		if cmp.HostType != "STORAGE_CELL" {
-			res.TotalMemory += cmp.Memory
-			res.TotalCPU += cmp.TotalCPU
-		}
-
-		if cmp.HostType == model.BARE_METAL {
-			res.UsedCPU += cmp.CPUEnabled
-		} else if cmp.HostType == model.DOM0 || cmp.HostType == model.KVM_HOST {
-			for _, vm := range cmp.VMs {
-				if vm.Type == model.VM_KVM || vm.Type == model.VM_XEN {
-					res.UsedMemory += (vm.RamCurrent / 1000) + (vm.RamOnline / 1000)
-					res.UsedCPU += vm.CPUCurrent + vm.CPUOnline
-				}
-			}
-		}
-
-		d, err := ToOracleExadataComponent(&cmp)
+	if d.TotalMemory != nil {
+		htotalmemory, err := d.TotalMemory.Human("GIB")
 		if err != nil {
 			return nil, err
 		}
 
-		res.TotalSize.Quantity += utils.TruncateFloat64(d.TotalSize.Quantity)
-		res.TotalSize.SetUnparsedValue()
-
-		res.FreeSpace.Quantity += utils.TruncateFloat64(d.TotalFreeSpace.Quantity)
-		res.FreeSpace.SetUnparsedValue()
-
-		res.Components = append(res.Components, *d)
+		res.TotalMemory = htotalmemory
 	}
 
-	// Calculate free memory and CPU
-	res.FreeMemory = res.TotalMemory - res.UsedMemory
-	res.FreeCPU = res.TotalCPU - res.UsedCPU
-
-	// Calculate used size
-	res.UsedSize = &OracleExadataMeasurement{
-		Symbol:   "TB",
-		Quantity: utils.TruncateFloat64(res.TotalSize.Quantity - res.FreeSpace.Quantity),
-	}
-
-	res.UsedSize.SetUnparsedValue()
-
-	return &res, nil
-}
-
-func ToOracleExadataInstances(instancesModel []model.OracleExadataInstance) ([]OracleExadataInstance, error) {
-	res := make([]OracleExadataInstance, 0, len(instancesModel))
-
-	for _, instance := range instancesModel {
-		dto, err := ToOracleExadataInstance(&instance)
+	if d.UsedMemory != nil {
+		husedmemory, err := d.UsedMemory.Human("GIB")
 		if err != nil {
 			return nil, err
 		}
 
-		res = append(res, *dto)
+		res.UsedMemory = husedmemory
 	}
+
+	if d.FreeMemory != nil {
+		hfreememory, err := d.FreeMemory.Human("GIB")
+		if err != nil {
+			return nil, err
+		}
+
+		res.FreeMemory = hfreememory
+	}
+
+	if d.TotalSize != nil {
+		htotalsize, err := d.TotalSize.Human("GIB")
+		if err != nil {
+			return nil, err
+		}
+
+		res.TotalSize = htotalsize
+	}
+
+	if d.UsedSize != nil {
+		husedsize, err := d.UsedSize.Human("GIB")
+		if err != nil {
+			return nil, err
+		}
+
+		res.UsedSize = husedsize
+	}
+
+	if d.FreeSpace != nil {
+		hfreespace, err := d.FreeSpace.Human("GIB")
+		if err != nil {
+			return nil, err
+		}
+
+		res.FreeSpace = hfreespace
+	}
+
+	componens, err := domain.ToUpperLevelLayers[domain.OracleExadataComponent, OracleExadataComponent](d.Components, ToOracleExadataComponent)
+	if err != nil {
+		return nil, err
+	}
+
+	res.Components = componens
 
 	return res, nil
 }

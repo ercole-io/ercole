@@ -18,6 +18,7 @@ package mongoutils
 import (
 	"encoding/json"
 	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -26,7 +27,7 @@ import (
 	"github.com/ercole-io/ercole/v2/model"
 )
 
-//LoadFixtureHostData load the hostdata in the filename and return it
+// LoadFixtureHostData load the hostdata in the filename and return it
 func LoadFixtureHostData(t *testing.T, filename string) model.HostDataBE {
 	var hd model.HostDataBE
 	raw, err := ioutil.ReadFile(filename)
@@ -37,7 +38,7 @@ func LoadFixtureHostData(t *testing.T, filename string) model.HostDataBE {
 	return hd
 }
 
-//LoadFixtureHostDataMap load the hostdata in the filename and return it
+// LoadFixtureHostDataMap load the hostdata in the filename and return it
 func LoadFixtureHostDataMap(t *testing.T, filename string) model.RawObject {
 	raw, err := ioutil.ReadFile(filename)
 	require.NoError(t, err)
@@ -48,7 +49,7 @@ func LoadFixtureHostDataMap(t *testing.T, filename string) model.RawObject {
 	return hd
 }
 
-//LoadFixtureMongoHostDataMap load the mongohostdata in the filename and return it
+// LoadFixtureMongoHostDataMap load the mongohostdata in the filename and return it
 func LoadFixtureMongoHostDataMap(t *testing.T, filename string) model.RawObject {
 	raw, err := ioutil.ReadFile(filename)
 	require.NoError(t, err)
@@ -59,7 +60,7 @@ func LoadFixtureMongoHostDataMap(t *testing.T, filename string) model.RawObject 
 	return hd
 }
 
-//LoadFixtureMongoHostDataMapAsHostData load the mongohostdata in the filename and return it as hostdata
+// LoadFixtureMongoHostDataMapAsHostData load the mongohostdata in the filename and return it as hostdata
 func LoadFixtureMongoHostDataMapAsHostData(t *testing.T, filename string) model.HostDataBE {
 	raw, err := ioutil.ReadFile(filename)
 	require.NoError(t, err)
@@ -72,10 +73,10 @@ func LoadFixtureMongoHostDataMapAsHostData(t *testing.T, filename string) model.
 
 func LoadFixtureExadata(t *testing.T, filename string) model.OracleExadataInstance {
 	var exd model.OracleExadataInstance
-	raw, err := ioutil.ReadFile(filename)
+	raw, err := os.ReadFile(filename)
 
 	require.NoError(t, err)
-	require.NoError(t, json.Unmarshal(raw, &exd))
+	require.NoError(t, bson.UnmarshalExtJSON(raw, true, &exd))
 
 	return exd
 }

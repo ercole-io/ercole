@@ -973,7 +973,7 @@ components:
           type: integer
         freeCPU:
           type: integer
-        freeSizePercentage:
+        usedSizePercentage:
           type: number
         totalSize:
           $ref: "#/components/schemas/ExadataMeasurement"
@@ -1035,7 +1035,7 @@ components:
             $ref: "#/components/schemas/ExadataGridDisk"
         database:
           $ref: "#/components/schemas/ExadataDatabase"
-        freeSizePercentage:
+        usedSizePercentage:
           type: number
       required:
         - type
