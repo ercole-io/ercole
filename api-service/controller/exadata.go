@@ -50,7 +50,7 @@ func (ctrl *APIController) GetExadata(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := dto.ToOracleExadataInstance(exa)
+	res, err := dto.ToOracleExadataInstance(*exa)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
@@ -125,8 +125,8 @@ func (ctrl *APIController) UpdateExadataRdma(w http.ResponseWriter, r *http.Requ
 }
 
 func (ctrl *APIController) ExportExadataInstances(w http.ResponseWriter, r *http.Request) {
-	contentType := r.Header.Get("Content-Type")
-	if contentType == "" || contentType != "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" {
+	accept := r.Header.Get("Accept")
+	if accept == "" || accept != "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, errors.New("invalid Content-Type"))
 		return
 	}

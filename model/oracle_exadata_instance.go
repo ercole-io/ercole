@@ -23,6 +23,7 @@ const (
 	BARE_METAL = "BARE_METAL"
 	VM_KVM     = "VM_KVM"
 	VM_XEN     = "VM_XEN"
+	STORAGE_CELL = "STORAGE_CELL"
 )
 
 // OracleExadataInstance holds specific informations about a exadata.

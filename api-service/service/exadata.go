@@ -16,6 +16,7 @@
 package service
 
 import (
+	"github.com/ercole-io/ercole/v2/api-service/domain"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -25,8 +26,18 @@ func (as *APIService) ListExadataInstances(filter dto.GlobalFilter) ([]dto.Exada
 	return as.Database.ListExadataInstances(filter)
 }
 
-func (as *APIService) GetExadataInstance(rackid string) (*model.OracleExadataInstance, error) {
-	return as.Database.FindExadataInstance(rackid)
+func (as *APIService) GetExadataInstance(rackid string) (*domain.OracleExadataInstance, error) {
+	instance, err := as.Database.FindExadataInstance(rackid)
+	if err != nil {
+		return nil, err
+	}
+
+	dom, err := domain.ToOracleExadataInstance(*instance)
+	if err != nil {
+		return nil, err
+	}
+
+	return dom, nil
 }
 
 func (as *APIService) UpdateExadataVmClusterName(rackID, hostID, vmname, clustername string) error {

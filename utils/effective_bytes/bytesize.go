@@ -28,27 +28,27 @@ import (
 type ByteSize uint64
 
 const (
-	B  ByteSize = 1
-	KB ByteSize = 1 << (10 * iota)
-	MB
-	GB
-	TB
+	B   ByteSize = 1
+	KiB ByteSize = 1 << (10 * iota)
+	MiB
+	GiB
+	TiB
 )
 
 var longUnitMap = map[ByteSize]string{
-	B:  "byte",
-	KB: "kilobyte",
-	MB: "megabyte",
-	GB: "gigabyte",
-	TB: "terabyte",
+	B:   "byte",
+	KiB: "kibibyte",
+	MiB: "mebibyte",
+	GiB: "gibibyte",
+	TiB: "tebibyte",
 }
 
 var shortUnitMap = map[ByteSize]string{
-	B:  "B",
-	KB: "KB",
-	MB: "MB",
-	GB: "GB",
-	TB: "TB",
+	B:   "B",
+	KiB: "KiB",
+	MiB: "MiB",
+	GiB: "GiB",
+	TiB: "TiB",
 }
 
 var unitMap = map[string]ByteSize{
@@ -56,25 +56,29 @@ var unitMap = map[string]ByteSize{
 	"BYTE":  B,
 	"BYTES": B,
 
-	"K":         KB,
-	"KB":        KB,
-	"KILOBYTE":  KB,
-	"KILOBYTES": KB,
+	"K":         KiB,
+	"KB":        KiB,
+	"KIB":       KiB,
+	"KIBIBYTE":  KiB,
+	"KIBIBYTES": KiB,
 
-	"M":         MB,
-	"MB":        MB,
-	"MEGABYTE":  MB,
-	"MEGABYTES": MB,
+	"M":         MiB,
+	"MB":        MiB,
+	"MIB":       MiB,
+	"MEBIBYTE":  MiB,
+	"MEBIBYTES": MiB,
 
-	"G":         GB,
-	"GB":        GB,
-	"GIGABYTE":  GB,
-	"GIGABYTES": GB,
+	"G":         GiB,
+	"GB":        GiB,
+	"GIB":       GiB,
+	"GIBIBYTE":  GiB,
+	"GIBIBYTES": GiB,
 
-	"T":         TB,
-	"TB":        TB,
-	"TERABYTE":  TB,
-	"TERABYTES": TB,
+	"T":         TiB,
+	"TB":        TiB,
+	"TIB":       TiB,
+	"TEBIBYTE":  TiB,
+	"TEBIBYTES": TiB,
 }
 
 var (
@@ -122,42 +126,6 @@ func (b ByteSize) String() string {
 	return b.format(Format, "", LongUnits)
 }
 
-func (b ByteSize) format(format string, unit string, longUnits bool) string {
-	var unitSize ByteSize
-	if unit != "" {
-		var ok bool
-		unitSize, ok = unitMap[strings.ToUpper(unit)]
-		if !ok {
-			return "Unrecognized unit: " + unit
-		}
-	} else {
-		switch {
-		case b >= TB:
-			unitSize = TB
-		case b >= GB:
-			unitSize = GB
-		case b >= MB:
-			unitSize = MB
-		case b >= KB:
-			unitSize = KB
-		default:
-			unitSize = B
-		}
-	}
-
-	if longUnits {
-		var s string
-		value := fmt.Sprintf(format, float64(b)/float64(unitSize))
-		if printS, _ := strconv.ParseFloat(strings.TrimSpace(value), 64); printS > 0 && printS != 1 {
-			s = "s"
-		}
-
-		return fmt.Sprintf(format+longUnitMap[unitSize]+s, float64(b)/float64(unitSize))
-	}
-
-	return fmt.Sprintf(format+shortUnitMap[unitSize], utils.TruncateFloat64(float64(b)/float64(unitSize)))
-}
-
 func Float64(s string) (float64, error) {
 	s = strings.TrimSpace(s)
 
@@ -182,4 +150,40 @@ func Float64(s string) (float64, error) {
 	formattedvalue := utils.TruncateFloat64(value)
 
 	return formattedvalue, nil
+}
+
+func (b ByteSize) format(format string, unit string, longUnits bool) string {
+	var unitSize ByteSize
+	if unit != "" {
+		var ok bool
+		unitSize, ok = unitMap[strings.ToUpper(unit)]
+		if !ok {
+			return "Unrecognized unit: " + unit
+		}
+	} else {
+		switch {
+		case b >= TiB:
+			unitSize = TiB
+		case b >= GiB:
+			unitSize = GiB
+		case b >= MiB:
+			unitSize = MiB
+		case b >= KiB:
+			unitSize = KiB
+		default:
+			unitSize = B
+		}
+	}
+
+	if longUnits {
+		var s string
+		value := fmt.Sprintf(format, float64(b)/float64(unitSize))
+		if printS, _ := strconv.ParseFloat(strings.TrimSpace(value), 64); printS > 0 && printS != 1 {
+			s = "s"
+		}
+
+		return fmt.Sprintf(format+longUnitMap[unitSize]+s, float64(b)/float64(unitSize))
+	}
+
+	return fmt.Sprintf(format+shortUnitMap[unitSize], utils.TruncateFloat64(float64(b)/float64(unitSize)))
 }
