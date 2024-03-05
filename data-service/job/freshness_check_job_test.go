@@ -21,6 +21,7 @@ import (
 
 	"go.uber.org/mock/gomock"
 
+	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
@@ -31,6 +32,21 @@ func TestFreshnessCheckJobRun_SuccessNoOldCurrentHosts(t *testing.T) {
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	fcj := FreshnessCheckJob{
+		Config: config.Configuration{
+			AlertService: config.AlertService{
+				Emailer: config.Emailer{
+					AlertType: config.AlertType{
+						NewHost:                    true,
+						NewDatabase:                true,
+						NewLicense:                 true,
+						NewOption:                  true,
+						NewUnlistedRunningDatabase: true,
+						NewHostCpu:                 true,
+						MissingPrimaryDatabase:     true,
+						MissingDatabase:            true,
+						AgentError:                 true,
+						NoData:                     true,
+					}}}},
 		TimeNow:        utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Database:       db,
 		AlertSvcClient: nil,
@@ -62,6 +78,21 @@ func TestFreshnessCheckJobRun_SuccessTwoOldCurrentHosts(t *testing.T) {
 	now := utils.Btc(utils.P("2019-11-05T14:02:03Z"))
 
 	fcj := FreshnessCheckJob{
+		Config: config.Configuration{
+			AlertService: config.AlertService{
+				Emailer: config.Emailer{
+					AlertType: config.AlertType{
+						NewHost:                    true,
+						NewDatabase:                true,
+						NewLicense:                 true,
+						NewOption:                  true,
+						NewUnlistedRunningDatabase: true,
+						NewHostCpu:                 true,
+						MissingPrimaryDatabase:     true,
+						MissingDatabase:            true,
+						AgentError:                 true,
+						NoData:                     true,
+					}}}},
 		TimeNow:        now,
 		Database:       db,
 		AlertSvcClient: asc,
@@ -139,6 +170,21 @@ func TestFreshnessCheckJobRun_DeleteAllNoDataAlertsError(t *testing.T) {
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	fcj := FreshnessCheckJob{
+		Config: config.Configuration{
+			AlertService: config.AlertService{
+				Emailer: config.Emailer{
+					AlertType: config.AlertType{
+						NewHost:                    true,
+						NewDatabase:                true,
+						NewLicense:                 true,
+						NewOption:                  true,
+						NewUnlistedRunningDatabase: true,
+						NewHostCpu:                 true,
+						MissingPrimaryDatabase:     true,
+						MissingDatabase:            true,
+						AgentError:                 true,
+						NoData:                     true,
+					}}}},
 		TimeNow:        utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Database:       db,
 		AlertSvcClient: nil,
@@ -156,6 +202,21 @@ func TestFreshnessCheckJobRun_FindOldCurrentHostdataError(t *testing.T) {
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	fcj := FreshnessCheckJob{
+		Config: config.Configuration{
+			AlertService: config.AlertService{
+				Emailer: config.Emailer{
+					AlertType: config.AlertType{
+						NewHost:                    true,
+						NewDatabase:                true,
+						NewLicense:                 true,
+						NewOption:                  true,
+						NewUnlistedRunningDatabase: true,
+						NewHostCpu:                 true,
+						MissingPrimaryDatabase:     true,
+						MissingDatabase:            true,
+						AgentError:                 true,
+						NoData:                     true,
+					}}}},
 		TimeNow:        utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Database:       db,
 		AlertSvcClient: nil,
@@ -185,6 +246,21 @@ func TestFreshnessCheckJobRun_ThrowNoDataAlertError(t *testing.T) {
 	now := utils.Btc(utils.P("2019-11-05T14:02:03Z"))
 
 	fcj := FreshnessCheckJob{
+		Config: config.Configuration{
+			AlertService: config.AlertService{
+				Emailer: config.Emailer{
+					AlertType: config.AlertType{
+						NewHost:                    true,
+						NewDatabase:                true,
+						NewLicense:                 true,
+						NewOption:                  true,
+						NewUnlistedRunningDatabase: true,
+						NewHostCpu:                 true,
+						MissingPrimaryDatabase:     true,
+						MissingDatabase:            true,
+						AgentError:                 true,
+						NoData:                     true,
+					}}}},
 		TimeNow:        utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Database:       db,
 		AlertSvcClient: asc,
