@@ -27,6 +27,10 @@ import (
 
 // ThrowNewDatabaseAlert create and insert in the database a new NEW_DATABASE alert
 func (hds *HostDataService) throwNewDatabaseAlert(dbname string, hostname string) error {
+	if !hds.Config.AlertService.Emailer.AlertType.NewDatabase {
+		return nil
+	}
+
 	alr := model.Alert{
 		ID:                      primitive.NewObjectIDFromTimestamp(hds.TimeNow()),
 		AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,
@@ -47,6 +51,10 @@ func (hds *HostDataService) throwNewDatabaseAlert(dbname string, hostname string
 
 // ThrowNewServerAlert create and insert in the database a new NEW_SERVER alert
 func (hds *HostDataService) throwNewServerAlert(hostname string) error {
+	if !hds.Config.AlertService.Emailer.AlertType.NewHost {
+		return nil
+	}
+
 	alr := model.Alert{
 		ID:                      primitive.NewObjectIDFromTimestamp(hds.TimeNow()),
 		AlertAffectedTechnology: nil,
@@ -93,6 +101,10 @@ func (hds *HostDataService) createNewLicenseAlert(hostname, dbname string, licen
 
 // ThrowNewEnterpriseLicenseAlert create and insert in the database a new NEW_LICENSE alert
 func (hds *HostDataService) throwNewLicenseAlert(alerts []model.Alert) error {
+	if !hds.Config.AlertService.Emailer.AlertType.NewLicense {
+		return nil
+	}
+
 	if len(alerts) == 0 {
 		return nil
 	}
@@ -106,7 +118,7 @@ func (hds *HostDataService) throwNewLicenseAlert(alerts []model.Alert) error {
 		AlertStatus:             model.AlertStatusNew,
 		Date:                    hds.TimeNow(),
 		Description:             alerts[0].Description,
-		OtherInfo: map[string]interface{}{},
+		OtherInfo:               map[string]interface{}{},
 	}
 
 	if val, ok := alerts[0].OtherInfo["hostname"]; ok {
@@ -141,6 +153,10 @@ func (hds *HostDataService) throwNewLicenseAlert(alerts []model.Alert) error {
 }
 
 func (hds *HostDataService) throwNewOptionAlerts(alerts []model.Alert) error {
+	if !hds.Config.AlertService.Emailer.AlertType.NewOption {
+		return nil
+	}
+
 	if len(alerts) == 0 {
 		return nil
 	}
@@ -182,6 +198,10 @@ func (hds *HostDataService) throwNewOptionAlerts(alerts []model.Alert) error {
 
 // ThrowUnlistedRunningDatabasesAlert create and insert in the database a new UNLISTED_RUNNING_DATABASE alert
 func (hds *HostDataService) throwUnlistedRunningDatabasesAlert(alerts []model.Alert) error {
+	if !hds.Config.AlertService.Emailer.AlertType.NewUnlistedRunningDatabase {
+		return nil
+	}
+
 	if len(alerts) == 0 {
 		return nil
 	}
@@ -228,6 +248,10 @@ func (hds *HostDataService) throwUnlistedRunningDatabasesAlert(alerts []model.Al
 }
 
 func (hds *HostDataService) throwAugmentedCPUCoresAlert(hostname string, previousCPUCores, newCPUCores int) error {
+	if !hds.Config.AlertService.Emailer.AlertType.NewHostCpu {
+		return nil
+	}
+
 	alr := model.Alert{
 		ID:                      primitive.NewObjectIDFromTimestamp(hds.TimeNow()),
 		AlertAffectedTechnology: nil,
@@ -247,6 +271,10 @@ func (hds *HostDataService) throwAugmentedCPUCoresAlert(hostname string, previou
 }
 
 func (hds *HostDataService) throwMissingPrimaryDatabase(hostname, secondaryDbName string) error {
+	if !hds.Config.AlertService.Emailer.AlertType.MissingPrimaryDatabase {
+		return nil
+	}
+
 	alert := model.Alert{
 		AlertCategory:           model.AlertCategoryEngine,
 		AlertAffectedTechnology: nil,
@@ -265,6 +293,10 @@ func (hds *HostDataService) throwMissingPrimaryDatabase(hostname, secondaryDbNam
 }
 
 func (hds *HostDataService) throwAgentErrorsAlert(hostname string, errs []model.AgentError) error {
+	if !hds.Config.AlertService.Emailer.AlertType.AgentError {
+		return nil
+	}
+
 	b := strings.Builder{}
 	prefix := ""
 
@@ -298,6 +330,10 @@ func (hds *HostDataService) throwAgentErrorsAlert(hostname string, errs []model.
 const dbNamesOtherInfo = "dbNames"
 
 func (hds *HostDataService) throwMissingDatabasesAlert(hostname string, dbNames []string, alertSeverity string) error {
+	if !hds.Config.AlertService.Emailer.AlertType.MissingDatabase {
+		return nil
+	}
+
 	sort.Strings(dbNames)
 	description := fmt.Sprintf("The databases %q on %q are missing compared to the previous hostdata",
 		strings.Join(dbNames, ", "), hostname)

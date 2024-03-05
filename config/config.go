@@ -298,6 +298,21 @@ type Emailer struct {
 	SMTPPassword string
 	// DisableSSLCertificateValidation contains true if disable the certification validation, otherwise false
 	DisableSSLCertificateValidation bool
+	// AlertType contains the possible type of alert that can be sent
+	AlertType AlertType
+}
+
+type AlertType struct {
+	NewHost                    bool
+	NewDatabase                bool
+	NewLicense                 bool
+	NewOption                  bool
+	NewUnlistedRunningDatabase bool
+	NewHostCpu                 bool
+	MissingPrimaryDatabase     bool
+	MissingDatabase            bool
+	AgentError                 bool
+	NoData                     bool
 }
 
 // AuthenticationProviderConfig contains the settings used to authenticate the users

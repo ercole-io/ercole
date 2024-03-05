@@ -42,6 +42,28 @@ QueueBufferSize = 10240
   Crontab = "@daily"
   RunAtStartup = false
 
+  [AlertService.Emailer]
+  Enabled = false
+  From = "report@ercole.io"
+  To = [""]
+  SMTPServer = "127.0.0.1"
+  SMTPPort = 1025
+  SMTPUsername = "user"
+  SMTPPassword = "password"
+  DisableSSLCertificateValidation = true
+
+    [AlertService.Emailer.AlertType]
+    NewHost = false
+    NewDatabase = false
+    NewLicense = false
+    NewOption = false
+    NewUnlistedRunningDatabase = false
+    NewHostCpu = false
+    MissingPrimaryDatabase = false
+    MissingDatabase = false
+    AgentError = false
+    NoData = false
+
 [APIService]
 RemoteEndpoint = "http://127.0.0.1:11113"
 BindIP = "0.0.0.0"

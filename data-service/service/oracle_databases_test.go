@@ -72,6 +72,19 @@ func TestAddLicensesToSecondaryDbs(t *testing.T) {
 				PublisherUsername: "publ1sh3r",
 				PublisherPassword: "M0stS3cretP4ssw0rd",
 				RemoteEndpoint:    "http://ercole.example.org",
+				Emailer: config.Emailer{
+					AlertType: config.AlertType{
+						NewHost:                    true,
+						NewDatabase:                true,
+						NewLicense:                 true,
+						NewOption:                  true,
+						NewUnlistedRunningDatabase: true,
+						NewHostCpu:                 true,
+						MissingPrimaryDatabase:     true,
+						MissingDatabase:            true,
+						AgentError:                 true,
+						NoData:                     true,
+					}},
 			},
 			DataService: config.DataService{
 				LogInsertingHostdata: true,
@@ -337,7 +350,21 @@ func TestCheckNewLicenses_SuccessNewDatabase(t *testing.T) {
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	asc := NewMockAlertSvcClientInterface(mockCtrl)
 	hds := HostDataService{
-		Config:         config.Configuration{},
+		Config: config.Configuration{
+			AlertService: config.AlertService{
+				Emailer: config.Emailer{
+					AlertType: config.AlertType{
+						NewHost:                    true,
+						NewDatabase:                true,
+						NewLicense:                 true,
+						NewOption:                  true,
+						NewUnlistedRunningDatabase: true,
+						NewHostCpu:                 true,
+						MissingPrimaryDatabase:     true,
+						MissingDatabase:            true,
+						AgentError:                 true,
+						NoData:                     true,
+					}}}},
 		ServerVersion:  "",
 		Database:       db,
 		AlertSvcClient: asc,
@@ -365,7 +392,21 @@ func TestCheckNewLicenses_ThrowNewLicenseAndNewOption(t *testing.T) {
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	asc := NewMockAlertSvcClientInterface(mockCtrl)
 	hds := HostDataService{
-		Config:         config.Configuration{},
+		Config: config.Configuration{
+			AlertService: config.AlertService{
+				Emailer: config.Emailer{
+					AlertType: config.AlertType{
+						NewHost:                    true,
+						NewDatabase:                true,
+						NewLicense:                 true,
+						NewOption:                  true,
+						NewUnlistedRunningDatabase: true,
+						NewHostCpu:                 true,
+						MissingPrimaryDatabase:     true,
+						MissingDatabase:            true,
+						AgentError:                 true,
+						NoData:                     true,
+					}}}},
 		ServerVersion:  "",
 		Database:       db,
 		AlertSvcClient: asc,
@@ -404,7 +445,21 @@ func TestCheckNewLicenses_ThrowNewLicenseAndNewOptionAlreadyEnabled(t *testing.T
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	asc := NewMockAlertSvcClientInterface(mockCtrl)
 	hds := HostDataService{
-		Config:         config.Configuration{},
+		Config: config.Configuration{
+			AlertService: config.AlertService{
+				Emailer: config.Emailer{
+					AlertType: config.AlertType{
+						NewHost:                    true,
+						NewDatabase:                true,
+						NewLicense:                 true,
+						NewOption:                  true,
+						NewUnlistedRunningDatabase: true,
+						NewHostCpu:                 true,
+						MissingPrimaryDatabase:     true,
+						MissingDatabase:            true,
+						AgentError:                 true,
+						NoData:                     true,
+					}}}},
 		ServerVersion:  "",
 		Database:       db,
 		AlertSvcClient: asc,
@@ -452,7 +507,21 @@ func TestCheckNewLicenses_CantThrowNewAlert(t *testing.T) {
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	asc := NewMockAlertSvcClientInterface(mockCtrl)
 	hds := HostDataService{
-		Config:         config.Configuration{},
+		Config: config.Configuration{
+			AlertService: config.AlertService{
+				Emailer: config.Emailer{
+					AlertType: config.AlertType{
+						NewHost:                    true,
+						NewDatabase:                true,
+						NewLicense:                 true,
+						NewOption:                  true,
+						NewUnlistedRunningDatabase: true,
+						NewHostCpu:                 true,
+						MissingPrimaryDatabase:     true,
+						MissingDatabase:            true,
+						AgentError:                 true,
+						NoData:                     true,
+					}}}},
 		ServerVersion:  "",
 		Database:       db,
 		AlertSvcClient: asc,
@@ -531,7 +600,21 @@ func TestCheckNewLicenses_ErrOracleDatabaseLicenseTypeIDNotFound(t *testing.T) {
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	asc := NewMockAlertSvcClientInterface(mockCtrl)
 	hds := HostDataService{
-		Config:         config.Configuration{},
+		Config: config.Configuration{
+			AlertService: config.AlertService{
+				Emailer: config.Emailer{
+					AlertType: config.AlertType{
+						NewHost:                    true,
+						NewDatabase:                true,
+						NewLicense:                 true,
+						NewOption:                  true,
+						NewUnlistedRunningDatabase: true,
+						NewHostCpu:                 true,
+						MissingPrimaryDatabase:     true,
+						MissingDatabase:            true,
+						AgentError:                 true,
+						NoData:                     true,
+					}}}},
 		ServerVersion:  "",
 		Database:       db,
 		AlertSvcClient: asc,
@@ -703,7 +786,21 @@ func TestCheckMissingDatabases_NoneMissing(t *testing.T) {
 	alertsc := NewMockAlertSvcClientInterface(mockCtrl)
 	apisc := NewMockApiSvcClientInterface(mockCtrl)
 	hds := HostDataService{
-		Config:         config.Configuration{},
+		Config: config.Configuration{
+			AlertService: config.AlertService{
+				Emailer: config.Emailer{
+					AlertType: config.AlertType{
+						NewHost:                    true,
+						NewDatabase:                true,
+						NewLicense:                 true,
+						NewOption:                  true,
+						NewUnlistedRunningDatabase: true,
+						NewHostCpu:                 true,
+						MissingPrimaryDatabase:     true,
+						MissingDatabase:            true,
+						AgentError:                 true,
+						NoData:                     true,
+					}}}},
 		ServerVersion:  "",
 		Database:       db,
 		AlertSvcClient: alertsc,
@@ -733,7 +830,21 @@ func TestCheckMissingDatabases_OneMissing(t *testing.T) {
 	alertsc := NewMockAlertSvcClientInterface(mockCtrl)
 	apisc := NewMockApiSvcClientInterface(mockCtrl)
 	hds := HostDataService{
-		Config:         config.Configuration{},
+		Config: config.Configuration{
+			AlertService: config.AlertService{
+				Emailer: config.Emailer{
+					AlertType: config.AlertType{
+						NewHost:                    true,
+						NewDatabase:                true,
+						NewLicense:                 true,
+						NewOption:                  true,
+						NewUnlistedRunningDatabase: true,
+						NewHostCpu:                 true,
+						MissingPrimaryDatabase:     true,
+						MissingDatabase:            true,
+						AgentError:                 true,
+						NoData:                     true,
+					}}}},
 		ServerVersion:  "",
 		Database:       db,
 		AlertSvcClient: alertsc,
@@ -831,7 +942,21 @@ func TestCheckMissingDatabases_AllMissing(t *testing.T) {
 	alertsc := NewMockAlertSvcClientInterface(mockCtrl)
 	apisc := NewMockApiSvcClientInterface(mockCtrl)
 	hds := HostDataService{
-		Config:         config.Configuration{},
+		Config: config.Configuration{
+			AlertService: config.AlertService{
+				Emailer: config.Emailer{
+					AlertType: config.AlertType{
+						NewHost:                    true,
+						NewDatabase:                true,
+						NewLicense:                 true,
+						NewOption:                  true,
+						NewUnlistedRunningDatabase: true,
+						NewHostCpu:                 true,
+						MissingPrimaryDatabase:     true,
+						MissingDatabase:            true,
+						AgentError:                 true,
+						NoData:                     true,
+					}}}},
 		ServerVersion:  "",
 		Database:       db,
 		AlertSvcClient: alertsc,
@@ -924,7 +1049,21 @@ func TestCheckMissingDatabases_NoFeature(t *testing.T) {
 	alertsc := NewMockAlertSvcClientInterface(mockCtrl)
 	apisc := NewMockApiSvcClientInterface(mockCtrl)
 	hds := HostDataService{
-		Config:         config.Configuration{},
+		Config: config.Configuration{
+			AlertService: config.AlertService{
+				Emailer: config.Emailer{
+					AlertType: config.AlertType{
+						NewHost:                    true,
+						NewDatabase:                true,
+						NewLicense:                 true,
+						NewOption:                  true,
+						NewUnlistedRunningDatabase: true,
+						NewHostCpu:                 true,
+						MissingPrimaryDatabase:     true,
+						MissingDatabase:            true,
+						AgentError:                 true,
+						NoData:                     true,
+					}}}},
 		ServerVersion:  "",
 		Database:       db,
 		AlertSvcClient: alertsc,
@@ -944,7 +1083,21 @@ func TestSearchAndAckOldMissingDatabasesAlerts(t *testing.T) {
 	alertsc := NewMockAlertSvcClientInterface(mockCtrl)
 	apisc := NewMockApiSvcClientInterface(mockCtrl)
 	hds := HostDataService{
-		Config:         config.Configuration{},
+		Config: config.Configuration{
+			AlertService: config.AlertService{
+				Emailer: config.Emailer{
+					AlertType: config.AlertType{
+						NewHost:                    true,
+						NewDatabase:                true,
+						NewLicense:                 true,
+						NewOption:                  true,
+						NewUnlistedRunningDatabase: true,
+						NewHostCpu:                 true,
+						MissingPrimaryDatabase:     true,
+						MissingDatabase:            true,
+						AgentError:                 true,
+						NoData:                     true,
+					}}}},
 		ServerVersion:  "",
 		Database:       db,
 		AlertSvcClient: alertsc,
@@ -1005,7 +1158,21 @@ func Test_ignoreRacLicenses_success(t *testing.T) {
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	asc := NewMockAlertSvcClientInterface(mockCtrl)
 	hds := HostDataService{
-		Config:         config.Configuration{},
+		Config: config.Configuration{
+			AlertService: config.AlertService{
+				Emailer: config.Emailer{
+					AlertType: config.AlertType{
+						NewHost:                    true,
+						NewDatabase:                true,
+						NewLicense:                 true,
+						NewOption:                  true,
+						NewUnlistedRunningDatabase: true,
+						NewHostCpu:                 true,
+						MissingPrimaryDatabase:     true,
+						MissingDatabase:            true,
+						AgentError:                 true,
+						NoData:                     true,
+					}}}},
 		ServerVersion:  "",
 		Database:       db,
 		AlertSvcClient: asc,
