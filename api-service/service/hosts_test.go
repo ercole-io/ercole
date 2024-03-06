@@ -713,6 +713,7 @@ func TestGetHostDataSummaries(t *testing.T) {
 
 		if tc.res != nil {
 			db.EXPECT().FindUnretrievedDatabases("pluto").Return(nil, nil).Times(1)
+			db.EXPECT().FindUnlistedRunningDatabases("pluto").Return(nil, nil).Times(1)
 		}
 
 		res, err := as.GetHostDataSummaries(tc.filters)
