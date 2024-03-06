@@ -1025,6 +1025,8 @@ components:
           $ref: "#/components/schemas/ExadataMeasurement"
         freeSpace:
           $ref: "#/components/schemas/ExadataMeasurement"
+        usedSize:
+          $ref: "#/components/schemas/ExadataMeasurement"
         status:
           type: string
         errorCount:
@@ -1036,7 +1038,7 @@ components:
         database:
           $ref: "#/components/schemas/ExadataDatabase"
         usedSizePercentage:
-          type: number
+          type: string
       required:
         - type
     ExadataGridDisk:

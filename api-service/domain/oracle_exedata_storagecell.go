@@ -24,11 +24,12 @@ type OracleExadataStorageCell struct {
 	Cell               string
 	Size               *OracleExadataMeasurement
 	FreeSpace          *OracleExadataMeasurement
+	UsedSize           *OracleExadataMeasurement
 	Status             string
 	ErrorCount         int
 	GridDisks          []OracleExadataGridDisk
 	Databases          []OracleExadataDatabase
-	FreeSizePercentage string
+	UsedSizePercentage string
 }
 
 func ToOracleExadataStorageCell(m model.OracleExadataStorageCell) (*OracleExadataStorageCell, error) {
@@ -55,6 +56,14 @@ func ToOracleExadataStorageCell(m model.OracleExadataStorageCell) (*OracleExadat
 
 	res.FreeSpace = freespace
 
+	usedsize := OracleExadataMeasurement{
+		Symbol:   res.Size.Symbol,
+		Quantity: res.Size.Quantity,
+	}
+
+	usedsize.Sub(*res.FreeSpace)
+	res.UsedSize = &usedsize
+
 	griddisks, err := ToUpperLevelLayers[model.OracleExadataGridDisk, OracleExadataGridDisk](m.GridDisks, ToOracleExadataGridDisk)
 	if err != nil {
 		return nil, err
@@ -69,7 +78,7 @@ func ToOracleExadataStorageCell(m model.OracleExadataStorageCell) (*OracleExadat
 
 	res.Databases = databases
 
-	res.FreeSizePercentage = GetPercentage(*res.FreeSpace, *res.Size)
+	res.UsedSizePercentage = GetPercentage(*res.UsedSize, *res.Size)
 
 	return res, nil
 }

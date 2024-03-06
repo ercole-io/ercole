@@ -129,6 +129,10 @@ func ToOracleExadataComponent(m model.OracleExadataComponent) (*OracleExadataCom
 		res.FreeCPU = res.TotalCPU - res.UsedCPU
 	}
 
+	if res.HostType == model.BARE_METAL {
+		res.UsedCPU += m.CPUEnabled
+	}
+
 	for _, sc := range res.StorageCells {
 		res.TotalSize.Add(sc.Size.Quantity, sc.Size.Symbol)
 		res.TotalFreeSpace.Add(sc.FreeSpace.Quantity, sc.FreeSpace.Symbol)
