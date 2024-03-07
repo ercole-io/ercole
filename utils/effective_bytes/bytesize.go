@@ -21,8 +21,6 @@ import (
 	"strconv"
 	"strings"
 	"unicode"
-
-	"github.com/ercole-io/ercole/v2/utils"
 )
 
 type ByteSize uint64
@@ -35,20 +33,12 @@ const (
 	TiB
 )
 
-var longUnitMap = map[ByteSize]string{
-	B:   "byte",
-	KiB: "kibibyte",
-	MiB: "mebibyte",
-	GiB: "gibibyte",
-	TiB: "tebibyte",
-}
-
 var shortUnitMap = map[ByteSize]string{
 	B:   "B",
-	KiB: "KiB",
-	MiB: "MiB",
-	GiB: "GiB",
-	TiB: "TiB",
+	KiB: "KIB",
+	MiB: "MIB",
+	GiB: "GIB",
+	TiB: "TIB",
 }
 
 var unitMap = map[string]ByteSize{
@@ -81,11 +71,6 @@ var unitMap = map[string]ByteSize{
 	"TEBIBYTES": TiB,
 }
 
-var (
-	LongUnits bool   = false
-	Format    string = "%.2f"
-)
-
 func Parse(s string) (ByteSize, error) {
 	s = strings.TrimSpace(s)
 
@@ -113,17 +98,17 @@ func Parse(s string) (ByteSize, error) {
 		return 0, err
 	}
 
-	bytesize := ByteSize(utils.TruncateFloat64(value) * float64(unit))
+	bytesize := ByteSize(value * float64(unit))
 
 	return bytesize, nil
 }
 
-func (b ByteSize) Format(format string, unit string, longUnits bool) string {
-	return b.format(format, unit, longUnits)
+func (b ByteSize) Format(format string, unit string) string {
+	return b.format(format, unit)
 }
 
 func (b ByteSize) String() string {
-	return b.format(Format, "", LongUnits)
+	return b.format("%v", "")
 }
 
 func Float64(s string) (float64, error) {
@@ -147,12 +132,10 @@ func Float64(s string) (float64, error) {
 		return 0, err
 	}
 
-	formattedvalue := utils.TruncateFloat64(value)
-
-	return formattedvalue, nil
+	return value, nil
 }
 
-func (b ByteSize) format(format string, unit string, longUnits bool) string {
+func (b ByteSize) format(format, unit string) string {
 	var unitSize ByteSize
 	if unit != "" {
 		var ok bool
@@ -175,15 +158,5 @@ func (b ByteSize) format(format string, unit string, longUnits bool) string {
 		}
 	}
 
-	if longUnits {
-		var s string
-		value := fmt.Sprintf(format, float64(b)/float64(unitSize))
-		if printS, _ := strconv.ParseFloat(strings.TrimSpace(value), 64); printS > 0 && printS != 1 {
-			s = "s"
-		}
-
-		return fmt.Sprintf(format+longUnitMap[unitSize]+s, float64(b)/float64(unitSize))
-	}
-
-	return fmt.Sprintf(format+shortUnitMap[unitSize], utils.TruncateFloat64(float64(b)/float64(unitSize)))
+	return fmt.Sprintf(format+shortUnitMap[unitSize], float64(b)/float64(unitSize))
 }

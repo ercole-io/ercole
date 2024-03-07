@@ -21,7 +21,6 @@ import (
 	"regexp"
 	"strconv"
 
-	"github.com/ercole-io/ercole/v2/utils"
 	effectivebytes "github.com/ercole-io/ercole/v2/utils/effective_bytes"
 )
 
@@ -32,7 +31,7 @@ type OracleExadataMeasurement struct {
 }
 
 func (m OracleExadataMeasurement) String() string {
-	return fmt.Sprintf("%.2f %s", m.Quantity, m.Symbol)
+	return fmt.Sprintf("%f %s", m.Quantity, m.Symbol)
 }
 
 func (m OracleExadataMeasurement) Human(symbol string) (string, error) {
@@ -61,6 +60,7 @@ func (m *OracleExadataMeasurement) Add(qty float64, symbol string) {
 
 	m.Quantity = og.Quantity
 	m.Symbol = og.Symbol
+	m.unparsedValue = og.String()
 }
 
 func (m *OracleExadataMeasurement) Sub(oem OracleExadataMeasurement) {
@@ -74,6 +74,7 @@ func (m *OracleExadataMeasurement) Sub(oem OracleExadataMeasurement) {
 	}
 
 	m.Quantity -= safeOem.Quantity
+	m.unparsedValue = m.String()
 }
 
 func NewOracleExadataMeasurement() *OracleExadataMeasurement {
@@ -84,7 +85,7 @@ func NewOracleExadataMeasurement() *OracleExadataMeasurement {
 
 func Convert(m OracleExadataMeasurement, symbol string) (*OracleExadataMeasurement, error) {
 	if m.String() == "" {
-		return nil, errors.New("invalid OracleExadataMeasurement, cannot convert to TiB")
+		return nil, fmt.Errorf("invalid OracleExadataMeasurement, cannot convert to %s", symbol)
 	}
 
 	b, err := effectivebytes.Parse(m.String())
@@ -92,20 +93,21 @@ func Convert(m OracleExadataMeasurement, symbol string) (*OracleExadataMeasureme
 		return nil, err
 	}
 
-	convertedValue := b.Format(effectivebytes.Format, symbol, false)
+	convertedValue := b.Format("%f", symbol)
 
 	q, err := effectivebytes.Float64(convertedValue)
 	if err != nil {
 		return nil, err
 	}
 
-	trimmedvalue := utils.TruncateFloat64(q)
+	res := &OracleExadataMeasurement{
+		Symbol:   symbol,
+		Quantity: q,
+	}
 
-	return &OracleExadataMeasurement{
-		unparsedValue: m.String(),
-		Symbol:        symbol,
-		Quantity:      trimmedvalue,
-	}, nil
+	res.unparsedValue = res.String()
+
+	return res, nil
 }
 
 func IntToOracleExadataMeasurement(d int, symbol string) (res *OracleExadataMeasurement, err error) {
@@ -114,7 +116,7 @@ func IntToOracleExadataMeasurement(d int, symbol string) (res *OracleExadataMeas
 	if s == "0" {
 		s = "0B"
 	} else {
-		s = fmt.Sprintf("%d%s", d, symbol)
+		s = fmt.Sprintf("%d %s", d, symbol)
 	}
 
 	res = &OracleExadataMeasurement{unparsedValue: s}
@@ -124,7 +126,7 @@ func IntToOracleExadataMeasurement(d int, symbol string) (res *OracleExadataMeas
 		return nil, err
 	}
 
-	res.Quantity = utils.TruncateFloat64(f)
+	res.Quantity = f
 
 	re := regexp.MustCompile(`[a-zA-Z]+`)
 	match := re.FindStringSubmatch(s)
@@ -150,7 +152,7 @@ func StringToOracleExadataMeasurement(s string) (res *OracleExadataMeasurement, 
 		return nil, err
 	}
 
-	res.Quantity = utils.TruncateFloat64(f)
+	res.Quantity = f
 
 	re := regexp.MustCompile(`[a-zA-Z]+`)
 	match := re.FindStringSubmatch(s)
@@ -165,7 +167,7 @@ func StringToOracleExadataMeasurement(s string) (res *OracleExadataMeasurement, 
 }
 
 func GetPercentage(measure, total OracleExadataMeasurement) string {
-	sameSymbol := "MIB"
+	sameSymbol := "GIB"
 
 	safemeasure, err := Convert(measure, sameSymbol)
 	if err != nil {
