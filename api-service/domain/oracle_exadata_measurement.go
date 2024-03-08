@@ -24,6 +24,10 @@ import (
 	effectivebytes "github.com/ercole-io/ercole/v2/utils/effective_bytes"
 )
 
+const (
+	UNKNOWN_VALUE = "UNKNOWN"
+)
+
 type OracleExadataMeasurement struct {
 	unparsedValue string
 	Symbol        string
@@ -31,10 +35,18 @@ type OracleExadataMeasurement struct {
 }
 
 func (m OracleExadataMeasurement) String() string {
+	if m.unparsedValue == UNKNOWN_VALUE {
+		return UNKNOWN_VALUE
+	}
+
 	return fmt.Sprintf("%f %s", m.Quantity, m.Symbol)
 }
 
 func (m OracleExadataMeasurement) Human(symbol string) (string, error) {
+	if m.unparsedValue == UNKNOWN_VALUE {
+		return UNKNOWN_VALUE, nil
+	}
+
 	c, err := Convert(m, symbol)
 	if err != nil {
 		return "", err
@@ -80,6 +92,12 @@ func (m *OracleExadataMeasurement) Sub(oem OracleExadataMeasurement) {
 func NewOracleExadataMeasurement() *OracleExadataMeasurement {
 	return &OracleExadataMeasurement{
 		Symbol: "MIB",
+	}
+}
+
+func NewUnknownOracleExadataMeasurement() *OracleExadataMeasurement {
+	return &OracleExadataMeasurement{
+		unparsedValue: UNKNOWN_VALUE,
 	}
 }
 
@@ -143,6 +161,10 @@ func IntToOracleExadataMeasurement(d int, symbol string) (res *OracleExadataMeas
 func StringToOracleExadataMeasurement(s string) (res *OracleExadataMeasurement, err error) {
 	if s == "0" || s == "" {
 		s = "0B"
+	}
+
+	if s == UNKNOWN_VALUE {
+		return NewUnknownOracleExadataMeasurement(), nil
 	}
 
 	res = &OracleExadataMeasurement{unparsedValue: s}

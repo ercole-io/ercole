@@ -111,6 +111,16 @@ func TestNewOracleExadataMeasurement(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
+func TestNewUnknownOracleExadataMeasurement(t *testing.T) {
+	expected := &OracleExadataMeasurement{
+		unparsedValue: "UNKNOWN",
+	}
+
+	actual := NewUnknownOracleExadataMeasurement()
+
+	assert.Equal(t, expected, actual)
+}
+
 func TestIntToOracleExadataMeasurement(t *testing.T) {
 	expected := &OracleExadataMeasurement{
 		unparsedValue: "2 GIB",
