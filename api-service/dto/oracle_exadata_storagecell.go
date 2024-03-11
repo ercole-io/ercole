@@ -22,9 +22,9 @@ type OracleExadataStorageCell struct {
 	Hostname           string                  `json:"hostname"`
 	CellDisk           string                  `json:"cellDisk"`
 	Cell               string                  `json:"cell"`
-	Size               string                  `json:"size"`
-	FreeSpace          string                  `json:"freeSpace"`
-	UsedSize           string                  `json:"usedSize"`
+	Size               int                     `json:"size"`
+	FreeSpace          int                     `json:"freeSpace"`
+	UsedSize           int                     `json:"usedSize"`
 	Status             string                  `json:"status"`
 	ErrorCount         int                     `json:"errorCount"`
 	GridDisks          []OracleExadataGridDisk `json:"gridDisks,omitempty"`
@@ -44,30 +44,30 @@ func ToOracleExadataStorageCell(d domain.OracleExadataStorageCell) (*OracleExada
 	}
 
 	if d.Size != nil {
-		hsize, err := d.Size.Human("GIB")
+		rsize, err := d.Size.RoundedGiB()
 		if err != nil {
 			return nil, err
 		}
 
-		res.Size = hsize
+		res.Size = rsize
 	}
 
 	if d.FreeSpace != nil {
-		hfreespace, err := d.FreeSpace.Human("GIB")
+		rfreespace, err := d.FreeSpace.RoundedGiB()
 		if err != nil {
 			return nil, err
 		}
 
-		res.FreeSpace = hfreespace
+		res.FreeSpace = rfreespace
 	}
 
 	if d.UsedSize != nil {
-		husedsize, err := d.UsedSize.Human("GIB")
+		rusedsize, err := d.UsedSize.RoundedGiB()
 		if err != nil {
 			return nil, err
 		}
 
-		res.UsedSize = husedsize
+		res.UsedSize = rusedsize
 	}
 
 	griddisks, err := domain.ToUpperLevelLayers[domain.OracleExadataGridDisk, OracleExadataGridDisk](d.GridDisks, ToOracleExadataGridDisk)

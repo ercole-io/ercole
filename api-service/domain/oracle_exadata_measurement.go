@@ -18,6 +18,7 @@ package domain
 import (
 	"errors"
 	"fmt"
+	"math"
 	"regexp"
 	"strconv"
 
@@ -25,7 +26,7 @@ import (
 )
 
 const (
-	UNKNOWN_VALUE = "UNKNOWN"
+	UNKNOWN_VALUE       = "UNKNOWN"
 )
 
 type OracleExadataMeasurement struct {
@@ -53,6 +54,21 @@ func (m OracleExadataMeasurement) Human(symbol string) (string, error) {
 	}
 
 	return fmt.Sprintf("%.2f %s", c.Quantity, c.Symbol), nil
+}
+
+func (m OracleExadataMeasurement) RoundedGiB() (int, error) {
+	// NOTE:
+	// temporarily if the unparsed value is unknown return an error
+	if m.unparsedValue == UNKNOWN_VALUE {
+		return 0, errors.New(UNKNOWN_VALUE)
+	}
+
+	c, err := Convert(m, "GIB")
+	if err != nil {
+		return 0, err
+	}
+
+	return int(math.Round(c.Quantity)), nil
 }
 
 func (m *OracleExadataMeasurement) Add(qty float64, symbol string) {

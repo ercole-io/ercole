@@ -24,12 +24,12 @@ type OracleExadataVM struct {
 	Name         string `json:"name"`
 	CPUCurrent   int    `json:"cpuCurrent"`
 	CPURestart   int    `json:"cpuRestart"`
-	RamCurrent   string `json:"ramCurrent"`
-	RamRestart   string `json:"ramRestart"`
+	RamCurrent   int    `json:"ramCurrent"`
+	RamRestart   int    `json:"ramRestart"`
 	CPUOnline    int    `json:"cpuOnline"`
 	CPUMaxUsable int    `json:"cpuMaxUsable"`
-	RamOnline    string `json:"ramOnline"`
-	RamMaxUsable string `json:"ramMaxUsable"`
+	RamOnline    int    `json:"ramOnline"`
+	RamMaxUsable int    `json:"ramMaxUsable"`
 	ClusterName  string `json:"clusterName"`
 }
 
@@ -47,39 +47,39 @@ func ToOracleExadataVM(d domain.OracleExadataVM) (*OracleExadataVM, error) {
 	}
 
 	if d.RamCurrent != nil {
-		hramcurrent, err := d.RamCurrent.Human("GIB")
+		rramcurrent, err := d.RamCurrent.RoundedGiB()
 		if err != nil {
 			return nil, err
 		}
 
-		res.RamCurrent = hramcurrent
+		res.RamCurrent = rramcurrent
 	}
 
 	if d.RamRestart != nil {
-		hramrestart, err := d.RamRestart.Human("GIB")
+		rramrestart, err := d.RamRestart.RoundedGiB()
 		if err != nil {
 			return nil, err
 		}
 
-		res.RamRestart = hramrestart
+		res.RamRestart = rramrestart
 	}
 
 	if d.RamOnline != nil {
-		hramonline, err := d.RamOnline.Human("GIB")
+		rramonline, err := d.RamOnline.RoundedGiB()
 		if err != nil {
 			return nil, err
 		}
 
-		res.RamOnline = hramonline
+		res.RamOnline = rramonline
 	}
 
 	if d.RamMaxUsable != nil {
-		hrammaxusable, err := d.RamMaxUsable.Human("GIB")
+		rrammaxusable, err := d.RamMaxUsable.RoundedGiB()
 		if err != nil {
 			return nil, err
 		}
 
-		res.RamMaxUsable = hrammaxusable
+		res.RamMaxUsable = rrammaxusable
 	}
 
 	return res, nil

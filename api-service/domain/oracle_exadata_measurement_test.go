@@ -46,6 +46,16 @@ func TestHuman(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
+func TestRoundedGiB(t *testing.T) {
+	expected := 3217
+
+	actual, err := oem.RoundedGiB()
+
+	require.NoError(t, err)
+
+	assert.Equal(t, expected, actual)
+}
+
 func TestConvert(t *testing.T) {
 	expected := &OracleExadataMeasurement{
 		unparsedValue: "3216.991232 GIB",
