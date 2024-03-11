@@ -15,14 +15,18 @@
 
 package dto
 
-import "github.com/ercole-io/ercole/v2/api-service/domain"
+import (
+	"strconv"
+
+	"github.com/ercole-io/ercole/v2/api-service/domain"
+)
 
 type OracleExadataGridDisk struct {
 	Type          string `json:"type"`
 	Hostname      string `json:"hostname"`
 	GridDisk      string `json:"gridDisk"`
 	CellDisk      string `json:"cellDisk"`
-	Size          string `json:"size"`
+	Size          int    `json:"size"`
 	Status        string `json:"status"`
 	ErrorCount    int    `json:"errorCount"`
 	CachingPolicy string `json:"cachingPolicy"`
@@ -47,21 +51,23 @@ func ToOracleExadataGridDisk(d domain.OracleExadataGridDisk) (*OracleExadataGrid
 	}
 
 	if d.Size != nil {
-		hsize, err := d.Size.Human("GIB")
+		rsize, err := d.Size.RoundedGiB()
 		if err != nil {
 			return nil, err
 		}
 
-		res.Size = hsize
+		res.Size = rsize
 	}
 
 	if d.AsmDiskSize != nil {
-		hasmdisksize, err := d.AsmDiskSize.Human("GIB")
+		rasmdisksize, err := d.AsmDiskSize.RoundedGiB()
 		if err != nil {
-			return nil, err
+			if err.Error() == domain.UNKNOWN_VALUE {
+				res.AsmDiskSize = domain.UNKNOWN_VALUE
+			}
+		} else {
+			res.AsmDiskSize = strconv.Itoa(rasmdisksize)
 		}
-
-		res.AsmDiskSize = hasmdisksize
 	}
 
 	return res, nil

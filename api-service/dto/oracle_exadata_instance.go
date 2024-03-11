@@ -32,9 +32,9 @@ type OracleExadataInstance struct {
 	Components  []OracleExadataComponent `json:"components"`
 	RDMA        *model.OracleExadataRdma `json:"rdma"`
 
-	TotalMemory           string `json:"totalMemory"`
-	UsedMemory            string `json:"usedMemory"`
-	FreeMemory            string `json:"freeMemory"`
+	TotalMemory           int    `json:"totalMemory"`
+	UsedMemory            int    `json:"usedMemory"`
+	FreeMemory            int    `json:"freeMemory"`
 	UsedMemoryMPercentage string `json:"usedMemoryPercentage"`
 
 	TotalCPU          int    `json:"totalCPU"`
@@ -42,9 +42,9 @@ type OracleExadataInstance struct {
 	FreeCPU           int    `json:"freeCPU"`
 	UsedCPUPercentage string `json:"usedCPUPercentage"`
 
-	TotalSize          string `json:"totalSize"`
-	UsedSize           string `json:"usedSize"`
-	FreeSpace          string `json:"freeSpace"`
+	TotalSize          int    `json:"totalSize"`
+	UsedSize           int    `json:"usedSize"`
+	FreeSpace          int    `json:"freeSpace"`
 	UsedSizePercentage string `json:"usedSizePercentage"`
 }
 
@@ -66,57 +66,57 @@ func ToOracleExadataInstance(d domain.OracleExadataInstance) (*OracleExadataInst
 	}
 
 	if d.TotalMemory != nil {
-		htotalmemory, err := d.TotalMemory.Human("GIB")
+		rtotalmemory, err := d.TotalMemory.RoundedGiB()
 		if err != nil {
 			return nil, err
 		}
 
-		res.TotalMemory = htotalmemory
+		res.TotalMemory = rtotalmemory
 	}
 
 	if d.UsedMemory != nil {
-		husedmemory, err := d.UsedMemory.Human("GIB")
+		rusedmemory, err := d.UsedMemory.RoundedGiB()
 		if err != nil {
 			return nil, err
 		}
 
-		res.UsedMemory = husedmemory
+		res.UsedMemory = rusedmemory
 	}
 
 	if d.FreeMemory != nil {
-		hfreememory, err := d.FreeMemory.Human("GIB")
+		rfreememory, err := d.FreeMemory.RoundedGiB()
 		if err != nil {
 			return nil, err
 		}
 
-		res.FreeMemory = hfreememory
+		res.FreeMemory = rfreememory
 	}
 
 	if d.TotalSize != nil {
-		htotalsize, err := d.TotalSize.Human("GIB")
+		rtotalsize, err := d.TotalSize.RoundedGiB()
 		if err != nil {
 			return nil, err
 		}
 
-		res.TotalSize = htotalsize
+		res.TotalSize = rtotalsize
 	}
 
 	if d.UsedSize != nil {
-		husedsize, err := d.UsedSize.Human("GIB")
+		rusedsize, err := d.UsedSize.RoundedGiB()
 		if err != nil {
 			return nil, err
 		}
 
-		res.UsedSize = husedsize
+		res.UsedSize = rusedsize
 	}
 
 	if d.FreeSpace != nil {
-		hfreespace, err := d.FreeSpace.Human("GIB")
+		rfreespace, err := d.FreeSpace.RoundedGiB()
 		if err != nil {
 			return nil, err
 		}
 
-		res.FreeSpace = hfreespace
+		res.FreeSpace = rfreespace
 	}
 
 	componens, err := domain.ToUpperLevelLayers[domain.OracleExadataComponent, OracleExadataComponent](d.Components, ToOracleExadataComponent)

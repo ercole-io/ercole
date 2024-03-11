@@ -896,18 +896,24 @@ components:
           type: integer
         freeMemory:
           type: integer
+        usedMemoryPercentage:
+          type: string
         totalCPU:
           type: integer
         usedCPU:
           type: integer
         freeCPU:
           type: integer
+        usedCPUPercentage:
+          type: string
         totalSize:
-          $ref: "#/components/schemas/ExadataMeasurement"
+          type: integer
         usedSize:
-          $ref: "#/components/schemas/ExadataMeasurement"
+          type: integer
         freeSpace:
-          $ref: "#/components/schemas/ExadataMeasurement"
+          type: integer
+        usedSizePercentage:
+          type: string
       required:
         - racID
     ExadataInstanceResponseList:
@@ -969,16 +975,20 @@ components:
           type: integer
         freeRAM:
           type: integer
+        usedRAMPercentage:
+          type: string
         usedCPU:
           type: integer
         freeCPU:
           type: integer
+        usedCPUPercentage:
+          type: string
         usedSizePercentage:
-          type: number
+          type: string
         totalSize:
-          $ref: "#/components/schemas/ExadataMeasurement"
+          type: integer
         totalFreeSpace:
-          $ref: "#/components/schemas/ExadataMeasurement"
+          type: integer
       required:
         - hostType
     ExadataVM:
@@ -1022,11 +1032,11 @@ components:
         cellDisk:
           type: string
         size:
-          $ref: "#/components/schemas/ExadataMeasurement"
+          type: integer
         freeSpace:
-          $ref: "#/components/schemas/ExadataMeasurement"
+          type: integer
         usedSize:
-          $ref: "#/components/schemas/ExadataMeasurement"
+          type: integer
         status:
           type: string
         errorCount:
@@ -1051,7 +1061,7 @@ components:
         gridDisk:
           type: string
         size:
-          type: string
+          type: integer
         status:
           type: string
         errorCount:

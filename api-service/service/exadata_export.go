@@ -93,7 +93,7 @@ func (as APIService) GetAllExadataInstanceAsXlsx() (*excelize.File, error) {
 			file.SetCellValue(clustersheet, nextAxisCls(), vmname.(string))
 		}
 
-		file.SetCellValue(clustersheet, nextAxisCls(), cv.TotalRAM/1024)
+		file.SetCellValue(clustersheet, nextAxisCls(), cv.TotalRAM)
 		file.SetCellValue(clustersheet, nextAxisCls(), cv.TotalCPU)
 	}
 
