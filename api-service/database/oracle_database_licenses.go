@@ -31,6 +31,8 @@ import (
 func (md *MongoDatabase) SearchOracleDatabaseUsedLicenses(hostname string, sortBy string, sortDesc bool, page int, pageSize int,
 	location string, environment string, olderThan time.Time,
 ) (*dto.OracleDatabaseUsedLicenseSearchResponse, error) {
+	options := options.Aggregate().SetAllowDiskUse(true)
+
 	cursor, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
@@ -57,6 +59,7 @@ func (md *MongoDatabase) SearchOracleDatabaseUsedLicenses(hostname string, sortB
 			mu.APOptionalSortingStage(sortBy, sortDesc),
 			PagingMetadataStage(page, pageSize),
 		),
+		options,
 	)
 
 	if err != nil {
