@@ -43,6 +43,19 @@ func TestProcessMsg_AlertInsertion(t *testing.T) {
 			AlertService: config.AlertService{
 				Emailer: config.Emailer{
 					To: []string{"test@ercole.test"},
+					Enabled: true,
+					AlertType: config.AlertType{
+						NewHost:                    true,
+						NewDatabase:                true,
+						NewLicense:                 true,
+						NewOption:                  true,
+						NewUnlistedRunningDatabase: true,
+						NewHostCpu:                 true,
+						MissingPrimaryDatabase:     true,
+						MissingDatabase:            true,
+						AgentError:                 true,
+						NoData:                     true,
+					},
 				},
 			},
 		},
@@ -105,6 +118,19 @@ func TestProcessAlertInsertion_WithHostname(t *testing.T) {
 			AlertService: config.AlertService{
 				Emailer: config.Emailer{
 					To: []string{"test@ercole.test"},
+					Enabled: true,
+					AlertType: config.AlertType{
+						NewHost:                    true,
+						NewDatabase:                true,
+						NewLicense:                 true,
+						NewOption:                  true,
+						NewUnlistedRunningDatabase: true,
+						NewHostCpu:                 true,
+						MissingPrimaryDatabase:     true,
+						MissingDatabase:            true,
+						AgentError:                 true,
+						NoData:                     true,
+					},
 				},
 			},
 		},
@@ -148,6 +174,19 @@ func TestProcessAlertInsertion_WithoutHostname(t *testing.T) {
 			AlertService: config.AlertService{
 				Emailer: config.Emailer{
 					To: []string{"test@ercole.test"},
+					Enabled: true,
+					AlertType: config.AlertType{
+						NewHost:                    true,
+						NewDatabase:                true,
+						NewLicense:                 true,
+						NewOption:                  true,
+						NewUnlistedRunningDatabase: true,
+						NewHostCpu:                 true,
+						MissingPrimaryDatabase:     true,
+						MissingDatabase:            true,
+						AgentError:                 true,
+						NoData:                     true,
+					},
 				},
 			},
 		},
@@ -189,7 +228,20 @@ func TestProcessAlertInsertion_EmailerError(t *testing.T) {
 		Config: config.Configuration{
 			AlertService: config.AlertService{
 				Emailer: config.Emailer{
-					To: []string{"test@ercole.test"},
+					To:      []string{"test@ercole.test"},
+					Enabled: true,
+					AlertType: config.AlertType{
+						NewHost:                    true,
+						NewDatabase:                true,
+						NewLicense:                 true,
+						NewOption:                  true,
+						NewUnlistedRunningDatabase: true,
+						NewHostCpu:                 true,
+						MissingPrimaryDatabase:     true,
+						MissingDatabase:            true,
+						AgentError:                 true,
+						NoData:                     true,
+					},
 				},
 			},
 		},

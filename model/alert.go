@@ -120,3 +120,7 @@ fields:
 
 	return true
 }
+
+func (a Alert) IsCode(code string) bool {
+	return a.AlertCode == code
+}
