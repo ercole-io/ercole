@@ -126,6 +126,47 @@ func (as *AlertService) ProcessMsg(msg hub.Message) {
 func (as *AlertService) ProcessAlertInsertion(params hub.Fields) {
 	alert := params["alert"].(model.Alert)
 
+	// check if alert notification is enabled
+	if alert.IsCode(model.AlertCodeNewServer) && !as.Config.AlertService.Emailer.AlertType.NewHost {
+		return
+	}
+
+	if alert.IsCode(model.AlertCodeNewDatabase) && !as.Config.AlertService.Emailer.AlertType.NewDatabase {
+		return
+	}
+
+	if alert.IsCode(model.AlertCodeNewLicense) && !as.Config.AlertService.Emailer.AlertType.NewLicense {
+		return
+	}
+
+	if alert.IsCode(model.AlertCodeNewOption) && !as.Config.AlertService.Emailer.AlertType.NewOption {
+		return
+	}
+
+	if alert.IsCode(model.AlertCodeUnlistedRunningDatabase) && !as.Config.AlertService.Emailer.AlertType.NewUnlistedRunningDatabase {
+		return
+	}
+
+	if alert.IsCode(model.AlertCodeIncreasedCPUCores) && !as.Config.AlertService.Emailer.AlertType.NewHostCpu {
+		return
+	}
+
+	if alert.IsCode(model.AlertCodeMissingPrimaryDatabase) && !as.Config.AlertService.Emailer.AlertType.MissingPrimaryDatabase {
+		return
+	}
+
+	if alert.IsCode(model.AlertCodeMissingDatabase) && !as.Config.AlertService.Emailer.AlertType.MissingDatabase {
+		return
+	}
+
+	if alert.IsCode(model.AlertCodeAgentError) && !as.Config.AlertService.Emailer.AlertType.AgentError {
+		return
+	}
+
+	if alert.IsCode(model.AlertCodeNoData) && !as.Config.AlertService.Emailer.AlertType.NoData {
+		return
+	}
+
 	//Create the subject and message
 	var subject, message string
 
