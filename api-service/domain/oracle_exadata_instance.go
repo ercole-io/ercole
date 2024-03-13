@@ -81,6 +81,7 @@ func ToOracleExadataInstance(m model.OracleExadataInstance) (*OracleExadataInsta
 
 		if c.HostType == model.BARE_METAL {
 			res.UsedCPU += c.CPUEnabled
+			res.UsedMemory.Add(c.UsedRAM.Quantity, c.UsedRAM.Symbol)
 		}
 
 		if c.HostType == model.DOM0 || c.HostType == model.KVM_HOST {
