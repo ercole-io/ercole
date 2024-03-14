@@ -16,6 +16,8 @@
 package service
 
 import (
+	"fmt"
+
 	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/ercole-io/ercole/v2/api-service/domain"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
@@ -78,23 +80,30 @@ func (as APIService) GetAllExadataInstanceAsXlsx() (*excelize.File, error) {
 		return nil, err
 	}
 
+	initcolumn := 7
+	newcolumn := 0
+
 	for _, cv := range clusterViews {
 		nextAxisCls := axisHelperUnk.NewRow()
 		file.SetCellValue(clustersheet, nextAxisCls(), cv.Hostname)
 		file.SetCellValue(clustersheet, nextAxisCls(), cv.RackID)
 		file.SetCellValue(clustersheet, nextAxisCls(), cv.HostType)
+		file.SetCellValue(clustersheet, nextAxisCls(), cv.TotalRAM)
+		file.SetCellValue(clustersheet, nextAxisCls(), cv.TotalCPU)
 		file.SetCellValue(clustersheet, nextAxisCls(), cv.Clustername)
 
 		for i, vmname := range cv.VmNames {
 			if i > 1 {
-				file.InsertCol(clustersheet, "G")
+				newcolumn = i
 			}
 
 			file.SetCellValue(clustersheet, nextAxisCls(), vmname.(string))
 		}
+	}
 
-		file.SetCellValue(clustersheet, nextAxisCls(), cv.TotalRAM)
-		file.SetCellValue(clustersheet, nextAxisCls(), cv.TotalCPU)
+	for i := 1; i < newcolumn; i++ {
+		col := initcolumn + i
+		file.SetCellValue(clustersheet, fmt.Sprintf("%s1", string(rune('A'+col))), fmt.Sprintf("Phys Nodes %d", i+2))
 	}
 
 	return file, err
