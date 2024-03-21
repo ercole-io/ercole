@@ -5267,6 +5267,10 @@ paths:
                                 type: number
                               totalCoveredLicensesCount:
                                 type: number
+                        status:
+                          type: string
+                        productOrderDate:
+                          type: string
                 required:
                   - contracts
               examples:

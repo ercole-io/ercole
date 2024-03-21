@@ -143,6 +143,8 @@ func (as *APIService) GetOracleDatabaseContractsAsXLSX(filter dto.GetOracleDatab
 		"CSI",
 		"Reference Number",
 		"Support Expiration",
+		"Status",
+		"Product Order Date",
 		"ULA",
 		"Licenses Per Core",
 		"Licenses Per User",
@@ -175,6 +177,14 @@ func (as *APIService) GetOracleDatabaseContractsAsXLSX(filter dto.GetOracleDatab
 
 		if val.SupportExpiration != nil {
 			sheets.SetCellValue(sheet, nextAxis(), val.SupportExpiration)
+		} else {
+			sheets.SetCellValue(sheet, nextAxis(), "")
+		}
+
+		sheets.SetCellValue(sheet, nextAxis(), val.Status)
+
+		if val.ProductOrderDate != nil {
+			sheets.SetCellValue(sheet, nextAxis(), val.ProductOrderDate)
 		} else {
 			sheets.SetCellValue(sheet, nextAxis(), "")
 		}
