@@ -22,6 +22,7 @@ import (
 
 	"github.com/amreo/mu"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
@@ -209,4 +210,44 @@ func (md *MongoDatabase) FindUnretrievedDatabases(hostname string) ([]string, er
 	}
 
 	return out, nil
+}
+
+func (md *MongoDatabase) FindAllMissingDatabases() ([]dto.OracleDatabaseMissing, error) {
+	res := make([]dto.OracleDatabaseMissing, 0)
+
+	pipeline := bson.A{
+		bson.D{{Key: "$match", Value: bson.D{{Key: "archived", Value: false}}}},
+		bson.D{
+			{Key: "$project",
+				Value: bson.D{
+					{Key: "hostname", Value: 1},
+					{Key: "missingdbs",
+						Value: bson.D{
+							{Key: "$concatArrays",
+								Value: bson.A{
+									"$features.oracle.database.unlistedRunningDatabases",
+									"$features.oracle.database.unretrievedDatabases",
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		bson.D{{Key: "$match", Value: bson.D{{Key: "missingdbs", Value: bson.D{{Key: "$ne", Value: primitive.Null{}}}}}}},
+	}
+
+	ctx := context.TODO()
+
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(hostCollection).
+		Aggregate(ctx, pipeline)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := cur.All(ctx, &res); err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }

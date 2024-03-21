@@ -2347,6 +2347,22 @@ components:
           type: number
         pdb:
           type: string
+    OracleDatabaseMissing:
+      type: object
+      properties:
+        hostname:
+          type: string
+        missingdbs:
+          type: array
+          items:
+            type: string
+    VirtualHostWithoutCluster:
+      type: object
+      properties:
+        hostname:
+          type: string
+        hardwareAbstractionTechnology:
+          type: string
   parameters:
     search:
       in: query
@@ -2808,6 +2824,37 @@ paths:
           $ref: "#/components/responses/error"
         "500":
           $ref: "#/components/responses/error"
+
+  /hosts/missing-dbs:
+    get:
+      tags:
+        - api-service
+      description: Get all the missing database (unretrieved and unlisted)
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OracleDatabaseMissing"
+
+  /hosts/no-clusters:
+    get:
+      tags:
+        - api-service
+      description: Get all virtula host without clusters
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VirtualHostWithoutCluster"
+
   "/hosts/{hostname}/is-missing-db":
     parameters:
       - in: path

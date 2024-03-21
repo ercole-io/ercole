@@ -355,3 +355,21 @@ func (ctrl *APIController) GetMissingDbHost(w http.ResponseWriter, r *http.Reque
 		IsMissingDB []string
 	}{IsMissingDB: res})
 }
+
+func (ctrl *APIController) GetAllMissingDb(w http.ResponseWriter, r *http.Request) {
+	res, err := ctrl.Service.GetAllMissingDbs()
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, res)
+}
+
+func (ctrl *APIController) GetVirtualHostWithoutCluster(w http.ResponseWriter, r *http.Request) {
+	res, err := ctrl.Service.GetVirtualHostWithoutCluster()
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, res)
+}

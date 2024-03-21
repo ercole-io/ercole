@@ -181,6 +181,9 @@ type MongoDatabaseInterface interface {
 	// Check if there are any db instances not running on host
 	FindUnlistedRunningDatabases(hostname string) ([]string, error)
 	FindUnretrievedDatabases(hostname string) ([]string, error)
+	FindAllMissingDatabases() ([]dto.OracleDatabaseMissing, error)
+
+	FindVirtualHostWithoutCluster() ([]dto.VirtualHostWithoutCluster, error)
 
 	// MYSQL
 
