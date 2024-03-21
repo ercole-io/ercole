@@ -252,6 +252,7 @@ func (as *APIService) SearchHostsAsXLSX(filters dto.SearchHostsFilters) (*exceli
 		"Environment",
 		"Location",
 		"Databases",
+		"Missing Databases",
 		"Technology",
 		"Operating System",
 		"Clust",
@@ -289,13 +290,17 @@ func (as *APIService) SearchHostsAsXLSX(filters dto.SearchHostsFilters) (*exceli
 
 		databases := strings.Builder{}
 		technology := strings.Builder{}
+		missingdbs := strings.Builder{}
 
 		for k, v := range val.Databases {
 			databases.WriteString(strings.Join(v, " "))
 			technology.WriteString(k)
 		}
 
+		missingdbs.WriteString(strings.Join(val.IsMissingDB, " "))
+
 		file.SetCellValue(sheet, nextAxis(), databases.String())
+		file.SetCellValue(sheet, nextAxis(), missingdbs.String())
 		file.SetCellValue(sheet, nextAxis(), technology.String())
 
 		var os string
