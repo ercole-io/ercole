@@ -538,6 +538,7 @@ func TestSearchHostsAsXLSX(t *testing.T) {
 			VirtualizationNode: "",
 			Cluster:            "",
 			Databases:          map[string][]string{},
+			IsMissingDB:        []string{},
 		},
 
 		{
@@ -620,13 +621,14 @@ func TestSearchHostsAsXLSX(t *testing.T) {
 		assert.Equal(t, "Italy", sp.GetCellValue("Hosts", "L2"))
 		assert.Equal(t, "", sp.GetCellValue("Hosts", "M2"))
 		assert.Equal(t, "", sp.GetCellValue("Hosts", "N2"))
-		assert.Equal(t, "Red Hat Enterprise Linux - 7.6", sp.GetCellValue("Hosts", "O2"))
-		assert.Equal(t, "1", sp.GetCellValue("Hosts", "P2"))
-		assert.Equal(t, "", sp.GetCellValue("Hosts", "Q2"))
-		assert.Equal(t, "376", sp.GetCellValue("Hosts", "R2"))
-		assert.Equal(t, "23", sp.GetCellValue("Hosts", "S2"))
-		assert.Equal(t, "", sp.GetCellValue("Hosts", "T2"))
+		assert.Equal(t, "", sp.GetCellValue("Hosts", "O2"))
+		assert.Equal(t, "Red Hat Enterprise Linux - 7.6", sp.GetCellValue("Hosts", "P2"))
+		assert.Equal(t, "1", sp.GetCellValue("Hosts", "Q2"))
+		assert.Equal(t, "", sp.GetCellValue("Hosts", "R2"))
+		assert.Equal(t, "376", sp.GetCellValue("Hosts", "S2"))
+		assert.Equal(t, "23", sp.GetCellValue("Hosts", "T2"))
 		assert.Equal(t, "", sp.GetCellValue("Hosts", "U2"))
+		assert.Equal(t, "", sp.GetCellValue("Hosts", "V2"))
 
 		assert.Equal(t, "test-db", sp.GetCellValue("Hosts", "A3"))
 		assert.Equal(t, "VMWARE", sp.GetCellValue("Hosts", "B3"))
@@ -642,13 +644,14 @@ func TestSearchHostsAsXLSX(t *testing.T) {
 		assert.Equal(t, "Italy", sp.GetCellValue("Hosts", "L2"))
 		assert.Equal(t, "", sp.GetCellValue("Hosts", "M3"))
 		assert.Equal(t, "", sp.GetCellValue("Hosts", "N3"))
-		assert.Equal(t, "Red Hat Enterprise Linux - 7.6", sp.GetCellValue("Hosts", "O3"))
-		assert.Equal(t, "0", sp.GetCellValue("Hosts", "P3"))
-		assert.Equal(t, "", sp.GetCellValue("Hosts", "Q3"))
-		assert.Equal(t, "3", sp.GetCellValue("Hosts", "R3"))
-		assert.Equal(t, "1", sp.GetCellValue("Hosts", "S3"))
-		assert.Equal(t, "", sp.GetCellValue("Hosts", "T3"))
+		assert.Equal(t, "", sp.GetCellValue("Hosts", "O3"))
+		assert.Equal(t, "Red Hat Enterprise Linux - 7.6", sp.GetCellValue("Hosts", "P3"))
+		assert.Equal(t, "0", sp.GetCellValue("Hosts", "Q3"))
+		assert.Equal(t, "", sp.GetCellValue("Hosts", "R3"))
+		assert.Equal(t, "3", sp.GetCellValue("Hosts", "S3"))
+		assert.Equal(t, "1", sp.GetCellValue("Hosts", "T3"))
 		assert.Equal(t, "", sp.GetCellValue("Hosts", "U3"))
+		assert.Equal(t, "", sp.GetCellValue("Hosts", "V3"))
 	})
 
 	t.Run("Db error", func(t *testing.T) {
