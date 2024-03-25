@@ -55,6 +55,9 @@ type OracleDatabaseContractFE struct {
 	CoveredLicenses float64 `json:"-" bson:"-"`
 
 	SupportExpiration *time.Time `json:"supportExpiration"`
+
+	Status           string     `json:"status"`
+	ProductOrderDate *time.Time `json:"productOrderDate"`
 }
 
 // OracleDatabaseContractAssociatedHostFE contains the informations about an associated host in contract

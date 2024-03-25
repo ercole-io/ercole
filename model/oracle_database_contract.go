@@ -36,6 +36,8 @@ type OracleDatabaseContract struct {
 	SupportExpiration *time.Time         `json:"supportExpiration" bson:"supportExpiration" csv:"-"`
 	Hosts             []string           `json:"hosts" bson:"hosts" csv:"-"`
 	HostsLiteral      LiteralStrSlice    `json:"-" bson:"-" csv:"-"`
+	Status            string             `json:"status" bson:"status" csv:"-"`
+	ProductOrderDate  *time.Time         `json:"productOrderDate" bson:"productOrderDate" csv:"-"`
 }
 
 func (contract OracleDatabaseContract) Check() error {
