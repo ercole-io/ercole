@@ -492,6 +492,14 @@ func (as *APIService) IsMissingDB(hostname string) ([]string, error) {
 	return append(unlisted, unretrieved...), nil
 }
 
+func (as *APIService) GetAllMissingDbs() ([]dto.OracleDatabaseMissing, error) {
+	return as.Database.FindAllMissingDatabases()
+}
+
+func (as *APIService) GetVirtualHostWithoutCluster() ([]dto.VirtualHostWithoutCluster, error) {
+	return as.Database.FindVirtualHostWithoutCluster()
+}
+
 func checkHosts(as *APIService, hosts []string) error {
 	commonFilters := dto.NewSearchHostsFilters()
 	notInClusterHosts, err := as.SearchHosts("hostnames",

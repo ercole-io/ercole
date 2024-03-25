@@ -209,6 +209,10 @@ type APIServiceInterface interface {
 
 	IsMissingDB(hostname string) ([]string, error)
 
+	GetAllMissingDbs() ([]dto.OracleDatabaseMissing, error)
+
+	GetVirtualHostWithoutCluster() ([]dto.VirtualHostWithoutCluster, error)
+
 	// UpdateAlertsStatus update alerts status
 	UpdateAlertsStatus(alertsFilter dto.AlertsFilter, newStatus string) error
 

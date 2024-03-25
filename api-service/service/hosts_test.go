@@ -1054,3 +1054,60 @@ func TestDismissHost_Fail(t *testing.T) {
 	err := as.DismissHost("foobar")
 	assert.Error(t, err)
 }
+
+func TestGetAllMissingDbs_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	asc := NewMockAlertSvcClientInterface(mockCtrl)
+
+	as := APIService{
+		Database:       db,
+		AlertSvcClient: asc,
+	}
+
+	expected := []dto.OracleDatabaseMissing{
+		{
+			Hostname: "host01",
+			MissingDbs: []string{
+				"db01",
+				"db02",
+			},
+		},
+	}
+
+	db.EXPECT().FindAllMissingDatabases().Return(expected, nil)
+
+	actual, err := as.GetAllMissingDbs()
+
+	require.NoError(t, err)
+
+	assert.Equal(t, expected, actual)
+}
+
+func TestGetVirtualHostWithoutCluster_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	asc := NewMockAlertSvcClientInterface(mockCtrl)
+
+	as := APIService{
+		Database:       db,
+		AlertSvcClient: asc,
+	}
+
+	expected := []dto.VirtualHostWithoutCluster{
+		{
+			Hostname:                      "host01",
+			HardwareAbstractionTechnology: "VIRT",
+		},
+	}
+
+	db.EXPECT().FindVirtualHostWithoutCluster().Return(expected, nil)
+
+	actual, err := as.GetVirtualHostWithoutCluster()
+
+	require.NoError(t, err)
+
+	assert.Equal(t, expected, actual)
+}

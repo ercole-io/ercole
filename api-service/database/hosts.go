@@ -1073,3 +1073,41 @@ func (md *MongoDatabase) SearchHostMysqlLMS(filter dto.SearchHostsAsLMS) ([]dto.
 
 	return result, nil
 }
+
+func (md *MongoDatabase) FindVirtualHostWithoutCluster() ([]dto.VirtualHostWithoutCluster, error) {
+	res := make([]dto.VirtualHostWithoutCluster, 0)
+
+	pipeline := bson.A{
+		bson.D{
+			{Key: "$match",
+				Value: bson.D{
+					{Key: "archived", Value: false},
+					{Key: "info.hardwareAbstraction", Value: "VIRT"},
+					{Key: "clusters", Value: primitive.Null{}},
+				},
+			},
+		},
+		bson.D{
+			{Key: "$project",
+				Value: bson.D{
+					{Key: "hostname", Value: 1},
+					{Key: "hardwareAbstractionTechnology", Value: "$info.hardwareAbstractionTechnology"},
+				},
+			},
+		},
+	}
+
+	ctx := context.TODO()
+
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(hostCollection).
+		Aggregate(ctx, pipeline)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := cur.All(ctx, &res); err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
