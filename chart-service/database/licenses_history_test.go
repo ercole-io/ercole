@@ -19,20 +19,22 @@ import (
 	"context"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-	"go.mongodb.org/mongo-driver/bson"
-
 	"github.com/ercole-io/ercole/v2/chart-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/ercole-io/ercole/v2/utils/mongoutils"
+	"github.com/stretchr/testify/assert"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func (m *MongodbSuite) TestGetLicenseComplianceHistory() {
-	m.T().Run("should_get_license_compliance_history", func(t *testing.T) {
-		defer m.db.Client.Database(m.dbname).Collection("database_licenses_history").DeleteMany(context.TODO(), bson.M{})
-		m.InsertHostDataHistory(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_chartservice_mongohostdata_03.json"))
+	defer m.db.Client.Database(m.dbname).Collection("database_licenses_history").DeleteMany(context.TODO(), bson.M{})
+	m.InsertHostDataHistory(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_chartservice_mongohostdata_03.json"))
 
-		out, err := m.db.GetLicenseComplianceHistory()
+	m.T().Run("should_get_license_compliance_history", func(t *testing.T) {
+		start := utils.MIN_TIME
+		end := utils.MAX_TIME
+
+		out, err := m.db.GetLicenseComplianceHistory(start, end)
 		m.Require().NoError(err)
 
 		expectedOut := []dto.LicenseComplianceHistory{

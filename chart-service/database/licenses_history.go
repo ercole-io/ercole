@@ -18,6 +18,7 @@ package database
 
 import (
 	"context"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 
@@ -25,10 +26,64 @@ import (
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
-func (md *MongoDatabase) GetLicenseComplianceHistory() ([]dto.LicenseComplianceHistory, error) {
+func (md *MongoDatabase) GetLicenseComplianceHistory(start, end time.Time) ([]dto.LicenseComplianceHistory, error) {
+	pipeline := bson.A{
+		bson.D{
+			{Key: "$match",
+				Value: bson.D{
+					{Key: "history.date", Value: bson.D{{Key: "$gt", Value: start}}},
+					{Key: "history.date", Value: bson.D{{Key: "$lt", Value: end}}},
+				},
+			},
+		},
+		bson.D{
+			{Key: "$project",
+				Value: bson.D{
+					{Key: "licenseTypeID", Value: 1},
+					{Key: "itemDescription", Value: 1},
+					{Key: "metric", Value: 1},
+					{Key: "history",
+						Value: bson.D{
+							{Key: "$filter",
+								Value: bson.D{
+									{Key: "input", Value: "$history"},
+									{Key: "as", Value: "item"},
+									{Key: "cond",
+										Value: bson.D{
+											{Key: "$and",
+												Value: bson.A{
+													bson.D{
+														{Key: "$gt",
+															Value: bson.A{
+																"$$item.date",
+																start,
+															},
+														},
+													},
+													bson.D{
+														{Key: "$lt",
+															Value: bson.A{
+																"$$item.date",
+																end,
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).
 		Collection("database_licenses_history").
-		Find(context.TODO(), bson.D{})
+		Aggregate(context.TODO(), pipeline)
 	if err != nil {
 		return nil, utils.NewError(err, "DB ERROR")
 	}

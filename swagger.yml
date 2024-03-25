@@ -2457,6 +2457,22 @@ components:
       in: query
       name: window-time
       description: "window time to check the patch date, in months"
+    start:
+      schema:
+        type: string
+        format: date-time
+        example: "2020-05-05T08:23:40.000Z"
+      in: query
+      name: start
+      description: Filter from date
+    end:
+      schema:
+        type: string
+        format: date-time
+        example: "2020-05-05T08:23:40.000Z"
+      in: query
+      name: name
+      description: Filter until date
 paths:
   /ping:
     get:
@@ -5811,6 +5827,9 @@ paths:
       summary: Get historical values of Oracle Databases Licenses
       tags:
         - chart-service
+      parameters:
+        - $ref: "#/components/parameters/start"
+        - $ref: "#/components/parameters/end"
       responses:
         "200":
           description: OK

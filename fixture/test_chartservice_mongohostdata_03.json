@@ -5,7 +5,9 @@
     "history":[
         {
             "date":      {
-                "$numberLong": "1561397660000"
+                "$date": {
+                    "$numberLong": "1561397660000"
+                }
             },
             "consumed":  {
                 "$numberDouble": "10"

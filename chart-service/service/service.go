@@ -38,7 +38,7 @@ type ChartServiceInterface interface {
 
 	// GetOracleDatabaseChart return a chart associated to teh
 	GetOracleDatabaseChart(metric string, location string, environment string, olderThan time.Time) (dto.Chart, error)
-	GetLicenseComplianceHistory() ([]dto.LicenseComplianceHistory, error)
+	GetLicenseComplianceHistory(start, end time.Time) ([]dto.LicenseComplianceHistory, error)
 
 	// GetTechnologiesMetrics return metrics of all technologies
 	GetTechnologiesMetrics() (map[string]model.TechnologySupportedMetrics, error)

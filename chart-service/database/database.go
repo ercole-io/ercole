@@ -42,7 +42,7 @@ type MongoDatabaseInterface interface {
 	GetOracleDatabaseChartByVersion(location string, environment string, olderThan time.Time) ([]dto.ChartBubble, error)
 	// GetOracleDatabaseChartByWork return the chart data about the work of all database
 	GetOracleDatabaseChartByWork(location string, environment string, olderThan time.Time) ([]dto.ChartBubble, error)
-	GetLicenseComplianceHistory() ([]dto.LicenseComplianceHistory, error)
+	GetLicenseComplianceHistory(start, end time.Time) ([]dto.LicenseComplianceHistory, error)
 
 	GetHostCores(location, environment string, olderThan, newerThan time.Time) ([]dto.HostCores, error)
 }

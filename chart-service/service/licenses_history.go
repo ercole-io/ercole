@@ -24,8 +24,8 @@ import (
 	"github.com/ercole-io/ercole/v2/model"
 )
 
-func (as *ChartService) GetLicenseComplianceHistory() ([]dto.LicenseComplianceHistory, error) {
-	licenses, err := as.Database.GetLicenseComplianceHistory()
+func (as *ChartService) GetLicenseComplianceHistory(start, end time.Time) ([]dto.LicenseComplianceHistory, error) {
+	licenses, err := as.Database.GetLicenseComplianceHistory(start, end)
 	if err != nil {
 		return nil, err
 	}
