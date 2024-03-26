@@ -92,12 +92,10 @@ func (job *FreshnessCheckJob) Run() {
 				},
 			}
 
-			if job.Config.AlertService.Emailer.AlertType.NoData {
-				errAlert := job.AlertSvcClient.ThrowNewAlert(alert)
-				if errAlert != nil {
-					job.Log.Error(errAlert)
-					continue
-				}
+			errAlert := job.AlertSvcClient.ThrowNewAlert(alert)
+			if errAlert != nil {
+				job.Log.Error(errAlert)
+				continue
 			}
 		}
 	}
