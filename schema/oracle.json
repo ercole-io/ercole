@@ -1016,6 +1016,37 @@
                                                 }
                                             }
                                         ]
+                                    },
+                                    "oracleDatabaseMemoryAdvisor":{
+                                        "anyOf": [
+                                            {"type": "null"},
+                                            {
+                                                "type": "object",
+                                                "properties": {
+                                                    "automaticMemoryManagement":{
+                                                        "type": "boolean"
+                                                    },
+                                                    "memorySizeLowerGb": {
+                                                        "anyOf": [
+                                                            {"type": "null"},
+                                                            {"type": "string"}
+                                                        ]
+                                                    },
+                                                    "pgaTargetAggregateLowerGb": {
+                                                        "anyOf": [
+                                                            {"type": "null"},
+                                                            {"type": "string"}
+                                                        ]
+                                                    },
+                                                    "sgaSizeLowerGb": {
+                                                        "anyOf": [
+                                                            {"type": "null"},
+                                                            {"type": "string"}
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        ]
                                     }
                                 }
                             }
