@@ -22,7 +22,19 @@ import (
 )
 
 func (ctrl *ChartController) GetLicenseComplianceHistory(w http.ResponseWriter, r *http.Request) {
-	history, err := ctrl.Service.GetLicenseComplianceHistory()
+	startdate, err := utils.Str2time(r.URL.Query().Get("start"), utils.MIN_TIME)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
+		return
+	}
+
+	enddate, err := utils.Str2time(r.URL.Query().Get("end"), utils.MAX_TIME)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
+		return
+	}
+
+	history, err := ctrl.Service.GetLicenseComplianceHistory(startdate, enddate)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return

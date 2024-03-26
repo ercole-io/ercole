@@ -42,7 +42,11 @@ func TestGetLicenseComplianceHistory_Success(t *testing.T) {
 	}
 
 	history := []dto.LicenseComplianceHistory{}
-	as.EXPECT().GetLicenseComplianceHistory().
+
+	start := utils.MIN_TIME
+	end := utils.MAX_TIME
+
+	as.EXPECT().GetLicenseComplianceHistory(start, end).
 		Return(history, nil)
 
 	rr := httptest.NewRecorder()
@@ -71,7 +75,10 @@ func TestGetLicenseComplianceHistory_InternalServerError(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	as.EXPECT().GetLicenseComplianceHistory().
+	start := utils.MIN_TIME
+	end := utils.MAX_TIME
+
+	as.EXPECT().GetLicenseComplianceHistory(start, end).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
