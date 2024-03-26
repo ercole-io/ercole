@@ -214,6 +214,29 @@ components:
               type: string
             DisableSSLCertificateValidation:
               type: boolean
+            AlertType:
+              type: object
+              properties:
+                NewHost:
+                  type: boolean
+                NewDatabase:
+                  type: boolean
+                NewLicense:
+                  type: boolean
+                NewOption:
+                  type: boolean
+                NewUnlistedRunningDatabase:
+                  type: boolean
+                NewHostCpu:
+                  type: boolean
+                MissingPrimaryDatabase:
+                  type: boolean
+                MissingDatabase:
+                  type: boolean
+                AgentError:
+                  type: boolean
+                NoData:
+                  type: boolean
 
     APIService:
       type: object
