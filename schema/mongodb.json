@@ -107,85 +107,90 @@
                         
                   }
                },
-               "dbStats":{
-                  "type":"array",
-                  "items":[
+               "dbStats": {
+                  "anyOf": [
+                     {"type": "null"},
                      {
-                        "type":"object",
-                        "properties":{
-                           "dbName":{
-                              "type":"string"
-                           },
-                           "charset":{
-                              "type":"string"
-                           },
-                           "collections":{
-                              "type":"integer"
-                           },
-                           "views":{
-                              "type":"integer"
-                           },
-                           "objects":{
-                              "type":"integer"
-                           },
-                           "indexes":{
-                              "type":"integer"
-                           },
-                           "dataSize":{
-                              "type":"number"
-                           },
-                           "indexSize":{
-                              "type":"number"
-                           },
-                           "storageSize":{
-                              "type":"number"
-                           },
-                           "totalSize":{
-                              "type":"number"
-                           },
-                           "fsUsedSize":{
-                              "type":"number"
-                           },
-                           "fsTotalSize":{
-                              "type":"number"
-                           },
-                           "freeStorageSize":{
-                              "type":"number"
-                           },
-                           "indexFreeStorageSize":{
-                              "type":"number"
-                           },
-                           "totalFreeStorageSize":{
-                              "type":"number"
-                           },
-                           "users":{
-                              "type":"integer"
-                           },
-                           "shardDBs":{
-                              "anyOf":[
-                                 {
-                                    "type":"null"
+                        "type":"array",
+                        "items":[
+                           {
+                              "type":"object",
+                              "properties":{
+                                 "dbName":{
+                                    "type":"string"
                                  },
-                                 {
-                                    "type":"array",
-                                    "items":{
-                                       "type":"object",
-                                       "properties":{
-                                          "_id":{
-                                             "type":"string"
-                                          },
-                                          "primary":{
-                                             "type":"string"
-                                          },
-                                          "partitioned":{
-                                             "type":"boolean"
+                                 "charset":{
+                                    "type":"string"
+                                 },
+                                 "collections":{
+                                    "type":"integer"
+                                 },
+                                 "views":{
+                                    "type":"integer"
+                                 },
+                                 "objects":{
+                                    "type":"integer"
+                                 },
+                                 "indexes":{
+                                    "type":"integer"
+                                 },
+                                 "dataSize":{
+                                    "type":"number"
+                                 },
+                                 "indexSize":{
+                                    "type":"number"
+                                 },
+                                 "storageSize":{
+                                    "type":"number"
+                                 },
+                                 "totalSize":{
+                                    "type":"number"
+                                 },
+                                 "fsUsedSize":{
+                                    "type":"number"
+                                 },
+                                 "fsTotalSize":{
+                                    "type":"number"
+                                 },
+                                 "freeStorageSize":{
+                                    "type":"number"
+                                 },
+                                 "indexFreeStorageSize":{
+                                    "type":"number"
+                                 },
+                                 "totalFreeStorageSize":{
+                                    "type":"number"
+                                 },
+                                 "users":{
+                                    "type":"integer"
+                                 },
+                                 "shardDBs":{
+                                    "anyOf":[
+                                       {
+                                          "type":"null"
+                                       },
+                                       {
+                                          "type":"array",
+                                          "items":{
+                                             "type":"object",
+                                             "properties":{
+                                                "_id":{
+                                                   "type":"string"
+                                                },
+                                                "primary":{
+                                                   "type":"string"
+                                                },
+                                                "partitioned":{
+                                                   "type":"boolean"
+                                                }
+                                             }
                                           }
                                        }
-                                    }
+                                    ]
                                  }
-                              ]
+                              }
                            }
-                        }
+                        ]
                      }
                   ]
                }
