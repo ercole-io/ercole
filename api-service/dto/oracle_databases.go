@@ -57,6 +57,7 @@ type OracleDatabase struct {
 	Services                  []model.OracleDatabaseService           `json:"services" bson:"services"`
 	PgsqlMigrabilitySemaphore string                                  `json:"pgsqlMigrabilitySemaphore"`
 	Canbemigrate              bool                                    `json:"canbemigrate"`
+	ClusterwareVersion        string                                  `json:"clusterwareVersion,omitempty"`
 }
 
 type SearchOracleDatabasesFilter struct {
