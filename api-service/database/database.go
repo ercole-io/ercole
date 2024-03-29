@@ -254,10 +254,10 @@ type MongoDatabaseInterface interface {
 	RemoveNode(name string) error
 
 	// EXADATA
-	ListExadataInstances(f dto.GlobalFilter) ([]dto.ExadataInstanceResponse, error)
-	FindExadataInstance(rackID string) (*model.OracleExadataInstance, error)
+	ListExadataInstances(f dto.GlobalFilter, hidden bool) ([]dto.ExadataInstanceResponse, error)
+	FindExadataInstance(rackID string, hidden bool) (*model.OracleExadataInstance, error)
 	UpdateExadataInstance(instance model.OracleExadataInstance) error
-	FindAllExadataInstances() ([]model.OracleExadataInstance, error)
+	FindAllExadataInstances(hidden bool) ([]model.OracleExadataInstance, error)
 	FindExadataClusterViews() ([]dto.OracleExadataClusterView, error)
 
 	InsertExadataVmClustername(rackID, hostID, vmname, clustername string) error

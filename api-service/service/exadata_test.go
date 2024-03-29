@@ -47,9 +47,9 @@ func TestListExadataInstances_Success(t *testing.T) {
 
 	f := dto.GlobalFilter{OlderThan: utils.MAX_TIME}
 
-	db.EXPECT().ListExadataInstances(f).Return(expected, nil)
+	db.EXPECT().ListExadataInstances(f, false).Return(expected, nil)
 
-	res, err := as.ListExadataInstances(f)
+	res, err := as.ListExadataInstances(f, false)
 	require.NoError(t, err)
 	assert.Equal(t, expected, res)
 }
@@ -89,12 +89,60 @@ func TestGetExadataInstance_Success(t *testing.T) {
 	modelInstance := mongoutils.LoadFixtureExadata(t, "../../fixture/test_apiservice_exadata_01.json")
 	println(modelInstance.Hostname)
 
-	db.EXPECT().FindExadataInstance("3M2ORPFI9Q").Return(&modelInstance, nil)
+	db.EXPECT().FindExadataInstance("3M2ORPFI9Q", false).Return(&modelInstance, nil)
 
 	dom, err := domain.ToOracleExadataInstance(modelInstance)
 	require.NoError(t, err)
 
-	res, err := as.GetExadataInstance("3M2ORPFI9Q")
+	res, err := as.GetExadataInstance("3M2ORPFI9Q", false)
 	require.NoError(t, err)
 	assert.Equal(t, dom, res)
+}
+
+func TestHideExadataInstance_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+		Config:   config.Configuration{},
+	}
+
+	exadata := mongoutils.LoadFixtureExadata(t, "../../fixture/test_apiservice_exadata_01.json")
+
+	db.EXPECT().FindExadataInstance("3M2ORPFI9Q", false).Return(&exadata, nil)
+
+	exadata.Hidden = true
+
+	db.EXPECT().UpdateExadataInstance(exadata).Return(nil).AnyTimes()
+
+	err := as.HideExadataInstance("3M2ORPFI9Q")
+
+	require.NoError(t, err)
+
+	assert.Equal(t, true, exadata.Hidden)
+}
+
+func TestShowExadataInstance(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+		Config:   config.Configuration{},
+	}
+
+	exadata := mongoutils.LoadFixtureExadata(t, "../../fixture/test_apiservice_exadata_02.json")
+
+	db.EXPECT().FindExadataInstance("3M2ORPFI9W", true).Return(&exadata, nil)
+
+	exadata.Hidden = false
+
+	db.EXPECT().UpdateExadataInstance(exadata).Return(nil).AnyTimes()
+
+	err := as.ShowExadataInstance("3M2ORPFI9W")
+
+	require.NoError(t, err)
+
+	assert.Equal(t, false, exadata.Hidden)
 }

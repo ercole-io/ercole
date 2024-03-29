@@ -110,7 +110,7 @@ func (as APIService) GetAllExadataInstanceAsXlsx() (*excelize.File, error) {
 }
 
 func (as APIService) getAllExadataInstance() ([]dto.OracleExadataInstance, error) {
-	instances, err := as.Database.FindAllExadataInstances()
+	instances, err := as.Database.FindAllExadataInstances(false)
 	if err != nil {
 		return nil, err
 	}

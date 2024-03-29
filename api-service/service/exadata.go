@@ -22,12 +22,12 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func (as *APIService) ListExadataInstances(filter dto.GlobalFilter) ([]dto.ExadataInstanceResponse, error) {
-	return as.Database.ListExadataInstances(filter)
+func (as *APIService) ListExadataInstances(filter dto.GlobalFilter, hidden bool) ([]dto.ExadataInstanceResponse, error) {
+	return as.Database.ListExadataInstances(filter, hidden)
 }
 
-func (as *APIService) GetExadataInstance(rackid string) (*domain.OracleExadataInstance, error) {
-	instance, err := as.Database.FindExadataInstance(rackid)
+func (as *APIService) GetExadataInstance(rackid string, hidden bool) (*domain.OracleExadataInstance, error) {
+	instance, err := as.Database.FindExadataInstance(rackid, hidden)
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +53,7 @@ func (as *APIService) UpdateExadataVmClusterName(rackID, hostID, vmname, cluster
 }
 
 func (as *APIService) UpdateExadataComponentClusterName(RackID, hostID string, clusternames []string) error {
-	instance, err := as.Database.FindExadataInstance(RackID)
+	instance, err := as.Database.FindExadataInstance(RackID, false)
 	if err != nil {
 		return err
 	}
@@ -68,12 +68,34 @@ func (as *APIService) UpdateExadataComponentClusterName(RackID, hostID string, c
 }
 
 func (as *APIService) UpdateExadataRdma(rackID string, rdma model.OracleExadataRdma) error {
-	instance, err := as.Database.FindExadataInstance(rackID)
+	instance, err := as.Database.FindExadataInstance(rackID, false)
 	if err != nil {
 		return err
 	}
 
 	instance.RDMA = &rdma
+
+	return as.Database.UpdateExadataInstance(*instance)
+}
+
+func (as *APIService) HideExadataInstance(rackID string) error {
+	instance, err := as.Database.FindExadataInstance(rackID, false)
+	if err != nil {
+		return err
+	}
+
+	instance.Hidden = true
+
+	return as.Database.UpdateExadataInstance(*instance)
+}
+
+func (as *APIService) ShowExadataInstance(rackID string) error {
+	instance, err := as.Database.FindExadataInstance(rackID, true)
+	if err != nil {
+		return err
+	}
+
+	instance.Hidden = false
 
 	return as.Database.UpdateExadataInstance(*instance)
 }
