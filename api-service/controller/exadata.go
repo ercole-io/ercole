@@ -32,7 +32,23 @@ func (ctrl *APIController) ListExadata(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := ctrl.Service.ListExadataInstances(*filter)
+	res, err := ctrl.Service.ListExadataInstances(*filter, false)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, res)
+}
+
+func (ctrl *APIController) ListHiddenExadata(w http.ResponseWriter, r *http.Request) {
+	filter, err := dto.GetGlobalFilter(r)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	res, err := ctrl.Service.ListExadataInstances(*filter, true)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
@@ -44,7 +60,7 @@ func (ctrl *APIController) ListExadata(w http.ResponseWriter, r *http.Request) {
 func (ctrl *APIController) GetExadata(w http.ResponseWriter, r *http.Request) {
 	rackID := mux.Vars(r)["rackID"]
 
-	exa, err := ctrl.Service.GetExadataInstance(rackID)
+	exa, err := ctrl.Service.GetExadataInstance(rackID, false)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
@@ -138,4 +154,26 @@ func (ctrl *APIController) ExportExadataInstances(w http.ResponseWriter, r *http
 	}
 
 	utils.WriteXLSXResponse(w, res)
+}
+
+func (ctrl *APIController) HideExadataInstance(w http.ResponseWriter, r *http.Request) {
+	rackID := mux.Vars(r)["rackID"]
+
+	if err := ctrl.Service.HideExadataInstance(rackID); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (ctrl *APIController) ShowExadataInstance(w http.ResponseWriter, r *http.Request) {
+	rackID := mux.Vars(r)["rackID"]
+
+	if err := ctrl.Service.ShowExadataInstance(rackID); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }

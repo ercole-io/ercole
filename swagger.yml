@@ -4662,6 +4662,20 @@ paths:
               schema:
                 $ref: "#/components/schemas/ExadataInstanceResponseList"
 
+  /exadata/hidden:
+    get:
+      tags:
+        - api-service
+      operationId: ListHiddenExadata
+      summary: List all hidden exadata
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExadataInstanceResponseList"
+
   /exadata/export:
     get:
       tags:
@@ -4787,6 +4801,38 @@ paths:
                     type: string
                   swVersion: 
                     type: string
+
+  "/exadata/{rackID}/hide":
+    patch:
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: rackID
+          required: true
+      tags:
+        - api-service
+      operationId: HideExadataInstance
+      summary: Hide exadata instance
+      responses:
+        "204":
+          description: no content
+    
+  "/exadata/{rackID}/show":
+    patch:
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: rackID
+          required: true
+      tags:
+        - api-service
+      operationId: ShowExadataInstance
+      summary: Show exadata instance
+      responses:
+        "204":
+          description: no content
 
   /hosts/technologies/oracle/exadata/total-memory-size:
     get:

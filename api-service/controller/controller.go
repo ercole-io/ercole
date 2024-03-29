@@ -226,11 +226,14 @@ type APIControllerInterface interface {
 
 	// EXADATA
 	ListExadata(w http.ResponseWriter, r *http.Request)
+	ListHiddenExadata(w http.ResponseWriter, r *http.Request)
 	GetExadata(w http.ResponseWriter, r *http.Request)
 	UpdateExadataVmClusterName(w http.ResponseWriter, r *http.Request)
 	UpdateExadataComponentClusterName(w http.ResponseWriter, r *http.Request)
 	UpdateExadataRdma(w http.ResponseWriter, r *http.Request)
 	ExportExadataInstances(w http.ResponseWriter, r *http.Request)
+	HideExadataInstance(w http.ResponseWriter, r *http.Request)
+	ShowExadataInstance(w http.ResponseWriter, r *http.Request)
 }
 
 // APIController is the struct used to handle the requests from agents and contains the concrete implementation of APIControllerInterface

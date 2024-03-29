@@ -171,7 +171,7 @@ var getExadataInstancePipeline = bson.A{
 	bson.D{{Key: "$unset", Value: "matchedDocument"}},
 }
 
-func (md *MongoDatabase) ListExadataInstances(f dto.GlobalFilter) ([]dto.ExadataInstanceResponse, error) {
+func (md *MongoDatabase) ListExadataInstances(f dto.GlobalFilter, hidden bool) ([]dto.ExadataInstanceResponse, error) {
 	ctx := context.TODO()
 
 	result := make([]dto.ExadataInstanceResponse, 0)
@@ -181,7 +181,7 @@ func (md *MongoDatabase) ListExadataInstances(f dto.GlobalFilter) ([]dto.Exadata
 	opts := options.Find().SetProjection(projection)
 
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(exadataCollection).
-		Find(ctx, Filter(f), opts)
+		Find(ctx, FilterExadata(f, hidden), opts)
 	if err != nil {
 		return nil, err
 	}
@@ -193,10 +193,20 @@ func (md *MongoDatabase) ListExadataInstances(f dto.GlobalFilter) ([]dto.Exadata
 	return result, nil
 }
 
-func (md *MongoDatabase) FindExadataInstance(rackID string) (*model.OracleExadataInstance, error) {
+func (md *MongoDatabase) FindExadataInstance(rackID string, hidden bool) (*model.OracleExadataInstance, error) {
 	ctx := context.TODO()
 
-	pipeline := append(getExadataInstancePipeline, bson.D{{Key: "$match", Value: bson.D{{Key: "rackID", Value: rackID}}}})
+	pipeline := append(getExadataInstancePipeline, bson.D{{
+		Key: "$match",
+		Value: bson.D{
+			{Key: "rackID", Value: rackID},
+			{Key: "$or",
+				Value: bson.A{
+					bson.D{{Key: "hidden", Value: bson.D{{Key: "$exists", Value: hidden}}}},
+					bson.D{{Key: "hidden", Value: hidden}},
+				},
+			},
+		}}})
 
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(exadataCollection).Aggregate(ctx, pipeline)
 	if err != nil {
@@ -228,13 +238,28 @@ func (md *MongoDatabase) UpdateExadataInstance(instance model.OracleExadataInsta
 	return md.updateExadataTime(instance.RackID)
 }
 
-func (md *MongoDatabase) FindAllExadataInstances() ([]model.OracleExadataInstance, error) {
+func (md *MongoDatabase) FindAllExadataInstances(hidden bool) ([]model.OracleExadataInstance, error) {
 	ctx := context.TODO()
 
 	result := make([]model.OracleExadataInstance, 0)
 
+	condition := bson.D{
+		{Key: "$or",
+			Value: bson.A{
+				bson.D{{Key: "hidden", Value: bson.D{{Key: "$exists", Value: hidden}}}},
+				bson.D{{Key: "hidden", Value: hidden}},
+			},
+		},
+	}
+
+	if hidden {
+		condition = bson.D{{Key: "hidden", Value: hidden}}
+	}
+
+	pipeline := append(getExadataInstancePipeline, bson.D{{Key: "$match", Value: condition}})
+
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(exadataCollection).
-		Aggregate(ctx, getExadataInstancePipeline)
+		Aggregate(ctx, pipeline)
 	if err != nil {
 		return nil, err
 	}

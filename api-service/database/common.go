@@ -121,24 +121,33 @@ func FindByHostname(hostname string) bson.A {
 	return mu.MAPipeline(mu.APOptionalStage(hostname != "", mu.APMatch(bson.M{"hostname": hostname})))
 }
 
-func Filter(filter dto.GlobalFilter) bson.M {
-	res := bson.M{}
+func FilterExadata(filter dto.GlobalFilter, hidden bool) bson.D {
+	res := bson.D{
+		{Key: "$or",
+			Value: bson.A{
+				bson.D{{Key: "hidden", Value: bson.D{{Key: "$exists", Value: hidden}}}},
+				bson.D{{Key: "hidden", Value: hidden}},
+			},
+		},
+	}
+
+	if hidden {
+		res = bson.D{
+			{Key: "hidden", Value: hidden},
+		}
+	}
 
 	if filter.Location != "" {
-		res["location"] = filter.Location
+		res = append(res, bson.E{Key: "location", Value: filter.Location})
 	}
 
 	if filter.Environment != "" {
-		res["environment"] = filter.Environment
+		res = append(res, bson.E{Key: "environment", Value: filter.Environment})
 	}
 
 	if filter.OlderThan != utils.MAX_TIME {
-		res["createdAt"] = bson.M{"$lte": filter.OlderThan}
+		res = append(res, bson.E{Key: "createdAt", Value: bson.M{"$lte": filter.OlderThan}})
 	}
 
-	if len(res) == 0 {
-		return bson.M{}
-	}
-
-	return bson.M{"$match": res}
+	return res
 }

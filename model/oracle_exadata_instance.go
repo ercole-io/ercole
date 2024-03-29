@@ -18,11 +18,11 @@ package model
 import "time"
 
 const (
-	KVM_HOST   = "KVM_HOST"
-	DOM0       = "DOM0"
-	BARE_METAL = "BARE_METAL"
-	VM_KVM     = "VM_KVM"
-	VM_XEN     = "VM_XEN"
+	KVM_HOST     = "KVM_HOST"
+	DOM0         = "DOM0"
+	BARE_METAL   = "BARE_METAL"
+	VM_KVM       = "VM_KVM"
+	VM_XEN       = "VM_XEN"
 	STORAGE_CELL = "STORAGE_CELL"
 )
 
@@ -36,4 +36,5 @@ type OracleExadataInstance struct {
 	RackID      string                   `json:"rackID" bson:"rackID"`
 	Components  []OracleExadataComponent `json:"components" bson:"components"`
 	RDMA        *OracleExadataRdma       `json:"rdma,omitempty" bson:"rdma"`
+	Hidden      bool                     `json:"hidden" bson:"hidden"`
 }
