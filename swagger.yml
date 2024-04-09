@@ -2386,6 +2386,46 @@ components:
           type: string
         hardwareAbstractionTechnology:
           type: string
+
+    AwsRDSResponse:
+      type: object
+      properties:
+        awsDbInstances:
+          type: array
+          items:
+            type: object
+            properties:
+              dbName:
+                type: string
+              dbInstanceClass:
+                type: string
+              engine:
+                type: string
+              engineVersion:
+                type: string
+              dbInstanceStatus:
+                type: string
+              licenseModel:
+                type: string
+              storageType:
+                type: string
+              allocatedStorage:
+                type: integer
+              maxAllocatedStorage:
+                type: integer
+              instanceType:
+                type: string
+              processorManufacturer:
+                type: string
+              defaultCore:
+                type: integer
+              defaultThreadsPerCore:
+                type: integer
+              defaultVCpus:
+                type: integer
+              memorySizeInMib:
+                type: integer
+
   parameters:
     search:
       in: query
@@ -8009,6 +8049,20 @@ paths:
                           type: string
                         count:
                           type: integer
+
+  /aws/rds:
+    get:
+      summary: Get all the aws rds retrieved from ercole
+      tags:
+        - thunder-service
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AwsRDSResponse"
+          
   /aws/retrieve-last-aws-recommendations:
     get:
       summary: Force retrieving recommendations from Amazon Web Service Infrastructure

@@ -56,6 +56,7 @@ type ThunderServiceInterface interface {
 	GetAzureProfiles() ([]model.AzureProfile, error)
 	DeleteAzureProfile(id primitive.ObjectID) error
 	SelectAzureProfile(profileId string, selected bool) error
+	GetAwsRDS() ([]model.AwsRDS, error)
 }
 
 type ThunderService struct {

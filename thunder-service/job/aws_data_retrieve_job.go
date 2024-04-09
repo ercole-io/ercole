@@ -111,6 +111,17 @@ func (job *AwsDataRetrieveJob) Run() {
 				c <- err
 			}
 		}(profile, seqValue)
+
+		go func(profile model.AwsProfile) {
+			seq, err := job.Database.GetLastAwsRDSSeqValue()
+			if err != nil {
+				c <- err
+			}
+
+			if err := job.FetchRDS(profile, seq+1); err != nil {
+				c <- err
+			}
+		}(profile)
 	}
 
 	job.Log.Error(<-c)
