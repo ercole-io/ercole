@@ -76,6 +76,8 @@ type MongoDatabaseInterface interface {
 	UpdateAzureProfile(profile model.AzureProfile) error
 	SelectAzureProfile(profileId string, selected bool) error
 	GetSelectedAzureProfiles() ([]primitive.ObjectID, error)
+	GetLastAwsRDSSeqValue() (uint64, error)
+	GetAwsRDS() ([]model.AwsRDS, error)
 }
 
 // MongoDatabase is a implementation

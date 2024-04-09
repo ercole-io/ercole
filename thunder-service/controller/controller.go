@@ -71,6 +71,8 @@ type ThunderControllerInterface interface {
 	DeleteAzureProfile(w http.ResponseWriter, r *http.Request)
 	// SelectAwsProfile define if a profile is active or not to retrieve recommendations associated to it
 	SelectAzureProfile(w http.ResponseWriter, r *http.Request)
+
+	GetAwsRDS(w http.ResponseWriter, r *http.Request)
 }
 
 // ThunderController is the struct used to handle the requests from agents and contains the concrete implementation of ThunderControllerInterface
