@@ -46,3 +46,31 @@ func (as *APIService) GetOraclePsqlMigrabilitiesSemaphore(hostname, dbname strin
 
 	return color, nil
 }
+
+func (as *APIService) GetOraclePdbPsqlMigrabilities(hostname, dbname, pdbname string) ([]model.PgsqlMigrability, error) {
+	return as.Database.FindPdbPsqlMigrabilities(hostname, dbname, pdbname)
+}
+
+func (as *APIService) GetOraclePdbPsqlMigrabilitiesSemaphore(hostname, dbname, pdbname string) (string, error) {
+	psqlMigrabilities, err := as.Database.FindPdbPsqlMigrabilities(hostname, dbname, pdbname)
+	if err != nil {
+		return "", err
+	}
+
+	color := ""
+
+	for _, migrability := range psqlMigrabilities {
+		if migrability.Metric != nil && *migrability.Metric == "PLSQL LINES" {
+			switch {
+			case migrability.Count < 1000:
+				color = "green"
+			case migrability.Count >= 1000 && migrability.Count <= 10000:
+				color = "yellow"
+			case migrability.Count > 10000:
+				color = "red"
+			}
+		}
+	}
+
+	return color, nil
+}

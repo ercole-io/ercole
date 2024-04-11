@@ -3565,6 +3565,64 @@ paths:
               schema: 
                 type: string
 
+  "/hosts/{hostname}/technologies/oracle/databases/{dbname}/pdbs/{pdbname}/psql-migrabilities":
+    parameters:
+      - schema:
+          type: string
+        name: hostname
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: dbname
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: pdbname
+        in: path
+        required: true
+    get:
+      tags:
+        - api-service
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: 
+                type: array
+                items:
+                  $ref: "#/components/schemas/PgsqlMigrability"
+
+  "/hosts/{hostname}/technologies/oracle/databases/{dbname}/pdbs/{pdbname}/psql-migrabilities/semaphore":
+    parameters:
+      - schema:
+          type: string
+        name: hostname
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: dbname
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: pdbname
+        in: path
+        required: true
+    get:
+      tags:
+        - api-service
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: 
+                type: string
+
   /hosts/technologies/oracle/databases/partitionings:
     get:
       summary: Get Oracle database partitioning list

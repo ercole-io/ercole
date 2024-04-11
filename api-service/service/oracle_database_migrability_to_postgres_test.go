@@ -131,3 +131,109 @@ func TestGetOraclePsqlMigrabilitiesSemaphore_Success(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, "red", res)
 }
+
+func TestGetOraclePdbPsqlMigrabilities_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+		Config:   config.Configuration{},
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+	}
+
+	metric := "test_metric"
+	schema := "test_schema"
+	objectType := "test_objectType"
+
+	expected := []model.PgsqlMigrability{
+		{
+			Metric:     &metric,
+			Count:      0,
+			Schema:     &schema,
+			ObjectType: &objectType,
+		},
+	}
+
+	db.EXPECT().FindPdbPsqlMigrabilities("hostname01", "dbname01", "pdbname01").Return(expected, nil)
+
+	res, err := as.GetOraclePdbPsqlMigrabilities("hostname01", "dbname01", "pdbname01")
+	require.NoError(t, err)
+	assert.Equal(t, expected, res)
+}
+
+func TestGetOraclePdbPsqlMigrabilitiesSemaphore_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+		Config:   config.Configuration{},
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+	}
+
+	metric1 := "PLSQL LINES"
+	metric2 := "NO PLSQL LINES"
+	schema := "test_schema"
+	objectType := "test_objectType"
+
+	green := []model.PgsqlMigrability{
+		{
+			Metric:     &metric1,
+			Count:      0,
+			Schema:     &schema,
+			ObjectType: &objectType,
+		},
+		{
+			Metric:     &metric2,
+			Count:      0,
+			Schema:     &schema,
+			ObjectType: &objectType,
+		},
+	}
+
+	yellow := []model.PgsqlMigrability{
+		{
+			Metric:     &metric1,
+			Count:      1000,
+			Schema:     &schema,
+			ObjectType: &objectType,
+		},
+		{
+			Metric:     &metric2,
+			Count:      0,
+			Schema:     &schema,
+			ObjectType: &objectType,
+		},
+	}
+
+	red := []model.PgsqlMigrability{
+		{
+			Metric:     &metric1,
+			Count:      10001,
+			Schema:     &schema,
+			ObjectType: &objectType,
+		},
+		{
+			Metric:     &metric2,
+			Count:      0,
+			Schema:     &schema,
+			ObjectType: &objectType,
+		},
+	}
+
+	db.EXPECT().FindPdbPsqlMigrabilities("hostname01", "dbname01", "pdbname01").Return(green, nil)
+	res, err := as.GetOraclePdbPsqlMigrabilitiesSemaphore("hostname01", "dbname01", "pdbname01")
+	require.NoError(t, err)
+	assert.Equal(t, "green", res)
+
+	db.EXPECT().FindPdbPsqlMigrabilities("hostname02", "dbname02", "pdbname02").Return(yellow, nil)
+	res, err = as.GetOraclePdbPsqlMigrabilitiesSemaphore("hostname02", "dbname02", "pdbname02")
+	require.NoError(t, err)
+	assert.Equal(t, "yellow", res)
+
+	db.EXPECT().FindPdbPsqlMigrabilities("hostname03", "dbname03", "pdbname03").Return(red, nil)
+	res, err = as.GetOraclePdbPsqlMigrabilitiesSemaphore("hostname03", "dbname03", "pdbname03")
+	require.NoError(t, err)
+	assert.Equal(t, "red", res)
+}

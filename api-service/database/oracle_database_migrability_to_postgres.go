@@ -62,3 +62,47 @@ func (md *MongoDatabase) FindPsqlMigrabilities(hostname, dbname string) ([]model
 
 	return result, nil
 }
+
+func (md *MongoDatabase) FindPdbPsqlMigrabilities(hostname, dbname, pdbname string) ([]model.PgsqlMigrability, error) {
+	ctx := context.TODO()
+
+	result := make([]model.PgsqlMigrability, 0)
+
+	pipeline := bson.A{
+		bson.D{
+			{Key: "$match",
+				Value: bson.D{
+					{Key: "archived", Value: false},
+					{Key: "hostname", Value: hostname},
+				},
+			},
+		},
+		bson.D{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$features.oracle.database.databases"}}}},
+		bson.D{{Key: "$match", Value: bson.D{{Key: "features.oracle.database.databases.name", Value: dbname}}}},
+		bson.D{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$features.oracle.database.databases.pdbs"}}}},
+		bson.D{{Key: "$match", Value: bson.D{{Key: "features.oracle.database.databases.pdbs.name", Value: pdbname}}}},
+		bson.D{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$features.oracle.database.databases.pdbs.pgsqlMigrability"}}}},
+		bson.D{
+			{Key: "$project",
+				Value: bson.D{
+					{Key: "metric", Value: "$features.oracle.database.databases.pdbs.pgsqlMigrability.metric"},
+					{Key: "count", Value: "$features.oracle.database.databases.pdbs.pgsqlMigrability.count"},
+					{Key: "schema", Value: "$features.oracle.database.databases.pdbs.pgsqlMigrability.schema"},
+					{Key: "objectType", Value: "$features.oracle.database.databases.pdbs.pgsqlMigrability.objectType"},
+				},
+			},
+		},
+	}
+
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(hostCollection).
+		Aggregate(ctx, pipeline)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := cur.All(ctx, &result); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
