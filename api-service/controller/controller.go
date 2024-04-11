@@ -55,6 +55,9 @@ type APIControllerInterface interface {
 	GetOraclePsqlMigrabilities(w http.ResponseWriter, r *http.Request)
 	GetOraclePsqlMigrabilitiesSemaphore(w http.ResponseWriter, r *http.Request)
 
+	GetOraclePdbPsqlMigrabilities(w http.ResponseWriter, r *http.Request)
+	GetOraclePdbPsqlMigrabilitiesSemaphore(w http.ResponseWriter, r *http.Request)
+
 	// ListLocations list locations using the filters in the request
 	ListLocations(w http.ResponseWriter, r *http.Request)
 	// ListEnvironments list environments using the filters in the request
