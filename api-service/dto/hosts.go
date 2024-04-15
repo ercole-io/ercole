@@ -189,6 +189,7 @@ type HostDataSummary struct {
 	Cluster                 string                        `json:"cluster" bson:"cluster"`
 	Databases               map[string][]string           `json:"databases" bson:"databases"` // map[Technology] []database names
 	IsMissingDB             []string                      `json:"isMissingDB,omitempty"`
+	Technology              string                        `json:"technology" bson:"technology"`
 }
 
 type VirtualHostWithoutCluster struct {

@@ -158,6 +158,187 @@ func (md *MongoDatabase) getHosts(mode string, filters dto.SearchHostsFilters, o
 						model.TechnologyPostgreSQLPostgreSQL: "$features.postgresql.instances.name",
 						model.TechnologyMongoDBMongoDB:       "$features.mongodb.instances.name",
 					},
+					"technology": bson.D{
+						{Key: "$switch",
+							Value: bson.D{
+								{Key: "branches",
+									Value: bson.A{
+										bson.D{
+											{Key: "case",
+												Value: bson.D{
+													{Key: "$or",
+														Value: bson.A{
+															bson.D{
+																{Key: "$eq",
+																	Value: bson.A{
+																		bson.D{{Key: "$type", Value: "$features.oracle"}},
+																		"object",
+																	},
+																},
+															},
+															bson.D{
+																{Key: "$and",
+																	Value: bson.A{
+																		bson.D{{Key: "$isArray", Value: "$features.oracle.database.databases"}},
+																		bson.D{
+																			{Key: "$gt",
+																				Value: bson.A{
+																					bson.D{{Key: "$size", Value: "$features.oracle.database.databases"}},
+																					0,
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+											{Key: "then", Value: model.TechnologyOracleDatabase},
+										},
+										bson.D{
+											{Key: "case",
+												Value: bson.D{
+													{Key: "$or",
+														Value: bson.A{
+															bson.D{
+																{Key: "$eq",
+																	Value: bson.A{
+																		bson.D{{Key: "$type", Value: "$features.microsoft"}},
+																		"object",
+																	},
+																},
+															},
+															bson.D{
+																{Key: "$and",
+																	Value: bson.A{
+																		bson.D{{Key: "$isArray", Value: "$features.microsoft.sqlServer.instances"}},
+																		bson.D{
+																			{Key: "$gt",
+																				Value: bson.A{
+																					bson.D{{Key: "$size", Value: "$features.microsoft.sqlServer.instances"}},
+																					0,
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+											{Key: "then", Value: model.TechnologyMicrosoftSQLServer},
+										},
+										bson.D{
+											{Key: "case",
+												Value: bson.D{
+													{Key: "$or",
+														Value: bson.A{
+															bson.D{
+																{Key: "$eq",
+																	Value: bson.A{
+																		bson.D{{Key: "$type", Value: "$features.mysql"}},
+																		"object",
+																	},
+																},
+															},
+															bson.D{
+																{Key: "$and",
+																	Value: bson.A{
+																		bson.D{{Key: "$isArray", Value: "$features.mysql.instances"}},
+																		bson.D{
+																			{Key: "$gt",
+																				Value: bson.A{
+																					bson.D{{Key: "$size", Value: "$features.mysql.instances"}},
+																					0,
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+											{Key: "then", Value: model.TechnologyOracleMySQL},
+										},
+										bson.D{
+											{Key: "case",
+												Value: bson.D{
+													{Key: "$or",
+														Value: bson.A{
+															bson.D{
+																{Key: "$eq",
+																	Value: bson.A{
+																		bson.D{{Key: "$type", Value: "$features.postgresql"}},
+																		"object",
+																	},
+																},
+															},
+															bson.D{
+																{Key: "$and",
+																	Value: bson.A{
+																		bson.D{{Key: "$isArray", Value: "$features.postgresql.instances"}},
+																		bson.D{
+																			{Key: "$gt",
+																				Value: bson.A{
+																					bson.D{{Key: "$size", Value: "$features.postgresql.instances"}},
+																					0,
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+											{Key: "then", Value: model.TechnologyPostgreSQLPostgreSQL},
+										},
+										bson.D{
+											{Key: "case",
+												Value: bson.D{
+													{Key: "$or",
+														Value: bson.A{
+															bson.D{
+																{Key: "$eq",
+																	Value: bson.A{
+																		bson.D{{Key: "$type", Value: "$features.mongodb"}},
+																		"object",
+																	},
+																},
+															},
+															bson.D{
+																{Key: "$and",
+																	Value: bson.A{
+																		bson.D{{Key: "$isArray", Value: "$features.mongodb.instances"}},
+																		bson.D{
+																			{Key: "$gt",
+																				Value: bson.A{
+																					bson.D{{Key: "$size", Value: "$features.mongodb.instances"}},
+																					0,
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+											{Key: "then", Value: model.TechnologyMongoDBMongoDB},
+										},
+									},
+								},
+								{Key: "default", Value: primitive.Null{}},
+							},
+						},
+					},
 				})),
 				mu.APOptionalStage(mode == "lms", mu.MAPipeline(
 					mu.APMatch(mu.QOExpr(mu.APOGreater(mu.APOSize("$features.oracle.database.databases"), 0))),
@@ -844,41 +1025,81 @@ func (md *MongoDatabase) ExistNotInClusterHost(hostname string) (bool, error) {
 }
 
 func (md *MongoDatabase) getHostTechnology(hostname string, olderThan time.Time) (string, error) {
-	var result map[string]float64 = make(map[string]float64)
+	var result map[string]bool = make(map[string]bool)
 
 	var out string
 
+	pipeline := bson.A{
+		bson.D{
+			{Key: "$match",
+				Value: bson.D{
+					{Key: "hostname", Value: hostname},
+					{Key: "archived", Value: false},
+				},
+			},
+		},
+		bson.D{
+			{Key: "$project",
+				Value: bson.D{
+					{Key: "Oracle/Database",
+						Value: bson.D{
+							{Key: "$eq",
+								Value: bson.A{
+									bson.D{{Key: "$type", Value: "$features.oracle"}},
+									"object",
+								},
+							},
+						},
+					},
+					{Key: "Microsoft/SQLServer",
+						Value: bson.D{
+							{Key: "$eq",
+								Value: bson.A{
+									bson.D{{Key: "$type", Value: "$features.microsoft"}},
+									"object",
+								},
+							},
+						},
+					},
+					{Key: "Oracle/MySQL",
+						Value: bson.D{
+							{Key: "$eq",
+								Value: bson.A{
+									bson.D{{Key: "$type", Value: "$features.mysql"}},
+									"object",
+								},
+							},
+						},
+					},
+					{Key: "PostgreSQL/PostgreSQL",
+						Value: bson.D{
+							{Key: "$eq",
+								Value: bson.A{
+									bson.D{{Key: "$type", Value: "$features.postgresql"}},
+									"object",
+								},
+							},
+						},
+					},
+					{Key: "MongoDB/MongoDB",
+						Value: bson.D{
+							{Key: "$eq",
+								Value: bson.A{
+									bson.D{{Key: "$type", Value: "$features.mongodb"}},
+									"object",
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		bson.D{{Key: "$unset", Value: "_id"}},
+	}
+
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
-		mu.MAPipeline(
-			FilterByOldnessSteps(olderThan),
-			mu.APMatch(bson.M{
-				"hostname": hostname,
-			}),
-			mu.APGroup(bson.M{
-				"_id": 1,
-				model.TechnologyOracleDatabase: mu.APOSum(
-					mu.APOCond(mu.APOGreater(mu.APOSize(mu.APOIfNull("$features.oracle.database.databases", bson.A{})), 0), 1, 0),
-				),
-				model.TechnologyOracleExadata: mu.APOSum(
-					mu.APOCond(mu.APOGreater(mu.APOSize(mu.APOIfNull("$features.oracle.exadata.components", bson.A{})), 0), 1, 0),
-				),
-				model.TechnologyOracleMySQL: mu.APOSum(
-					mu.APOCond(mu.APOGreater(mu.APOSize(mu.APOIfNull("$features.mysql.instances", bson.A{})), 0), 1, 0),
-				),
-				model.TechnologyMicrosoftSQLServer: mu.APOSum(
-					mu.APOCond(mu.APOGreater(mu.APOSize(mu.APOIfNull("$features.microsoft.sqlServer.instances", bson.A{})), 0), 1, 0),
-				),
-				model.TechnologyPostgreSQLPostgreSQL: mu.APOSum(
-					mu.APOCond(mu.APOGreater(mu.APOSize(mu.APOIfNull("$features.postgresql.instances", bson.A{})), 0), 1, 0),
-				),
-				model.TechnologyMongoDBMongoDB: mu.APOSum(
-					mu.APOCond(mu.APOGreater(mu.APOSize(mu.APOIfNull("$features.mongodb.instances", bson.A{})), 0), 1, 0),
-				),
-			}),
-			mu.APUnset("_id"),
-		),
-	)
+		pipeline)
 	if err != nil {
 		return "", utils.NewError(err, "DB ERROR")
 	}
@@ -892,8 +1113,8 @@ func (md *MongoDatabase) getHostTechnology(hostname string, olderThan time.Time)
 		return "", utils.NewError(err, "DB ERROR")
 	}
 
-	for technology, count := range result {
-		if count > 0 {
+	for technology, exist := range result {
+		if exist {
 			out = technology
 			break
 		}
