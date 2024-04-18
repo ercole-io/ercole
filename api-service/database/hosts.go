@@ -158,6 +158,28 @@ func (md *MongoDatabase) getHosts(mode string, filters dto.SearchHostsFilters, o
 						model.TechnologyPostgreSQLPostgreSQL: "$features.postgresql.instances.name",
 						model.TechnologyMongoDBMongoDB:       "$features.mongodb.instances.name",
 					},
+					"isMissingDB": bson.D{
+						{Key: "$concatArrays",
+							Value: bson.A{
+								bson.D{
+									{Key: "$ifNull",
+										Value: bson.A{
+											"$features.oracle.database.unlistedRunningDatabases",
+											bson.A{},
+										},
+									},
+								},
+								bson.D{
+									{Key: "$ifNull",
+										Value: bson.A{
+											"$features.oracle.database.unretrievedDatabases",
+											bson.A{},
+										},
+									},
+								},
+							},
+						},
+					},
 					"technology": bson.D{
 						{Key: "$switch",
 							Value: bson.D{
