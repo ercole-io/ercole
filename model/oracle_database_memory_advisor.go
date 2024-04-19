@@ -16,7 +16,7 @@
 package model
 
 type OracleDatabaseMemoryAdvisor struct {
-	AutomaticMemoryManagement bool   `json:"automaticMemoryManagement,omitempty" bson:"automaticMemoryManagement,omitempty"`
+	AutomaticMemoryManagement bool   `json:"automaticMemoryManagement" bson:"automaticMemoryManagement"`
 	MemorySizeLowerGb         string `json:"memorySizeLowerGb,omitempty" bson:"memorySizeLowerGb,omitempty"`
 	PgaTargetAggregateLowerGb string `json:"pgaTargetAggregateLowerGb,omitempty" bson:"pgaTargetAggregateLowerGb,omitempty"`
 	SgaSizeLowerGb            string `json:"sgaSizeLowerGb,omitempty" bson:"sgaSizeLowerGb,omitempty"`
