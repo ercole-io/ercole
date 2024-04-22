@@ -41,6 +41,7 @@ func (as *APIService) CreateGetOracleServiceListXLSX(filter dto.GlobalFilter) (*
 		"Hostname",
 		"DB Name",
 		"Service Name",
+		"Container Name",
 		"Enabled",
 	}
 
@@ -61,6 +62,8 @@ func (as *APIService) CreateGetOracleServiceListXLSX(filter dto.GlobalFilter) (*
 		} else {
 			sheets.SetCellValue(sheet, nextAxis(), "")
 		}
+
+		sheets.SetCellValue(sheet, nextAxis(), val.OracleDatabaseService.ContainerName)
 
 		if val.OracleDatabaseService.Enabled != nil {
 			sheets.SetCellValue(sheet, nextAxis(), *val.OracleDatabaseService.Enabled)
