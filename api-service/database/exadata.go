@@ -292,8 +292,50 @@ func (md *MongoDatabase) FindExadataClusterViews() ([]dto.OracleExadataClusterVi
 									{Key: "hostType", Value: "$components.hostType"},
 									{Key: "clustername", Value: "$components.vms.clusterName"},
 									{Key: "vmname", Value: "$components.vms.name"},
-									{Key: "totalRAM", Value: bson.D{{Key: "$sum", Value: "$components.vms.ramCurrent"}}},
-									{Key: "totalCPU", Value: bson.D{{Key: "$sum", Value: "$components.vms.cpuCurrent"}}},
+									{Key: "totalRAM",
+										Value: bson.D{
+											{Key: "$sum",
+												Value: bson.D{
+													{Key: "$cond",
+														Value: bson.A{
+															bson.D{
+																{Key: "$eq",
+																	Value: bson.A{
+																		"$components.hostType",
+																		model.DOM0,
+																	},
+																},
+															},
+															"$components.vms.ramOnline",
+															"$components.vms.ramCurrent",
+														},
+													},
+												},
+											},
+										},
+									},
+									{Key: "totalCPU",
+										Value: bson.D{
+											{Key: "$sum",
+												Value: bson.D{
+													{Key: "$cond",
+														Value: bson.A{
+															bson.D{
+																{Key: "$eq",
+																	Value: bson.A{
+																		"$components.hostType",
+																		model.DOM0,
+																	},
+																},
+															},
+															"$components.vms.cpuOnline",
+															"$components.vms.cpuCurrent",
+														},
+													},
+												},
+											},
+										},
+									},
 								},
 							},
 						},
