@@ -333,7 +333,7 @@ local task_build_push_image(push) =
           },
           steps: [
             { type: 'clone' },
-            { type: 'restore_cache', keys: ['cache-sum-{{ md5sum "go.sum" }}', 'cache-date-'], dest_dir: '/go/pkg/mod/cache' },
+            { type: 'restore_cache', keys: ['cache-sum-1-{{ md5sum "go.sum" }}', 'cache-date-1-'], dest_dir: '/go/pkg/mod/cache' },
 
             { type: 'run', name: 'clone gitleaks', command: 'git clone https://github.com/gitleaks/gitleaks.git ../gitleaks' },
             { type: 'run', name: 'build gitleaks', command: 'cd ../gitleaks; make build; echo ${GITLEAKS_CONF} > gitleaks.toml' },
@@ -346,8 +346,8 @@ local task_build_push_image(push) =
             { type: 'run', name: '', command: 'go generate -v ./...' },
             { type: 'run', name: '', command: 'go test -race -coverprofile=coverage.txt -covermode=atomic ./...' },
 
-            { type: 'save_cache', key: 'cache-sum-{{ md5sum "go.sum" }}', contents: [{ source_dir: '/go/pkg/mod/cache' }] },
-            { type: 'save_cache', key: 'cache-date-{{ year }}-{{ month }}-{{ day }}', contents: [{ source_dir: '/go/pkg/mod/cache' }] },
+            { type: 'save_cache', key: 'cache-sum-1-{{ md5sum "go.sum" }}', contents: [{ source_dir: '/go/pkg/mod/cache' }] },
+            { type: 'save_cache', key: 'cache-date-1-{{ year }}-{{ month }}-{{ day }}', contents: [{ source_dir: '/go/pkg/mod/cache' }] },
           ],
         },
       ] + [
