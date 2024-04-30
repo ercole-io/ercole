@@ -22,23 +22,197 @@ import (
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func (md *MongoDatabase) FindAllOracleDatabasePdbs(filter dto.GlobalFilter) ([]dto.OracleDatabasePluggableDatabase, error) {
 	ctx := context.TODO()
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
-		ctx,
-		mu.MAPipeline(
-			FilterByOldnessSteps(filter.OlderThan),
-			FilterByLocationAndEnvironmentSteps(filter.Location, filter.Environment),
-			bson.M{"$unwind": bson.M{"path": "$features.oracle.database.databases"}},
-			bson.M{"$unwind": bson.M{"path": "$features.oracle.database.databases.pdbs"}},
-			bson.M{"$project": bson.M{
-				"hostname": 1,
-				"pdb":      "$features.oracle.database.databases.pdbs",
-			}},
-		),
+
+	pipeline := mu.MAPipeline(
+		FilterByOldnessSteps(filter.OlderThan),
+		FilterByLocationAndEnvironmentSteps(filter.Location, filter.Environment),
+		bson.A{
+			bson.D{{Key: "$match", Value: bson.D{{Key: "archived", Value: false}}}},
+			bson.D{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$features.oracle.database.databases"}}}},
+			bson.D{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$features.oracle.database.databases.pdbs"}}}},
+			bson.D{
+				{Key: "$project",
+					Value: bson.D{
+						{Key: "hostname", Value: 1},
+						{Key: "pdb", Value: "$features.oracle.database.databases.pdbs"},
+						{Key: "filteredMigrability",
+							Value: bson.D{
+								{Key: "$cond",
+									Value: bson.D{
+										{Key: "if",
+											Value: bson.D{
+												{Key: "$eq",
+													Value: bson.A{
+														"$features.oracle.database.databases.pdbs.pgsqlMigrability",
+														primitive.Null{},
+													},
+												},
+											},
+										},
+										{Key: "then", Value: primitive.Null{}},
+										{Key: "else",
+											Value: bson.D{
+												{Key: "$filter",
+													Value: bson.D{
+														{Key: "input", Value: "$features.oracle.database.databases.pdbs.pgsqlMigrability"},
+														{Key: "as", Value: "migrability"},
+														{Key: "cond",
+															Value: bson.D{
+																{Key: "$eq",
+																	Value: bson.A{
+																		"$$migrability.metric",
+																		"PLSQL LINES",
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			bson.D{
+				{Key: "$project",
+					Value: bson.D{
+						{Key: "hostname", Value: 1},
+						{Key: "pdb", Value: "$pdb"},
+						{Key: "color",
+							Value: bson.D{
+								{Key: "$switch",
+									Value: bson.D{
+										{Key: "branches",
+											Value: bson.A{
+												bson.D{
+													{Key: "case",
+														Value: bson.D{
+															{Key: "$ne",
+																Value: bson.A{
+																	"$filteredMigrability",
+																	primitive.Null{},
+																},
+															},
+														},
+													},
+													{Key: "then",
+														Value: bson.D{
+															{Key: "$switch",
+																Value: bson.D{
+																	{Key: "branches",
+																		Value: bson.A{
+																			bson.D{
+																				{Key: "case",
+																					Value: bson.D{
+																						{Key: "$lt",
+																							Value: bson.A{
+																								bson.D{
+																									{Key: "$arrayElemAt",
+																										Value: bson.A{
+																											"$filteredMigrability.count",
+																											0,
+																										},
+																									},
+																								},
+																								1000,
+																							},
+																						},
+																					},
+																				},
+																				{Key: "then", Value: "green"},
+																			},
+																			bson.D{
+																				{Key: "case",
+																					Value: bson.D{
+																						{Key: "$and",
+																							Value: bson.A{
+																								bson.D{
+																									{Key: "$lte",
+																										Value: bson.A{
+																											bson.D{
+																												{Key: "$arrayElemAt",
+																													Value: bson.A{
+																														"$filteredMigrability.count",
+																														0,
+																													},
+																												},
+																											},
+																											10000,
+																										},
+																									},
+																								},
+																								bson.D{
+																									{Key: "$gte",
+																										Value: bson.A{
+																											bson.D{
+																												{Key: "$arrayElemAt",
+																													Value: bson.A{
+																														"$filteredMigrability.count",
+																														0,
+																													},
+																												},
+																											},
+																											1000,
+																										},
+																									},
+																								},
+																							},
+																						},
+																					},
+																				},
+																				{Key: "then", Value: "yellow"},
+																			},
+																			bson.D{
+																				{Key: "case",
+																					Value: bson.D{
+																						{Key: "$gt",
+																							Value: bson.A{
+																								bson.D{
+																									{Key: "$arrayElemAt",
+																										Value: bson.A{
+																											"$filteredMigrability.count",
+																											0,
+																										},
+																									},
+																								},
+																								10000,
+																							},
+																						},
+																					},
+																				},
+																				{Key: "then", Value: "red"},
+																			},
+																		},
+																	},
+																	{Key: "default", Value: ""},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+										{Key: "default", Value: ""},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 	)
+
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(ctx, pipeline)
 
 	if err != nil {
 		return nil, utils.NewError(err, "DB ERROR")
