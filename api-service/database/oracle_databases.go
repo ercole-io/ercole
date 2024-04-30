@@ -22,7 +22,6 @@ import (
 
 	"github.com/amreo/mu"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
@@ -226,8 +225,23 @@ func (md *MongoDatabase) FindAllMissingDatabases() ([]dto.OracleDatabaseMissing,
 						Value: bson.D{
 							{Key: "$concatArrays",
 								Value: bson.A{
-									"$features.oracle.database.unlistedRunningDatabases",
-									"$features.oracle.database.unretrievedDatabases",
+									bson.D{
+										{Key: "$ifNull",
+											Value: bson.A{
+												"$features.oracle.database.unlistedRunningDatabases",
+												bson.A{},
+											},
+										},
+									},
+									bson.D{
+										{Key: "$ifNull",
+
+											Value: bson.A{
+												"$features.oracle.database.unretrievedDatabases",
+												bson.A{},
+											},
+										},
+									},
 								},
 							},
 						},
@@ -235,7 +249,7 @@ func (md *MongoDatabase) FindAllMissingDatabases() ([]dto.OracleDatabaseMissing,
 				},
 			},
 		},
-		bson.D{{Key: "$match", Value: bson.D{{Key: "missingdbs", Value: bson.D{{Key: "$ne", Value: primitive.Null{}}}}}}},
+		bson.D{{Key: "$match", Value: bson.D{{Key: "missingdbs", Value: bson.D{{Key: "$ne", Value: bson.A{}}}}}}},
 	}
 
 	ctx := context.TODO()
