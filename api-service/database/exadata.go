@@ -256,7 +256,9 @@ func (md *MongoDatabase) FindAllExadataInstances(hidden bool) ([]model.OracleExa
 		condition = bson.D{{Key: "hidden", Value: hidden}}
 	}
 
-	pipeline := append(getExadataInstancePipeline, bson.D{{Key: "$match", Value: condition}})
+	pipeline := append(getExadataInstancePipeline,
+		bson.D{{Key: "$match", Value: condition}},
+		bson.D{{Key: "$sort", Value: bson.D{{Key: "hostname", Value: 1}}}})
 
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(exadataCollection).
 		Aggregate(ctx, pipeline)
