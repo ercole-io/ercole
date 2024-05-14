@@ -73,6 +73,12 @@ type ThunderControllerInterface interface {
 	SelectAzureProfile(w http.ResponseWriter, r *http.Request)
 
 	GetAwsRDS(w http.ResponseWriter, r *http.Request)
+
+	GetGcpProfiles(w http.ResponseWriter, r *http.Request)
+	AddGcpProfile(w http.ResponseWriter, r *http.Request)
+	SelectGcpProfile(w http.ResponseWriter, r *http.Request)
+	UpdateGcpProfile(w http.ResponseWriter, r *http.Request)
+	RemoveGcpProfile(w http.ResponseWriter, r *http.Request)
 }
 
 // ThunderController is the struct used to handle the requests from agents and contains the concrete implementation of ThunderControllerInterface

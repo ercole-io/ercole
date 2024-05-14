@@ -23,6 +23,7 @@ import (
 	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/thunder-service/database"
+	"github.com/ercole-io/ercole/v2/thunder-service/dto"
 	"github.com/ercole-io/ercole/v2/thunder-service/job"
 
 	"github.com/ercole-io/ercole/v2/config"
@@ -57,6 +58,12 @@ type ThunderServiceInterface interface {
 	DeleteAzureProfile(id primitive.ObjectID) error
 	SelectAzureProfile(profileId string, selected bool) error
 	GetAwsRDS() ([]model.AwsRDS, error)
+
+	GetGcpProfiles() ([]model.GcpProfile, error)
+	AddGcpProfile(profile dto.GcpProfileRequest) error
+	SelectGcpProfile(idhex string) error
+	UpdateGcpProfile(profileID string, profile dto.GcpProfileRequest) error
+	RemoveGcpProfile(profileID string) error
 }
 
 type ThunderService struct {

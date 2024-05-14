@@ -78,6 +78,13 @@ type MongoDatabaseInterface interface {
 	GetSelectedAzureProfiles() ([]primitive.ObjectID, error)
 	GetLastAwsRDSSeqValue() (uint64, error)
 	GetAwsRDS() ([]model.AwsRDS, error)
+
+	AddGcpProfile(profile model.GcpProfile) error
+	GetGcpProfileActive() (*model.GcpProfile, error)
+	ListGcpProfiles() ([]model.GcpProfile, error)
+	SelectGcpProfile(id primitive.ObjectID) error
+	UpdateGcpProfile(id primitive.ObjectID, profile model.GcpProfile) error
+	RemoveGcpProfile(id primitive.ObjectID) error
 }
 
 // MongoDatabase is a implementation
