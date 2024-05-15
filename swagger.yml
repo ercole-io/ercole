@@ -2426,6 +2426,30 @@ components:
               memorySizeInMib:
                 type: integer
 
+    GcpProfile:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        selected:
+          type: boolean
+        privatekey:
+          type: string
+        clientemail:
+          type: string
+
+    GcpProfileRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        privatekey:
+          type: string
+        clientemail:
+          type: string
+
   parameters:
     search:
       in: query
@@ -8135,6 +8159,76 @@ paths:
               examples: {}
       operationId: ForceGetAwsRecommendations
       description: Force the execution of queries to retrieve information from Amazon Web Service
+
+  /gcp/configurations:
+    get:
+      summary: list all gcp profiles
+      tags:
+        - thunder-service
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GcpProfile"
+    post:
+      summary: add gcp profile
+      tags: 
+        - thunder-service
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GcpProfileRequest"
+      responses:
+        201:
+          description: Created
+
+  /gcp/configurations/{profileid}/select:
+    parameters:
+      - schema:
+          type: string
+        name: profileid
+        in: path
+        required: true
+    patch:
+      summary: select gcp profile as active
+      tags:
+        - thunder-service
+      responses:
+        204:
+          description: No content
+
+  /gcp/configurations/{profileid}:
+    parameters:
+      - schema:
+          type: string
+        name: profileid
+        in: path
+        required: true
+    put:
+      summary: edit a gcp profile
+      tags:
+        - thunder-service
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GcpProfileRequest"
+      responses:
+        204:
+          description: No content
+    delete:
+      summary: delete a gcp profile
+      tags:
+        - thunder-service
+      responses:
+        204:
+          description: No content
+      
   "/admin/roles/{name}":
     parameters:
       - schema:
