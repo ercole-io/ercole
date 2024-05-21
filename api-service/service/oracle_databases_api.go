@@ -211,39 +211,40 @@ func (as *APIService) SearchOracleDatabasesAsXLSX(filter dto.SearchOracleDatabas
 		i += 2 // offset for headers
 		file.SetCellValue("Databases", fmt.Sprintf("A%d", i), val.Name)
 		file.SetCellValue("Databases", fmt.Sprintf("B%d", i), val.UniqueName)
-		file.SetCellValue("Databases", fmt.Sprintf("C%d", i), val.Hostname)
-		file.SetCellValue("Databases", fmt.Sprintf("D%d", i), val.Version)
-		file.SetCellValue("Databases", fmt.Sprintf("E%d", i), val.Status)
-		file.SetCellValue("Databases", fmt.Sprintf("F%d", i), val.Environment)
-		file.SetCellValue("Databases", fmt.Sprintf("G%d", i), val.Location)
-		file.SetCellValue("Databases", fmt.Sprintf("H%d", i), val.Charset)
-		file.SetCellValue("Databases", fmt.Sprintf("I%d", i), val.BlockSize)
-		file.SetCellValue("Databases", fmt.Sprintf("J%d", i), val.CPUCount)
+		file.SetCellValue("Databases", fmt.Sprintf("C%d", i), val.DbID)
+		file.SetCellValue("Databases", fmt.Sprintf("D%d", i), val.Hostname)
+		file.SetCellValue("Databases", fmt.Sprintf("E%d", i), val.Version)
+		file.SetCellValue("Databases", fmt.Sprintf("F%d", i), val.Status)
+		file.SetCellValue("Databases", fmt.Sprintf("G%d", i), val.Environment)
+		file.SetCellValue("Databases", fmt.Sprintf("H%d", i), val.Location)
+		file.SetCellValue("Databases", fmt.Sprintf("I%d", i), val.Charset)
+		file.SetCellValue("Databases", fmt.Sprintf("J%d", i), val.BlockSize)
+		file.SetCellValue("Databases", fmt.Sprintf("K%d", i), val.CPUCount)
 
 		if val.Work != nil {
-			file.SetCellValue("Databases", fmt.Sprintf("K%d", i), *val.Work)
+			file.SetCellValue("Databases", fmt.Sprintf("L%d", i), *val.Work)
 		} else {
-			file.SetCellValue("Databases", fmt.Sprintf("K%d", i), "")
+			file.SetCellValue("Databases", fmt.Sprintf("L%d", i), "")
 		}
 
-		file.SetCellValue("Databases", fmt.Sprintf("L%d", i), val.Memory)
-		file.SetCellValue("Databases", fmt.Sprintf("M%d", i), val.DatafileSize)
-		file.SetCellValue("Databases", fmt.Sprintf("N%d", i), val.SegmentsSize)
-		file.SetCellValue("Databases", fmt.Sprintf("O%d", i), val.Archivelog)
-		file.SetCellValue("Databases", fmt.Sprintf("P%d", i), val.Dataguard)
-		file.SetCellValue("Databases", fmt.Sprintf("Q%d", i), val.Rac)
-		file.SetCellValue("Databases", fmt.Sprintf("R%d", i), val.Ha)
+		file.SetCellValue("Databases", fmt.Sprintf("M%d", i), val.Memory)
+		file.SetCellValue("Databases", fmt.Sprintf("N%d", i), val.DatafileSize)
+		file.SetCellValue("Databases", fmt.Sprintf("O%d", i), val.SegmentsSize)
+		file.SetCellValue("Databases", fmt.Sprintf("P%d", i), val.Archivelog)
+		file.SetCellValue("Databases", fmt.Sprintf("Q%d", i), val.Dataguard)
+		file.SetCellValue("Databases", fmt.Sprintf("R%d", i), val.Rac)
+		file.SetCellValue("Databases", fmt.Sprintf("S%d", i), val.Ha)
 
 		if val.IsCDB {
-			file.SetCellValue("Databases", fmt.Sprintf("S%d", i), "True")
-			file.SetCellValue("Databases", fmt.Sprintf("T%d", i), val.PDBs)
+			file.SetCellValue("Databases", fmt.Sprintf("T%d", i), "True")
+			file.SetCellValue("Databases", fmt.Sprintf("U%d", i), val.PDBs)
 		} else {
-			file.SetCellValue("Databases", fmt.Sprintf("S%d", i), "False")
-			file.SetCellValue("Databases", fmt.Sprintf("T%d", i), "")
+			file.SetCellValue("Databases", fmt.Sprintf("T%d", i), "False")
+			file.SetCellValue("Databases", fmt.Sprintf("U%d", i), "")
 		}
 
-		file.SetCellValue("Databases", fmt.Sprintf("U%d", i), val.PgsqlMigrabilitySemaphore)
-		file.SetCellValue("Databases", fmt.Sprintf("V%d", i), val.ClusterwareVersion)
+		file.SetCellValue("Databases", fmt.Sprintf("V%d", i), val.PgsqlMigrabilitySemaphore)
+		file.SetCellValue("Databases", fmt.Sprintf("W%d", i), val.ClusterwareVersion)
 	}
 
 	return file, nil
