@@ -291,30 +291,31 @@
                     "items": {
                         "type": "object",
                         "required": [
-                            "fetchEndpoint",
-                            "type",
                             "name",
-                            "cpu",
-                            "sockets",
                             "vms"
                         ],
                         "properties": {
                             "fetchEndpoint": {
                                 "type": "string",
-                                "minLength": 1,
                                 "maxLength": 64
                             },
                             "type": {
-                                "type": "string",
-                                "enum": [
-                                    "Oracle/VM",
-                                    "VMWare/VMWare",
-                                    "Oracle/LVM"
+                                "anyOf": [
+                                    {
+                                        "type": "string",
+                                        "enum": [
+                                            "Oracle/VM",
+                                            "VMWare/VMWare",
+                                            "Oracle/LVM"
+                                        ]
+                                    },
+                                    {
+                                        "type": "string"
+                                    }
                                 ]
                             },
                             "name": {
                                 "type": "string",
-                                "minLength": 1,
                                 "maxLength": 128
                             },
                             "cpu": {
@@ -330,20 +331,15 @@
                                 "items": {
                                     "type": "object",
                                     "required": [
-                                        "name",
-                                        "hostname",
-                                        "cappedCPU",
-                                        "virtualizationNode"
+                                        "hostname"
                                     ],
                                     "properties": {
                                         "name": {
                                             "type": "string",
-                                            "minLength": 1,
                                             "maxLength": 128
                                         },
                                         "hostname": {
                                             "type": "string",
-                                            "minLength": 1,
                                             "maxLength": 253,
                                             "format": "idn-hostname"
                                         },
@@ -352,7 +348,6 @@
                                         },
                                         "virtualizationNode": {
                                             "type": "string",
-                                            "minLength": 1,
                                             "maxLength": 253,
                                             "format": "idn-hostname"
                                         }

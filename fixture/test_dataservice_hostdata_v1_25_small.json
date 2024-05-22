@@ -1,0 +1,73 @@
+{
+    "hostname": "test-virt",
+    "environment": "PROD",
+    "location": "Italy",
+    "info": {
+        "hostname": "test-virt",
+        "cpuModel": "Intel(R) Xeon(R) CPU E5-2680 v3 @ 2.50GHz",
+        "cpuCores": 1,
+        "cpuThreads": 2,
+        "kernel": "3.10.0-862.9.1.el7.x86_64",
+        "os": "Red Hat Enterprise Linux",
+        "memoryTotal": 3,
+        "swapTotal": 4,
+        "cpuFrequency": "2.50GHz",
+        "cpuSockets": 2,
+        "coresPerSocket": 1,
+        "threadsPerCore": 2,
+        "kernelVersion": "3.10.0-862.9.1.el7.x86_64",
+        "osVersion": "7.5",
+        "hardwareAbstraction": "VIRT",
+        "hardwareAbstractionTechnology": "VMWARE"
+    },
+    "agentVersion": "1.6.1",
+    "tags": [],
+    "schemaVersion": 1,
+    "clusterMembershipStatus": {
+        "oracleClusterware": false,
+        "sunCluster": false,
+        "hacmp": false,
+        "veritasClusterServer": true,
+        "veritasClusterHostnames": [
+            "test-virt1",
+            "test-virt2"
+        ]
+    },
+    "filesystems": [
+        {
+            "filesystem": "/dev/mapper/vg_os-lv_root",
+            "size": 8589934592,
+            "mountedOn": "/",
+            "availableSpace": 4939212390,
+            "usedSpace": 3758096384,
+            "type": "xfs"
+        }
+    ],
+    "features": {},
+    "clusters": [
+        {
+            "fetchEndpoint": "",
+            "type": "",
+            "name": "fittizio",
+            "cpu": 0,
+            "sockets": 0,
+            "vms": [
+                {
+                    "name": "",
+                    "hostname": "test-virt1",
+                    "cappedCPU": false,
+                    "virtualizationNode": "",
+                    "physicalServerModelName": ""
+                },
+                {
+                    "name": "",
+                    "hostname": "test-virt2",
+                    "cappedCPU": false,
+                    "virtualizationNode": "",
+                    "physicalServerModelName": ""
+                }
+            ]
+        }
+    ],
+    "grantDba": null
+}
