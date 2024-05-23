@@ -68,14 +68,9 @@ func (md *MongoDatabase) GetGcpProfileActive() (*model.GcpProfile, error) {
 	return result, nil
 }
 
-func (md *MongoDatabase) SelectGcpProfile(id primitive.ObjectID) error {
+func (md *MongoDatabase) SelectGcpProfile(id primitive.ObjectID, selected bool) error {
 	if _, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(GcpProfileCollection).
-		UpdateOne(context.TODO(), bson.M{"_id": id}, bson.M{"$set": bson.M{"selected": true}}); err != nil {
-		return utils.NewError(err, "DB ERROR")
-	}
-
-	if _, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(GcpProfileCollection).
-		UpdateMany(context.TODO(), bson.M{"_id": bson.M{"$ne": id}}, bson.M{"$set": bson.M{"selected": false}}); err != nil {
+		UpdateOne(context.TODO(), bson.M{"_id": id}, bson.M{"$set": bson.M{"selected": selected}}); err != nil {
 		return utils.NewError(err, "DB ERROR")
 	}
 

@@ -41,13 +41,13 @@ func (ts *ThunderService) GetGcpProfiles() ([]model.GcpProfile, error) {
 	return ts.Database.ListGcpProfiles()
 }
 
-func (ts *ThunderService) SelectGcpProfile(idhex string) error {
+func (ts *ThunderService) SelectGcpProfile(idhex string, selected bool) error {
 	id, err := primitive.ObjectIDFromHex(idhex)
 	if err != nil {
 		return err
 	}
 
-	if err := ts.Database.SelectGcpProfile(id); err != nil {
+	if err := ts.Database.SelectGcpProfile(id, selected); err != nil {
 		return err
 	}
 

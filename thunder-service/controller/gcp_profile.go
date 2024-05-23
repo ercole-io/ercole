@@ -16,6 +16,7 @@ package controller
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/ercole-io/ercole/v2/thunder-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
@@ -51,7 +52,13 @@ func (ctrl *ThunderController) AddGcpProfile(w http.ResponseWriter, r *http.Requ
 func (ctrl *ThunderController) SelectGcpProfile(w http.ResponseWriter, r *http.Request) {
 	profileId := mux.Vars(r)["profileid"]
 
-	if err := ctrl.Service.SelectGcpProfile(profileId); err != nil {
+	selected, err := strconv.ParseBool(mux.Vars(r)["selected"])
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
+		return
+	}
+
+	if err := ctrl.Service.SelectGcpProfile(profileId, selected); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
