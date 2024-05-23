@@ -82,7 +82,7 @@ type MongoDatabaseInterface interface {
 	AddGcpProfile(profile model.GcpProfile) error
 	GetGcpProfileActive() (*model.GcpProfile, error)
 	ListGcpProfiles() ([]model.GcpProfile, error)
-	SelectGcpProfile(id primitive.ObjectID) error
+	SelectGcpProfile(id primitive.ObjectID, selected bool) error
 	UpdateGcpProfile(id primitive.ObjectID, profile model.GcpProfile) error
 	RemoveGcpProfile(id primitive.ObjectID) error
 }

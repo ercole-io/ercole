@@ -8187,15 +8187,20 @@ paths:
         201:
           description: Created
 
-  /gcp/configurations/{profileid}/select:
+  /gcp/configurations/{profileid}/selected/{selected}:
     parameters:
       - schema:
           type: string
         name: profileid
         in: path
         required: true
-    patch:
-      summary: select gcp profile as active
+      - schema:
+          type: string
+        name: selected
+        in: path
+        required: true
+    put:
+      summary: select gcp profile as active or not
       tags:
         - thunder-service
       responses:

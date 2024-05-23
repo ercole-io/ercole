@@ -61,7 +61,7 @@ type ThunderServiceInterface interface {
 
 	GetGcpProfiles() ([]model.GcpProfile, error)
 	AddGcpProfile(profile dto.GcpProfileRequest) error
-	SelectGcpProfile(idhex string) error
+	SelectGcpProfile(idhex string, selected bool) error
 	UpdateGcpProfile(profileID string, profile dto.GcpProfileRequest) error
 	RemoveGcpProfile(profileID string) error
 }
