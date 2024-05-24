@@ -18,4 +18,5 @@ type GcpProfileRequest struct {
 	Name        string `json:"name"`
 	PrivateKey  string `json:"privatekey"`
 	ClientEmail string `json:"clientemail"`
+	Selected    bool   `json:"selected"`
 }
