@@ -2450,6 +2450,37 @@ components:
         clientemail:
           type: string
 
+    GcpRecommendation:
+      type: object
+      properties:
+        seqValue:
+          type: integer
+        createdAt:
+          type: string
+        profileID:
+          type: string
+        instanceID:
+          type: integer
+        category:
+          type: string
+        suggestion:
+          type: string
+        projectID:
+          type: string
+        projectName:
+          type: string
+        objectType:
+          type: string
+        details:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              value:
+                type: string
+
   parameters:
     search:
       in: query
@@ -8233,6 +8264,22 @@ paths:
       responses:
         204:
           description: No content
+
+  /gcp/recommendations:
+    get:
+      summary: list all selected profile gcp recommendations (last sequence value)
+      tags:
+        - thunder-service
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GcpRecommendation"
+
       
   "/admin/roles/{name}":
     parameters:

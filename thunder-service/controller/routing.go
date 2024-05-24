@@ -81,4 +81,6 @@ func (ctrl *ThunderController) setupProtectedRoutes(router *mux.Router) {
 	router.HandleFunc("/gcp/configurations/{profileid}/selected/{selected}", ctrl.SelectGcpProfile).Methods("PUT")
 	router.HandleFunc("/gcp/configurations/{profileid}", ctrl.UpdateGcpProfile).Methods("PUT")
 	router.HandleFunc("/gcp/configurations/{profileid}", ctrl.RemoveGcpProfile).Methods("DELETE")
+
+	router.HandleFunc("/gcp/recommendations", ctrl.GetGcpRecommendations).Methods("GET")
 }

@@ -80,11 +80,14 @@ type MongoDatabaseInterface interface {
 	GetAwsRDS() ([]model.AwsRDS, error)
 
 	AddGcpProfile(profile model.GcpProfile) error
-	GetGcpProfileActive() (*model.GcpProfile, error)
+	GetActiveGcpProfiles() ([]model.GcpProfile, error)
 	ListGcpProfiles() ([]model.GcpProfile, error)
 	SelectGcpProfile(id primitive.ObjectID, selected bool) error
 	UpdateGcpProfile(id primitive.ObjectID, profile model.GcpProfile) error
 	RemoveGcpProfile(id primitive.ObjectID) error
+
+	GetLastGcpSeqValue() (uint64, error)
+	ListGcpRecommendationsByProfiles(profileIDs []primitive.ObjectID) ([]model.GcpRecommendation, error)
 }
 
 // MongoDatabase is a implementation

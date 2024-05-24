@@ -52,16 +52,16 @@ func (md *MongoDatabase) AddGcpProfile(profile model.GcpProfile) error {
 	return nil
 }
 
-func (md *MongoDatabase) GetGcpProfileActive() (*model.GcpProfile, error) {
-	res := md.Client.Database(md.Config.Mongodb.DBName).Collection(GcpProfileCollection).
-		FindOne(context.TODO(), bson.M{"selected": true})
-	if res.Err() != nil {
-		return nil, res.Err()
+func (md *MongoDatabase) GetActiveGcpProfiles() ([]model.GcpProfile, error) {
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(GcpProfileCollection).
+		Find(context.TODO(), bson.M{"selected": true})
+	if err != nil {
+		return nil, err
 	}
 
-	result := &model.GcpProfile{}
+	result := make([]model.GcpProfile, 0)
 
-	if err := res.Decode(result); err != nil {
+	if err := cur.All(context.Background(), &result); err != nil {
 		return nil, err
 	}
 
