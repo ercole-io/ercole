@@ -64,6 +64,8 @@ type ThunderServiceInterface interface {
 	SelectGcpProfile(idhex string, selected bool) error
 	UpdateGcpProfile(profileID string, profile dto.GcpProfileRequest) error
 	RemoveGcpProfile(profileID string) error
+
+	ListGcpRecommendations() ([]model.GcpRecommendation, error)
 }
 
 type ThunderService struct {
