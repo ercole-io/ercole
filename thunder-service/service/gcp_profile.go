@@ -24,7 +24,7 @@ func (ts *ThunderService) AddGcpProfile(profile dto.GcpProfileRequest) error {
 	profileModel := model.GcpProfile{
 		ID:          ts.NewObjectID(),
 		Name:        profile.Name,
-		Selected:    false,
+		Selected:    profile.Selected,
 		PrivateKey:  profile.PrivateKey,
 		ClientEmail: profile.ClientEmail,
 	}

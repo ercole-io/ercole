@@ -2449,6 +2449,8 @@ components:
           type: string
         clientemail:
           type: string
+        selected:
+          type: boolean
 
   parameters:
     search:
