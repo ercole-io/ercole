@@ -508,6 +508,8 @@ func (as *APIService) getOracleDatabasesUsedLicenses(hostname string, filter dto
 
 	usedLicenses = as.manageStandardDBVersionLicenses(usedLicenses, clusters, hostdatasPerHostname)
 
+	as.CalcVeritasClusterLicenses(usedLicenses)
+
 	return usedLicenses, nil
 }
 
@@ -635,6 +637,18 @@ func (as *APIService) manageStandardDBVersionLicenses(usedLicenses []dto.Databas
 	}
 
 	return usedLicenses
+}
+
+func (as *APIService) CalcVeritasClusterLicenses(usedLicenses []dto.DatabaseUsedLicense) {
+	for i := 0; i < len(usedLicenses); i++ {
+		ul := &usedLicenses[i]
+
+		if ul.LicenseTypeID == "L47837" && ul.ClusterType == "VeritasCluster" {
+			used := float64(len(strings.Split(ul.ClusterName, ",")))
+			ul.UsedLicenses = used
+			ul.ClusterLicenses = used
+		}
+	}
 }
 
 func (as *APIService) getMySQLUsedLicenses(hostname string, filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error) {
