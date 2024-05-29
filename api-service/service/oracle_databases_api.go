@@ -245,6 +245,7 @@ func (as *APIService) SearchOracleDatabasesAsXLSX(filter dto.SearchOracleDatabas
 
 		file.SetCellValue("Databases", fmt.Sprintf("V%d", i), val.PgsqlMigrabilitySemaphore)
 		file.SetCellValue("Databases", fmt.Sprintf("W%d", i), val.ClusterwareVersion)
+		file.SetCellValue("Databases", fmt.Sprintf("X%d", i), val.Role)
 	}
 
 	return file, nil

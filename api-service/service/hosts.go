@@ -259,6 +259,7 @@ func (as *APIService) SearchHostsAsXLSX(filters dto.SearchHostsFilters) (*exceli
 		"Kernel",
 		"Memory",
 		"Swap",
+		"Cluster Type",
 	}
 
 	file, err := exutils.NewXLSX(as.Config, sheet, headers...)
@@ -316,6 +317,14 @@ func (as *APIService) SearchHostsAsXLSX(filters dto.SearchHostsFilters) (*exceli
 		file.SetCellValue(sheet, nextAxis(), val.Info.KernelVersion)
 		file.SetCellValue(sheet, nextAxis(), val.Info.MemoryTotal)
 		file.SetCellValue(sheet, nextAxis(), val.Info.SwapTotal)
+
+		if val.ClusterMembershipStatus.OracleClusterware {
+			file.SetCellValue(sheet, nextAxis(), "ClusterWare")
+		}
+
+		if val.ClusterMembershipStatus.VeritasClusterServer {
+			file.SetCellValue(sheet, nextAxis(), "VeritasCluster")
+		}
 	}
 
 	return file, nil
