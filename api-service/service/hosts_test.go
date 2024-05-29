@@ -627,7 +627,7 @@ func TestSearchHostsAsXLSX(t *testing.T) {
 		assert.Equal(t, "", sp.GetCellValue("Hosts", "R2"))
 		assert.Equal(t, "376", sp.GetCellValue("Hosts", "S2"))
 		assert.Equal(t, "23", sp.GetCellValue("Hosts", "T2"))
-		assert.Equal(t, "", sp.GetCellValue("Hosts", "U2"))
+		assert.Equal(t, "ClusterWare", sp.GetCellValue("Hosts", "U2"))
 		assert.Equal(t, "", sp.GetCellValue("Hosts", "V2"))
 
 		assert.Equal(t, "test-db", sp.GetCellValue("Hosts", "A3"))
