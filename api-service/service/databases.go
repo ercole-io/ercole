@@ -645,7 +645,7 @@ func (as *APIService) CalcVeritasClusterLicenses(usedLicenses []dto.DatabaseUsed
 
 		if ul.LicenseTypeID == "L47837" && ul.ClusterType == "VeritasCluster" {
 			used := float64(len(strings.Split(ul.ClusterName, ",")))
-			ul.UsedLicenses = used
+			ul.UsedLicenses = 1
 			ul.ClusterLicenses = used
 		}
 	}
