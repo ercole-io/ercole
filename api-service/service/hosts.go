@@ -260,6 +260,8 @@ func (as *APIService) SearchHostsAsXLSX(filters dto.SearchHostsFilters) (*exceli
 		"Memory",
 		"Swap",
 		"Cluster Type",
+		"Cluster Veritas Nodes Count",
+		"Cluster Veritas Nodes",
 	}
 
 	file, err := exutils.NewXLSX(as.Config, sheet, headers...)
@@ -318,13 +320,23 @@ func (as *APIService) SearchHostsAsXLSX(filters dto.SearchHostsFilters) (*exceli
 		file.SetCellValue(sheet, nextAxis(), val.Info.MemoryTotal)
 		file.SetCellValue(sheet, nextAxis(), val.Info.SwapTotal)
 
+		clusterType := ""
+		clusterVeritasNodesCount := 0
+		clusterVeritasNodes := ""
+
 		if val.ClusterMembershipStatus.OracleClusterware {
-			file.SetCellValue(sheet, nextAxis(), "ClusterWare")
+			clusterType = "ClusterWare"
 		}
 
 		if val.ClusterMembershipStatus.VeritasClusterServer {
-			file.SetCellValue(sheet, nextAxis(), "VeritasCluster")
+			clusterType = "VeritasCluster"
+			clusterVeritasNodesCount = len(val.ClusterMembershipStatus.VeritasClusterHostnames)
+			clusterVeritasNodes = strings.Join(val.ClusterMembershipStatus.VeritasClusterHostnames, ",")
 		}
+
+		file.SetCellValue(sheet, nextAxis(), clusterType)
+		file.SetCellValue(sheet, nextAxis(), clusterVeritasNodesCount)
+		file.SetCellValue(sheet, nextAxis(), clusterVeritasNodes)
 	}
 
 	return file, nil
