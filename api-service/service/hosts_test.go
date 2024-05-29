@@ -628,7 +628,7 @@ func TestSearchHostsAsXLSX(t *testing.T) {
 		assert.Equal(t, "376", sp.GetCellValue("Hosts", "S2"))
 		assert.Equal(t, "23", sp.GetCellValue("Hosts", "T2"))
 		assert.Equal(t, "ClusterWare", sp.GetCellValue("Hosts", "U2"))
-		assert.Equal(t, "", sp.GetCellValue("Hosts", "V2"))
+		assert.Equal(t, "0", sp.GetCellValue("Hosts", "V2"))
 
 		assert.Equal(t, "test-db", sp.GetCellValue("Hosts", "A3"))
 		assert.Equal(t, "VMWARE", sp.GetCellValue("Hosts", "B3"))
@@ -651,7 +651,7 @@ func TestSearchHostsAsXLSX(t *testing.T) {
 		assert.Equal(t, "3", sp.GetCellValue("Hosts", "S3"))
 		assert.Equal(t, "1", sp.GetCellValue("Hosts", "T3"))
 		assert.Equal(t, "", sp.GetCellValue("Hosts", "U3"))
-		assert.Equal(t, "", sp.GetCellValue("Hosts", "V3"))
+		assert.Equal(t, "0", sp.GetCellValue("Hosts", "V3"))
 	})
 
 	t.Run("Db error", func(t *testing.T) {
