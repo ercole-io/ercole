@@ -88,6 +88,8 @@ type MongoDatabaseInterface interface {
 
 	GetLastGcpSeqValue() (uint64, error)
 	ListGcpRecommendationsByProfiles(profileIDs []primitive.ObjectID) ([]model.GcpRecommendation, error)
+	AddGcpRecommendation(gcprecommendation interface{}) error
+	AddGcpError(gcperror interface{}) error
 }
 
 // MongoDatabase is a implementation

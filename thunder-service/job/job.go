@@ -67,4 +67,13 @@ func (j *Job) Init() {
 	if j.Config.ThunderService.AwsDataRetrieveJob.RunAtStartup {
 		jobrunner.Now(&awsDataRetrieveJob)
 	}
+
+	gcpDataRetrieverJob := GcpDataRetrieveJob{j.Database, j.Config, j.Log, nil}
+	if err := jobrunner.Schedule(j.Config.ThunderService.GcpDataRetrieveJob.Crontab, &gcpDataRetrieverJob); err != nil {
+		j.Log.Errorf("Something went wrong scheduling GcpDataRetrieveJob: %v", err)
+	}
+
+	if j.Config.ThunderService.GcpDataRetrieveJob.RunAtStartup {
+		jobrunner.Now(&gcpDataRetrieverJob)
+	}
 }

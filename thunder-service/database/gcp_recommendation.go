@@ -25,7 +25,10 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const GcpRecommendationCollection = "gcp_recommendations"
+const (
+	GcpRecommendationCollection = "gcp_recommendations"
+	GcpErrorCollection          = "gcp_errors"
+)
 
 func (md *MongoDatabase) GetLastGcpSeqValue() (uint64, error) {
 	ctx := context.TODO()
@@ -121,4 +124,24 @@ func (md *MongoDatabase) ListGcpRecommendationsByProfiles(profileIDs []primitive
 	}
 
 	return result, nil
+}
+
+func (md *MongoDatabase) AddGcpRecommendation(gcprecommendation interface{}) error {
+	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(GcpRecommendationCollection).
+		InsertOne(context.TODO(), gcprecommendation)
+	if err != nil {
+		return utils.NewError(err, "DB ERROR")
+	}
+
+	return nil
+}
+
+func (md *MongoDatabase) AddGcpError(gcperror interface{}) error {
+	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(GcpErrorCollection).
+		InsertOne(context.Background(), gcperror)
+	if err != nil {
+		return utils.NewError(err, "DB ERROR")
+	}
+
+	return nil
 }
