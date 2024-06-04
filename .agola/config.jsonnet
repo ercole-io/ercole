@@ -340,7 +340,7 @@ local task_build_push_image(push) =
             { type: 'run', name: 'detect security leaks', command: '../gitleaks/gitleaks detect -v -c ../gitleaks/gitleaks.toml' },
   
             { type: 'run', name: 'install golangci-lint', command: 'curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.52.2' },
-            { type: 'run', name: 'run golangci-lint', command: 'golangci-lint run' },
+            { type: 'run', name: 'run golangci-lint', command: 'golangci-lint run --timeout 10m' },
 
             { type: 'run', name: '', command: 'go install go.uber.org/mock/mockgen@v0.3.0' },
             { type: 'run', name: '', command: 'go generate -v ./...' },
