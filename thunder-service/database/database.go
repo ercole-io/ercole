@@ -90,6 +90,7 @@ type MongoDatabaseInterface interface {
 	ListGcpRecommendationsByProfiles(profileIDs []primitive.ObjectID) ([]model.GcpRecommendation, error)
 	AddGcpRecommendation(gcprecommendation interface{}) error
 	AddGcpError(gcperror interface{}) error
+	ListGcpErrorsByProfiles(profileIDs []primitive.ObjectID) ([]model.GcpError, error)
 }
 
 // MongoDatabase is a implementation

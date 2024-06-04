@@ -32,5 +32,14 @@ func (ctrl *ThunderController) GetGcpRecommendations(w http.ResponseWriter, r *h
 func (ctrl *ThunderController) ForceGetGcpRecommendations(w http.ResponseWriter, r *http.Request) {
 	go ctrl.Service.ForceGetGcpRecommendations()
 
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (ctrl *ThunderController) GetGcpErrors(w http.ResponseWriter, r *http.Request) {
+	gcpErrors, err := ctrl.Service.ListGcpError()
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, gcpErrors)
 }
