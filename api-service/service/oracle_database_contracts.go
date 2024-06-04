@@ -152,7 +152,6 @@ func (as *APIService) GetOracleDatabaseContractsAsXLSX(filter dto.GetOracleDatab
 		"Available Licenses User",
 		"Basket",
 		"Restricted",
-		"Support ",
 		"Hostname",
 		"Used Licenses",
 		"Covered by this contract",
