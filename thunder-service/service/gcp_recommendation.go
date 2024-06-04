@@ -44,3 +44,17 @@ func (ts *ThunderService) ForceGetGcpRecommendations() {
 
 	j.Run()
 }
+
+func (ts *ThunderService) ListGcpError() ([]model.GcpError, error) {
+	selectedProfiles, err := ts.Database.GetActiveGcpProfiles()
+	if err != nil {
+		return nil, err
+	}
+
+	profileIDs := make([]primitive.ObjectID, 0, len(selectedProfiles))
+	for _, p := range selectedProfiles {
+		profileIDs = append(profileIDs, p.ID)
+	}
+
+	return ts.Database.ListGcpErrorsByProfiles(profileIDs)
+}

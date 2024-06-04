@@ -67,6 +67,7 @@ type ThunderServiceInterface interface {
 
 	ListGcpRecommendations() ([]model.GcpRecommendation, error)
 	ForceGetGcpRecommendations()
+	ListGcpError() ([]model.GcpError, error)
 }
 
 type ThunderService struct {

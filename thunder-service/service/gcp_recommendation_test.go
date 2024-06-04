@@ -89,3 +89,56 @@ func TestListGcpRecommendations(t *testing.T) {
 
 	assert.Equal(t, recommendation, actual)
 }
+
+func TestListGcpError(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	ts := ThunderService{
+		Config:      config.Configuration{},
+		Database:    db,
+		TimeNow:     utils.Btc(utils.P("2021-11-08T12:02:03Z")),
+		Log:         logger.NewLogger("TEST"),
+		NewObjectID: utils.NewObjectIDForTests(),
+	}
+
+	activeProfile := []model.GcpProfile{
+		{
+			ID:       utils.Str2oid("000000000000000000000001"),
+			Name:     "profile1",
+			Selected: true,
+		},
+		{
+			ID:       utils.Str2oid("000000000000000000000002"),
+			Name:     "profile2",
+			Selected: true,
+		}}
+
+	db.EXPECT().GetActiveGcpProfiles().Return(activeProfile, nil)
+
+	gcperrors := []model.GcpError{
+		{
+			SeqValue:  1,
+			CreatedAt: ts.TimeNow(),
+			ProfileID: utils.Str2oid("000000000000000000000001"),
+			Category:  "",
+			Msg:       "msg errors",
+		},
+		{
+			SeqValue:  1,
+			CreatedAt: ts.TimeNow(),
+			ProfileID: utils.Str2oid("000000000000000000000002"),
+			Category:  "",
+			Msg:       "msg errors",
+		}}
+
+	profileIDs := []primitive.ObjectID{activeProfile[0].ID, activeProfile[1].ID}
+
+	db.EXPECT().ListGcpErrorsByProfiles(profileIDs).Return(gcperrors, nil)
+
+	actual, err := ts.ListGcpError()
+
+	require.NoError(t, err)
+
+	assert.Equal(t, gcperrors, actual)
+}

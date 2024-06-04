@@ -145,3 +145,63 @@ func (md *MongoDatabase) AddGcpError(gcperror interface{}) error {
 
 	return nil
 }
+
+func (md *MongoDatabase) ListGcpErrorsByProfiles(profileIDs []primitive.ObjectID) ([]model.GcpError, error) {
+	ctx := context.Background()
+
+	seqValue, err := md.GetLastGcpSeqValue()
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]model.GcpError, 0)
+
+	pipeline := bson.A{
+		bson.D{
+			{Key: "$match",
+				Value: bson.D{
+					{Key: "seqValue", Value: seqValue},
+					{Key: "profileID",
+						Value: bson.D{
+							{Key: "$in", Value: profileIDs},
+						},
+					},
+				},
+			},
+		},
+		bson.D{
+			{Key: "$lookup",
+				Value: bson.D{
+					{Key: "from", Value: "gcp_profiles"},
+					{Key: "localField", Value: "profileID"},
+					{Key: "foreignField", Value: "_id"},
+					{Key: "as", Value: "profile"},
+				},
+			},
+		},
+		bson.D{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$profile"}}}},
+		bson.D{
+			{Key: "$project",
+				Value: bson.D{
+					{Key: "seqValue", Value: 1},
+					{Key: "createdAt", Value: 1},
+					{Key: "profileID", Value: 1},
+					{Key: "category", Value: 1},
+					{Key: "profileName", Value: "$profile.name"},
+					{Key: "msg", Value: 1},
+				},
+			},
+		},
+	}
+
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(GcpErrorCollection).Aggregate(ctx, pipeline)
+	if err != nil {
+		return nil, utils.NewError(err, "DB ERROR")
+	}
+
+	if err := cur.All(ctx, &result); err != nil {
+		return nil, utils.NewError(err, "DB ERROR")
+	}
+
+	return result, nil
+}

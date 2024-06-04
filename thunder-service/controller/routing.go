@@ -84,4 +84,5 @@ func (ctrl *ThunderController) setupProtectedRoutes(router *mux.Router) {
 
 	router.HandleFunc("/gcp/recommendations", ctrl.GetGcpRecommendations).Methods("GET")
 	router.HandleFunc("/gcp/retrieve-last-gcp-recommendations", ctrl.ForceGetGcpRecommendations).Methods("GET")
+	router.HandleFunc("/gcp/errors", ctrl.GetGcpErrors).Methods("GET")
 }

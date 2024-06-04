@@ -2483,6 +2483,20 @@ components:
               value:
                 type: string
 
+    GcpError:
+      type: object
+      properties:
+        seqValue:
+          type: integer
+        profileID:
+          type: string
+        category:
+          type: string  
+        createdAt:
+          type: string
+        msg:
+          type: string
+
   parameters:
     search:
       in: query
@@ -8281,6 +8295,30 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/GcpRecommendation"
+      
+  /gcp/retrieve-last-gcp-recommendations:
+    get:
+      summary: run the gcp job to retrieve recommendations
+      tags:
+        - thunder-service
+      responses:
+        204:
+          description: No content
+
+  /gcp/errors:
+    get:
+      summary: list all selected profile gcp errors (last sequence value)
+      tags:
+        - thunder-service
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GcpError"
 
       
   "/admin/roles/{name}":
