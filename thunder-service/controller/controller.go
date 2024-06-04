@@ -79,6 +79,9 @@ type ThunderControllerInterface interface {
 	SelectGcpProfile(w http.ResponseWriter, r *http.Request)
 	UpdateGcpProfile(w http.ResponseWriter, r *http.Request)
 	RemoveGcpProfile(w http.ResponseWriter, r *http.Request)
+
+	GetGcpRecommendations(w http.ResponseWriter, r *http.Request)
+	ForceGetGcpRecommendations(w http.ResponseWriter, r *http.Request)
 }
 
 // ThunderController is the struct used to handle the requests from agents and contains the concrete implementation of ThunderControllerInterface
