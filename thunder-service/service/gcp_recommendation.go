@@ -16,6 +16,7 @@ package service
 
 import (
 	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/thunder-service/job"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -31,4 +32,15 @@ func (ts *ThunderService) ListGcpRecommendations() ([]model.GcpRecommendation, e
 	}
 
 	return ts.Database.ListGcpRecommendationsByProfiles(profileIDs)
+}
+
+func (ts *ThunderService) ForceGetGcpRecommendations() {
+	j := &job.GcpDataRetrieveJob{
+		Database: ts.Database,
+		Config:   ts.Config,
+		Log:      ts.Log,
+		Opt:      nil,
+	}
+
+	j.Run()
 }

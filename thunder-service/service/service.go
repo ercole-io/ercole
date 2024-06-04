@@ -66,6 +66,7 @@ type ThunderServiceInterface interface {
 	RemoveGcpProfile(profileID string) error
 
 	ListGcpRecommendations() ([]model.GcpRecommendation, error)
+	ForceGetGcpRecommendations()
 }
 
 type ThunderService struct {

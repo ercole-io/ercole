@@ -28,3 +28,9 @@ func (ctrl *ThunderController) GetGcpRecommendations(w http.ResponseWriter, r *h
 
 	utils.WriteJSONResponse(w, http.StatusOK, recommendations)
 }
+
+func (ctrl *ThunderController) ForceGetGcpRecommendations(w http.ResponseWriter, r *http.Request) {
+	go ctrl.Service.ForceGetGcpRecommendations()
+
+	w.WriteHeader(http.StatusOK)
+}
