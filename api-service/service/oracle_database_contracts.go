@@ -237,11 +237,25 @@ func (as *APIService) assignOracleDatabaseContractsToHosts(
 	}
 
 	// sort again and rebuild map because the references are updated during the sort
-	sortHostsByLicenses(usages)
-	usagesMap = buildHostUsingLicensesMap(usages)
+	// sortHostsByLicenses(usages)
+	// usagesMap = buildHostUsingLicensesMap(usages)
 
 	if as.Config.APIService.DebugOracleDatabaseContractsAssignmentAlgorithm {
 		as.Log.Debugf("Resorted LicensingObjects: %#v\n", usages)
+	}
+
+	usages = []dto.HostUsingOracleDatabaseLicenses{}
+
+	for k := range usagesMap {
+		for j := range usagesMap[k] {
+			usages = append(usages, dto.HostUsingOracleDatabaseLicenses{
+				LicenseTypeID: usagesMap[k][j].LicenseTypeID,
+				Name:          usagesMap[k][j].Name,
+				Type:          usagesMap[k][j].Type,
+				LicenseCount:  usagesMap[k][j].LicenseCount,
+				OriginalCount: usagesMap[k][j].OriginalCount,
+			})
+		}
 	}
 
 	assignLicensesFromBasketContracts(as, agrs, usages)
@@ -346,7 +360,10 @@ func assignContractsLicensesToItsAssociatedHosts(
 			associatedHost := &contract.Hosts[j]
 
 			if !hasAvailableLicenses(contract) {
-				break
+				associatedHost.TotalCoveredLicensesCount = 0
+				associatedHost.CoveredLicensesCount = 0
+
+				continue
 			}
 
 			var hostUsingLicenses *dto.HostUsingOracleDatabaseLicenses
@@ -499,23 +516,21 @@ func doAssignContractLicensesToAssociatedHost(
 		associatedHost.CoveredLicensesCount += coverableLicenses
 		contract.CoveredLicenses += coverableLicenses
 		host.LicenseCount -= coverableLicenses
-
-		return
-	}
-
-	var coverableLicenses float64
-	if contract.Unlimited {
-		coverableLicenses = host.LicenseCount
-		contract.AvailableLicensesPerUser = 0
 	} else {
-		availableInContract := math.Floor(contract.AvailableLicensesPerUser/model.FactorNamedUser) * model.FactorNamedUser
-		coverableLicenses = math.Min(availableInContract, host.LicenseCount)
-		contract.AvailableLicensesPerUser -= coverableLicenses
-	}
+		var coverableLicenses float64
+		if contract.Unlimited {
+			coverableLicenses = host.LicenseCount
+			contract.AvailableLicensesPerUser = 0
+		} else {
+			availableInContract := math.Floor(contract.AvailableLicensesPerUser/model.FactorNamedUser) * model.FactorNamedUser
+			coverableLicenses = math.Min(availableInContract, host.LicenseCount)
+			contract.AvailableLicensesPerUser -= coverableLicenses
+		}
 
-	associatedHost.CoveredLicensesCount += coverableLicenses
-	contract.CoveredLicenses += coverableLicenses
-	host.LicenseCount -= coverableLicenses
+		associatedHost.CoveredLicensesCount += coverableLicenses
+		contract.CoveredLicenses += coverableLicenses
+		host.LicenseCount -= coverableLicenses
+	}
 }
 
 // If an contract is basket distributes its licenses to every hosts that use that kind of license
