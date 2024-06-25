@@ -1052,12 +1052,19 @@
                             }
                         },
                         "unlistedRunningDatabases": {
-                            "type": "array",
-                            "items": {
-                                "type": "string",
-                                "minLength": 1
-                            },
-                            "uniqueItems": true
+                            "anyOf": [
+                                {
+                                    "type": "null"
+                                },
+                                {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string",
+                                        "minLength": 1
+                                    },
+                                    "uniqueItems": true
+                                }
+                            ]
                         }
                     }
                 }
