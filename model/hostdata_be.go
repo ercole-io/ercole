@@ -47,14 +47,14 @@ type HostDataBE struct {
 	Clusters                []ClusterInfo           `json:"clusters" bson:"clusters"`
 	Cloud                   Cloud                   `json:"cloud" bson:"cloud"`
 	Errors                  []AgentError            `json:"errors" bson:"errors"`
-	CpuConsumptions            []CpuConsumption        `json:"cpuConsumptions"`
+	CpuConsumptions         []CpuConsumption        `json:"cpuConsumptions"`
 	DiskConsumptions        []DiskConsumption       `json:"diskConsumptions"`
 }
 
 func (v *HostDataBE) GetClusterCores(hostdatasPerHostname map[string]*HostDataBE) (int, error) {
 	cms := v.ClusterMembershipStatus
 	if !cms.VeritasClusterServer ||
-		(cms.VeritasClusterServer && len(cms.VeritasClusterHostnames) <= 2) {
+		(cms.VeritasClusterServer && len(cms.VeritasClusterHostnames) < 2) {
 		return 0, utils.ErrHostNotInCluster
 	}
 
