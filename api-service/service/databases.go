@@ -884,17 +884,6 @@ licenses:
 			return nil, err
 		}
 
-		usedlicense := v
-
-		if usedlicense.LicenseTypeID == "L47837" && usedlicense.ClusterType == "VeritasCluster" {
-			used := float64(len(strings.Split(usedlicense.ClusterName, ",")))
-			usedlicense.ClusterLicenses = used
-		}
-
-		if clusterLicenses == 0 {
-			clusterLicenses = usedlicense.ClusterLicenses
-		}
-
 		licensesPerHost = append(licensesPerHost,
 			dto.DatabaseUsedLicensePerHost{
 				Hostname:        v.Hostname,
