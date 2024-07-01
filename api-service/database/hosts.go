@@ -1326,6 +1326,7 @@ func (md *MongoDatabase) FindVirtualHostWithoutCluster() ([]dto.VirtualHostWitho
 				Value: bson.D{
 					{Key: "archived", Value: false},
 					{Key: "info.hardwareAbstraction", Value: "VIRT"},
+					{Key: "info.hardwareAbstractionTechnology", Value: bson.D{{Key: "$ne", Value: "HPVRT"}}},
 					{Key: "clusters", Value: primitive.Null{}},
 				},
 			},
