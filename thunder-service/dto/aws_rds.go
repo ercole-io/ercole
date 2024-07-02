@@ -48,14 +48,36 @@ type AwsInstanceTypeDetail struct {
 
 func ToAwsInstanceTypeDetail(m *ec2types.InstanceTypeInfo) *AwsInstanceTypeDetail {
 	if m != nil {
-		return &AwsInstanceTypeDetail{
-			InstanceType:          string(m.InstanceType),
-			ProcessorManufacturer: *m.ProcessorInfo.Manufacturer,
-			DefaultCore:           int(*m.VCpuInfo.DefaultCores),
-			DefaultThreadsPerCore: int(*m.VCpuInfo.DefaultThreadsPerCore),
-			DefaultVCpus:          int(*m.VCpuInfo.DefaultVCpus),
-			MemorySizeInMib:       int(*m.MemoryInfo.SizeInMiB),
+		res := &AwsInstanceTypeDetail{
+			InstanceType: string(m.InstanceType),
 		}
+
+		processorManufacturer := m.ProcessorInfo.Manufacturer
+		if processorManufacturer != nil {
+			res.ProcessorManufacturer = *processorManufacturer
+		}
+
+		defaultCore := m.VCpuInfo.DefaultCores
+		if defaultCore != nil {
+			res.DefaultCore = int(*defaultCore)
+		}
+
+		defaultThreadsPerCore := m.VCpuInfo.DefaultThreadsPerCore
+		if defaultThreadsPerCore != nil {
+			res.DefaultThreadsPerCore = int(*defaultThreadsPerCore)
+		}
+
+		defaultVCpus := m.VCpuInfo.DefaultVCpus
+		if defaultVCpus != nil {
+			res.DefaultVCpus = int(*defaultVCpus)
+		}
+
+		sizeInMiB := m.MemoryInfo.SizeInMiB
+		if sizeInMiB != nil {
+			res.MemorySizeInMib = int(*sizeInMiB)
+		}
+
+		return res
 	}
 
 	return nil
@@ -63,19 +85,59 @@ func ToAwsInstanceTypeDetail(m *ec2types.InstanceTypeInfo) *AwsInstanceTypeDetai
 
 func ToAwsDbInstance(m *model.AwsDbInstance) *AwsDbInstance {
 	if m != nil {
-		return &AwsDbInstance{
-			DbName:              *m.DBName,
-			DbInstanceClass:     *m.DBInstanceClass,
-			Engine:              *m.Engine,
-			EngineVersion:       *m.EngineVersion,
-			DbInstanceStatus:    *m.DBInstanceStatus,
-			LicenseModel:        *m.LicenseModel,
-			StorageType:         *m.StorageType,
-			AllocatedStorage:    int(*m.AllocatedStorage),
-			MaxAllocatedStorage: int(*m.MaxAllocatedStorage),
+		res := &AwsDbInstance{}
 
-			AwsInstanceTypeDetail: *ToAwsInstanceTypeDetail(m.InstanceTypeDetail),
+		dbName := m.DBName
+		if dbName != nil {
+			res.DbName = *dbName
 		}
+
+		dbInstanceClass := m.DBInstanceClass
+		if dbInstanceClass != nil {
+			res.DbInstanceClass = *dbInstanceClass
+		}
+
+		engine := m.Engine
+		if engine != nil {
+			res.Engine = *engine
+		}
+
+		engineVersion := m.EngineVersion
+		if engineVersion != nil {
+			res.EngineVersion = *engineVersion
+		}
+
+		dbInstanceStatus := m.DBInstanceStatus
+		if dbInstanceStatus != nil {
+			res.DbInstanceStatus = *dbInstanceStatus
+		}
+
+		licenseModel := m.LicenseModel
+		if licenseModel != nil {
+			res.LicenseModel = *licenseModel
+		}
+
+		storageType := m.StorageType
+		if storageType != nil {
+			res.StorageType = *storageType
+		}
+
+		allocatedStorage := m.AllocatedStorage
+		if allocatedStorage != nil {
+			res.AllocatedStorage = int(*allocatedStorage)
+		}
+
+		maxAllocatedStorage := m.MaxAllocatedStorage
+		if maxAllocatedStorage != nil {
+			res.MaxAllocatedStorage = int(*maxAllocatedStorage)
+		}
+
+		awsInstanceTypeDetail := ToAwsInstanceTypeDetail(m.InstanceTypeDetail)
+		if awsInstanceTypeDetail != nil {
+			res.AwsInstanceTypeDetail = *awsInstanceTypeDetail
+		}
+
+		return res
 	}
 
 	return nil
@@ -85,7 +147,11 @@ func ToAwsDbInstances(list []model.AwsDbInstance) []AwsDbInstance {
 	res := make([]AwsDbInstance, 0, len(list))
 
 	for _, v := range list {
-		res = append(res, *ToAwsDbInstance(&v))
+		awsDbInstance := ToAwsDbInstance(&v)
+
+		if awsDbInstance != nil {
+			res = append(res, *awsDbInstance)
+		}
 	}
 
 	return res
