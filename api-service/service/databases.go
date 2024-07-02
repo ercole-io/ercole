@@ -727,7 +727,7 @@ func (as *APIService) GetDatabaseLicensesComplianceAsXLSX() (*excelize.File, err
 		"Description",
 		"Metric",
 		"License Available",
-		"Purchesed",
+		"Purchased",
 		"Consumed",
 		"Covered",
 		"Compliance",
