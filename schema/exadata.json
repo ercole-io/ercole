@@ -283,6 +283,12 @@
                                         }
                                     }
                                 ]
+                            },
+                            "reservedCPU": {
+                                "type": "integer"
+                            },
+                            "reservedMemory": {
+                                "type": "integer"
                             }
                         }
                     }
