@@ -1012,6 +1012,10 @@ components:
           type: integer
         totalFreeSpace:
           type: integer
+        reservedCPU:
+          type: integer
+        reservedMemory:
+          type: integer
       required:
         - hostType
     ExadataVM:

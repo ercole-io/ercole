@@ -44,6 +44,9 @@ type OracleExadataComponent struct {
 	StorageCells      []OracleExadataStorageCell
 	ClusterNames      []string
 
+	ReservedMemory int
+	ReservedCPU    int
+
 	UsedRAM           *OracleExadataMeasurement
 	FreeRAM           *OracleExadataMeasurement
 	UsedRAMPercentage string
@@ -84,6 +87,15 @@ func ToOracleExadataComponent(m model.OracleExadataComponent) (*OracleExadataCom
 	res.TotalSize = NewOracleExadataMeasurement()
 	res.TotalFreeSpace = NewOracleExadataMeasurement()
 
+	reservedMemory, err := IntToOracleExadataMeasurement(m.ReservedMemory, "GB")
+	if err != nil {
+		return nil, err
+	}
+
+	res.ReservedMemory = m.ReservedMemory
+
+	res.UsedRAM.Add(reservedMemory.Quantity, reservedMemory.Symbol)
+
 	memory, err := IntToOracleExadataMeasurement(m.Memory, "GB")
 	if err != nil {
 		return nil, err
@@ -113,6 +125,9 @@ func ToOracleExadataComponent(m model.OracleExadataComponent) (*OracleExadataCom
 			res.UsedCPU += vm.CPUCurrent + vm.CPUOnline
 		}
 	}
+
+	res.ReservedCPU = m.ReservedCPU
+	res.UsedCPU += m.ReservedCPU
 
 	if res.HostType == model.DOM0 || res.HostType == model.KVM_HOST {
 		freeram := OracleExadataMeasurement{

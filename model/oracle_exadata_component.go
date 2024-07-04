@@ -38,4 +38,7 @@ type OracleExadataComponent struct {
 	VMs               []OracleExadataVM          `json:"vms,omitempty" bson:"vms"`
 	StorageCells      []OracleExadataStorageCell `json:"storageCells,omitempty" bson:"storageCells"`
 	ClusterNames      []string                   `json:"clusterNames" bson:"clusterNames"`
+
+	ReservedCPU    int `json:"reservedCPU" bson:"reservedCPU"`
+	ReservedMemory int `json:"reservedMemory" bson:"reservedMemory"`
 }

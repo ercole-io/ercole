@@ -51,6 +51,9 @@ type OracleExadataComponent struct {
 	TotalSize          int    `json:"totalSize"`
 	TotalFreeSpace     int    `json:"totalFreeSpace"`
 	UsedSizePercentage string `json:"usedSizePercentage"`
+
+	ReservedCPU    int `json:"reservedCPU"`
+	ReservedMemory int `json:"reservedMemory"`
 }
 
 func ToOracleExadataComponent(d domain.OracleExadataComponent) (*OracleExadataComponent, error) {
@@ -78,6 +81,8 @@ func ToOracleExadataComponent(d domain.OracleExadataComponent) (*OracleExadataCo
 		UsedSizePercentage: d.UsedSizePercentage,
 		UsedRAMPercentage:  d.UsedRAMPercentage,
 		UsedCPUPercentage:  d.UsedCPUPercentage,
+		ReservedCPU:        d.ReservedCPU,
+		ReservedMemory:     d.ReservedMemory,
 	}
 
 	if d.Memory != nil {
