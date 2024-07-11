@@ -31,4 +31,5 @@ type OracleDatabasePluggableDatabase struct {
 	Partitionings          []OracleDatabasePartitioning   `json:"partitionings" bson:"partitionings"`
 	CpuDiskConsumptionPdbs []CpuDiskConsumptionPdb        `json:"cpuDiskConsumptionPdbs" bson:"cpuDiskConsumptionPdbs"`
 	PgsqlMigrability       []PgsqlMigrability             `json:"pgsqlMigrability,omitempty" bson:"pgsqlMigrability,omitempty"`
+	PoliciesAudit          []string                       `json:"policiesAudit,omitempty" bson:"policiesAudit,omitempty"`
 }
