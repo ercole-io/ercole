@@ -69,6 +69,7 @@ type OracleDatabase struct {
 	CpuDiskConsumptions         []CpuDiskConsumption              `json:"cpuDiskConsumptions" bson:"cpuDiskConsumptions"`
 	PgsqlMigrability            []PgsqlMigrability                `json:"pgsqlMigrability,omitempty" bson:"pgsqlMigrability,omitempty"`
 	OracleDatabaseMemoryAdvisor *OracleDatabaseMemoryAdvisor      `json:"oracleDatabaseMemoryAdvisor,omitempty" bson:"oracleDatabaseMemoryAdvisor,omitempty"`
+	PoliciesAudit               []string                          `json:"policiesAudit,omitempty" bson:"policiesAudit,omitempty"`
 }
 
 var (

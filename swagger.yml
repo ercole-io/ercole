@@ -299,6 +299,10 @@ components:
           type: array
           items:
             type: string
+        OracleDatabasePoliciesAudit:
+          type: array
+          items:
+            type: string
 
     ChartService:
       type: object
@@ -3697,6 +3701,63 @@ paths:
             application/json:
               schema: 
                 type: string
+
+  /hosts/{hostname}/technologies/oracle/databases/{dbname}/policies-audit:
+    parameters:
+      - schema:
+          type: string
+        name: hostname
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: dbname
+        in: path
+        required: true
+    get:
+      tags:
+        - api-service
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  flag:
+                    type: string
+
+  /hosts/{hostname}/technologies/oracle/databases/{dbname}/pdbs/{pdbname}/policies-audit:
+    parameters:
+      - schema:
+          type: string
+        name: hostname
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: dbname
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: pdbname
+        in: path
+        required: true
+    get:
+      tags:
+        - api-service
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  flag:
+                    type: string
 
   /hosts/technologies/oracle/databases/partitionings:
     get:

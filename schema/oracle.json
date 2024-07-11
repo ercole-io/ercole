@@ -1047,6 +1047,18 @@
                                                 }
                                             }
                                         ]
+                                    },
+                                    "policiesAudit": {
+                                        "anyOf": [
+                                            { "type": "null" },
+                                            {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string",
+                                                    "uniqueItems": true
+                                                }
+                                            }
+                                        ]
                                     }
                                 }
                             }
