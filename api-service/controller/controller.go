@@ -55,6 +55,9 @@ type APIControllerInterface interface {
 	GetOraclePsqlMigrabilities(w http.ResponseWriter, r *http.Request)
 	GetOraclePsqlMigrabilitiesSemaphore(w http.ResponseWriter, r *http.Request)
 
+	GetOraclePoliciesAudit(w http.ResponseWriter, r *http.Request)
+	GetOraclePdbsPoliciesAudit(w http.ResponseWriter, r *http.Request)
+
 	GetOraclePdbPsqlMigrabilities(w http.ResponseWriter, r *http.Request)
 	GetOraclePdbPsqlMigrabilitiesSemaphore(w http.ResponseWriter, r *http.Request)
 

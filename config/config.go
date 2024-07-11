@@ -134,6 +134,8 @@ type APIService struct {
 	OperatingSystemAggregationRules []AggregationRule
 	// DefaultDatabaseTags contains the default list of database tags
 	DefaultDatabaseTags []string
+
+	OracleDatabasePoliciesAudit []string
 }
 
 // RepoService contains configuration about the repo service
