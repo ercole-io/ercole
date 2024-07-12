@@ -25,11 +25,11 @@ func (ctrl *APIController) GetOraclePoliciesAudit(w http.ResponseWriter, r *http
 	hostname := mux.Vars(r)["hostname"]
 	dbname := mux.Vars(r)["dbname"]
 
-	msg, err := ctrl.Service.GetOracleDatabasePoliciesAuditFlag(hostname, dbname)
+	resp, err := ctrl.Service.GetOracleDatabasePoliciesAuditFlag(hostname, dbname)
 	if err != nil {
 		utils.WriteJSONResponse(w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
-	utils.WriteJSONResponse(w, http.StatusOK, map[string]string{"flag": msg})
+	utils.WriteJSONResponse(w, http.StatusOK, resp)
 }

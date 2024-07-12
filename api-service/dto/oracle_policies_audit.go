@@ -12,25 +12,48 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-package controller
+package dto
 
 import (
-	"net/http"
-
 	"github.com/ercole-io/ercole/v2/utils"
-	"github.com/gorilla/mux"
 )
 
-func (ctrl *APIController) GetOraclePdbsPoliciesAudit(w http.ResponseWriter, r *http.Request) {
-	hostname := mux.Vars(r)["hostname"]
-	dbname := mux.Vars(r)["dbname"]
-	pdbname := mux.Vars(r)["pdbname"]
+type OraclePoliciesAudit struct {
+	List []string `json:"policiesAudit"`
+}
 
-	resp, err := ctrl.Service.GetOracleDatabasePdbPoliciesAuditFlag(hostname, dbname, pdbname)
-	if err != nil {
-		utils.WriteJSONResponse(w, http.StatusUnprocessableEntity, err)
-		return
+func (opa OraclePoliciesAudit) Response(configured, policies []string) map[string][]string {
+	if len(configured) == 0 {
+		return map[string][]string{"N/A": nil}
 	}
 
-	utils.WriteJSONResponse(w, http.StatusOK, resp)
+	isEnable := true
+
+	for _, c := range configured {
+		if !isEnable {
+			break
+		}
+
+		isEnable = utils.Contains(policies, c)
+	}
+
+	s := []string{}
+
+	if isEnable {
+		for _, c := range configured {
+			if utils.Contains(policies, c) {
+				s = append(s, c)
+			}
+		}
+
+		return map[string][]string{"GREEN": s}
+	}
+
+	for _, c := range configured {
+		if !utils.Contains(policies, c) {
+			s = append(s, c)
+		}
+	}
+
+	return map[string][]string{"RED": s}
 }

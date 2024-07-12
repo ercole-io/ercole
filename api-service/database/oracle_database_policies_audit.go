@@ -17,13 +17,12 @@ package database
 import (
 	"context"
 
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func (md *MongoDatabase) FindOracleDatabasePoliciesAudit(hostname, dbname string) ([]string, error) {
+func (md *MongoDatabase) FindOracleDatabasePoliciesAudit(hostname, dbname string) (*dto.OraclePoliciesAudit, error) {
 	ctx := context.TODO()
-
-	res := make([]string, 0)
 
 	pipeline := bson.A{
 		bson.D{
@@ -54,14 +53,16 @@ func (md *MongoDatabase) FindOracleDatabasePoliciesAudit(hostname, dbname string
 		return nil, err
 	}
 
+	list := make([]string, 0)
+
 	for cur.Next(ctx) {
 		var item map[string]string
 		if cur.Decode(&item) != nil {
 			return nil, err
 		}
 
-		res = append(res, item["_id"])
+		list = append(list, item["_id"])
 	}
 
-	return res, nil
+	return &dto.OraclePoliciesAudit{List: list}, nil
 }

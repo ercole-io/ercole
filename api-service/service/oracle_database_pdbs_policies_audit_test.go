@@ -17,6 +17,7 @@ package service
 import (
 	"testing"
 
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -38,9 +39,10 @@ func TestGetOracleDatabasePdbPoliciesAuditFlag_Green(t *testing.T) {
 		},
 	}
 
-	expected := "GREEN"
+	expected := map[string][]string{"GREEN": {"policy0"}}
 
-	db.EXPECT().FindOracleDatabasePdbPoliciesAudit("hostname", "dbname", "pdbname").Return([]string{"policy0", "policy1"}, nil)
+	db.EXPECT().FindOracleDatabasePdbPoliciesAudit("hostname", "dbname", "pdbname").Return(
+		&dto.OraclePoliciesAudit{List: []string{"policy0", "policy1"}}, nil)
 
 	res, err := as.GetOracleDatabasePdbPoliciesAuditFlag("hostname", "dbname", "pdbname")
 
@@ -63,9 +65,10 @@ func TestGetOracleDatabasePdbPoliciesAuditFlag_Red(t *testing.T) {
 		},
 	}
 
-	expected := "RED"
+	expected := map[string][]string{"RED": {"policy0"}}
 
-	db.EXPECT().FindOracleDatabasePdbPoliciesAudit("hostname", "dbname", "pdbname").Return([]string{"policy1"}, nil)
+	db.EXPECT().FindOracleDatabasePdbPoliciesAudit("hostname", "dbname", "pdbname").Return(
+		&dto.OraclePoliciesAudit{List: []string{"policy1"}}, nil)
 
 	res, err := as.GetOracleDatabasePdbPoliciesAuditFlag("hostname", "dbname", "pdbname")
 
@@ -82,9 +85,10 @@ func TestGetOracleDatabasePdbPoliciesAuditFlag_NotAvailable(t *testing.T) {
 		Config:   config.Configuration{},
 	}
 
-	expected := "N/A"
+	expected := map[string][]string{"N/A": nil}
 
-	db.EXPECT().FindOracleDatabasePdbPoliciesAudit("hostname", "dbname", "pdbname").Return([]string{"policy1"}, nil)
+	db.EXPECT().FindOracleDatabasePdbPoliciesAudit("hostname", "dbname", "pdbname").Return(
+		&dto.OraclePoliciesAudit{List: []string{"policy1"}}, nil)
 
 	res, err := as.GetOracleDatabasePdbPoliciesAuditFlag("hostname", "dbname", "pdbname")
 

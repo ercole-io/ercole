@@ -185,8 +185,8 @@ type APIServiceInterface interface {
 	GetOracleServiceList(filter dto.GlobalFilter) ([]dto.OracleDatabaseServiceDto, error)
 	CreateGetOracleServiceListXLSX(filter dto.GlobalFilter) (*excelize.File, error)
 
-	GetOracleDatabasePoliciesAuditFlag(hostname, dbname string) (string, error)
-	GetOracleDatabasePdbPoliciesAuditFlag(hostname, dbname, pdbname string) (string, error)
+	GetOracleDatabasePoliciesAuditFlag(hostname, dbname string) (map[string][]string, error)
+	GetOracleDatabasePdbPoliciesAuditFlag(hostname, dbname, pdbname string) (map[string][]string, error)
 
 	// SQL SERVER DATABASE LICENSES
 	GetSqlServerDatabaseLicenseTypes() ([]model.SqlServerDatabaseLicenseType, error)
