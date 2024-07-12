@@ -14,34 +14,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package service
 
-import (
-	"github.com/ercole-io/ercole/v2/utils"
-)
-
-func (as *APIService) GetOracleDatabasePoliciesAuditFlag(hostname, dbname string) (string, error) {
+func (as *APIService) GetOracleDatabasePoliciesAuditFlag(hostname, dbname string) (map[string][]string, error) {
 	policiesAudit, err := as.Database.FindOracleDatabasePoliciesAudit(hostname, dbname)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	if len(as.Config.APIService.OracleDatabasePoliciesAudit) == 0 {
-		return "N/A", nil
-	}
-
-	flag := true
-
-	for _, policyAudit := range as.Config.APIService.OracleDatabasePoliciesAudit {
-		if !flag {
-			break
-		}
-
-		flag = utils.Contains(policiesAudit, policyAudit)
-	}
-
-	flagColor := map[bool]string{
-		true:  "GREEN",
-		false: "RED",
-	}
-
-	return flagColor[flag], nil
+	return policiesAudit.Response(as.Config.APIService.OracleDatabasePoliciesAudit, policiesAudit.List), err
 }

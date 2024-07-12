@@ -58,6 +58,7 @@ type OracleDatabase struct {
 	PgsqlMigrabilitySemaphore string                                  `json:"pgsqlMigrabilitySemaphore"`
 	Canbemigrate              bool                                    `json:"canbemigrate"`
 	ClusterwareVersion        string                                  `json:"clusterwareVersion,omitempty"`
+	PoliciesAudit             []string                                `json:"policiesAudit,omitempty"`
 }
 
 type SearchOracleDatabasesFilter struct {
