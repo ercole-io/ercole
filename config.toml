@@ -71,6 +71,7 @@ Port = 11113
 LogHTTPRequest = true
 ReadOnly = false
 DebugOracleDatabaseAgreementsAssignmentAlgorithm = false
+RoundLicenses = false
 DefaultDatabaseTags = [
   "coolest",
   "very important",

@@ -93,6 +93,10 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompli
 		}
 
 		license.Consumed += usage.OriginalCount
+
+		if as.Config.APIService.RoundLicenses {
+			license.Consumed = math.Round(license.Consumed)
+		}
 	}
 
 	availableLicenses := make(map[string]float64)
@@ -114,8 +118,13 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompli
 			availableLicenses[contract.LicenseTypeID] += contract.AvailableLicensesPerCore
 		}
 
-		license.Covered += contract.CoveredLicenses
-		license.Purchased += (contract.LicensesPerCore + contract.LicensesPerUser)
+		if as.Config.APIService.RoundLicenses {
+			license.Covered += math.Round(contract.CoveredLicenses)
+			license.Purchased += math.Round((contract.LicensesPerCore + contract.LicensesPerUser))
+		} else {
+			license.Covered += contract.CoveredLicenses
+			license.Purchased += (contract.LicensesPerCore + contract.LicensesPerUser)
+		}
 	}
 
 	result := make([]dto.LicenseCompliance, 0, len(licenses))
@@ -131,7 +140,7 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompli
 			license.Compliance = license.Covered / license.Consumed
 		}
 
-		license.Available = availableLicenses[license.LicenseTypeID]
+		license.Available = math.Floor(availableLicenses[license.LicenseTypeID])
 
 		result = append(result, *license)
 	}
