@@ -136,6 +136,8 @@ type APIService struct {
 	DefaultDatabaseTags []string
 
 	OracleDatabasePoliciesAudit []string
+
+	RoundLicenses bool
 }
 
 // RepoService contains configuration about the repo service
