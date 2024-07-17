@@ -16,6 +16,7 @@
 package model
 
 import (
+	"regexp"
 	"strings"
 
 	"github.com/ercole-io/ercole/v2/utils"
@@ -132,6 +133,12 @@ func (v OracleDatabase) CoreFactor(host Host, hostCoreFactor float64) (float64, 
 
 	if host.HardwareAbstractionTechnology == HardwareAbstractionTechnologyPhysical {
 		if dbEdition == OracleDatabaseEditionExtreme || dbEdition == OracleDatabaseEditionEnterprise {
+			re := regexp.MustCompile(`(?i)aix`)
+
+			if re.MatchString(host.OS) {
+				return 1, nil
+			}
+
 			return 0.5, nil
 		} else if dbEdition == OracleDatabaseEditionStandard {
 			return float64(host.CPUSockets), nil
