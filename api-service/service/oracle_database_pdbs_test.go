@@ -39,6 +39,7 @@ func TestListOracleDatabasePdbs_Success(t *testing.T) {
 	expected := []dto.OracleDatabasePluggableDatabase{
 		{
 			Hostname:                        "hostname",
+			Dbname:                          "dbname",
 			OracleDatabasePluggableDatabase: model.OracleDatabasePluggableDatabase{},
 		},
 	}
