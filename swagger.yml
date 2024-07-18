@@ -2194,6 +2194,8 @@ components:
       properties:
         hostname:
           type: string
+        dbname:
+          type: string
         pdb:
           type: object
           properties:

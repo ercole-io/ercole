@@ -39,6 +39,7 @@ func (md *MongoDatabase) FindAllOracleDatabasePdbs(filter dto.GlobalFilter) ([]d
 				{Key: "$project",
 					Value: bson.D{
 						{Key: "hostname", Value: 1},
+						{Key: "dbname", Value: "$features.oracle.database.databases.name"},
 						{Key: "pdb", Value: "$features.oracle.database.databases.pdbs"},
 						{Key: "filteredMigrability",
 							Value: bson.D{
@@ -86,6 +87,7 @@ func (md *MongoDatabase) FindAllOracleDatabasePdbs(filter dto.GlobalFilter) ([]d
 				{Key: "$project",
 					Value: bson.D{
 						{Key: "hostname", Value: 1},
+						{Key: "dbname", Value: "$dbname"},
 						{Key: "pdb", Value: "$pdb"},
 						{Key: "color",
 							Value: bson.D{

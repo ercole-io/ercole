@@ -54,6 +54,7 @@ func (as *APIService) CreateOracleDatabasePdbsXlsx(filter dto.GlobalFilter) (*ex
 	sheet := "Pluggable dbs"
 	headers := []string{
 		"Hostname",
+		"DBname",
 		"Name",
 		"Status",
 		"SegmentsSize",
@@ -76,6 +77,7 @@ func (as *APIService) CreateOracleDatabasePdbsXlsx(filter dto.GlobalFilter) (*ex
 	for _, val := range grants {
 		nextAxis := axisHelp.NewRow()
 		sheets.SetCellValue(sheet, nextAxis(), val.Hostname)
+		sheets.SetCellValue(sheet, nextAxis(), val.Dbname)
 		sheets.SetCellValue(sheet, nextAxis(), val.Name)
 		sheets.SetCellValue(sheet, nextAxis(), val.Status)
 		sheets.SetCellValue(sheet, nextAxis(), val.SegmentsSize)
