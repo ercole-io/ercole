@@ -1,4 +1,4 @@
-// Copyright (c) 2022 Sorint.lab S.p.A.
+// Copyright (c) 2024 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -12,13 +12,15 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 package model
 
 import (
+	"encoding/json"
 	"errors"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/bsontype"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -28,22 +30,72 @@ type OracleDatabaseContract struct {
 	ContractID        string             `json:"contractID" bson:"contractID" csv:"Contract Number"`
 	CSI               string             `json:"csi" bson:"csi" csv:"CSI"`
 	LicenseTypeID     string             `json:"licenseTypeID" bson:"licenseTypeID" csv:"Part Number"`
-	ReferenceNumber   string             `json:"referenceNumber" bson:"referenceNumber" csv:"-"`
-	Unlimited         bool               `json:"unlimited" bson:"unlimited" csv:"ULA"`
-	Count             int                `json:"count" bson:"count" csv:"License number"`
-	Basket            bool               `json:"basket" bson:"basket" csv:"-"`
-	Restricted        bool               `json:"restricted" bson:"restricted" csv:"-"`
-	SupportExpiration *time.Time         `json:"supportExpiration" bson:"supportExpiration" csv:"-"`
+	ReferenceNumber   string             `json:"referenceNumber" bson:"referenceNumber" csv:"Reference Number,omitempty"`
+	Unlimited         bool               `json:"unlimited" bson:"unlimited" csv:"ULA,omitempty"`
+	Count             int                `json:"count" bson:"count" csv:"License number,omitempty"`
+	Basket            bool               `json:"basket" bson:"basket" csv:"Basket,omitempty"`
+	Restricted        bool               `json:"restricted" bson:"restricted" csv:"Restricted,omitempty"`
+	SupportExpiration *dateTime          `json:"supportExpiration" bson:"supportExpiration" csv:"Support Expiration,omitempty"`
 	Hosts             []string           `json:"hosts" bson:"hosts" csv:"-"`
-	HostsLiteral      LiteralStrSlice    `json:"-" bson:"-" csv:"-"`
-	Status            string             `json:"status" bson:"status" csv:"-"`
-	ProductOrderDate  *time.Time         `json:"productOrderDate" bson:"productOrderDate" csv:"-"`
+	HostsLiteral      LiteralStrSlice    `json:"-" bson:"-" csv:"Hosts,omitempty"`
+	Status            string             `json:"status" bson:"status" csv:"Status,omitempty"`
+	ProductOrderDate  *dateTime          `json:"productOrderDate" bson:"productOrderDate" csv:"Product Order Date,omitempty"`
 }
 
 func (contract OracleDatabaseContract) Check() error {
 	if contract.Restricted && contract.Basket {
-		return errors.New("If it's restricted it can't be basket")
+		return errors.New("if it's restricted it can't be basket")
 	}
+
+	return nil
+}
+
+type dateTime struct {
+	time.Time
+}
+
+func (d *dateTime) MarshalCSV() (string, error) {
+	return d.Time.Format("02/01/2006"), nil
+}
+
+func (d *dateTime) UnmarshalCSV(csv string) (err error) {
+	d.Time, err = time.Parse("02/01/2006", csv)
+	return err
+}
+
+func (d dateTime) MarshalJSON() ([]byte, error) {
+	return json.Marshal(d.Time)
+}
+
+func (d *dateTime) UnmarshalJSON(data []byte) error {
+	var t time.Time
+
+	if err := json.Unmarshal(data, &t); err != nil {
+		return err
+	}
+
+	d.Time = t
+
+	return nil
+}
+
+func (d dateTime) MarshalBSONValue() (bsontype.Type, []byte, error) {
+	if d.IsZero() {
+		return bson.MarshalValue(nil)
+	}
+
+	return bson.MarshalValue(d.Time)
+}
+
+func (d *dateTime) UnmarshalBSON(data []byte) error {
+	var t time.Time
+
+	err := bson.Unmarshal(data, &t)
+	if err != nil {
+		return err
+	}
+
+	d.Time = t
 
 	return nil
 }

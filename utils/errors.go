@@ -92,3 +92,5 @@ var ErrSuperUserCannotBeDeleted = errors.New("Super User cannot be deleted")
 var ErrPermissionDenied = "Permission denied"
 
 var ErrInvalidExadata = errors.New("invalid exadata")
+
+var ErrInvalidOracleContract = errors.New("invalid oracle contract")
