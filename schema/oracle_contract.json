@@ -1,0 +1,72 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "required": [
+        "contractID",
+        "licenseTypeID",
+        "csi",
+        "unlimited",
+        "count"
+    ],
+    "properties": {
+        "contractID": {
+            "type":  "string",
+            "minLength": 1
+        },
+        "csi": {
+            "type": "string",
+            "minLength": 1
+        },
+        "licenseTypeID": {
+            "type": "string",
+            "minLength": 1
+        },
+        "referenceNumber": {
+            "type": "string"
+        },
+        "unlimited": {
+            "type": "boolean"
+        },
+        "count": {
+            "type": "integer"
+        },
+        "basket": {
+            "type": "boolean"
+        },
+        "restricted": {
+            "type": "boolean"
+        },
+        "supportExpiration": {
+            "anyOf": [
+                { "type": "null" },
+                {
+                    "type": "string",
+                    "format": "date-time"
+                }
+            ]
+        },
+        "hosts" : {
+            "anyOf": [
+                {"type": "null"},
+                {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            ]
+        },
+        "status": {
+            "type": "string"
+        },
+        "productOrderDate": {
+            "anyOf": [
+                { "type": "null" },
+                {
+                    "type": "string",
+                    "format": "date-time"
+                }
+            ]
+        }
+    }
+}

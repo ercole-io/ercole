@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Sorint.lab S.p.A.
+// Copyright (c) 2024 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -12,15 +12,16 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 package service
 
 import (
 	"encoding/csv"
+	"encoding/json"
 	"fmt"
 	"strings"
 
 	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/schema"
 	"github.com/gocarina/gocsv"
 )
 
@@ -32,8 +33,17 @@ func (as *APIService) ImportOracleDatabaseContracts(reader *csv.Reader) error {
 	}
 
 	for _, contract := range contracts {
+		raw, err := json.Marshal(contract)
+		if err != nil {
+			return err
+		}
+
+		if err := schema.ValidateOracleContract(raw); err != nil {
+			return err
+		}
+
 		if len(contract.HostsLiteral) > 0 {
-			contract.Hosts = strings.Split(string(contract.HostsLiteral), "|||")
+			contract.Hosts = strings.Split(string(contract.HostsLiteral), ",")
 		}
 
 		if _, err := as.AddOracleDatabaseContract(contract); err != nil {
