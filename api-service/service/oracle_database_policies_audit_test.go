@@ -41,6 +41,8 @@ func TestGetOracleDatabasePoliciesAuditFlag_Green(t *testing.T) {
 
 	expected := map[string][]string{"GREEN": {"policy0"}}
 
+	db.EXPECT().DbExist("hostname", "dbname").Return(true, nil)
+
 	db.EXPECT().FindOracleDatabasePoliciesAudit("hostname", "dbname").Return(
 		&dto.OraclePoliciesAudit{List: []string{"policy0", "policy1"}}, nil)
 
@@ -67,6 +69,8 @@ func TestGetOracleDatabasePoliciesAuditFlag_Red(t *testing.T) {
 
 	expected := map[string][]string{"RED": {"policy0"}}
 
+	db.EXPECT().DbExist("hostname", "dbname").Return(true, nil)
+
 	db.EXPECT().FindOracleDatabasePoliciesAudit("hostname", "dbname").Return(
 		&dto.OraclePoliciesAudit{List: []string{"policy1"}}, nil)
 
@@ -86,6 +90,8 @@ func TestGetOracleDatabasePoliciesAuditFlag_NotAvailable(t *testing.T) {
 	}
 
 	expected := map[string][]string{"N/A": nil}
+
+	db.EXPECT().DbExist("hostname", "dbname").Return(true, nil)
 
 	db.EXPECT().FindOracleDatabasePoliciesAudit("hostname", "dbname").Return(
 		&dto.OraclePoliciesAudit{List: []string{"policy1"}}, nil)

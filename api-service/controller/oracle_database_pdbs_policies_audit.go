@@ -28,7 +28,7 @@ func (ctrl *APIController) GetOraclePdbsPoliciesAudit(w http.ResponseWriter, r *
 
 	resp, err := ctrl.Service.GetOracleDatabasePdbPoliciesAuditFlag(hostname, dbname, pdbname)
 	if err != nil {
-		utils.WriteJSONResponse(w, http.StatusUnprocessableEntity, err)
+		utils.WriteJSONResponse(w, http.StatusBadRequest, err)
 		return
 	}
 

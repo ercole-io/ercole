@@ -41,6 +41,8 @@ func TestGetOracleDatabasePdbPoliciesAuditFlag_Green(t *testing.T) {
 
 	expected := map[string][]string{"GREEN": {"policy0"}}
 
+	db.EXPECT().PdbExist("hostname", "dbname", "pdbname").Return(true, nil)
+
 	db.EXPECT().FindOracleDatabasePdbPoliciesAudit("hostname", "dbname", "pdbname").Return(
 		&dto.OraclePoliciesAudit{List: []string{"policy0", "policy1"}}, nil)
 
@@ -67,6 +69,8 @@ func TestGetOracleDatabasePdbPoliciesAuditFlag_Red(t *testing.T) {
 
 	expected := map[string][]string{"RED": {"policy0"}}
 
+	db.EXPECT().PdbExist("hostname", "dbname", "pdbname").Return(true, nil)
+
 	db.EXPECT().FindOracleDatabasePdbPoliciesAudit("hostname", "dbname", "pdbname").Return(
 		&dto.OraclePoliciesAudit{List: []string{"policy1"}}, nil)
 
@@ -86,6 +90,8 @@ func TestGetOracleDatabasePdbPoliciesAuditFlag_NotAvailable(t *testing.T) {
 	}
 
 	expected := map[string][]string{"N/A": nil}
+
+	db.EXPECT().PdbExist("hostname", "dbname", "pdbname").Return(true, nil)
 
 	db.EXPECT().FindOracleDatabasePdbPoliciesAudit("hostname", "dbname", "pdbname").Return(
 		&dto.OraclePoliciesAudit{List: []string{"policy1"}}, nil)

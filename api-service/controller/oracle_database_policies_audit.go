@@ -27,7 +27,7 @@ func (ctrl *APIController) GetOraclePoliciesAudit(w http.ResponseWriter, r *http
 
 	resp, err := ctrl.Service.GetOracleDatabasePoliciesAuditFlag(hostname, dbname)
 	if err != nil {
-		utils.WriteJSONResponse(w, http.StatusUnprocessableEntity, err)
+		utils.WriteJSONResponse(w, http.StatusBadRequest, err)
 		return
 	}
 
