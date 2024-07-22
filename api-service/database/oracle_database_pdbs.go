@@ -227,3 +227,20 @@ func (md *MongoDatabase) FindAllOracleDatabasePdbs(filter dto.GlobalFilter) ([]d
 
 	return out, nil
 }
+
+func (md *MongoDatabase) PdbExist(hostname, dbname, pdbname string) (bool, error) {
+	filter := bson.D{
+		{Key: "archived", Value: false},
+		{Key: "hostname", Value: hostname},
+		{Key: "features.oracle.database.databases.name", Value: dbname},
+		{Key: "features.oracle.database.databases.name", Value: pdbname},
+	}
+
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(hostCollection).
+		CountDocuments(context.TODO(), filter)
+	if err != nil {
+		return false, err
+	}
+
+	return cur > 0, nil
+}

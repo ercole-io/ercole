@@ -14,7 +14,18 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package service
 
+import "errors"
+
 func (as *APIService) GetOracleDatabasePoliciesAuditFlag(hostname, dbname string) (map[string][]string, error) {
+	exist, err := as.Database.DbExist(hostname, dbname)
+	if err != nil {
+		return nil, err
+	}
+
+	if !exist {
+		return nil, errors.New("no document found")
+	}
+
 	policiesAudit, err := as.Database.FindOracleDatabasePoliciesAudit(hostname, dbname)
 	if err != nil {
 		return nil, err

@@ -153,6 +153,7 @@ type MongoDatabaseInterface interface {
 	FindAllOracleDatabaseSchemas(filter dto.GlobalFilter) ([]dto.OracleDatabaseSchema, error)
 	FindAllOraclePDBSchemas(filter dto.GlobalFilter) ([]dto.OracleDatabaseSchema, error)
 	FindAllOracleDatabasePdbs(filter dto.GlobalFilter) ([]dto.OracleDatabasePluggableDatabase, error)
+	PdbExist(hostname, dbname, pdbname string) (bool, error)
 	FindAllOracleDatabasePartitionings(filter dto.GlobalFilter) ([]dto.OracleDatabasePartitioning, error)
 	FindAllOraclePDBPartitionings(filter dto.GlobalFilter) ([]dto.OracleDatabasePartitioning, error)
 	FindOraclePDBChangesByHostname(filter dto.GlobalFilter, hostname string, start time.Time, end time.Time) ([]dto.OraclePdbChange, error)
@@ -186,6 +187,7 @@ type MongoDatabaseInterface interface {
 	FindUnlistedRunningDatabases(hostname string) ([]string, error)
 	FindUnretrievedDatabases(hostname string) ([]string, error)
 	FindAllMissingDatabases() ([]dto.OracleDatabaseMissing, error)
+	DbExist(hostname, dbname string) (bool, error)
 
 	FindVirtualHostWithoutCluster() ([]dto.VirtualHostWithoutCluster, error)
 
