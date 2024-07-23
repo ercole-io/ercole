@@ -1,4 +1,4 @@
-// Copyright (c) 2022 Sorint.lab S.p.A.
+// Copyright (c) 2024 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -12,16 +12,12 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 package model
 
 // OracleDatabasePluggableDatabase holds information about an Oracle pluggable database.
 type OracleDatabasePluggableDatabase struct {
 	Name                   string                         `json:"name" bson:"name"`
 	Status                 string                         `json:"status" bson:"status"`
-	SegmentsSize           float64                        `json:"segmentsSize" bson:"segmentsSize"`
-	DatafileSize           float64                        `json:"datafileSize" bson:"datafileSize"`
-	Allocable              float64                        `json:"allocable" bson:"allocable"`
 	Charset                string                         `json:"charset" bson:"charset"`
 	Tablespaces            []OracleDatabaseTablespace     `json:"tablespaces" bson:"tablespaces"`
 	Schemas                []OracleDatabaseSchema         `json:"schemas" bson:"schemas"`
@@ -32,4 +28,5 @@ type OracleDatabasePluggableDatabase struct {
 	CpuDiskConsumptionPdbs []CpuDiskConsumptionPdb        `json:"cpuDiskConsumptionPdbs" bson:"cpuDiskConsumptionPdbs"`
 	PgsqlMigrability       []PgsqlMigrability             `json:"pgsqlMigrability,omitempty" bson:"pgsqlMigrability,omitempty"`
 	PoliciesAudit          []string                       `json:"policiesAudit,omitempty" bson:"policiesAudit,omitempty"`
+	OracleDatabasePdbSize
 }

@@ -850,6 +850,21 @@
                                                             }
                                                         }
                                                     ]
+                                                },
+                                                "segmentsSize": {
+                                                    "type": "number"
+                                                },
+                                                "datafileSize": {
+                                                    "type": "number"
+                                                },
+                                                "allocable": {
+                                                    "type": "number"
+                                                },
+                                                "sgaTarget": {
+                                                    "type": "number"
+                                                },
+                                                "pgaAggregateTarget": {
+                                                    "type": "number"
                                                 }
                                             }
                                         }
