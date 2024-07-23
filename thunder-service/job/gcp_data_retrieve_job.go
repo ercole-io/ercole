@@ -53,6 +53,8 @@ func worker[T comparable](data T, wg *sync.WaitGroup, ch chan T) {
 }
 
 func (job *GcpDataRetrieveJob) Run() {
+	tstart := time.Now()
+
 	ctx := context.TODO()
 	// ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
 	// defer cancel()
@@ -64,6 +66,8 @@ func (job *GcpDataRetrieveJob) Run() {
 	}
 
 	seqValue = seqValue + 1
+
+	job.Log.Debugf("seqvalue is %d", seqValue)
 
 	profiles, err := job.Database.GetActiveGcpProfiles()
 	if err != nil {
@@ -78,7 +82,7 @@ func (job *GcpDataRetrieveJob) Run() {
 	for _, profile := range profiles {
 		profileWg.Add(1)
 
-		go worker[model.GcpProfile](profile, &profileWg, profileCh)
+		go worker(profile, &profileWg, profileCh)
 	}
 
 	go func() {
@@ -111,9 +115,11 @@ func (job *GcpDataRetrieveJob) Run() {
 		projectCh := make(chan *cloudresourcemanager.Project, len(projects))
 
 		for _, project := range projects {
-			projectWg.Add(1)
+			if project.ProjectId == job.Config.ThunderService.GcpDataRetrieveJob.ProjectID {
+				projectWg.Add(1)
 
-			go worker[*cloudresourcemanager.Project](project, &projectWg, projectCh)
+				go worker(project, &projectWg, projectCh)
+			}
 		}
 
 		go func() {
@@ -146,7 +152,7 @@ func (job *GcpDataRetrieveJob) Run() {
 			for _, instance := range instances {
 				instanceWg.Add(1)
 
-				go worker[model.GcpInstance](model.GcpInstance{
+				go worker(model.GcpInstance{
 					Instance:  instance,
 					Project:   project,
 					ProfileID: profile.ID,
@@ -186,8 +192,12 @@ func (job *GcpDataRetrieveJob) Run() {
 							job.Log.Warn(err)
 						}
 
+						job.Log.Debugf("added new error - seqvalue: %d - category: %s - msg %d", gcperr.SeqValue, gcperr.Category, gcperr.Msg)
+
 						continue
 					}
+
+					job.Log.Debugf("added new recommendation - seqvalue: %d - project name: %s - instanceID %d", rec.SeqValue, rec.ProjectName, rec.InstanceID)
 				}
 
 				var diskWg sync.WaitGroup
@@ -211,6 +221,8 @@ func (job *GcpDataRetrieveJob) Run() {
 							job.Log.Warn(err)
 						}
 
+						job.Log.Debugf("added new error - seqvalue: %d - category: %s - msg %d", gcperr.SeqValue, gcperr.Category, gcperr.Msg)
+
 						continue
 					}
 
@@ -223,7 +235,7 @@ func (job *GcpDataRetrieveJob) Run() {
 						Disk:         disk,
 					}
 
-					go worker[model.GcpDisk](gcpDisk, &diskWg, diskCh)
+					go worker(gcpDisk, &diskWg, diskCh)
 				}
 
 				go func() {
@@ -259,11 +271,19 @@ func (job *GcpDataRetrieveJob) Run() {
 								job.Log.Warn(err)
 							}
 
+							job.Log.Debugf("added new error - seqvalue: %d - category: %s - msg %d", gcperr.SeqValue, gcperr.Category, gcperr.Msg)
+
 							continue
 						}
+
+						job.Log.Debugf("added new recommendation - seqvalue: %d - project name: %s - instanceID %d", rec.SeqValue, rec.ProjectName, rec.InstanceID)
 					}
 				}
 			}
 		}
 	}
+
+	dend := time.Since(tstart)
+
+	job.Log.Debugf("gcp job took %v minutes", dend.Minutes())
 }

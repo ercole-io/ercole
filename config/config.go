@@ -257,6 +257,8 @@ type GcpDataRetrieveJob struct {
 	AvgCpuUtilizationThreshold uint
 	MaxCpuUtilizationThreshold uint
 	MaxMemUtilizationThreshold uint
+
+	ProjectID string
 }
 
 // HTTPRepoService contains parameters for a single serving service
