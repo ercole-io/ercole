@@ -2209,6 +2209,10 @@ components:
               type: number
             allocable:
               type: number
+            sgaTarget:
+              type: number
+            pgaAggregateTarget:
+              type: number
             charset:
               type: string
             tablespaces:
