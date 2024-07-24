@@ -25,7 +25,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func (job *GcpDataRetrieveJob) IsMaxThroughputReadStorageOptimizable(ctx context.Context, disk model.GcpDisk) (bool, error) {
+func (job *GcpDataRetrieveJob) IsMaxThroughputReadStorageOptimizable(ctx context.Context, disk model.GcpDisk) (*model.OptimizableValue, error) {
 	now := time.Now()
 	endMidnight := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
 	startdate := now.AddDate(0, 0, -5)
@@ -50,17 +50,19 @@ func (job *GcpDataRetrieveJob) IsMaxThroughputReadStorageOptimizable(ctx context
 
 	series, err := job.GetTimeSeries(ctx, *job.Opt, req)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 
 	if series != nil && series.Points != nil {
-		return job.AuditDiskPoint("max_read_throughput", disk, series.Points), nil
+		optValue := job.AuditDiskPoint("max_read_throughput", disk, series.Points)
+
+		return &optValue, nil
 	}
 
-	return true, nil
+	return &model.OptimizableValue{IsOptimizable: true}, nil
 }
 
-func (job *GcpDataRetrieveJob) IsMaxThroughputWriteStorageOptimizable(ctx context.Context, disk model.GcpDisk) (bool, error) {
+func (job *GcpDataRetrieveJob) IsMaxThroughputWriteStorageOptimizable(ctx context.Context, disk model.GcpDisk) (*model.OptimizableValue, error) {
 	now := time.Now()
 	endMidnight := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
 
@@ -86,12 +88,14 @@ func (job *GcpDataRetrieveJob) IsMaxThroughputWriteStorageOptimizable(ctx contex
 
 	series, err := job.GetTimeSeries(ctx, *job.Opt, req)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 
 	if series != nil && series.Points != nil {
-		return job.AuditDiskPoint("max_write_throughput", disk, series.Points), nil
+		optValue := job.AuditDiskPoint("max_write_throughput", disk, series.Points)
+
+		return &optValue, nil
 	}
 
-	return true, nil
+	return &model.OptimizableValue{IsOptimizable: true}, nil
 }
