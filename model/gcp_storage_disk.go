@@ -115,3 +115,9 @@ func (d GcpDisk) WriteThroughputPerGib() float64 {
 
 	return limit
 }
+
+type OptimizableValue struct {
+	IsOptimizable  bool
+	RetrievedValue int64
+	TargetValue    float64
+}
