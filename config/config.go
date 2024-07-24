@@ -138,6 +138,9 @@ type APIService struct {
 	OracleDatabasePoliciesAudit []string
 
 	RoundLicenses bool
+
+	PGASGASumTargetPercentage         int
+	PGASGASumTargetPercentagePerHosts map[string]int
 }
 
 // RepoService contains configuration about the repo service

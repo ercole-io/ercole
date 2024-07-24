@@ -72,11 +72,15 @@ LogHTTPRequest = true
 ReadOnly = false
 DebugOracleDatabaseAgreementsAssignmentAlgorithm = false
 RoundLicenses = false
+PGASGASumTargetPercentage = 0
 DefaultDatabaseTags = [
   "coolest",
   "very important",
   "gdpr-compliant"
 ]
+
+  [APIService.PGASGASumTargetPercentagePerHosts]
+    "{HOSTNAME}" = 0
 
   [APIService.AuthenticationProvider]
   Types = [
