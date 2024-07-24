@@ -299,6 +299,12 @@ components:
           type: array
           items:
             type: string
+        PGASGASumTargetPercentage:
+          type: integer
+        PGASGASumTargetPercentagePerHosts:
+          type: array
+          items:
+            type: object
 
     ChartService:
       type: object
