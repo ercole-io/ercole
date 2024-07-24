@@ -15,6 +15,7 @@
 package model
 
 import (
+	"math"
 	"strings"
 
 	"cloud.google.com/go/compute/apiv1/computepb"
@@ -77,43 +78,43 @@ var (
 )
 
 func (d GcpDisk) ReadIopsPerGib() float64 {
-	limit := float64(d.GetSizeGb() * int64(IopsLimits[d.Type()].Read))
+	limit := float64(d.GetSizeGb()) * IopsLimits[d.Type()].Read
 
 	if limit > IopsLimits[d.Type()].Limit.Read {
 		return IopsLimits[d.Type()].Limit.Read
 	}
 
-	return limit
+	return math.Floor(limit*100) / 100
 }
 
 func (d GcpDisk) WriteIopsPerGib() float64 {
-	limit := float64(d.GetSizeGb() * int64(IopsLimits[d.Type()].Write))
+	limit := float64(d.GetSizeGb()) * IopsLimits[d.Type()].Write
 
 	if limit > IopsLimits[d.Type()].Limit.Write {
 		return IopsLimits[d.Type()].Limit.Write
 	}
 
-	return limit
+	return math.Floor(limit*100) / 100
 }
 
 func (d GcpDisk) ReadThroughputPerGib() float64 {
-	limit := float64(d.GetSizeGb() * int64(ThroughputLimits[d.Type()].Read))
+	limit := float64(d.GetSizeGb()) * ThroughputLimits[d.Type()].Read
 
 	if limit > ThroughputLimits[d.Type()].Limit.Read {
 		return ThroughputLimits[d.Type()].Limit.Read
 	}
 
-	return limit
+	return math.Floor(limit*100) / 100
 }
 
 func (d GcpDisk) WriteThroughputPerGib() float64 {
-	limit := float64(d.GetSizeGb() * int64(ThroughputLimits[d.Type()].Write))
+	limit := float64(d.GetSizeGb()) * ThroughputLimits[d.Type()].Write
 
 	if limit > IopsLimits[d.Type()].Limit.Write {
 		return IopsLimits[d.Type()].Limit.Write
 	}
 
-	return limit
+	return math.Floor(limit*100) / 100
 }
 
 type OptimizableValue struct {

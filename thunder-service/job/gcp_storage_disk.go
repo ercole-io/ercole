@@ -87,12 +87,14 @@ func (job *GcpDataRetrieveJob) FetchGcpStorageDisk(ctx context.Context, gcpDisk 
 			ProjectName: gcpDisk.Project.Name,
 			ObjectType:  "Disk",
 			Details: map[string]string{
-				"Block Storage Name":   gcpDisk.Disk.GetName(),
-				"Size":                 sizeGbStr,
-				"THROUGHPUT W MAX 5DD": fmt.Sprintf("%d/%v", maxWriteThroughput.RetrievedValue, maxWriteThroughput.TargetValue),
-				"THROUGHPUT R MAX 5DD": fmt.Sprintf("%d/%v", maxReadThroughput.RetrievedValue, maxReadThroughput.TargetValue),
-				"IOPS W MAX 5DD":       fmt.Sprintf("%d/%v", maxWriteIops.RetrievedValue, maxWriteIops.TargetValue),
-				"IOPS R MAX 5DD":       fmt.Sprintf("%d/%v", maxReadIops.RetrievedValue, maxReadIops.TargetValue),
+				"Block Storage Name":    gcpDisk.Disk.GetName(),
+				"Size":                  sizeGbStr,
+				"THROUGHPUT W MAX 5DD":  fmt.Sprintf("%d/%v", maxWriteThroughput.RetrievedValue, maxWriteThroughput.TargetValue),
+				"THROUGHPUT R MAX 5DD":  fmt.Sprintf("%d/%v", maxReadThroughput.RetrievedValue, maxReadThroughput.TargetValue),
+				"IOPS W MAX 5DD":        fmt.Sprintf("%d/%v", maxWriteIops.RetrievedValue, maxWriteIops.TargetValue),
+				"IOPS R MAX 5DD":        fmt.Sprintf("%d/%v", maxReadIops.RetrievedValue, maxReadIops.TargetValue),
+				"storage type":          gcpDisk.Type(),
+				"unparsed storage type": gcpDisk.GetType(),
 			},
 		}
 	}
