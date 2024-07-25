@@ -2477,8 +2477,10 @@ components:
           type: string
         profileID:
           type: string
-        instanceID:
+        resourceID:
           type: integer
+        resourceName:
+          type: string
         category:
           type: string
         suggestion:

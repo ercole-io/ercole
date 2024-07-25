@@ -81,24 +81,25 @@ func (job *GcpDataRetrieveJob) FetchGcpInstanceRightsizing(ctx context.Context, 
 		return
 	}
 
-	optimizable := avgcpumetrics && maxcpumetrics && maxmemmetrics
+	optimizable := avgcpumetrics.IsOptimizable || maxcpumetrics.IsOptimizable || maxmemmetrics.IsOptimizable
 
 	if optimizable {
 		ch <- model.GcpRecommendation{
-			SeqValue:    seqValue,
-			CreatedAt:   time.Now(),
-			ProfileID:   gcpInstance.ProfileID,
-			InstanceID:  gcpInstance.GetId(),
-			Category:    "Compute Instance Rightsizing",
-			Suggestion:  "Resize oversized compute instance",
-			ProjectID:   gcpInstance.ProjectId,
-			ProjectName: gcpInstance.Project.Name,
-			ObjectType:  "Compute Instance",
+			SeqValue:     seqValue,
+			CreatedAt:    time.Now(),
+			ProfileID:    gcpInstance.ProfileID,
+			ResourceID:   gcpInstance.GetId(),
+			ResourceName: gcpInstance.GetName(),
+			Category:     "Compute Instance Rightsizing",
+			Suggestion:   "Resize oversized compute instance",
+			ProjectID:    gcpInstance.ProjectId,
+			ProjectName:  gcpInstance.Project.Name,
+			ObjectType:   "Compute Instance",
 			Details: map[string]string{
 				"Instance Name": gcpInstance.GetName(),
-				"Cpu Average":   fmt.Sprintf("%%Cpu Average 90dd - Number of Threshold Reached (>50%%): >%d", job.Config.ThunderService.GcpDataRetrieveJob.AvgCpuUtilizationThreshold),
-				"Cpu Max":       fmt.Sprintf("%%Cpu Max 7dd - Number of Threshold Reached (>50%%): >%d", job.Config.ThunderService.GcpDataRetrieveJob.MaxCpuUtilizationThreshold),
-				"Mem Max":       fmt.Sprintf("%%Memory Average 7dd - Number of Threshold Reached (>90%%): >%d", job.Config.ThunderService.GcpDataRetrieveJob.MaxMemUtilizationThreshold),
+				"Cpu Average":   fmt.Sprintf("%%Cpu Average 90dd - Number of Threshold Reached (>50%%): %d/%d", avgcpumetrics.Count, job.Config.ThunderService.GcpDataRetrieveJob.AvgCpuUtilizationThreshold),
+				"Cpu Max":       fmt.Sprintf("%%Cpu Max 7dd - Number of Threshold Reached (>50%%): %d/%d", maxcpumetrics.Count, job.Config.ThunderService.GcpDataRetrieveJob.MaxCpuUtilizationThreshold),
+				"Mem Max":       fmt.Sprintf("%%Memory Average 7dd - Number of Threshold Reached (>90%%): %d/%d", maxmemmetrics.Count, job.Config.ThunderService.GcpDataRetrieveJob.MaxMemUtilizationThreshold),
 			},
 		}
 	}

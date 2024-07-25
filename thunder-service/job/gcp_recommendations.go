@@ -19,7 +19,7 @@ import (
 	"github.com/ercole-io/ercole/v2/model"
 )
 
-func (job *GcpDataRetrieveJob) AuditInstancePoint(queryType string, points []*monitoringpb.Point) bool {
+func (job *GcpDataRetrieveJob) AuditInstancePoint(queryType string, points []*monitoringpb.Point) model.CountValue {
 	switch queryType {
 	case "avg_cpu":
 		counter := 0
@@ -30,11 +30,14 @@ func (job *GcpDataRetrieveJob) AuditInstancePoint(queryType string, points []*mo
 			}
 
 			if counter >= int(job.Config.ThunderService.GcpDataRetrieveJob.AvgCpuUtilizationThreshold) {
-				return false
+				return model.CountValue{IsOptimizable: false}
 			}
 		}
 
-		return true
+		return model.CountValue{
+			IsOptimizable: true,
+			Count:         counter,
+		}
 
 	case "max_cpu":
 		counter := 0
@@ -45,11 +48,14 @@ func (job *GcpDataRetrieveJob) AuditInstancePoint(queryType string, points []*mo
 			}
 
 			if counter >= int(job.Config.ThunderService.GcpDataRetrieveJob.MaxCpuUtilizationThreshold) {
-				return false
+				return model.CountValue{IsOptimizable: false}
 			}
 		}
 
-		return true
+		return model.CountValue{
+			IsOptimizable: true,
+			Count:         counter,
+		}
 
 	case "max_mem":
 		counter := 0
@@ -60,31 +66,34 @@ func (job *GcpDataRetrieveJob) AuditInstancePoint(queryType string, points []*mo
 			}
 
 			if counter >= int(job.Config.ThunderService.GcpDataRetrieveJob.MaxMemUtilizationThreshold) {
-				return false
+				return model.CountValue{IsOptimizable: false}
 			}
 		}
 
-		return true
+		return model.CountValue{
+			IsOptimizable: true,
+			Count:         counter,
+		}
 	}
 
-	return false
+	return model.CountValue{IsOptimizable: false}
 }
 
 func (job *GcpDataRetrieveJob) AuditDiskPoint(queryType string, disk model.GcpDisk, points []*monitoringpb.Point) model.OptimizableValue {
 	switch queryType {
 	case "max_read_iops":
-		var maxMeasurement int64
+		var maxMeasurement float64
 
 		for _, point := range points {
-			if point.Value != nil && point.Value.GetInt64Value() > int64(maxMeasurement) {
-				maxMeasurement = point.Value.GetInt64Value()
+			if point.Value != nil && float64(point.Value.GetInt64Value()) > maxMeasurement {
+				maxMeasurement = float64(point.Value.GetInt64Value())
 			}
 
-			if point.Value != nil && point.Value.GetInt64Value() < int64(disk.ReadIopsPerGib()/2) {
+			if point.Value != nil && float64(point.Value.GetInt64Value()) < disk.ReadIopsPerGib()/2 {
 				return model.OptimizableValue{
 					IsOptimizable:  true,
-					RetrievedValue: point.Value.GetInt64Value(),
-					TargetValue:    disk.ReadIopsPerGib() / 2,
+					RetrievedValue: float64(point.Value.GetInt64Value()),
+					TargetValue:    disk.ReadIopsPerGib(),
 				}
 			}
 		}
@@ -92,22 +101,22 @@ func (job *GcpDataRetrieveJob) AuditDiskPoint(queryType string, disk model.GcpDi
 		return model.OptimizableValue{
 			IsOptimizable:  false,
 			RetrievedValue: maxMeasurement,
-			TargetValue:    disk.ReadIopsPerGib() / 2,
+			TargetValue:    disk.ReadIopsPerGib(),
 		}
 
 	case "max_write_iops":
-		var maxMeasurement int64
+		var maxMeasurement float64
 
 		for _, point := range points {
-			if point.Value != nil && point.Value.GetInt64Value() > int64(maxMeasurement) {
-				maxMeasurement = point.Value.GetInt64Value()
+			if point.Value != nil && float64(point.Value.GetInt64Value()) > maxMeasurement {
+				maxMeasurement = float64(point.Value.GetInt64Value())
 			}
 
-			if point.Value != nil && point.Value.GetInt64Value() < int64(disk.WriteIopsPerGib()/2) {
+			if point.Value != nil && float64(point.Value.GetInt64Value()) < disk.WriteIopsPerGib()/2 {
 				return model.OptimizableValue{
 					IsOptimizable:  true,
-					RetrievedValue: point.Value.GetInt64Value(),
-					TargetValue:    disk.WriteIopsPerGib() / 2,
+					RetrievedValue: float64(point.Value.GetInt64Value()),
+					TargetValue:    disk.WriteIopsPerGib(),
 				}
 			}
 		}
@@ -115,22 +124,26 @@ func (job *GcpDataRetrieveJob) AuditDiskPoint(queryType string, disk model.GcpDi
 		return model.OptimizableValue{
 			IsOptimizable:  false,
 			RetrievedValue: maxMeasurement,
-			TargetValue:    disk.WriteIopsPerGib() / 2,
+			TargetValue:    disk.WriteIopsPerGib(),
 		}
 
 	case "max_read_throughput":
-		var maxMeasurement int64
+		var maxMeasurement, pointValue float64
 
 		for _, point := range points {
-			if point.Value != nil && point.Value.GetInt64Value() > int64(maxMeasurement) {
-				maxMeasurement = point.Value.GetInt64Value()
+			if point.Value != nil {
+				pointValue = float64(point.Value.GetInt64Value()) / 1048576
+
+				if pointValue > maxMeasurement {
+					maxMeasurement = pointValue
+				}
 			}
 
-			if point.Value != nil && point.Value.GetInt64Value() < int64(disk.ReadThroughputPerGib()/2) {
+			if point.Value != nil && pointValue < disk.ReadThroughputPerMib()/2 {
 				return model.OptimizableValue{
 					IsOptimizable:  true,
-					RetrievedValue: point.Value.GetInt64Value(),
-					TargetValue:    disk.ReadThroughputPerGib() / 2,
+					RetrievedValue: pointValue,
+					TargetValue:    disk.ReadThroughputPerMib(),
 				}
 			}
 		}
@@ -138,22 +151,26 @@ func (job *GcpDataRetrieveJob) AuditDiskPoint(queryType string, disk model.GcpDi
 		return model.OptimizableValue{
 			IsOptimizable:  false,
 			RetrievedValue: maxMeasurement,
-			TargetValue:    disk.ReadThroughputPerGib() / 2,
+			TargetValue:    disk.ReadThroughputPerMib(),
 		}
 
 	case "max_write_throughput":
-		var maxMeasurement int64
+		var maxMeasurement, pointValue float64
 
 		for _, point := range points {
-			if point.Value != nil && point.Value.GetInt64Value() > int64(maxMeasurement) {
-				maxMeasurement = point.Value.GetInt64Value()
+			if point.Value != nil {
+				pointValue = float64(point.Value.GetInt64Value()) / 1048576
+
+				if pointValue > maxMeasurement {
+					maxMeasurement = pointValue
+				}
 			}
 
-			if point.Value != nil && point.Value.GetInt64Value() < int64(disk.WriteThroughputPerGib()/2) {
+			if point.Value != nil && pointValue < disk.WriteThroughputPerMib()/2 {
 				return model.OptimizableValue{
 					IsOptimizable:  true,
-					RetrievedValue: point.Value.GetInt64Value(),
-					TargetValue:    disk.WriteThroughputPerGib() / 2,
+					RetrievedValue: pointValue,
+					TargetValue:    disk.WriteThroughputPerMib(),
 				}
 			}
 		}
@@ -161,7 +178,7 @@ func (job *GcpDataRetrieveJob) AuditDiskPoint(queryType string, disk model.GcpDi
 		return model.OptimizableValue{
 			IsOptimizable:  false,
 			RetrievedValue: maxMeasurement,
-			TargetValue:    disk.WriteThroughputPerGib() / 2,
+			TargetValue:    disk.WriteThroughputPerMib(),
 		}
 	}
 

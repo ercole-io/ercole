@@ -25,7 +25,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func (job *GcpDataRetrieveJob) IsAvgCpuUtilizationOptimizable(ctx context.Context, instance model.GcpInstance) (bool, error) {
+func (job *GcpDataRetrieveJob) IsAvgCpuUtilizationOptimizable(ctx context.Context, instance model.GcpInstance) (*model.CountValue, error) {
 	now := time.Now()
 	endMidnight := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
 	startdate := now.AddDate(0, 0, -90)
@@ -50,12 +50,14 @@ func (job *GcpDataRetrieveJob) IsAvgCpuUtilizationOptimizable(ctx context.Contex
 
 	series, err := job.GetTimeSeries(ctx, *job.Opt, req)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 
 	if series != nil && series.Points != nil {
-		return job.AuditInstancePoint("avg_cpu", series.Points), nil
+		countVal := job.AuditInstancePoint("avg_cpu", series.Points)
+
+		return &countVal, nil
 	}
 
-	return false, nil
+	return nil, nil
 }

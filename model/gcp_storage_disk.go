@@ -52,7 +52,7 @@ type IopsPerGib struct {
 	Limit RW
 }
 
-type ThroughputPerGib struct {
+type ThroughputPerMib struct {
 	RW
 	Limit RW
 }
@@ -70,7 +70,7 @@ var (
 		DiskTypeSsd:      {RW: RW{Read: 30, Write: 30}, Limit: RW{Read: 100000, Write: 100000}},
 	}
 
-	ThroughputLimits = map[string]ThroughputPerGib{
+	ThroughputLimits = map[string]ThroughputPerMib{
 		DiskTypeStandard: {RW: RW{Read: 0.12, Write: 0.12}, Limit: RW{Read: 1200, Write: 400}},
 		DiskTypeBalanced: {RW: RW{Read: 0.28, Write: 0.28}, Limit: RW{Read: 1200, Write: 1200}},
 		DiskTypeSsd:      {RW: RW{Read: 0.48, Write: 0.48}, Limit: RW{Read: 1200, Write: 1200}},
@@ -97,7 +97,7 @@ func (d GcpDisk) WriteIopsPerGib() float64 {
 	return math.Floor(limit*100) / 100
 }
 
-func (d GcpDisk) ReadThroughputPerGib() float64 {
+func (d GcpDisk) ReadThroughputPerMib() float64 {
 	limit := float64(d.GetSizeGb()) * ThroughputLimits[d.Type()].Read
 
 	if limit > ThroughputLimits[d.Type()].Limit.Read {
@@ -107,7 +107,7 @@ func (d GcpDisk) ReadThroughputPerGib() float64 {
 	return math.Floor(limit*100) / 100
 }
 
-func (d GcpDisk) WriteThroughputPerGib() float64 {
+func (d GcpDisk) WriteThroughputPerMib() float64 {
 	limit := float64(d.GetSizeGb()) * ThroughputLimits[d.Type()].Write
 
 	if limit > IopsLimits[d.Type()].Limit.Write {
@@ -119,6 +119,6 @@ func (d GcpDisk) WriteThroughputPerGib() float64 {
 
 type OptimizableValue struct {
 	IsOptimizable  bool
-	RetrievedValue int64
+	RetrievedValue float64
 	TargetValue    float64
 }
