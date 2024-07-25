@@ -96,9 +96,9 @@ func (job *GcpDataRetrieveJob) FetchGcpInstanceRightsizing(ctx context.Context, 
 			ObjectType:  "Compute Instance",
 			Details: map[string]string{
 				"Instance Name": gcpInstance.GetName(),
-				"Cpu Average":   fmt.Sprintf("%%Cpu Average 90dd - Number of Threshold Reached (>50%%): 0/%d", job.Config.ThunderService.GcpDataRetrieveJob.AvgCpuUtilizationThreshold),
-				"Cpu Max":       fmt.Sprintf("%%Cpu Max 7dd - Number of Threshold Reached (>50%%): 0/%d", job.Config.ThunderService.GcpDataRetrieveJob.MaxCpuUtilizationThreshold),
-				"Mem Max":       fmt.Sprintf("%%Memory Average 7dd - Number of Threshold Reached (>90%%): 0/%d", job.Config.ThunderService.GcpDataRetrieveJob.MaxMemUtilizationThreshold),
+				"Cpu Average":   fmt.Sprintf("%%Cpu Average 90dd - Number of Threshold Reached (>50%%): >%d", job.Config.ThunderService.GcpDataRetrieveJob.AvgCpuUtilizationThreshold),
+				"Cpu Max":       fmt.Sprintf("%%Cpu Max 7dd - Number of Threshold Reached (>50%%): >%d", job.Config.ThunderService.GcpDataRetrieveJob.MaxCpuUtilizationThreshold),
+				"Mem Max":       fmt.Sprintf("%%Memory Average 7dd - Number of Threshold Reached (>90%%): >%d", job.Config.ThunderService.GcpDataRetrieveJob.MaxMemUtilizationThreshold),
 			},
 		}
 	}
