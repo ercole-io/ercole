@@ -47,3 +47,8 @@ func (i GcpInstance) MachineType() string {
 
 	return parts[len(parts)-1]
 }
+
+type CountValue struct {
+	IsOptimizable bool
+	Count         int
+}

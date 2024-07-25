@@ -25,7 +25,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func (job *GcpDataRetrieveJob) IsMaxCpuUtilizationOptimizable(ctx context.Context, instance model.GcpInstance) (bool, error) {
+func (job *GcpDataRetrieveJob) IsMaxCpuUtilizationOptimizable(ctx context.Context, instance model.GcpInstance) (*model.CountValue, error) {
 	now := time.Now()
 	start := now.AddDate(0, 0, -7)
 	startMidnight := time.Date(start.Year(), start.Month(), start.Day(), 0, 0, 0, 0, start.Location())
@@ -50,12 +50,13 @@ func (job *GcpDataRetrieveJob) IsMaxCpuUtilizationOptimizable(ctx context.Contex
 
 	series, err := job.GetTimeSeries(ctx, *job.Opt, req)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 
 	if series.Points != nil {
-		return job.AuditInstancePoint("max_cpu", series.Points), nil
+		countVal := job.AuditInstancePoint("max_cpu", series.Points)
+		return &countVal, nil
 	}
 
-	return false, nil
+	return nil, nil
 }
