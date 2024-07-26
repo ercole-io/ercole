@@ -18,6 +18,7 @@ package service
 
 import (
 	"fmt"
+	"math"
 	"strings"
 	"time"
 
@@ -407,8 +408,14 @@ func (as *APIService) GetHost(hostname string, olderThan time.Time, raw bool) (*
 					}
 				}
 			}
+
+			db := &host.Features.Oracle.Database.Databases[i]
+			db.PgaSum = db.GetPgaSum()
+			db.SgaSum = db.GetSgaSum()
 		}
 	}
+
+	as.setMemoryTarget(host)
 
 	return host, nil
 }
@@ -524,6 +531,28 @@ func (as *APIService) GetAllMissingDbs() ([]dto.OracleDatabaseMissing, error) {
 
 func (as *APIService) GetVirtualHostWithoutCluster() ([]dto.VirtualHostWithoutCluster, error) {
 	return as.Database.FindVirtualHostWithoutCluster()
+}
+
+func (as *APIService) setMemoryTarget(host *dto.HostData) {
+	sum := host.GetPGASGASum() + host.GetMemoryTargetSum()
+	host.MemorySum = sum
+	percentage := (sum * 100) / host.Info.MemoryTotal
+	host.MemorySumPercentage = math.Floor(percentage*100) / 100
+	flag := "red"
+
+	if as.Config.APIService.PGASGASumTargetPercentage > int(percentage) {
+		flag = "green"
+	}
+
+	if val, ok := as.Config.APIService.PGASGASumTargetPercentagePerHosts[host.Hostname]; ok {
+		flag = "red"
+
+		if val > int(percentage) {
+			flag = "green"
+		}
+	}
+
+	host.MemorySumFlag = flag
 }
 
 func checkHosts(as *APIService, hosts []string) error {
