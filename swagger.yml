@@ -1313,6 +1313,12 @@ components:
           type: array
           items:
             type: string
+        memorySum:
+          type: number
+        memorySumPercentage:
+          type: number
+        memorySumFlag:
+          type: string
       required:
         - hostname
         - environment

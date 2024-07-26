@@ -16,6 +16,7 @@
 package model
 
 import (
+	"math"
 	"regexp"
 	"strings"
 
@@ -71,6 +72,8 @@ type OracleDatabase struct {
 	PgsqlMigrability            []PgsqlMigrability                `json:"pgsqlMigrability,omitempty" bson:"pgsqlMigrability,omitempty"`
 	OracleDatabaseMemoryAdvisor *OracleDatabaseMemoryAdvisor      `json:"oracleDatabaseMemoryAdvisor,omitempty" bson:"oracleDatabaseMemoryAdvisor,omitempty"`
 	PoliciesAudit               []string                          `json:"policiesAudit,omitempty" bson:"policiesAudit,omitempty"`
+	PgaSum                      float64                           `json:"pgaSum"`
+	SgaSum                      float64                           `json:"sgaSum"`
 }
 
 var (
@@ -149,6 +152,26 @@ func (v OracleDatabase) CoreFactor(host Host, hostCoreFactor float64) (float64, 
 
 	return 0, utils.NewErrorf("%q db: hardwareAbstractionTechnology %q unknown",
 		v.Name, host.HardwareAbstractionTechnology)
+}
+
+func (od OracleDatabase) GetPgaSum() float64 {
+	var res float64
+
+	for _, pdb := range od.PDBs {
+		res += pdb.PGAAggregateTarget
+	}
+
+	return math.Floor(res*100) / 100
+}
+
+func (od OracleDatabase) GetSgaSum() float64 {
+	var res float64
+
+	for _, pdb := range od.PDBs {
+		res += pdb.SGATarget
+	}
+
+	return math.Floor(res*100) / 100
 }
 
 // DatabaseSliceAsMap return the equivalent map of the database slice with Database.Name as Key

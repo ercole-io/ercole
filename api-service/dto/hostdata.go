@@ -16,6 +16,7 @@
 package dto
 
 import (
+	"math"
 	"time"
 
 	"github.com/ercole-io/ercole/v2/model"
@@ -53,4 +54,27 @@ type HostData struct {
 	History                 []model.History               `json:"history" bson:"history"`
 	CpuConsumptions         []model.CpuConsumption        `json:"cpuConsumptions" bson:"cpuconsumptions"`
 	DiskConsumptions        []model.DiskConsumption       `json:"diskConsumptions" bson:"diskconsumptions"`
+	MemorySum               float64                       `json:"memorySum"`
+	MemorySumPercentage     float64                       `json:"memorySumPercentage"`
+	MemorySumFlag           string                        `json:"memorySumFlag"`
+}
+
+func (h HostData) GetPGASGASum() float64 {
+	var res float64
+
+	for _, db := range h.Features.Oracle.Database.Databases {
+		res += db.PGATarget + db.SGATarget
+	}
+
+	return math.Floor(res*100) / 100
+}
+
+func (h HostData) GetMemoryTargetSum() float64 {
+	var res float64
+
+	for _, db := range h.Features.Oracle.Database.Databases {
+		res += db.MemoryTarget
+	}
+
+	return math.Floor(res*100) / 100
 }

@@ -657,7 +657,13 @@
                         "work": {
                             "$numberDouble": "1.0"
                         },
-                        "cpuDiskConsumptions":[]
+                        "cpuDiskConsumptions":[],
+                        "pgasum": {
+                            "$numberDouble": "0.0"
+                        },
+                        "sgasum": {
+                            "$numberDouble": "0.0"
+                        }
                     }
                 ]
             }
@@ -840,5 +846,12 @@
         "$oid": "5dfba7a25484d7c669a9ccdc"
     },
     "cpuconsumptions": [],
-    "diskconsumptions": []
+    "diskconsumptions": [],
+    "memorysum": {
+        "$numberDouble": "0.0"
+    },
+    "memorysumpercentage": {
+        "$numberDouble": "0.0"
+    },
+    "memorysumflag": ""
 }
