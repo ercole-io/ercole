@@ -119,6 +119,17 @@ func (md *MongoDatabase) SetExadataComponent(rackID string, component model.Orac
 	return md.updateExadataTime(rackID)
 }
 
+func (md *MongoDatabase) UpdateExadataHidden(rackID string, hidden bool) error {
+	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(exdataCollection).
+		UpdateOne(context.TODO(), bson.M{"rackID": rackID},
+			bson.M{"$set": bson.M{"hidden": hidden}})
+	if err != nil {
+		return err
+	}
+
+	return md.updateExadataTime(rackID)
+}
+
 func (md *MongoDatabase) updateExadataTime(rackID string) error {
 	now := md.TimeNow()
 

@@ -66,6 +66,10 @@ func (hds *HostDataService) updateExistingExadata(existingExadata, newExadata *m
 		}
 	}
 
+	if err := hds.Database.UpdateExadataHidden(newExadata.RackID, false); err != nil {
+		return err
+	}
+
 	return nil
 }
 

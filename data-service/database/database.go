@@ -59,6 +59,7 @@ type MongoDatabaseInterface interface {
 	UpdateExadataHostname(rackID, hostname string) error
 	PushComponentToExadataInstance(rackID string, component model.OracleExadataComponent) error
 	SetExadataComponent(rackID string, component model.OracleExadataComponent) error
+	UpdateExadataHidden(rackID string, hidden bool) error
 }
 
 type MongoDatabase struct {
