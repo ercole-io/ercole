@@ -81,7 +81,7 @@ func (job *GcpDataRetrieveJob) FetchGcpInstanceRightsizing(ctx context.Context, 
 		return
 	}
 
-	optimizable := avgcpumetrics.IsOptimizable || maxcpumetrics.IsOptimizable || maxmemmetrics.IsOptimizable
+	optimizable := avgcpumetrics.IsOptimizable && maxcpumetrics.IsOptimizable && maxmemmetrics.IsOptimizable
 
 	if optimizable {
 		ch <- model.GcpRecommendation{
