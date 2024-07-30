@@ -70,8 +70,8 @@ func (job *GcpDataRetrieveJob) FetchGcpStorageDisk(ctx context.Context, gcpDisk 
 		return
 	}
 
-	optimizable := maxReadIops.IsOptimizable || maxWriteIops.IsOptimizable ||
-		maxReadThroughput.IsOptimizable || maxWriteThroughput.IsOptimizable
+	optimizable := maxReadIops.IsOptimizable && maxWriteIops.IsOptimizable &&
+		maxReadThroughput.IsOptimizable && maxWriteThroughput.IsOptimizable
 
 	if optimizable {
 		sizeGbStr := strconv.Itoa(int(gcpDisk.GetSizeGb()))
