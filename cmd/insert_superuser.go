@@ -25,11 +25,23 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var password string
+
 var insertSUCmd = &cobra.Command{
 	Use:   "insert-su",
 	Short: "Insert Super User",
 	Long:  `Insert super user ercole`,
 	Run: func(cmd *cobra.Command, args []string) {
+		if password != "" {
+			err := migration.InsertSuperUser(ercoleConfig.Mongodb, password)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			fmt.Println("Super user created succesfully")
+			return
+		}
+
 		validate := func(input string) error {
 			if len(input) < 6 {
 				return errors.New("Password must have more than 6 characters")
@@ -71,4 +83,5 @@ var insertSUCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(insertSUCmd)
 	insertSUCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Enable the verbosity")
+	insertSUCmd.Flags().StringVarP(&password, "password", "p", "", "Password for authentication")
 }
