@@ -233,7 +233,7 @@ func (md *MongoDatabase) PdbExist(hostname, dbname, pdbname string) (bool, error
 		{Key: "archived", Value: false},
 		{Key: "hostname", Value: hostname},
 		{Key: "features.oracle.database.databases.name", Value: dbname},
-		{Key: "features.oracle.database.databases.name", Value: pdbname},
+		{Key: "features.oracle.database.databases.pdbs.name", Value: pdbname},
 	}
 
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(hostCollection).
