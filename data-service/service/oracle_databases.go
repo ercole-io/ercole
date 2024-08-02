@@ -160,6 +160,11 @@ primaryDbLicensesCycle:
 				continue primaryDbLicensesCycle
 			}
 
+			goldenGateID := []string{"L75967", "L75978"}
+			if utils.Contains(goldenGateID, primaryDbLicense.LicenseTypeID) {
+				continue primaryDbLicensesCycle
+			}
+
 			secondaryDb.Licenses = append(secondaryDb.Licenses,
 				model.OracleDatabaseLicense{
 					LicenseTypeID: primaryDbLicense.LicenseTypeID,
