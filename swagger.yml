@@ -2521,6 +2521,60 @@ components:
         msg:
           type: string
 
+    OraclePoliciesAuditListResponse:
+      type: object
+      properties:
+        hostname:
+          type: string
+        dbName:
+          type: string
+        flag:
+          type: string
+        policiesAuditConfigured:
+          type: array
+          items: 
+            type: string
+        policiesAudit:
+          type: array
+          items: 
+            type: string
+        matched:
+          type: array
+          items: 
+            type: string
+        notMatched:
+          type: array
+          items: 
+            type: string
+
+    OraclePdbPoliciesAuditListResponse:
+      type: object
+      properties:
+        hostname:
+          type: string
+        dbName:
+          type: string
+        pdbName:
+          type: string
+        flag:
+          type: string
+        policiesAuditConfigured:
+          type: array
+          items: 
+            type: string
+        policiesAudit:
+          type: array
+          items: 
+            type: string
+        matched:
+          type: array
+          items: 
+            type: string
+        notMatched:
+          type: array
+          items: 
+            type: string
+
   parameters:
     search:
       in: query
@@ -3794,6 +3848,35 @@ paths:
                     type: array
                     items:
                       type: string
+
+  /hosts/technologies/oracle/databases/policies-audit:
+    get:
+      tags:
+        - api-service
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OraclePoliciesAuditListResponse"
+
+  /hosts/technologies/oracle/databases/pdbs/policies-audit:
+    get:
+      tags:
+        - api-service
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OraclePdbPoliciesAuditListResponse"
+
 
   /hosts/technologies/oracle/databases/partitionings:
     get:

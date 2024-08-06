@@ -57,3 +57,24 @@ func (opa OraclePoliciesAudit) Response(configured, policies []string) map[strin
 
 	return map[string][]string{"RED": s}
 }
+
+type OraclePoliciesAuditListResponse struct {
+	Hostname                string   `json:"hostname" bson:"hostname"`
+	DbName                  string   `json:"dbName" bson:"dbName"`
+	Flag                    string   `json:"flag" bson:"flag"`
+	PoliciesAuditConfigured []string `json:"policiesAuditConfigured" bson:"policiesAuditConfigured"`
+	PoliciesAudit           []string `json:"policiesAudit" bson:"policiesAudit"`
+	Matched                 []string `json:"matched" bson:"matched"`
+	NotMatched              []string `json:"notmatched" bson:"notmatched"`
+}
+
+type OraclePdbPoliciesAuditListResponse struct {
+	Hostname                string   `json:"hostname" bson:"hostname"`
+	DbName                  string   `json:"dbName" bson:"dbName"`
+	PdbName                 string   `json:"pdbName" bson:"pdbName"`
+	Flag                    string   `json:"flag" bson:"flag"`
+	PoliciesAuditConfigured []string `json:"policiesAuditConfigured" bson:"policiesAuditConfigured"`
+	PoliciesAudit           []string `json:"policiesAudit" bson:"policiesAudit"`
+	Matched                 []string `json:"matched" bson:"matched"`
+	NotMatched              []string `json:"notmatched" bson:"notmatched"`
+}

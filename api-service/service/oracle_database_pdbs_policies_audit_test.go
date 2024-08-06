@@ -101,3 +101,33 @@ func TestGetOracleDatabasePdbPoliciesAuditFlag_NotAvailable(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, expected, res)
 }
+
+func TestListOracleDatabasePdbPoliciesAudit(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+		Config:   config.Configuration{},
+	}
+
+	expected := []dto.OraclePdbPoliciesAuditListResponse{
+		{
+			Hostname:                "hostname",
+			DbName:                  "dbname",
+			PdbName:                 "pdbname",
+			Flag:                    "green",
+			PoliciesAuditConfigured: []string{"policy0"},
+			PoliciesAudit:           []string{"policy0"},
+			Matched:                 []string{"policy0"},
+			NotMatched:              []string{},
+		},
+	}
+
+	db.EXPECT().ListOracleDatabasePdbPoliciesAudit().Return(expected, nil)
+
+	res, err := as.ListOracleDatabasePdbPoliciesAudit()
+
+	require.NoError(t, err)
+	assert.Equal(t, expected, res)
+}
