@@ -147,6 +147,8 @@ func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 
 	router.HandleFunc("/hosts/{hostname}/technologies/oracle/databases/{dbname}/psql-migrabilities", ctrl.GetOraclePsqlMigrabilities).Methods("GET")
 	router.HandleFunc("/hosts/{hostname}/technologies/oracle/databases/{dbname}/psql-migrabilities/semaphore", ctrl.GetOraclePsqlMigrabilitiesSemaphore).Methods("GET")
+	router.HandleFunc("/hosts/technologies/oracle/databases/psql-migrabilities", ctrl.ListOracleDatabasePsqlMigrabilities).Methods("GET")
+	router.HandleFunc("/hosts/technologies/oracle/databases/pdbs/psql-migrabilities", ctrl.ListOracleDatabasePdbPsqlMigrabilities).Methods("GET")
 
 	router.HandleFunc("/hosts/{hostname}/technologies/oracle/databases/{dbname}/policies-audit", ctrl.GetOraclePoliciesAudit).Methods("GET")
 	router.HandleFunc("/hosts/{hostname}/technologies/oracle/databases/{dbname}/pdbs/{pdbname}/policies-audit", ctrl.GetOraclePdbsPoliciesAudit).Methods("GET")

@@ -16,6 +16,7 @@
 package service
 
 import (
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
 )
 
@@ -73,4 +74,12 @@ func (as *APIService) GetOraclePdbPsqlMigrabilitiesSemaphore(hostname, dbname, p
 	}
 
 	return color, nil
+}
+
+func (as *APIService) ListOracleDatabasePsqlMigrabilities() ([]dto.OracleDatabasePgsqlMigrability, error) {
+	return as.Database.ListOracleDatabasePsqlMigrabilities()
+}
+
+func (as *APIService) ListOracleDatabasePdbPsqlMigrabilities() ([]dto.OracleDatabasePdbPgsqlMigrability, error) {
+	return as.Database.ListOracleDatabasePdbPsqlMigrabilities()
 }

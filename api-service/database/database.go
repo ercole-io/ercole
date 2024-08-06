@@ -72,6 +72,8 @@ type MongoDatabaseInterface interface {
 
 	FindPsqlMigrabilities(hostname, dbname string) ([]model.PgsqlMigrability, error)
 	FindPdbPsqlMigrabilities(hostname, dbname, pdbname string) ([]model.PgsqlMigrability, error)
+	ListOracleDatabasePsqlMigrabilities() ([]dto.OracleDatabasePgsqlMigrability, error)
+	ListOracleDatabasePdbPsqlMigrabilities() ([]dto.OracleDatabasePdbPgsqlMigrability, error)
 
 	ListOracleDatabasePoliciesAudit() ([]dto.OraclePoliciesAuditListResponse, error)
 	ListOracleDatabasePdbPoliciesAudit() ([]dto.OraclePdbPoliciesAuditListResponse, error)

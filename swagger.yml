@@ -1342,6 +1342,34 @@ components:
         objectType:
           nullable: true
           type: string
+    PgsqlMigrabilityList:
+      type: object
+      properties:
+        hostname:
+          type: string
+        dbname:
+          type: string
+        flag:
+          type: string
+        metrics:
+          type: array
+          items:
+            $ref: "#/components/schemas/PgsqlMigrability"
+    PgsqlMigrabilityPdbList:
+      type: object
+      properties:
+        hostname:
+          type: string
+        dbname:
+          type: string
+        pdbname:
+          type: string
+        flag:
+          type: string
+        metrics:
+          type: array
+          items:
+            $ref: "#/components/schemas/PgsqlMigrability"
     SqlServerInstance:
       type: object
       properties:
@@ -3714,6 +3742,20 @@ paths:
               schema: 
                 type: string
 
+  "/hosts/technologies/oracle/databases/psql-migrabilities":
+    get:
+      tags:
+        - api-service
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: 
+                type: array
+                items:
+                  $ref: "#/components/schemas/PgsqlMigrabilityList"
+
   "/hosts/{hostname}/technologies/oracle/databases/{dbname}/pdbs/{pdbname}/psql-migrabilities":
     parameters:
       - schema:
@@ -3771,6 +3813,20 @@ paths:
             application/json:
               schema: 
                 type: string
+
+  "/hosts/technologies/oracle/databases/pdbs/psql-migrabilities":
+    get:
+      tags:
+        - api-service
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: 
+                type: array
+                items:
+                  $ref: "#/components/schemas/PgsqlMigrabilityPdbList"
 
   /hosts/{hostname}/technologies/oracle/databases/{dbname}/policies-audit:
     parameters:
