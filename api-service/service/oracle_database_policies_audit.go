@@ -14,7 +14,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package service
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/ercole-io/ercole/v2/api-service/dto"
+)
 
 func (as *APIService) GetOracleDatabasePoliciesAuditFlag(hostname, dbname string) (map[string][]string, error) {
 	exist, err := as.Database.DbExist(hostname, dbname)
@@ -32,4 +36,8 @@ func (as *APIService) GetOracleDatabasePoliciesAuditFlag(hostname, dbname string
 	}
 
 	return policiesAudit.Response(as.Config.APIService.OracleDatabasePoliciesAudit, policiesAudit.List), err
+}
+
+func (as *APIService) ListOracleDatabasePoliciesAudit() ([]dto.OraclePoliciesAuditListResponse, error) {
+	return as.Database.ListOracleDatabasePoliciesAudit()
 }

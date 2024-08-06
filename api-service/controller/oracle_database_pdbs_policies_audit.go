@@ -34,3 +34,13 @@ func (ctrl *APIController) GetOraclePdbsPoliciesAudit(w http.ResponseWriter, r *
 
 	utils.WriteJSONResponse(w, http.StatusOK, resp)
 }
+
+func (ctrl *APIController) ListOraclePdbPoliciesAudit(w http.ResponseWriter, r *http.Request) {
+	resp, err := ctrl.Service.ListOracleDatabasePdbPoliciesAudit()
+	if err != nil {
+		utils.WriteJSONResponse(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, resp)
+}

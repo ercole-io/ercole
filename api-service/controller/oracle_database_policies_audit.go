@@ -33,3 +33,13 @@ func (ctrl *APIController) GetOraclePoliciesAudit(w http.ResponseWriter, r *http
 
 	utils.WriteJSONResponse(w, http.StatusOK, resp)
 }
+
+func (ctrl *APIController) ListOraclePoliciesAudit(w http.ResponseWriter, r *http.Request) {
+	resp, err := ctrl.Service.ListOracleDatabasePoliciesAudit()
+	if err != nil {
+		utils.WriteJSONResponse(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, resp)
+}
