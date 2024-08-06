@@ -18,6 +18,7 @@ package service
 import (
 	"testing"
 
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
@@ -236,4 +237,79 @@ func TestGetOraclePdbPsqlMigrabilitiesSemaphore_Success(t *testing.T) {
 	res, err = as.GetOraclePdbPsqlMigrabilitiesSemaphore("hostname03", "dbname03", "pdbname03")
 	require.NoError(t, err)
 	assert.Equal(t, "red", res)
+}
+
+func TestListOracleDatabasePsqlMigrabilities(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+		Config:   config.Configuration{},
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+	}
+
+	metric := "test_metric"
+	schema := "test_schema"
+	objectType := "test_objectType"
+
+	expected := []dto.OracleDatabasePgsqlMigrability{
+		{
+			Hostname: "hostname01",
+			Dbname:   "dbname01",
+			Flag:     "green",
+			Metrics: []model.PgsqlMigrability{
+				{
+					Metric:     &metric,
+					Count:      0,
+					Schema:     &schema,
+					ObjectType: &objectType,
+				},
+			},
+		},
+	}
+
+	db.EXPECT().ListOracleDatabasePsqlMigrabilities().Return(expected, nil)
+
+	res, err := as.ListOracleDatabasePsqlMigrabilities()
+	require.NoError(t, err)
+	assert.Equal(t, expected, res)
+}
+
+func TestListOracleDatabasePdbPsqlMigrabilities(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+		Config:   config.Configuration{},
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+	}
+
+	metric := "test_metric"
+	schema := "test_schema"
+	objectType := "test_objectType"
+
+	expected := []dto.OracleDatabasePdbPgsqlMigrability{
+		{
+			Hostname: "hostname01",
+			Dbname:   "dbname01",
+			Pdbname:  "pdbname01",
+			Flag:     "green",
+			Metrics: []model.PgsqlMigrability{
+				{
+					Metric:     &metric,
+					Count:      0,
+					Schema:     &schema,
+					ObjectType: &objectType,
+				},
+			},
+		},
+	}
+
+	db.EXPECT().ListOracleDatabasePdbPsqlMigrabilities().Return(expected, nil)
+
+	res, err := as.ListOracleDatabasePdbPsqlMigrabilities()
+	require.NoError(t, err)
+	assert.Equal(t, expected, res)
 }

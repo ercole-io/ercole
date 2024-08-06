@@ -47,3 +47,23 @@ func (ctrl *APIController) GetOraclePsqlMigrabilitiesSemaphore(w http.ResponseWr
 
 	utils.WriteJSONResponse(w, http.StatusOK, res)
 }
+
+func (ctrl *APIController) ListOracleDatabasePsqlMigrabilities(w http.ResponseWriter, r *http.Request) {
+	res, err := ctrl.Service.ListOracleDatabasePsqlMigrabilities()
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, res)
+}
+
+func (ctrl *APIController) ListOracleDatabasePdbPsqlMigrabilities(w http.ResponseWriter, r *http.Request) {
+	res, err := ctrl.Service.ListOracleDatabasePdbPsqlMigrabilities()
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, res)
+}

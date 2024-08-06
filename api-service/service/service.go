@@ -75,6 +75,8 @@ type APIServiceInterface interface {
 
 	GetOraclePsqlMigrabilities(hostname, dbname string) ([]model.PgsqlMigrability, error)
 	GetOraclePsqlMigrabilitiesSemaphore(hostname, dbname string) (string, error)
+	ListOracleDatabasePsqlMigrabilities() ([]dto.OracleDatabasePgsqlMigrability, error)
+	ListOracleDatabasePdbPsqlMigrabilities() ([]dto.OracleDatabasePdbPgsqlMigrability, error)
 
 	GetOraclePdbPsqlMigrabilities(hostname, dbname, pdbname string) ([]model.PgsqlMigrability, error)
 	GetOraclePdbPsqlMigrabilitiesSemaphore(hostname, dbname, pdbname string) (string, error)
