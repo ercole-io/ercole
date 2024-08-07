@@ -90,6 +90,9 @@ func (job *GcpDataRetrieveJob) AuditDiskPoint(queryType string, disk model.GcpDi
 			}
 
 			if point.Value != nil && float64(point.Value.GetInt64Value()) < disk.ReadIopsPerGib()/2 {
+				job.Log.Debugf(" querytype %s - diskName %s - point value (int): %d - point value (float): %v",
+					queryType, disk.GetName(), point.Value.GetInt64Value(), float64(point.Value.GetInt64Value()))
+
 				return model.OptimizableValue{
 					IsOptimizable:  true,
 					RetrievedValue: float64(point.Value.GetInt64Value()),
@@ -113,6 +116,9 @@ func (job *GcpDataRetrieveJob) AuditDiskPoint(queryType string, disk model.GcpDi
 			}
 
 			if point.Value != nil && float64(point.Value.GetInt64Value()) < disk.WriteIopsPerGib()/2 {
+				job.Log.Debugf(" querytype %s - diskName %s - point value (int): %d - point value (float): %v",
+					queryType, disk.GetName(), point.Value.GetInt64Value(), float64(point.Value.GetInt64Value()))
+
 				return model.OptimizableValue{
 					IsOptimizable:  true,
 					RetrievedValue: float64(point.Value.GetInt64Value()),
@@ -140,6 +146,9 @@ func (job *GcpDataRetrieveJob) AuditDiskPoint(queryType string, disk model.GcpDi
 			}
 
 			if point.Value != nil && pointValue < disk.ReadThroughputPerMib()/2 {
+				job.Log.Debugf(" querytype %s - diskName %s - point value (int): %d - point value (float): %v",
+					queryType, disk.GetName(), point.Value.GetInt64Value(), float64(point.Value.GetInt64Value()))
+
 				return model.OptimizableValue{
 					IsOptimizable:  true,
 					RetrievedValue: pointValue,
@@ -167,6 +176,9 @@ func (job *GcpDataRetrieveJob) AuditDiskPoint(queryType string, disk model.GcpDi
 			}
 
 			if point.Value != nil && pointValue < disk.WriteThroughputPerMib()/2 {
+				job.Log.Debugf(" querytype %s - diskName %s - point value (int): %d - point value (float): %v",
+					queryType, disk.GetName(), point.Value.GetInt64Value(), float64(point.Value.GetInt64Value()))
+
 				return model.OptimizableValue{
 					IsOptimizable:  true,
 					RetrievedValue: pointValue,

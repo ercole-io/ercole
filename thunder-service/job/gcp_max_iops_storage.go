@@ -55,9 +55,10 @@ func (job *GcpDataRetrieveJob) IsMaxReadIopsStorageOptimizable(ctx context.Conte
 
 	if series != nil && series.Points != nil {
 		optValue := job.AuditDiskPoint("max_read_iops", disk, series.Points)
-
 		return &optValue, nil
 	}
+
+	job.Log.Debugf("no points on disk %s", disk.GetName())
 
 	return &model.OptimizableValue{IsOptimizable: true}, nil
 }
@@ -94,6 +95,8 @@ func (job *GcpDataRetrieveJob) IsMaxWriteIopsStorageOptimizable(ctx context.Cont
 		optValue := job.AuditDiskPoint("max_write_iops", disk, series.Points)
 		return &optValue, nil
 	}
+
+	job.Log.Debugf("no points on disk %s", disk.GetName())
 
 	return &model.OptimizableValue{IsOptimizable: true}, nil
 }

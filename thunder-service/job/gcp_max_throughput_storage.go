@@ -59,6 +59,8 @@ func (job *GcpDataRetrieveJob) IsMaxThroughputReadStorageOptimizable(ctx context
 		return &optValue, nil
 	}
 
+	job.Log.Debugf("no points on disk %s", disk.GetName())
+
 	return &model.OptimizableValue{IsOptimizable: true}, nil
 }
 
@@ -96,6 +98,8 @@ func (job *GcpDataRetrieveJob) IsMaxThroughputWriteStorageOptimizable(ctx contex
 
 		return &optValue, nil
 	}
+
+	job.Log.Debugf("no points on disk %s", disk.GetName())
 
 	return &model.OptimizableValue{IsOptimizable: true}, nil
 }
