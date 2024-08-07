@@ -197,7 +197,7 @@ func (job *GcpDataRetrieveJob) Run() {
 						continue
 					}
 
-					job.Log.Debugf("added new recommendation - seqvalue: %d - project name: %s - instanceID %d", rec.SeqValue, rec.ProjectName, rec.ResourceID)
+					job.Log.Debugf("added new recommendation - seqvalue: %d - project name: %s - resourceID %d - resourceName %s - objectType %s", rec.SeqValue, rec.ProjectName, rec.ResourceID, rec.ResourceName, rec.ObjectType)
 				}
 
 				var diskWg sync.WaitGroup
@@ -276,7 +276,7 @@ func (job *GcpDataRetrieveJob) Run() {
 							continue
 						}
 
-						job.Log.Debugf("added new recommendation - seqvalue: %d - project name: %s - instanceID %d", rec.SeqValue, rec.ProjectName, rec.ResourceID)
+						job.Log.Debugf("added new recommendation - seqvalue: %d - project name: %s - resourceID %d - resourceName %s - objectType %s", rec.SeqValue, rec.ProjectName, rec.ResourceID, rec.ResourceName, rec.ObjectType)
 					}
 				}
 			}
