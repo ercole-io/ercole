@@ -37,6 +37,21 @@ func (as *APIService) ListManagedTechnologies(sortBy string, sortDesc bool, loca
 		return nil, err
 	}
 
+	licCompliances, err := as.GetDatabaseLicensesCompliance()
+	if err != nil {
+		return nil, err
+	}
+
+	totCompliance := float64(0.0)
+
+	for _, lc := range licCompliances {
+		totCompliance += lc.Compliance
+	}
+
+	newAvgPercentage := totCompliance / float64(len(licCompliances))
+
+	oracleStatus.NewAvgPercentage = newAvgPercentage
+
 	statuses = append(statuses, *oracleStatus)
 
 	mysqlStatus, err := createMySqlTechnologyStatus(as, hostsCountByTechnology[model.TechnologyOracleMySQL])
@@ -85,7 +100,7 @@ func (as *APIService) ListManagedTechnologies(sortBy string, sortDesc bool, loca
 		CoveredByContracts: 0,
 		TotalCost:          0,
 		PaidCost:           0,
-		Compliance:         0,
+		Compliance:         1,
 		UnpaidDues:         0,
 		HostsCount:         0,
 	}

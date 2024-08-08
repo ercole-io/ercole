@@ -25,4 +25,5 @@ type TechnologyStatus struct {
 	Compliance         float64 `json:"compliance"`
 	UnpaidDues         float64 `json:"unpaidDues"`
 	HostsCount         int     `json:"hostsCount"`
+	NewAvgPercentage   float64 `json:"newAvgPercentage"`
 }
