@@ -24,6 +24,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"github.com/amreo/mu"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
@@ -37,6 +38,7 @@ const alertsCollection = "alerts"
 func (md *MongoDatabase) SearchAlerts(alertFilter alert_filter.Alert) (*dto.Pagination, error) {
 	offset := int64(alertFilter.Filter.Limit * (alertFilter.Filter.Page - 1))
 	limit := int64(alertFilter.Filter.Limit)
+	options := options.Aggregate().SetAllowDiskUse(true)
 
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(alertsCollection).Aggregate(
 		context.TODO(),
@@ -192,8 +194,7 @@ func (md *MongoDatabase) SearchAlerts(alertFilter alert_filter.Alert) (*dto.Pagi
 					"path": "$totalCount",
 				},
 			},
-		),
-	)
+		), options)
 	if err != nil {
 		return nil, utils.NewError(err, "DB ERROR")
 	}
@@ -225,6 +226,8 @@ func (md *MongoDatabase) SearchAlerts(alertFilter alert_filter.Alert) (*dto.Pagi
 }
 
 func (md *MongoDatabase) GetAlerts(location, environment, status string, from, to, olderThan time.Time) ([]map[string]interface{}, error) {
+	options := options.Aggregate().SetAllowDiskUse(true)
+
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(alertsCollection).Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
@@ -288,8 +291,7 @@ func (md *MongoDatabase) GetAlerts(location, environment, status string, from, t
 				}),
 			}),
 			mu.APUnset("host"),
-		),
-	)
+		), options)
 	if err != nil {
 		return nil, utils.NewError(err, "DB ERROR")
 	}
