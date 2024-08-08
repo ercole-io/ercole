@@ -32,8 +32,8 @@ func (job *GcpDataRetrieveJob) IsMaxThroughputReadStorageOptimizable(ctx context
 	startdateMidnight := time.Date(startdate.Year(), startdate.Month(), startdate.Day(), 0, 0, 0, 0, startdate.Location())
 
 	filter := fmt.Sprintf(`metric.type = "compute.googleapis.com/instance/disk/max_read_bytes_count"
-	AND resource.labels.instance_id = "%d"
-	AND resource.labels.zone = "%s"`, disk.InstanceID, disk.InstanceZone)
+	AND metric.label.device_name = "%s"
+	AND resource.labels.zone = "%s"`, disk.GetName(), disk.InstanceZone)
 
 	req := &monitoringpb.ListTimeSeriesRequest{
 		Name:   fmt.Sprintf("projects/%s", disk.ProjectId),
@@ -72,8 +72,8 @@ func (job *GcpDataRetrieveJob) IsMaxThroughputWriteStorageOptimizable(ctx contex
 	startdateMidnight := time.Date(startdate.Year(), startdate.Month(), startdate.Day(), 0, 0, 0, 0, startdate.Location())
 
 	filter := fmt.Sprintf(`metric.type = "compute.googleapis.com/instance/disk/max_write_bytes_count"
-	AND resource.labels.instance_id = "%d"
-	AND resource.labels.zone = "%s"`, disk.InstanceID, disk.InstanceZone)
+	AND metric.label.device_name = "%s"
+	AND resource.labels.zone = "%s"`, disk.GetName(), disk.InstanceZone)
 
 	req := &monitoringpb.ListTimeSeriesRequest{
 		Name:   fmt.Sprintf("projects/%s", disk.ProjectId),
