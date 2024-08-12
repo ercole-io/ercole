@@ -25,13 +25,44 @@ import (
 
 const nodesCollection = "nodes"
 
-func (md *MongoDatabase) GetNodesByRoles(roles []string) ([]model.Node, error) {
+func (md *MongoDatabase) GetNodesByRoles(roles []string, cloudAdvisorNodeIsEnable bool) ([]model.Node, error) {
 	ctx := context.TODO()
 
 	result := make([]model.Node, 0)
 
+	pipeline := bson.A{
+		bson.D{
+			{Key: "$match",
+				Value: bson.D{
+					{Key: "roles",
+						Value: bson.D{
+							{Key: "$in",
+								Value: roles,
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	if !cloudAdvisorNodeIsEnable {
+		pipeline = append(pipeline, bson.D{
+			{Key: "$match",
+				Value: bson.D{
+					{Key: "$and",
+						Value: bson.A{
+							bson.D{{Key: "parent", Value: bson.D{{Key: "$ne", Value: "Cloud Advisors"}}}},
+							bson.D{{Key: "name", Value: bson.D{{Key: "$ne", Value: "Cloud Advisors"}}}},
+						},
+					},
+				},
+			},
+		})
+	}
+
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(nodesCollection).
-		Aggregate(ctx, bson.A{bson.M{"$match": bson.M{"roles": bson.M{"$in": roles}}}})
+		Aggregate(ctx, pipeline)
 	if err != nil {
 		return nil, err
 	}

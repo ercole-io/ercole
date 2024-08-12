@@ -47,7 +47,7 @@ func TestGetNodes_Success(t *testing.T) {
 		},
 	}
 
-	db.EXPECT().GetNodesByRoles([]string{model.AdminPermission}).Return(expected, nil)
+	db.EXPECT().GetNodesByRoles([]string{model.AdminPermission}, false).Return(expected, nil)
 	db.EXPECT().GetGroup("admin").Return(&group, nil)
 
 	res, err := as.GetNodes([]string{"admin"})

@@ -141,6 +141,8 @@ type APIService struct {
 
 	PGASGASumTargetPercentage         int
 	PGASGASumTargetPercentagePerHosts map[string]int
+
+	EnableCloudAdvisorMenu bool
 }
 
 // RepoService contains configuration about the repo service

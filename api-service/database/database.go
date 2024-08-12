@@ -258,7 +258,7 @@ type MongoDatabaseInterface interface {
 	UpdatePassword(username string, password string, salt string) error
 
 	// TREE
-	GetNodesByRoles(roles []string) ([]model.Node, error)
+	GetNodesByRoles(roles []string, cloudAdvisorNodeIsEnable bool) ([]model.Node, error)
 	GetNodeByName(name string) (*model.Node, error)
 	AddNode(node model.Node) error
 	UpdateNode(node model.Node) error
