@@ -31,9 +31,22 @@ func (as *APIService) GetNodes(groups []string) ([]model.Node, error) {
 		userRoles = append(userRoles, group.Roles...)
 	}
 
-	nodes, err := as.Database.GetNodesByRoles(userRoles)
+	cloudAdvisorNodeIsEnable := as.Config.APIService.EnableCloudAdvisorMenu
+
+	nodes, err := as.Database.GetNodesByRoles(userRoles, cloudAdvisorNodeIsEnable)
 	if err != nil {
 		return nil, err
+	}
+
+	if cloudAdvisorNodeIsEnable {
+		nodes = append(nodes, model.Node{
+			Name: "gcp",
+			Roles: []string{
+				"admin",
+				"read_cloud",
+			},
+			Parent: "Cloud Advisors",
+		})
 	}
 
 	return nodes, nil

@@ -73,6 +73,7 @@ ReadOnly = false
 DebugOracleDatabaseAgreementsAssignmentAlgorithm = false
 RoundLicenses = false
 PGASGASumTargetPercentage = 0
+EnableCloudAdvisorMenu = false
 DefaultDatabaseTags = [
   "coolest",
   "very important",
