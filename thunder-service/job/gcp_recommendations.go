@@ -17,6 +17,7 @@ package job
 import (
 	"cloud.google.com/go/monitoring/apiv3/v2/monitoringpb"
 	"github.com/ercole-io/ercole/v2/model"
+	"google.golang.org/api/compute/v1"
 )
 
 func (job *GcpDataRetrieveJob) AuditInstancePoint(queryType string, points []*monitoringpb.Point) model.CountValue {
@@ -48,24 +49,6 @@ func (job *GcpDataRetrieveJob) AuditInstancePoint(queryType string, points []*mo
 			}
 
 			if counter >= int(job.Config.ThunderService.GcpDataRetrieveJob.MaxCpuUtilizationThreshold) {
-				return model.CountValue{IsOptimizable: false}
-			}
-		}
-
-		return model.CountValue{
-			IsOptimizable: true,
-			Count:         counter,
-		}
-
-	case "max_mem":
-		counter := 0
-
-		for _, point := range points {
-			if point.Value != nil && point.Value.GetDoubleValue() > 0.9 {
-				counter++
-			}
-
-			if counter >= int(job.Config.ThunderService.GcpDataRetrieveJob.MaxMemUtilizationThreshold) {
 				return model.CountValue{IsOptimizable: false}
 			}
 		}
@@ -195,6 +178,31 @@ func (job *GcpDataRetrieveJob) AuditDiskPoint(queryType string, disk model.GcpDi
 	}
 
 	return model.OptimizableValue{}
+}
+
+func (job *GcpDataRetrieveJob) AuditMaxMemPoint(machineType *compute.MachineType, points []*monitoringpb.Point) model.CountValue {
+	counter := 0
+
+	for _, point := range points {
+		if point.Value != nil {
+			maxMem := point.Value.GetInt64Value()
+			maxMemMib := float64(maxMem) / 1048576
+			percentage := maxMemMib / float64(machineType.MemoryMb)
+
+			if percentage > 0.9 {
+				counter++
+			}
+		}
+
+		if counter >= int(job.Config.ThunderService.GcpDataRetrieveJob.MaxMemUtilizationThreshold) {
+			return model.CountValue{IsOptimizable: false}
+		}
+	}
+
+	return model.CountValue{
+		IsOptimizable: true,
+		Count:         counter,
+	}
 }
 
 func (job *GcpDataRetrieveJob) AddRecommendation(recommendation model.GcpRecommendation) error {

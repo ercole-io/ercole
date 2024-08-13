@@ -53,8 +53,13 @@ func (job *GcpDataRetrieveJob) IsMaxMemUtilizationOptimizable(ctx context.Contex
 		return nil, err
 	}
 
+	machineType, err := job.GetMachineType(ctx, *job.Opt, instance)
+	if err != nil {
+		return nil, err
+	}
+
 	if series.Points != nil {
-		countVal := job.AuditInstancePoint("max_mem", series.Points)
+		countVal := job.AuditMaxMemPoint(machineType, series.Points)
 
 		return &countVal, nil
 	}
