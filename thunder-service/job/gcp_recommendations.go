@@ -26,7 +26,8 @@ func (job *GcpDataRetrieveJob) AuditInstancePoint(queryType string, points []*mo
 		counter := 0
 
 		for _, point := range points {
-			if point.Value != nil && point.Value.GetDoubleValue() > 0.5 {
+			if point.Value != nil &&
+				(point.Value.GetDoubleValue()*100) > float64(job.Config.ThunderService.GcpDataRetrieveJob.AvgCpuPercentage) {
 				counter++
 			}
 
@@ -44,7 +45,8 @@ func (job *GcpDataRetrieveJob) AuditInstancePoint(queryType string, points []*mo
 		counter := 0
 
 		for _, point := range points {
-			if point.Value != nil && point.Value.GetDoubleValue() > 0.5 {
+			if point.Value != nil &&
+				(point.Value.GetDoubleValue()*100) > float64(job.Config.ThunderService.GcpDataRetrieveJob.MaxCpuPercentage) {
 				counter++
 			}
 
@@ -72,7 +74,8 @@ func (job *GcpDataRetrieveJob) AuditDiskPoint(queryType string, disk model.GcpDi
 				maxMeasurement = float64(point.Value.GetInt64Value())
 			}
 
-			if point.Value != nil && float64(point.Value.GetInt64Value()) < disk.ReadIopsPerGib()/2 {
+			if point.Value != nil && float64(point.Value.GetInt64Value()) < disk.ReadIopsPerGib()*
+				(float64(job.Config.ThunderService.GcpDataRetrieveJob.IopsStoragePercentage)/100) {
 				job.Log.Debugf(" querytype %s - diskName %s - point value (int): %d - point value (float): %v",
 					queryType, disk.GetName(), point.Value.GetInt64Value(), float64(point.Value.GetInt64Value()))
 
@@ -98,7 +101,8 @@ func (job *GcpDataRetrieveJob) AuditDiskPoint(queryType string, disk model.GcpDi
 				maxMeasurement = float64(point.Value.GetInt64Value())
 			}
 
-			if point.Value != nil && float64(point.Value.GetInt64Value()) < disk.WriteIopsPerGib()/2 {
+			if point.Value != nil && float64(point.Value.GetInt64Value()) < disk.WriteIopsPerGib()*
+				(float64(job.Config.ThunderService.GcpDataRetrieveJob.IopsStoragePercentage)/100) {
 				job.Log.Debugf(" querytype %s - diskName %s - point value (int): %d - point value (float): %v",
 					queryType, disk.GetName(), point.Value.GetInt64Value(), float64(point.Value.GetInt64Value()))
 
@@ -128,7 +132,8 @@ func (job *GcpDataRetrieveJob) AuditDiskPoint(queryType string, disk model.GcpDi
 				}
 			}
 
-			if point.Value != nil && pointValue < disk.ReadThroughputPerMib()/2 {
+			if point.Value != nil && pointValue < disk.ReadThroughputPerMib()*
+				(float64(job.Config.ThunderService.GcpDataRetrieveJob.ThroughputStoragePercentage)/100) {
 				job.Log.Debugf(" querytype %s - diskName %s - point value (int): %d - point value (float): %v",
 					queryType, disk.GetName(), point.Value.GetInt64Value(), float64(point.Value.GetInt64Value()))
 
@@ -158,7 +163,8 @@ func (job *GcpDataRetrieveJob) AuditDiskPoint(queryType string, disk model.GcpDi
 				}
 			}
 
-			if point.Value != nil && pointValue < disk.WriteThroughputPerMib()/2 {
+			if point.Value != nil && pointValue < disk.WriteThroughputPerMib()*
+				(float64(job.Config.ThunderService.GcpDataRetrieveJob.ThroughputStoragePercentage)/100) {
 				job.Log.Debugf(" querytype %s - diskName %s - point value (int): %d - point value (float): %v",
 					queryType, disk.GetName(), point.Value.GetInt64Value(), float64(point.Value.GetInt64Value()))
 
@@ -187,9 +193,9 @@ func (job *GcpDataRetrieveJob) AuditMaxMemPoint(machineType *compute.MachineType
 		if point.Value != nil {
 			maxMem := point.Value.GetInt64Value()
 			maxMemMib := float64(maxMem) / 1048576
-			percentage := maxMemMib / float64(machineType.MemoryMb)
+			percentage := (maxMemMib / float64(machineType.MemoryMb)) * 100
 
-			if percentage > 0.9 {
+			if percentage > float64(job.Config.ThunderService.GcpDataRetrieveJob.MaxMemPercentage) {
 				counter++
 			}
 		}
