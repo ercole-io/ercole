@@ -186,6 +186,11 @@ RunAtStartup = false
 AvgCpuUtilizationThreshold = 3
 MaxCpuUtilizationThreshold = 180
 MaxMemUtilizationThreshold = 1
+AvgCpuPercentage = 50
+MaxCpuPercentage = 50
+MaxMemPercentage = 90
+IopsStoragePercentage = 50
+ThroughputStoragePercentage = 50
 
 [Mongodb]
 URI = "mongodb://localhost:27017/ercole"
