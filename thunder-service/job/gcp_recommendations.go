@@ -69,20 +69,42 @@ func (job *GcpDataRetrieveJob) AuditDiskPoint(queryType string, disk model.GcpDi
 	case "max_read_iops":
 		var maxMeasurement float64
 
+		rIops := disk.ReadIopsPerGib()
+		limit := rIops * (float64(job.Config.ThunderService.GcpDataRetrieveJob.IopsStoragePercentage) / 100)
+
 		for _, point := range points {
-			if point.Value != nil && float64(point.Value.GetInt64Value()) > maxMeasurement {
+			if point.Value == nil {
+				continue
+			}
+
+			if float64(point.Value.GetInt64Value()) > maxMeasurement {
 				maxMeasurement = float64(point.Value.GetInt64Value())
 			}
 
-			if point.Value != nil && float64(point.Value.GetInt64Value()) < disk.ReadIopsPerGib()*
-				(float64(job.Config.ThunderService.GcpDataRetrieveJob.IopsStoragePercentage)/100) {
-				job.Log.Debugf(" querytype %s - diskName %s - point value (int): %d - point value (float): %v",
-					queryType, disk.GetName(), point.Value.GetInt64Value(), float64(point.Value.GetInt64Value()))
+			job.Log.Debugf(
+				`--Received--
+				disk name: %s
+				disk type: %s
+				vpcus: %d
+				shared core: %t
+				read iops: %v
+				read iops limit: %v
+				condition limit: %v
+				----`,
+				disk.GetName(),
+				disk.Type(),
+				disk.InstanceVcpus,
+				disk.IsSharedCore,
+				float64(point.Value.GetInt64Value()),
+				rIops,
+				limit,
+			)
 
+			if float64(point.Value.GetInt64Value()) < limit {
 				return model.OptimizableValue{
 					IsOptimizable:  true,
 					RetrievedValue: float64(point.Value.GetInt64Value()),
-					TargetValue:    disk.ReadIopsPerGib(),
+					TargetValue:    rIops,
 				}
 			}
 		}
@@ -90,26 +112,48 @@ func (job *GcpDataRetrieveJob) AuditDiskPoint(queryType string, disk model.GcpDi
 		return model.OptimizableValue{
 			IsOptimizable:  false,
 			RetrievedValue: maxMeasurement,
-			TargetValue:    disk.ReadIopsPerGib(),
+			TargetValue:    rIops,
 		}
 
 	case "max_write_iops":
 		var maxMeasurement float64
 
+		wIops := disk.WriteIopsPerGib()
+		limit := wIops * (float64(job.Config.ThunderService.GcpDataRetrieveJob.IopsStoragePercentage) / 100)
+
 		for _, point := range points {
-			if point.Value != nil && float64(point.Value.GetInt64Value()) > maxMeasurement {
+			if point.Value == nil {
+				continue
+			}
+
+			if float64(point.Value.GetInt64Value()) > maxMeasurement {
 				maxMeasurement = float64(point.Value.GetInt64Value())
 			}
 
-			if point.Value != nil && float64(point.Value.GetInt64Value()) < disk.WriteIopsPerGib()*
-				(float64(job.Config.ThunderService.GcpDataRetrieveJob.IopsStoragePercentage)/100) {
-				job.Log.Debugf(" querytype %s - diskName %s - point value (int): %d - point value (float): %v",
-					queryType, disk.GetName(), point.Value.GetInt64Value(), float64(point.Value.GetInt64Value()))
+			job.Log.Debugf(
+				`--Received--
+				disk name: %s
+				disk type: %s
+				vpcus: %d
+				shared core: %t
+				write iops: %v
+				write iops limit: %v
+				condition limit: %v
+				----`,
+				disk.GetName(),
+				disk.Type(),
+				disk.InstanceVcpus,
+				disk.IsSharedCore,
+				float64(point.Value.GetInt64Value()),
+				wIops,
+				limit,
+			)
 
+			if float64(point.Value.GetInt64Value()) < limit {
 				return model.OptimizableValue{
 					IsOptimizable:  true,
 					RetrievedValue: float64(point.Value.GetInt64Value()),
-					TargetValue:    disk.WriteIopsPerGib(),
+					TargetValue:    wIops,
 				}
 			}
 		}
@@ -117,30 +161,50 @@ func (job *GcpDataRetrieveJob) AuditDiskPoint(queryType string, disk model.GcpDi
 		return model.OptimizableValue{
 			IsOptimizable:  false,
 			RetrievedValue: maxMeasurement,
-			TargetValue:    disk.WriteIopsPerGib(),
+			TargetValue:    wIops,
 		}
 
 	case "max_read_throughput":
 		var maxMeasurement, pointValue float64
 
-		for _, point := range points {
-			if point.Value != nil {
-				pointValue = float64(point.Value.GetInt64Value()) / 1048576
+		rThroughput := disk.ReadThroughputPerMib()
+		limit := rThroughput * (float64(job.Config.ThunderService.GcpDataRetrieveJob.ThroughputStoragePercentage) / 100)
 
-				if pointValue > maxMeasurement {
-					maxMeasurement = pointValue
-				}
+		for _, point := range points {
+			if point.Value == nil {
+				continue
 			}
 
-			if point.Value != nil && pointValue < disk.ReadThroughputPerMib()*
-				(float64(job.Config.ThunderService.GcpDataRetrieveJob.ThroughputStoragePercentage)/100) {
-				job.Log.Debugf(" querytype %s - diskName %s - point value (int): %d - point value (float): %v",
-					queryType, disk.GetName(), point.Value.GetInt64Value(), float64(point.Value.GetInt64Value()))
+			pointValue = float64(point.Value.GetInt64Value()) / 1048576
 
+			if pointValue > maxMeasurement {
+				maxMeasurement = pointValue
+			}
+
+			job.Log.Debugf(
+				`--Received--
+				disk name: %s
+				disk type: %s
+				vpcus: %d
+				shared core: %t
+				read throughput: %v
+				read throughput limit: %v
+				condition limit: %v
+				----`,
+				disk.GetName(),
+				disk.Type(),
+				disk.InstanceVcpus,
+				disk.IsSharedCore,
+				pointValue,
+				rThroughput,
+				limit,
+			)
+
+			if pointValue < limit {
 				return model.OptimizableValue{
 					IsOptimizable:  true,
 					RetrievedValue: pointValue,
-					TargetValue:    disk.ReadThroughputPerMib(),
+					TargetValue:    rThroughput,
 				}
 			}
 		}
@@ -148,30 +212,50 @@ func (job *GcpDataRetrieveJob) AuditDiskPoint(queryType string, disk model.GcpDi
 		return model.OptimizableValue{
 			IsOptimizable:  false,
 			RetrievedValue: maxMeasurement,
-			TargetValue:    disk.ReadThroughputPerMib(),
+			TargetValue:    rThroughput,
 		}
 
 	case "max_write_throughput":
 		var maxMeasurement, pointValue float64
 
-		for _, point := range points {
-			if point.Value != nil {
-				pointValue = float64(point.Value.GetInt64Value()) / 1048576
+		wThroughput := disk.WriteThroughputPerMib()
+		limit := wThroughput * (float64(job.Config.ThunderService.GcpDataRetrieveJob.ThroughputStoragePercentage) / 100)
 
-				if pointValue > maxMeasurement {
-					maxMeasurement = pointValue
-				}
+		for _, point := range points {
+			if point.Value == nil {
+				continue
 			}
 
-			if point.Value != nil && pointValue < disk.WriteThroughputPerMib()*
-				(float64(job.Config.ThunderService.GcpDataRetrieveJob.ThroughputStoragePercentage)/100) {
-				job.Log.Debugf(" querytype %s - diskName %s - point value (int): %d - point value (float): %v",
-					queryType, disk.GetName(), point.Value.GetInt64Value(), float64(point.Value.GetInt64Value()))
+			pointValue = float64(point.Value.GetInt64Value()) / 1048576
 
+			if pointValue > maxMeasurement {
+				maxMeasurement = pointValue
+			}
+
+			job.Log.Debugf(
+				`--Received--
+				disk name: %s
+				disk type: %s
+				vpcus: %d
+				shared core: %t
+				write throughput: %v
+				write throughput limit: %v
+				condition limit: %v
+				----`,
+				disk.GetName(),
+				disk.Type(),
+				disk.InstanceVcpus,
+				disk.IsSharedCore,
+				pointValue,
+				wThroughput,
+				limit,
+			)
+
+			if pointValue < limit {
 				return model.OptimizableValue{
 					IsOptimizable:  true,
 					RetrievedValue: pointValue,
-					TargetValue:    disk.WriteThroughputPerMib(),
+					TargetValue:    wThroughput,
 				}
 			}
 		}
@@ -179,7 +263,7 @@ func (job *GcpDataRetrieveJob) AuditDiskPoint(queryType string, disk model.GcpDi
 		return model.OptimizableValue{
 			IsOptimizable:  false,
 			RetrievedValue: maxMeasurement,
-			TargetValue:    disk.WriteThroughputPerMib(),
+			TargetValue:    wThroughput,
 		}
 	}
 

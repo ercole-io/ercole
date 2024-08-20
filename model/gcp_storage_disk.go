@@ -15,7 +15,7 @@
 package model
 
 import (
-	"math"
+	"strconv"
 	"strings"
 
 	"cloud.google.com/go/compute/apiv1/computepb"
@@ -24,10 +24,12 @@ import (
 )
 
 type GcpDisk struct {
-	InstanceID   uint64
-	InstanceZone string
-	MachineType  string
-	ProfileID    primitive.ObjectID
+	InstanceID    uint64
+	InstanceZone  string
+	MachineType   string
+	InstanceVcpus int
+	IsSharedCore  bool
+	ProfileID     primitive.ObjectID
 	*cloudresourcemanager.Project
 	*computepb.Disk
 }
@@ -48,13 +50,11 @@ type RW struct {
 }
 
 type IopsPerGib struct {
-	RW
-	Limit RW
+	Limit map[string]RW
 }
 
 type ThroughputPerMib struct {
-	RW
-	Limit RW
+	Limit map[string]RW
 }
 
 const (
@@ -65,56 +65,102 @@ const (
 
 var (
 	IopsLimits = map[string]IopsPerGib{
-		DiskTypeStandard: {RW: RW{Read: 0.75, Write: 1.5}, Limit: RW{Read: 7500, Write: 15000}},
-		DiskTypeBalanced: {RW: RW{Read: 6, Write: 6}, Limit: RW{Read: 80000, Write: 80000}},
-		DiskTypeSsd:      {RW: RW{Read: 30, Write: 30}, Limit: RW{Read: 100000, Write: 100000}},
+		DiskTypeStandard: {
+			Limit: map[string]RW{
+				"shared-core": {Read: 1000, Write: 10_000},
+				"2-7":         {Read: 3000, Write: 15_000},
+				"8-15":        {Read: 5000, Write: 15_000},
+				"16+":         {Read: 7500, Write: 15_000},
+			},
+		},
+
+		DiskTypeBalanced: {
+			Limit: map[string]RW{
+				"shared-core": {Write: 10_000, Read: 12_000},
+				"2-7":         {Write: 15_000, Read: 15_000},
+				"8-15":        {Write: 15_000, Read: 15_000},
+				"16-31":       {Write: 20_000, Read: 20_000},
+				"32+":         {Write: 50_000, Read: 50_000},
+			},
+		},
 	}
 
 	ThroughputLimits = map[string]ThroughputPerMib{
-		DiskTypeStandard: {RW: RW{Read: 0.12, Write: 0.12}, Limit: RW{Read: 1200, Write: 400}},
-		DiskTypeBalanced: {RW: RW{Read: 0.28, Write: 0.28}, Limit: RW{Read: 1200, Write: 1200}},
-		DiskTypeSsd:      {RW: RW{Read: 0.48, Write: 0.48}, Limit: RW{Read: 1200, Write: 1200}},
+		DiskTypeStandard: {
+			Limit: map[string]RW{
+				"shared-core": {Read: 200, Write: 200},
+				"2-7":         {Read: 240, Write: 240},
+				"8-15":        {Read: 800, Write: 400},
+				"16+":         {Read: 1200, Write: 400},
+			},
+		},
+
+		DiskTypeBalanced: {
+			Limit: map[string]RW{
+				"shared-core": {Write: 200, Read: 200},
+				"2-7":         {Write: 240, Read: 240},
+				"8-15":        {Write: 800, Read: 800},
+				"16-31":       {Write: 1000, Read: 1200},
+				"32+":         {Write: 1000, Read: 1200},
+			},
+		},
 	}
 )
 
 func (d GcpDisk) ReadIopsPerGib() float64 {
-	limit := float64(d.GetSizeGb()) * IopsLimits[d.Type()].Read
-
-	if limit > IopsLimits[d.Type()].Limit.Read {
-		return IopsLimits[d.Type()].Limit.Read
-	}
-
-	return math.Floor(limit*100) / 100
+	return IopsLimits[d.Type()].Limit[mustReturnRange(d.InstanceVcpus, d.IsSharedCore)].Read
 }
 
 func (d GcpDisk) WriteIopsPerGib() float64 {
-	limit := float64(d.GetSizeGb()) * IopsLimits[d.Type()].Write
-
-	if limit > IopsLimits[d.Type()].Limit.Write {
-		return IopsLimits[d.Type()].Limit.Write
-	}
-
-	return math.Floor(limit*100) / 100
+	return IopsLimits[d.Type()].Limit[mustReturnRange(d.InstanceVcpus, d.IsSharedCore)].Write
 }
 
 func (d GcpDisk) ReadThroughputPerMib() float64 {
-	limit := float64(d.GetSizeGb()) * ThroughputLimits[d.Type()].Read
-
-	if limit > ThroughputLimits[d.Type()].Limit.Read {
-		return ThroughputLimits[d.Type()].Limit.Read
-	}
-
-	return math.Floor(limit*100) / 100
+	return ThroughputLimits[d.Type()].Limit[mustReturnRange(d.InstanceVcpus, d.IsSharedCore)].Read
 }
 
 func (d GcpDisk) WriteThroughputPerMib() float64 {
-	limit := float64(d.GetSizeGb()) * ThroughputLimits[d.Type()].Write
+	return ThroughputLimits[d.Type()].Limit[mustReturnRange(d.InstanceVcpus, d.IsSharedCore)].Write
+}
 
-	if limit > IopsLimits[d.Type()].Limit.Write {
-		return IopsLimits[d.Type()].Limit.Write
+func mustReturnRange(vcpu int, isSharedCore bool) string {
+	if isSharedCore {
+		return "shared-core"
 	}
 
-	return math.Floor(limit*100) / 100
+	cpuRanges := []string{
+		"shared-core",
+		"2-7",
+		"8-15",
+		"16+",
+	}
+
+	for _, cpuRange := range cpuRanges {
+		if strings.Contains(cpuRange, "-") {
+			bounds := strings.Split(cpuRange, "-")
+			lowerBound, err1 := strconv.Atoi(bounds[0])
+			upperBound, err2 := strconv.Atoi(bounds[1])
+
+			if err1 != nil && err2 != nil {
+				continue
+			}
+
+			if vcpu >= lowerBound && vcpu <= upperBound {
+				return cpuRange
+			}
+		} else if strings.HasSuffix(cpuRange, "+") {
+			lowerBound, err := strconv.Atoi(strings.TrimSuffix(cpuRange, "+"))
+			if err != nil {
+				continue
+			}
+
+			if vcpu >= lowerBound {
+				return cpuRange
+			}
+		}
+	}
+
+	return ""
 }
 
 type OptimizableValue struct {

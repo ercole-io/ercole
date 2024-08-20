@@ -227,12 +227,14 @@ func (job *GcpDataRetrieveJob) Run() {
 					}
 
 					gcpDisk := model.GcpDisk{
-						InstanceID:   instance.GetId(),
-						InstanceZone: instance.Zone(),
-						MachineType:  instance.MachineType(),
-						ProfileID:    instance.ProfileID,
-						Project:      project,
-						Disk:         disk,
+						InstanceID:    instance.GetId(),
+						InstanceZone:  instance.Zone(),
+						MachineType:   instance.MachineType(),
+						InstanceVcpus: instance.VCpu(),
+						IsSharedCore:  instance.IsSharedCore(),
+						ProfileID:     instance.ProfileID,
+						Project:       project,
+						Disk:          disk,
 					}
 
 					go worker(gcpDisk, &diskWg, diskCh)

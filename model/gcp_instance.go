@@ -15,9 +15,12 @@
 package model
 
 import (
+	"regexp"
+	"strconv"
 	"strings"
 
 	"cloud.google.com/go/compute/apiv1/computepb"
+	"github.com/ercole-io/ercole/v2/utils"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"google.golang.org/api/cloudresourcemanager/v1"
 )
@@ -46,6 +49,28 @@ func (i GcpInstance) MachineType() string {
 	}
 
 	return parts[len(parts)-1]
+}
+
+func (i GcpInstance) VCpu() int {
+	machineType := i.MachineType()
+	re := regexp.MustCompile(`\d+$`)
+	match := re.FindString(machineType)
+
+	if match != "" {
+		vcpu, err := strconv.Atoi(match)
+		if err != nil {
+			return 0
+		}
+
+		return vcpu
+	}
+
+	return 2
+}
+
+func (i GcpInstance) IsSharedCore() bool {
+	sharedMachineType := []string{"e2-micro", "e2-small", "e2-medium"}
+	return utils.Contains(sharedMachineType, i.MachineType())
 }
 
 type CountValue struct {
