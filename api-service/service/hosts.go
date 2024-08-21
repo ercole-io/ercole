@@ -413,9 +413,9 @@ func (as *APIService) GetHost(hostname string, olderThan time.Time, raw bool) (*
 			db.PgaSum = db.GetPgaSum()
 			db.SgaSum = db.GetSgaSum()
 		}
-	}
 
-	as.setMemoryTarget(host)
+		as.setMemoryTarget(host)
+	}
 
 	return host, nil
 }
