@@ -99,13 +99,13 @@ func (job *GcpDataRetrieveJob) AuditDiskPoint(queryType string, disk model.GcpDi
 				rIops,
 				limit,
 			)
+		}
 
-			if float64(point.Value.GetInt64Value()) < limit {
-				return model.OptimizableValue{
-					IsOptimizable:  true,
-					RetrievedValue: float64(point.Value.GetInt64Value()),
-					TargetValue:    rIops,
-				}
+		if maxMeasurement < limit {
+			return model.OptimizableValue{
+				IsOptimizable:  true,
+				RetrievedValue: maxMeasurement,
+				TargetValue:    rIops,
 			}
 		}
 
@@ -148,13 +148,13 @@ func (job *GcpDataRetrieveJob) AuditDiskPoint(queryType string, disk model.GcpDi
 				wIops,
 				limit,
 			)
+		}
 
-			if float64(point.Value.GetInt64Value()) < limit {
-				return model.OptimizableValue{
-					IsOptimizable:  true,
-					RetrievedValue: float64(point.Value.GetInt64Value()),
-					TargetValue:    wIops,
-				}
+		if maxMeasurement < limit {
+			return model.OptimizableValue{
+				IsOptimizable:  true,
+				RetrievedValue: maxMeasurement,
+				TargetValue:    wIops,
 			}
 		}
 
@@ -199,13 +199,13 @@ func (job *GcpDataRetrieveJob) AuditDiskPoint(queryType string, disk model.GcpDi
 				rThroughput,
 				limit,
 			)
+		}
 
-			if pointValue < limit {
-				return model.OptimizableValue{
-					IsOptimizable:  true,
-					RetrievedValue: pointValue,
-					TargetValue:    rThroughput,
-				}
+		if maxMeasurement < limit {
+			return model.OptimizableValue{
+				IsOptimizable:  true,
+				RetrievedValue: maxMeasurement,
+				TargetValue:    rThroughput,
 			}
 		}
 
@@ -250,13 +250,13 @@ func (job *GcpDataRetrieveJob) AuditDiskPoint(queryType string, disk model.GcpDi
 				wThroughput,
 				limit,
 			)
+		}
 
-			if pointValue < limit {
-				return model.OptimizableValue{
-					IsOptimizable:  true,
-					RetrievedValue: pointValue,
-					TargetValue:    wThroughput,
-				}
+		if maxMeasurement < limit {
+			return model.OptimizableValue{
+				IsOptimizable:  true,
+				RetrievedValue: maxMeasurement,
+				TargetValue:    wThroughput,
 			}
 		}
 
