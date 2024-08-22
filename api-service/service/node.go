@@ -39,14 +39,32 @@ func (as *APIService) GetNodes(groups []string) ([]model.Node, error) {
 	}
 
 	if cloudAdvisorNodeIsEnable {
-		nodes = append(nodes, model.Node{
-			Name: "gcp",
-			Roles: []string{
-				"admin",
-				"read_cloud",
+		nodes = append(nodes,
+			model.Node{
+				Name: "GCP",
+				Roles: []string{
+					"admin",
+					"read_cloud",
+				},
+				Parent: "Cloud Advisors",
 			},
-			Parent: "Cloud Advisors",
-		})
+			model.Node{
+				Name: "Profile Configurations",
+				Roles: []string{
+					"admin",
+					"read_cloud",
+				},
+				Parent: "GCP",
+			},
+			model.Node{
+				Name: "Recommendations",
+				Roles: []string{
+					"admin",
+					"read_cloud",
+				},
+				Parent: "GCP",
+			},
+		)
 	}
 
 	return nodes, nil
