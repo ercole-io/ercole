@@ -21,15 +21,16 @@ import (
 )
 
 type GcpRecommendation struct {
-	SeqValue     uint64             `json:"seqValue" bson:"seqValue"`
-	CreatedAt    time.Time          `json:"createdAt" bson:"createdAt"`
-	ProfileID    primitive.ObjectID `json:"profileID" bson:"profileID"`
-	ResourceID   uint64             `json:"resourceID" bson:"resourceID"`
-	ResourceName string             `json:"resourceName" bson:"resourceName"`
-	Category     string             `json:"category" bson:"category"`
-	Suggestion   string             `json:"suggestion" bson:"suggestion"`
-	ProjectID    string             `json:"projectID" bson:"projectID"`
-	ProjectName  string             `json:"projectName" bson:"projectName"`
-	ObjectType   string             `json:"objectType" bson:"objectType"`
-	Details      map[string]string  `json:"details" bson:"details"`
+	SeqValue        uint64             `json:"seqValue" bson:"seqValue"`
+	CreatedAt       time.Time          `json:"createdAt" bson:"createdAt"`
+	ProfileID       primitive.ObjectID `json:"profileID" bson:"profileID"`
+	ResourceID      uint64             `json:"resourceID" bson:"resourceID"`
+	ResourceName    string             `json:"resourceName" bson:"resourceName"`
+	Category        string             `json:"category" bson:"category"`
+	Suggestion      string             `json:"suggestion" bson:"suggestion"`
+	ProjectID       string             `json:"projectID" bson:"projectID"`
+	ProjectName     string             `json:"projectName" bson:"projectName"`
+	ObjectType      string             `json:"objectType" bson:"objectType"`
+	Details         map[string]string  `json:"details" bson:"details"`
+	ResolutionLevel string             `json:"resolutionLevel" bson:"resolutionLevel"`
 }

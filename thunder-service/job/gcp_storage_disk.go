@@ -76,6 +76,13 @@ func (job *GcpDataRetrieveJob) FetchGcpStorageDisk(ctx context.Context, gcpDisk 
 	if optimizable {
 		sizeGbStr := strconv.Itoa(int(gcpDisk.GetSizeGb()))
 
+		job.Log.Debugf("riops percentage: %.2f", maxReadIops.GetPercentage())
+		job.Log.Debugf("wiops percentage: %.2f", maxWriteIops.GetPercentage())
+		job.Log.Debugf("rthroughput percentage: %.2f", maxReadThroughput.GetPercentage())
+		job.Log.Debugf("wthroughput percentage: %.2f", maxWriteThroughput.GetPercentage())
+
+		resolutionLevel := getResolutionLevel(maxReadIops.GetPercentage(), maxWriteIops.GetPercentage(), maxReadThroughput.GetPercentage(), maxWriteThroughput.GetPercentage())
+
 		ch <- model.GcpRecommendation{
 			SeqValue:     seqValue,
 			CreatedAt:    time.Now(),
@@ -96,6 +103,32 @@ func (job *GcpDataRetrieveJob) FetchGcpStorageDisk(ctx context.Context, gcpDisk 
 				"IOPS R MAX 5DD":               fmt.Sprintf("%.0f/%v", maxReadIops.RetrievedValue, maxReadIops.TargetValue),
 				"storage type":                 gcpDisk.Type(),
 			},
+			ResolutionLevel: resolutionLevel,
 		}
 	}
+}
+
+func getResolutionLevel(percentages ...float64) string {
+	var sum float64
+
+	for _, p := range percentages {
+		sum += p
+	}
+
+	avg := sum / float64(len(percentages))
+
+	resolutionLevel := ""
+
+	switch {
+	case avg <= 25:
+		resolutionLevel = "easy"
+	case avg > 25 && avg <= 50:
+		resolutionLevel = "medium"
+	case avg > 50 && avg <= 75:
+		resolutionLevel = "hard"
+	case avg > 75 && avg <= 100:
+		resolutionLevel = "very hard"
+	}
+
+	return resolutionLevel
 }

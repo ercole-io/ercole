@@ -2534,6 +2534,8 @@ components:
                 type: string
               value:
                 type: string
+        resolutionLevel:
+          type: string
 
     GcpError:
       type: object
