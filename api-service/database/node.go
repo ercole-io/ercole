@@ -25,7 +25,7 @@ import (
 
 const nodesCollection = "nodes"
 
-func (md *MongoDatabase) GetNodesByRoles(roles []string, cloudAdvisorNodeIsEnable bool) ([]model.Node, error) {
+func (md *MongoDatabase) GetNodesByRoles(roles []string) ([]model.Node, error) {
 	ctx := context.TODO()
 
 	result := make([]model.Node, 0)
@@ -44,21 +44,21 @@ func (md *MongoDatabase) GetNodesByRoles(roles []string, cloudAdvisorNodeIsEnabl
 				},
 			},
 		},
-	}
-
-	if !cloudAdvisorNodeIsEnable {
-		pipeline = append(pipeline, bson.D{
+		bson.D{
 			{Key: "$match",
 				Value: bson.D{
-					{Key: "$and",
-						Value: bson.A{
-							bson.D{{Key: "parent", Value: bson.D{{Key: "$ne", Value: "Cloud Advisors"}}}},
-							bson.D{{Key: "name", Value: bson.D{{Key: "$ne", Value: "Cloud Advisors"}}}},
+					{Key: "roles",
+						Value: bson.D{
+							{Key: "$nin",
+								Value: bson.A{
+									"read_cloud",
+								},
+							},
 						},
 					},
 				},
 			},
-		})
+		},
 	}
 
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(nodesCollection).
