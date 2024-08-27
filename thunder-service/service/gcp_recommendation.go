@@ -15,8 +15,12 @@
 package service
 
 import (
+	"fmt"
+
+	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/thunder-service/job"
+	"github.com/ercole-io/ercole/v2/utils/exutils"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -57,4 +61,97 @@ func (ts *ThunderService) ListGcpError() ([]model.GcpError, error) {
 	}
 
 	return ts.Database.ListGcpErrorsByProfiles(profileIDs)
+}
+
+func (ts *ThunderService) CreateGcpRecommendationsXlsx() (*excelize.File, error) {
+	recommendations, err := ts.ListGcpRecommendations()
+	if err != nil {
+		return nil, err
+	}
+
+	sheet := "Gcp recommendations"
+	headers := []string{
+		"Category",
+		"Object Type",
+		"Suggestion",
+		"Project Name",
+		"Profile ID",
+		"Resource Name",
+		"Resource ID",
+		"Resolution Level",
+		"Cpu Average",
+		"Cpu Max",
+		"Instance Name",
+		"Mem Max",
+		"Block Storage Name",
+		"IOPS R MAX 5DD",
+		"IOPS W MAX 5DD",
+		"Size GB",
+		"THROUGHPUT R MAX 5DD (MiBps)",
+		"THROUGHPUT W MAX 5DD (MiBps)",
+		"storage type",
+	}
+
+	sheets, err := exutils.NewXLSX(ts.Config, sheet, headers...)
+	if err != nil {
+		return nil, err
+	}
+
+	for i, val := range recommendations {
+		i += 2
+		sheets.SetCellValue(sheet, fmt.Sprintf("A%d", i), val.Category)
+		sheets.SetCellValue(sheet, fmt.Sprintf("B%d", i), val.ObjectType)
+		sheets.SetCellValue(sheet, fmt.Sprintf("C%d", i), val.Suggestion)
+		sheets.SetCellValue(sheet, fmt.Sprintf("D%d", i), val.ProjectName)
+		sheets.SetCellValue(sheet, fmt.Sprintf("E%d", i), val.ProfileID.Hex())
+		sheets.SetCellValue(sheet, fmt.Sprintf("F%d", i), val.ResourceName)
+		sheets.SetCellValue(sheet, fmt.Sprintf("G%d", i), fmt.Sprintf("%v", val.ResourceID))
+		sheets.SetCellValue(sheet, fmt.Sprintf("H%d", i), val.ResolutionLevel)
+
+		if v, ok := val.Details["Cpu Average"]; ok {
+			sheets.SetCellValue(sheet, fmt.Sprintf("I%d", i), v)
+		}
+
+		if v, ok := val.Details["Cpu Max"]; ok {
+			sheets.SetCellValue(sheet, fmt.Sprintf("J%d", i), v)
+		}
+
+		if v, ok := val.Details["Instance Name"]; ok {
+			sheets.SetCellValue(sheet, fmt.Sprintf("K%d", i), v)
+		}
+
+		if v, ok := val.Details["Mem Max"]; ok {
+			sheets.SetCellValue(sheet, fmt.Sprintf("L%d", i), v)
+		}
+
+		if v, ok := val.Details["Block Storage Name"]; ok {
+			sheets.SetCellValue(sheet, fmt.Sprintf("M%d", i), v)
+		}
+
+		if v, ok := val.Details["IOPS R MAX 5DD"]; ok {
+			sheets.SetCellValue(sheet, fmt.Sprintf("N%d", i), v)
+		}
+
+		if v, ok := val.Details["IOPS W MAX 5DD"]; ok {
+			sheets.SetCellValue(sheet, fmt.Sprintf("O%d", i), v)
+		}
+
+		if v, ok := val.Details["Size GB"]; ok {
+			sheets.SetCellValue(sheet, fmt.Sprintf("P%d", i), v)
+		}
+
+		if v, ok := val.Details["THROUGHPUT R MAX 5DD (MiBps)"]; ok {
+			sheets.SetCellValue(sheet, fmt.Sprintf("Q%d", i), v)
+		}
+
+		if v, ok := val.Details["THROUGHPUT W MAX 5DD (MiBps)"]; ok {
+			sheets.SetCellValue(sheet, fmt.Sprintf("R%d", i), v)
+		}
+
+		if v, ok := val.Details["storage type"]; ok {
+			sheets.SetCellValue(sheet, fmt.Sprintf("S%d", i), v)
+		}
+	}
+
+	return sheets, err
 }

@@ -18,15 +18,29 @@ import (
 	"net/http"
 
 	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/golang/gddo/httputil"
 )
 
 func (ctrl *ThunderController) GetGcpRecommendations(w http.ResponseWriter, r *http.Request) {
-	recommendations, err := ctrl.Service.ListGcpRecommendations()
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-	}
+	choice := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
 
-	utils.WriteJSONResponse(w, http.StatusOK, recommendations)
+	switch choice {
+	case "application/json":
+		recommendations, err := ctrl.Service.ListGcpRecommendations()
+		if err != nil {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		}
+
+		utils.WriteJSONResponse(w, http.StatusOK, recommendations)
+	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+		result, err := ctrl.Service.CreateGcpRecommendationsXlsx()
+		if err != nil {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+			return
+		}
+
+		utils.WriteXLSXResponse(w, result)
+	}
 }
 
 func (ctrl *ThunderController) ForceGetGcpRecommendations(w http.ResponseWriter, r *http.Request) {
