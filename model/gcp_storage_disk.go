@@ -168,3 +168,7 @@ type OptimizableValue struct {
 	RetrievedValue float64
 	TargetValue    float64
 }
+
+func (o OptimizableValue) GetPercentage() float64 {
+	return (o.RetrievedValue / o.TargetValue) * 100
+}
