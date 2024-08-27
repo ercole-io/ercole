@@ -31,14 +31,81 @@ func (as *APIService) GetNodes(groups []string) ([]model.Node, error) {
 		userRoles = append(userRoles, group.Roles...)
 	}
 
-	cloudAdvisorNodeIsEnable := as.Config.APIService.EnableCloudAdvisorMenu
-
-	nodes, err := as.Database.GetNodesByRoles(userRoles, cloudAdvisorNodeIsEnable)
+	nodes, err := as.Database.GetNodesByRoles(userRoles)
 	if err != nil {
 		return nil, err
 	}
 
-	if cloudAdvisorNodeIsEnable {
+	if as.Config.APIService.EnableOciMenu || as.Config.APIService.EnableAwsMenu || as.Config.APIService.EnableGcpMenu {
+		nodes = append(nodes, model.Node{
+			Name: "Cloud Advisors",
+			Roles: []string{
+				"admin",
+				"read_cloud",
+			},
+			Parent: "",
+		})
+	}
+
+	if as.Config.APIService.EnableOciMenu {
+		nodes = append(nodes,
+			model.Node{
+				Name: "OCI",
+				Roles: []string{
+					"admin",
+					"read_cloud",
+				},
+				Parent: "Cloud Advisors",
+			},
+			model.Node{
+				Name: "Profile Configurations",
+				Roles: []string{
+					"admin",
+					"read_cloud",
+				},
+				Parent: "OCI",
+			},
+			model.Node{
+				Name: "Recommendations",
+				Roles: []string{
+					"admin",
+					"read_cloud",
+				},
+				Parent: "OCI",
+			},
+		)
+	}
+
+	if as.Config.APIService.EnableAwsMenu {
+		nodes = append(nodes,
+			model.Node{
+				Name: "AWS",
+				Roles: []string{
+					"admin",
+					"read_cloud",
+				},
+				Parent: "Cloud Advisors",
+			},
+			model.Node{
+				Name: "Profile Configurations",
+				Roles: []string{
+					"admin",
+					"read_cloud",
+				},
+				Parent: "AWS",
+			},
+			model.Node{
+				Name: "Recommendations",
+				Roles: []string{
+					"admin",
+					"read_cloud",
+				},
+				Parent: "AWS",
+			},
+		)
+	}
+
+	if as.Config.APIService.EnableGcpMenu {
 		nodes = append(nodes,
 			model.Node{
 				Name: "GCP",
