@@ -20,6 +20,7 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/thunder-service/database"
@@ -68,6 +69,7 @@ type ThunderServiceInterface interface {
 	ListGcpRecommendations() ([]model.GcpRecommendation, error)
 	ForceGetGcpRecommendations()
 	ListGcpError() ([]model.GcpError, error)
+	CreateGcpRecommendationsXlsx() (*excelize.File, error)
 }
 
 type ThunderService struct {
