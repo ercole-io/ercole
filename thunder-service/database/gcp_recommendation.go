@@ -110,6 +110,7 @@ func (md *MongoDatabase) ListGcpRecommendationsByProfiles(profileIDs []primitive
 					{Key: "objectType", Value: 1},
 					{Key: "details", Value: 1},
 					{Key: "profileName", Value: "$profile.name"},
+					{Key: "resolutionLevel", Value: 1},
 				},
 			},
 		},
