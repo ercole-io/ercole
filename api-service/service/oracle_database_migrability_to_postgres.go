@@ -16,8 +16,10 @@
 package service
 
 import (
+	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/utils/exutils"
 )
 
 func (as *APIService) GetOraclePsqlMigrabilities(hostname, dbname string) ([]model.PgsqlMigrability, error) {
@@ -82,4 +84,57 @@ func (as *APIService) ListOracleDatabasePsqlMigrabilities() ([]dto.OracleDatabas
 
 func (as *APIService) ListOracleDatabasePdbPsqlMigrabilities() ([]dto.OracleDatabasePdbPgsqlMigrability, error) {
 	return as.Database.ListOracleDatabasePdbPsqlMigrabilities()
+}
+
+func (as *APIService) CreateOraclePsqlMigrabilitiesXlsx(dbs []dto.OracleDatabasePgsqlMigrability, pdbs []dto.OracleDatabasePdbPgsqlMigrability) (*excelize.File, error) {
+	sheet := "Psql Migrabilities"
+	headers := []string{
+		"Hostname",
+		"Db Name",
+		"Pdb Name",
+		"Flag",
+		"Metrics",
+		"Object Type",
+		"Schema",
+		"Count",
+	}
+
+	sheets, err := exutils.NewXLSX(as.Config, sheet, headers...)
+	if err != nil {
+		return nil, err
+	}
+
+	axisHelp := exutils.NewAxisHelper(1)
+
+	for _, m := range dbs {
+		for _, d := range m.Metrics {
+			nextAxis := axisHelp.NewRow()
+			sheets.SetCellValue(sheet, nextAxis(), m.Hostname)
+			sheets.SetCellValue(sheet, nextAxis(), m.Dbname)
+			sheets.SetCellValue(sheet, nextAxis(), "")
+			sheets.SetCellValue(sheet, nextAxis(), m.Flag)
+
+			sheets.SetCellValue(sheet, nextAxis(), d.GetMetric())
+			sheets.SetCellValue(sheet, nextAxis(), d.GetObjectType())
+			sheets.SetCellValue(sheet, nextAxis(), d.GetSchema())
+			sheets.SetCellValue(sheet, nextAxis(), d.Count)
+		}
+	}
+
+	for _, p := range pdbs {
+		for _, d := range p.Metrics {
+			nextAxis := axisHelp.NewRow()
+			sheets.SetCellValue(sheet, nextAxis(), p.Hostname)
+			sheets.SetCellValue(sheet, nextAxis(), p.Dbname)
+			sheets.SetCellValue(sheet, nextAxis(), p.Pdbname)
+			sheets.SetCellValue(sheet, nextAxis(), p.Flag)
+
+			sheets.SetCellValue(sheet, nextAxis(), d.GetMetric())
+			sheets.SetCellValue(sheet, nextAxis(), d.GetObjectType())
+			sheets.SetCellValue(sheet, nextAxis(), d.GetSchema())
+			sheets.SetCellValue(sheet, nextAxis(), d.Count)
+		}
+	}
+
+	return sheets, err
 }

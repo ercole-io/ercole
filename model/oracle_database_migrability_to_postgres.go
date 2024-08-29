@@ -21,3 +21,27 @@ type PgsqlMigrability struct {
 	Schema     *string `json:"schema,omitempty" bson:"schema,omitempty"`
 	ObjectType *string `json:"objectType,omitempty" bson:"objectType,omitempty"`
 }
+
+func (pm PgsqlMigrability) GetMetric() string {
+	if pm.Metric == nil {
+		return ""
+	}
+
+	return *pm.Metric
+}
+
+func (pm PgsqlMigrability) GetSchema() string {
+	if pm.Schema == nil {
+		return ""
+	}
+
+	return *pm.Schema
+}
+
+func (pm PgsqlMigrability) GetObjectType() string {
+	if pm.ObjectType == nil {
+		return ""
+	}
+
+	return *pm.ObjectType
+}

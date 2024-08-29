@@ -19,6 +19,7 @@ import (
 	"net/http"
 
 	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/golang/gddo/httputil"
 	"github.com/gorilla/mux"
 )
 
@@ -49,13 +50,38 @@ func (ctrl *APIController) GetOraclePsqlMigrabilitiesSemaphore(w http.ResponseWr
 }
 
 func (ctrl *APIController) ListOracleDatabasePsqlMigrabilities(w http.ResponseWriter, r *http.Request) {
-	res, err := ctrl.Service.ListOracleDatabasePsqlMigrabilities()
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-		return
-	}
+	choice := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
 
-	utils.WriteJSONResponse(w, http.StatusOK, res)
+	switch choice {
+	case "application/json":
+		res, err := ctrl.Service.ListOracleDatabasePsqlMigrabilities()
+		if err != nil {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+			return
+		}
+
+		utils.WriteJSONResponse(w, http.StatusOK, res)
+	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+		db, err := ctrl.Service.ListOracleDatabasePsqlMigrabilities()
+		if err != nil {
+			utils.WriteJSONResponse(w, http.StatusBadRequest, err)
+			return
+		}
+
+		pdb, err := ctrl.Service.ListOracleDatabasePdbPsqlMigrabilities()
+		if err != nil {
+			utils.WriteJSONResponse(w, http.StatusBadRequest, err)
+			return
+		}
+
+		result, err := ctrl.Service.CreateOraclePsqlMigrabilitiesXlsx(db, pdb)
+		if err != nil {
+			utils.WriteJSONResponse(w, http.StatusBadRequest, err)
+			return
+		}
+
+		utils.WriteXLSXResponse(w, result)
+	}
 }
 
 func (ctrl *APIController) ListOracleDatabasePdbPsqlMigrabilities(w http.ResponseWriter, r *http.Request) {
