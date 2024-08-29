@@ -16,8 +16,11 @@ package service
 
 import (
 	"errors"
+	"strings"
 
+	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/utils/exutils"
 )
 
 func (as *APIService) GetOracleDatabasePoliciesAuditFlag(hostname, dbname string) (map[string][]string, error) {
@@ -40,4 +43,51 @@ func (as *APIService) GetOracleDatabasePoliciesAuditFlag(hostname, dbname string
 
 func (as *APIService) ListOracleDatabasePoliciesAudit() ([]dto.OraclePoliciesAuditListResponse, error) {
 	return as.Database.ListOracleDatabasePoliciesAudit()
+}
+
+func (as *APIService) CreateOraclePoliciesAuditXlsx(dbs []dto.OraclePoliciesAuditListResponse, pdbs []dto.OraclePdbPoliciesAuditListResponse) (*excelize.File, error) {
+	sheet := "policies audit"
+	headers := []string{
+		"Hostname",
+		"Db Name",
+		"Pdb Name",
+		"Flag",
+		"Policies Audit Retrieved From DB",
+		"Policies Audit Configured on Ercole",
+		"Matched",
+		"Not Matched",
+	}
+
+	sheets, err := exutils.NewXLSX(as.Config, sheet, headers...)
+	if err != nil {
+		return nil, err
+	}
+
+	axisHelp := exutils.NewAxisHelper(1)
+
+	for _, val := range dbs {
+		nextAxis := axisHelp.NewRow()
+		sheets.SetCellValue(sheet, nextAxis(), val.Hostname)
+		sheets.SetCellValue(sheet, nextAxis(), val.DbName)
+		sheets.SetCellValue(sheet, nextAxis(), "")
+		sheets.SetCellValue(sheet, nextAxis(), val.Flag)
+		sheets.SetCellValue(sheet, nextAxis(), strings.Join(val.PoliciesAudit, ","))
+		sheets.SetCellValue(sheet, nextAxis(), strings.Join(val.PoliciesAuditConfigured, ","))
+		sheets.SetCellValue(sheet, nextAxis(), strings.Join(val.Matched, ","))
+		sheets.SetCellValue(sheet, nextAxis(), strings.Join(val.NotMatched, ","))
+	}
+
+	for _, val := range pdbs {
+		nextAxis := axisHelp.NewRow()
+		sheets.SetCellValue(sheet, nextAxis(), val.Hostname)
+		sheets.SetCellValue(sheet, nextAxis(), val.DbName)
+		sheets.SetCellValue(sheet, nextAxis(), val.PdbName)
+		sheets.SetCellValue(sheet, nextAxis(), val.Flag)
+		sheets.SetCellValue(sheet, nextAxis(), strings.Join(val.PoliciesAudit, ","))
+		sheets.SetCellValue(sheet, nextAxis(), strings.Join(val.PoliciesAuditConfigured, ","))
+		sheets.SetCellValue(sheet, nextAxis(), strings.Join(val.Matched, ","))
+		sheets.SetCellValue(sheet, nextAxis(), strings.Join(val.NotMatched, ","))
+	}
+
+	return sheets, err
 }
