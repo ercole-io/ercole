@@ -18,6 +18,7 @@ import (
 	"net/http"
 
 	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/golang/gddo/httputil"
 	"github.com/gorilla/mux"
 )
 
@@ -35,11 +36,36 @@ func (ctrl *APIController) GetOraclePoliciesAudit(w http.ResponseWriter, r *http
 }
 
 func (ctrl *APIController) ListOraclePoliciesAudit(w http.ResponseWriter, r *http.Request) {
-	resp, err := ctrl.Service.ListOracleDatabasePoliciesAudit()
-	if err != nil {
-		utils.WriteJSONResponse(w, http.StatusBadRequest, err)
-		return
-	}
+	choice := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
 
-	utils.WriteJSONResponse(w, http.StatusOK, resp)
+	switch choice {
+	case "application/json":
+		resp, err := ctrl.Service.ListOracleDatabasePoliciesAudit()
+		if err != nil {
+			utils.WriteJSONResponse(w, http.StatusBadRequest, err)
+			return
+		}
+
+		utils.WriteJSONResponse(w, http.StatusOK, resp)
+	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+		db, err := ctrl.Service.ListOracleDatabasePoliciesAudit()
+		if err != nil {
+			utils.WriteJSONResponse(w, http.StatusBadRequest, err)
+			return
+		}
+
+		pdb, err := ctrl.Service.ListOracleDatabasePdbPoliciesAudit()
+		if err != nil {
+			utils.WriteJSONResponse(w, http.StatusBadRequest, err)
+			return
+		}
+
+		result, err := ctrl.Service.CreateOraclePoliciesAuditXlsx(db, pdb)
+		if err != nil {
+			utils.WriteJSONResponse(w, http.StatusBadRequest, err)
+			return
+		}
+
+		utils.WriteXLSXResponse(w, result)
+	}
 }

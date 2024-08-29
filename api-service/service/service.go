@@ -190,6 +190,8 @@ type APIServiceInterface interface {
 	ListOracleDatabasePoliciesAudit() ([]dto.OraclePoliciesAuditListResponse, error)
 	ListOracleDatabasePdbPoliciesAudit() ([]dto.OraclePdbPoliciesAuditListResponse, error)
 
+	CreateOraclePoliciesAuditXlsx(dbs []dto.OraclePoliciesAuditListResponse, pdbs []dto.OraclePdbPoliciesAuditListResponse) (*excelize.File, error)
+
 	GetOracleDatabasePoliciesAuditFlag(hostname, dbname string) (map[string][]string, error)
 	GetOracleDatabasePdbPoliciesAuditFlag(hostname, dbname, pdbname string) (map[string][]string, error)
 
