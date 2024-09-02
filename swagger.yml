@@ -2534,8 +2534,8 @@ components:
                 type: string
               value:
                 type: string
-        resolutionLevel:
-          type: string
+        optimizationScore:
+          type: integer
 
     GcpError:
       type: object

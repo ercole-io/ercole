@@ -78,7 +78,7 @@ func (ts *ThunderService) CreateGcpRecommendationsXlsx() (*excelize.File, error)
 		"Profile ID",
 		"Resource Name",
 		"Resource ID",
-		"Resolution Level",
+		"Optimization Score",
 		"Cpu Average",
 		"Cpu Max",
 		"Instance Name",
@@ -106,7 +106,7 @@ func (ts *ThunderService) CreateGcpRecommendationsXlsx() (*excelize.File, error)
 		sheets.SetCellValue(sheet, fmt.Sprintf("E%d", i), val.ProfileID.Hex())
 		sheets.SetCellValue(sheet, fmt.Sprintf("F%d", i), val.ResourceName)
 		sheets.SetCellValue(sheet, fmt.Sprintf("G%d", i), fmt.Sprintf("%v", val.ResourceID))
-		sheets.SetCellValue(sheet, fmt.Sprintf("H%d", i), val.ResolutionLevel)
+		sheets.SetCellValue(sheet, fmt.Sprintf("H%d", i), val.OptimizationScore)
 
 		if v, ok := val.Details["Cpu Average"]; ok {
 			sheets.SetCellValue(sheet, fmt.Sprintf("I%d", i), v)
