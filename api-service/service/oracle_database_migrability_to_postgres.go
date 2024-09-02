@@ -16,6 +16,10 @@
 package service
 
 import (
+	"bytes"
+	"fmt"
+	"sync"
+
 	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
@@ -87,6 +91,10 @@ func (as *APIService) ListOracleDatabasePdbPsqlMigrabilities() ([]dto.OracleData
 }
 
 func (as *APIService) CreateOraclePsqlMigrabilitiesXlsx(dbs []dto.OracleDatabasePgsqlMigrability, pdbs []dto.OracleDatabasePdbPgsqlMigrability) (*excelize.File, error) {
+	var buffer bytes.Buffer
+
+	addToBuffer(&buffer, dbs, pdbs)
+
 	sheet := "Psql Migrabilities"
 	headers := []string{
 		"Hostname",
@@ -104,37 +112,70 @@ func (as *APIService) CreateOraclePsqlMigrabilitiesXlsx(dbs []dto.OracleDatabase
 		return nil, err
 	}
 
-	axisHelp := exutils.NewAxisHelper(1)
+	content := buffer.Bytes()
 
-	for _, m := range dbs {
-		for _, d := range m.Metrics {
-			nextAxis := axisHelp.NewRow()
-			sheets.SetCellValue(sheet, nextAxis(), m.Hostname)
-			sheets.SetCellValue(sheet, nextAxis(), m.Dbname)
-			sheets.SetCellValue(sheet, nextAxis(), "")
-			sheets.SetCellValue(sheet, nextAxis(), m.Flag)
+	for i, line := range bytes.Split([]byte(content), []byte("\n")) {
+		i += 2
 
-			sheets.SetCellValue(sheet, nextAxis(), d.GetMetric())
-			sheets.SetCellValue(sheet, nextAxis(), d.GetObjectType())
-			sheets.SetCellValue(sheet, nextAxis(), d.GetSchema())
-			sheets.SetCellValue(sheet, nextAxis(), d.Count)
-		}
-	}
+		splitted := bytes.Split(line, []byte("|"))
 
-	for _, p := range pdbs {
-		for _, d := range p.Metrics {
-			nextAxis := axisHelp.NewRow()
-			sheets.SetCellValue(sheet, nextAxis(), p.Hostname)
-			sheets.SetCellValue(sheet, nextAxis(), p.Dbname)
-			sheets.SetCellValue(sheet, nextAxis(), p.Pdbname)
-			sheets.SetCellValue(sheet, nextAxis(), p.Flag)
-
-			sheets.SetCellValue(sheet, nextAxis(), d.GetMetric())
-			sheets.SetCellValue(sheet, nextAxis(), d.GetObjectType())
-			sheets.SetCellValue(sheet, nextAxis(), d.GetSchema())
-			sheets.SetCellValue(sheet, nextAxis(), d.Count)
+		if len(splitted) >= 8 {
+			sheets.SetCellValue(sheet, fmt.Sprintf("A%d", i), string(splitted[0]))
+			sheets.SetCellValue(sheet, fmt.Sprintf("B%d", i), string(splitted[1]))
+			sheets.SetCellValue(sheet, fmt.Sprintf("C%d", i), string(splitted[2]))
+			sheets.SetCellValue(sheet, fmt.Sprintf("D%d", i), string(splitted[3]))
+			sheets.SetCellValue(sheet, fmt.Sprintf("E%d", i), string(splitted[4]))
+			sheets.SetCellValue(sheet, fmt.Sprintf("F%d", i), string(splitted[5]))
+			sheets.SetCellValue(sheet, fmt.Sprintf("G%d", i), string(splitted[6]))
+			sheets.SetCellValue(sheet, fmt.Sprintf("H%d", i), string(splitted[7]))
 		}
 	}
 
 	return sheets, err
+}
+
+func addToBuffer(buffer *bytes.Buffer, data ...interface{}) {
+	var wg sync.WaitGroup
+
+	var mu sync.Mutex
+
+	processSlice := func(data interface{}) {
+		defer wg.Done()
+
+		var localBuffer bytes.Buffer
+
+		switch data := data.(type) {
+		case []dto.OracleDatabasePgsqlMigrability:
+			for _, db := range data {
+				for _, m := range db.Metrics {
+					localBuffer.WriteString(fmt.Sprintf("%s|%s|%s|%s|%s|%s|%s|%d\n",
+						db.Hostname, db.Dbname, "", db.Flag, m.GetMetric(), m.GetObjectType(), m.GetSchema(), m.Count))
+				}
+			}
+
+		case []dto.OracleDatabasePdbPgsqlMigrability:
+			for _, pdb := range data {
+				for _, m := range pdb.Metrics {
+					localBuffer.WriteString(fmt.Sprintf("%s|%s|%s|%s|%s|%s|%s|%d\n",
+						pdb.Hostname, pdb.Dbname, pdb.Pdbname, pdb.Flag, m.GetMetric(), m.GetObjectType(), m.GetSchema(), m.Count))
+				}
+			}
+
+		default:
+			fmt.Printf("type: %T\n", data)
+			return
+		}
+
+		mu.Lock()
+		buffer.Write(localBuffer.Bytes())
+		mu.Unlock()
+	}
+
+	for _, d := range data {
+		wg.Add(1)
+
+		go processSlice(d)
+	}
+
+	wg.Wait()
 }
