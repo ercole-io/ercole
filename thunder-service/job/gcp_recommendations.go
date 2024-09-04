@@ -39,6 +39,7 @@ func (job *GcpDataRetrieveJob) AuditInstancePoint(queryType string, points []*mo
 		return model.CountValue{
 			IsOptimizable: true,
 			Count:         counter,
+			TargetValue:   int(job.Config.ThunderService.GcpDataRetrieveJob.AvgCpuUtilizationThreshold),
 		}
 
 	case "max_cpu":
@@ -58,6 +59,7 @@ func (job *GcpDataRetrieveJob) AuditInstancePoint(queryType string, points []*mo
 		return model.CountValue{
 			IsOptimizable: true,
 			Count:         counter,
+			TargetValue:   int(job.Config.ThunderService.GcpDataRetrieveJob.MaxCpuUtilizationThreshold),
 		}
 	}
 
@@ -292,6 +294,7 @@ func (job *GcpDataRetrieveJob) AuditMaxMemPoint(machineType *compute.MachineType
 	return model.CountValue{
 		IsOptimizable: true,
 		Count:         counter,
+		TargetValue:   int(job.Config.ThunderService.GcpDataRetrieveJob.MaxMemUtilizationThreshold),
 	}
 }
 
@@ -301,4 +304,16 @@ func (job *GcpDataRetrieveJob) AddRecommendation(recommendation model.GcpRecomme
 
 func (job *GcpDataRetrieveJob) AddError(gcperror model.GcpError) error {
 	return job.Database.AddGcpError(gcperror)
+}
+
+func (job *GcpDataRetrieveJob) GetOptimizationScore(percentages ...float64) int {
+	var sum float64
+
+	for _, p := range percentages {
+		sum += p
+	}
+
+	avg := sum / float64(len(percentages))
+
+	return 100 - int(avg)
 }

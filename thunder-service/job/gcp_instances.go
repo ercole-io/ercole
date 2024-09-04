@@ -84,6 +84,12 @@ func (job *GcpDataRetrieveJob) FetchGcpInstanceRightsizing(ctx context.Context, 
 	optimizable := avgcpumetrics.IsOptimizable && maxcpumetrics.IsOptimizable && maxmemmetrics.IsOptimizable
 
 	if optimizable {
+		job.Log.Debugf("avgcpumetrics percentage: %.2f", avgcpumetrics.GetPercentage())
+		job.Log.Debugf("maxcpumetrics percentage: %.2f", maxcpumetrics.GetPercentage())
+		job.Log.Debugf("maxmemmetrics percentage: %.2f", maxmemmetrics.GetPercentage())
+
+		optimizationScore := job.GetOptimizationScore(avgcpumetrics.GetPercentage(), maxcpumetrics.GetPercentage(), maxmemmetrics.GetPercentage())
+
 		ch <- model.GcpRecommendation{
 			SeqValue:     seqValue,
 			CreatedAt:    time.Now(),
@@ -100,16 +106,17 @@ func (job *GcpDataRetrieveJob) FetchGcpInstanceRightsizing(ctx context.Context, 
 				"Cpu Average": fmt.Sprintf("%%Cpu Average 90dd - Number of Threshold Reached (>%d%%): %d/%d",
 					job.Config.ThunderService.GcpDataRetrieveJob.AvgCpuPercentage,
 					avgcpumetrics.Count,
-					job.Config.ThunderService.GcpDataRetrieveJob.AvgCpuUtilizationThreshold),
+					avgcpumetrics.TargetValue),
 				"Cpu Max": fmt.Sprintf("%%Cpu Max 7dd - Number of Threshold Reached (>%d%%): %d/%d",
 					job.Config.ThunderService.GcpDataRetrieveJob.MaxCpuPercentage,
 					maxcpumetrics.Count,
-					job.Config.ThunderService.GcpDataRetrieveJob.MaxCpuUtilizationThreshold),
+					maxcpumetrics.TargetValue),
 				"Mem Max": fmt.Sprintf("%%Memory Average 7dd - Number of Threshold Reached (>%d%%): %d/%d",
 					job.Config.ThunderService.GcpDataRetrieveJob.MaxMemPercentage,
 					maxmemmetrics.Count,
-					job.Config.ThunderService.GcpDataRetrieveJob.MaxMemUtilizationThreshold),
+					maxmemmetrics.TargetValue),
 			},
+			OptimizationScore: optimizationScore,
 		}
 	}
 }

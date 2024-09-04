@@ -81,7 +81,7 @@ func (job *GcpDataRetrieveJob) FetchGcpStorageDisk(ctx context.Context, gcpDisk 
 		job.Log.Debugf("rthroughput percentage: %.2f", maxReadThroughput.GetPercentage())
 		job.Log.Debugf("wthroughput percentage: %.2f", maxWriteThroughput.GetPercentage())
 
-		optimizationScore := getOptimizationScore(maxReadIops.GetPercentage(), maxWriteIops.GetPercentage(), maxReadThroughput.GetPercentage(), maxWriteThroughput.GetPercentage())
+		optimizationScore := job.GetOptimizationScore(maxReadIops.GetPercentage(), maxWriteIops.GetPercentage(), maxReadThroughput.GetPercentage(), maxWriteThroughput.GetPercentage())
 
 		ch <- model.GcpRecommendation{
 			SeqValue:     seqValue,
@@ -89,7 +89,7 @@ func (job *GcpDataRetrieveJob) FetchGcpStorageDisk(ctx context.Context, gcpDisk 
 			ProfileID:    gcpDisk.ProfileID,
 			ResourceID:   gcpDisk.GetId(),
 			ResourceName: gcpDisk.GetName(),
-			Category:     "Storage",
+			Category:     "Block Storage Rightsizing",
 			Suggestion:   "Resize Oversized Disk",
 			ProjectID:    gcpDisk.ProjectId,
 			ProjectName:  gcpDisk.Project.Name,
@@ -106,16 +106,4 @@ func (job *GcpDataRetrieveJob) FetchGcpStorageDisk(ctx context.Context, gcpDisk 
 			OptimizationScore: optimizationScore,
 		}
 	}
-}
-
-func getOptimizationScore(percentages ...float64) int {
-	var sum float64
-
-	for _, p := range percentages {
-		sum += p
-	}
-
-	avg := sum / float64(len(percentages))
-
-	return 100 - int(avg)
 }
