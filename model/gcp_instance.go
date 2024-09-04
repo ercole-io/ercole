@@ -76,4 +76,9 @@ func (i GcpInstance) IsSharedCore() bool {
 type CountValue struct {
 	IsOptimizable bool
 	Count         int
+	TargetValue   int
+}
+
+func (c CountValue) GetPercentage() float64 {
+	return float64(c.Count) / float64(c.TargetValue) * 100
 }

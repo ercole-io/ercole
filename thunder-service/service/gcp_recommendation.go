@@ -77,11 +77,11 @@ func (ts *ThunderService) CreateGcpRecommendationsXlsx() (*excelize.File, error)
 		"Project Name",
 		"Profile ID",
 		"Resource Name",
+		"Instance Name",
 		"Resource ID",
 		"Optimization Score",
 		"Cpu Average",
 		"Cpu Max",
-		"Instance Name",
 		"Mem Max",
 		"Block Storage Name",
 		"IOPS R MAX 5DD",
@@ -89,7 +89,7 @@ func (ts *ThunderService) CreateGcpRecommendationsXlsx() (*excelize.File, error)
 		"Size GB",
 		"THROUGHPUT R MAX 5DD (MiBps)",
 		"THROUGHPUT W MAX 5DD (MiBps)",
-		"storage type",
+		"Storage Type",
 	}
 
 	sheets, err := exutils.NewXLSX(ts.Config, sheet, headers...)
@@ -105,18 +105,19 @@ func (ts *ThunderService) CreateGcpRecommendationsXlsx() (*excelize.File, error)
 		sheets.SetCellValue(sheet, fmt.Sprintf("D%d", i), val.ProjectName)
 		sheets.SetCellValue(sheet, fmt.Sprintf("E%d", i), val.ProfileID.Hex())
 		sheets.SetCellValue(sheet, fmt.Sprintf("F%d", i), val.ResourceName)
-		sheets.SetCellValue(sheet, fmt.Sprintf("G%d", i), fmt.Sprintf("%v", val.ResourceID))
-		sheets.SetCellValue(sheet, fmt.Sprintf("H%d", i), val.OptimizationScore)
 
-		if v, ok := val.Details["Cpu Average"]; ok {
-			sheets.SetCellValue(sheet, fmt.Sprintf("I%d", i), v)
+		if v, ok := val.Details["Instance Name"]; ok {
+			sheets.SetCellValue(sheet, fmt.Sprintf("G%d", i), v)
 		}
 
-		if v, ok := val.Details["Cpu Max"]; ok {
+		sheets.SetCellValue(sheet, fmt.Sprintf("H%d", i), fmt.Sprintf("%v", val.ResourceID))
+		sheets.SetCellValue(sheet, fmt.Sprintf("I%d", i), val.OptimizationScore)
+
+		if v, ok := val.Details["Cpu Average"]; ok {
 			sheets.SetCellValue(sheet, fmt.Sprintf("J%d", i), v)
 		}
 
-		if v, ok := val.Details["Instance Name"]; ok {
+		if v, ok := val.Details["Cpu Max"]; ok {
 			sheets.SetCellValue(sheet, fmt.Sprintf("K%d", i), v)
 		}
 
