@@ -48,9 +48,11 @@ func (as *APIService) ListManagedTechnologies(sortBy string, sortDesc bool, loca
 		totCompliance += lc.Compliance
 	}
 
-	newAvgPercentage := totCompliance / float64(len(licCompliances))
+	if len(licCompliances) > 0 {
+		newAvgPercentage := totCompliance / float64(len(licCompliances))
 
-	oracleStatus.NewAvgPercentage = newAvgPercentage
+		oracleStatus.NewAvgPercentage = newAvgPercentage
+	}
 
 	statuses = append(statuses, *oracleStatus)
 
