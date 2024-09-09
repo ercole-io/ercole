@@ -80,6 +80,10 @@ func (job *AwsDataRetrieveJob) FetchBucketLifecycleConfiguration(bucketName stri
 				go job.sumSize(bucketObject.Contents[objLen/2:], c)
 				objSum := <-c + <-c
 
+				if objSum < 500_000_000_000 {
+					return nil
+				}
+
 				awsRecommendation := model.AwsRecommendation{
 					SeqValue:   seqValue,
 					ProfileID:  profileID,
