@@ -180,6 +180,18 @@ func (md *MongoDatabase) SearchAlerts(alertFilter alert_filter.Alert) (*dto.Pagi
 				}),
 			)),
 
+			bson.M{
+				"$addFields": bson.M{
+					"daysFromCreation": bson.M{
+						"$dateDiff": bson.M{
+							"startDate": "$date",
+							"endDate":   "$$NOW",
+							"unit":      "day",
+						},
+					},
+				},
+			},
+
 			mu.APOptionalSortingStage(alertFilter.SortBy, alertFilter.SortDesc),
 
 			bson.M{
