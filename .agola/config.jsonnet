@@ -325,7 +325,7 @@ local task_build_push_image(push) =
             arch: 'amd64',
             containers: [
               { image: 'golang:1.20' },
-              { image: 'mongo:4' },
+              { image: 'mongo:6' },
             ],
           },
           environment: {
