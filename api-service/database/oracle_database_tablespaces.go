@@ -36,7 +36,7 @@ func (md *MongoDatabase) FindAllOracleDatabaseTablespaces(filter dto.GlobalFilte
 			bson.M{"$project": bson.M{
 				"hostname": 1,
 				"name":     "$features.oracle.database.databases.tablespaces.name",
-				"maxSize":  "$features.oracle.database.databases.tablespaces.maxSize  ",
+				"maxSize":  "$features.oracle.database.databases.tablespaces.maxSize",
 				"total":    "$features.oracle.database.databases.tablespaces.total",
 				"used":     "$features.oracle.database.databases.tablespaces.used",
 				"usedPerc": "$features.oracle.database.databases.tablespaces.usedPerc",
