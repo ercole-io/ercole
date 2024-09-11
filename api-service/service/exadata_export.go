@@ -56,9 +56,11 @@ func (as APIService) GetAllExadataInstanceAsXlsx() (*excelize.File, error) {
 				file.SetCellValue(memorysheet, nextAxis(), component.HostID)
 				file.SetCellValue(memorysheet, nextAxis(), component.Memory)
 				file.SetCellValue(memorysheet, nextAxis(), component.UsedRAM)
+				file.SetCellValue(memorysheet, nextAxis(), component.ReservedMemory)
 				file.SetCellValue(memorysheet, nextAxis(), component.UsedRAMPercentage)
 				file.SetCellValue(memorysheet, nextAxis(), component.TotalCPU)
 				file.SetCellValue(memorysheet, nextAxis(), component.UsedCPU)
+				file.SetCellValue(memorysheet, nextAxis(), component.ReservedCPU)
 				file.SetCellValue(memorysheet, nextAxis(), component.UsedCPUPercentage)
 
 			case component.HostType == model.STORAGE_CELL:
