@@ -183,10 +183,16 @@ func (md *MongoDatabase) SearchAlerts(alertFilter alert_filter.Alert) (*dto.Pagi
 			bson.M{
 				"$addFields": bson.M{
 					"daysFromCreation": bson.M{
-						"$dateDiff": bson.M{
-							"startDate": "$date",
-							"endDate":   "$$NOW",
-							"unit":      "day",
+						"$trunc": bson.M{
+							"$divide": bson.A{
+								bson.M{
+									"$subtract": bson.A{
+										"$$NOW",
+										"$date",
+									},
+								},
+								24 * 60 * 60 * 1000, // number of milliseconds in a day
+							},
 						},
 					},
 				},
