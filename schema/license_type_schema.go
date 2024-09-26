@@ -31,14 +31,13 @@ import (
 var licenseTypeSchema string
 
 func ValidateLicenseType(raw []byte) error {
-	if schema == nil {
-		if err := loadLicenseTypeSchema(); err != nil {
-			return err
-		}
+	schemaLoader, err := loadLicenseTypeSchema()
+	if err != nil {
+		return nil
 	}
 
 	documentLoader := gojsonschema.NewBytesLoader(raw)
-	result, err := schema.Validate(documentLoader)
+	result, err := schemaLoader.Validate(documentLoader)
 
 	syntaxErr := &json.SyntaxError{}
 	if errors.As(err, &syntaxErr) {
@@ -65,14 +64,14 @@ func ValidateLicenseType(raw []byte) error {
 	return nil
 }
 
-func loadLicenseTypeSchema() error {
+func loadLicenseTypeSchema() (*gojsonschema.Schema, error) {
 	sl := gojsonschema.NewSchemaLoader()
 
 	schemas := []string{licenseTypeSchema}
 	for i := range schemas {
 		jl := gojsonschema.NewStringLoader(schemas[i])
 		if err := sl.AddSchemas(jl); err != nil {
-			return utils.NewError(err, "Wrong license type schema: [%s]", schemas[i])
+			return nil, utils.NewError(err, "Wrong license type schema: [%s]", schemas[i])
 		}
 	}
 
@@ -80,10 +79,10 @@ func loadLicenseTypeSchema() error {
 
 	var err error
 
-	schema, err = sl.Compile(licenseType)
+	licenseTypeSchema, err := sl.Compile(licenseType)
 	if err != nil {
-		return utils.NewError(err, "Wrong license type schema: can't load or compile it")
+		return nil, utils.NewError(err, "Wrong license type schema: can't load or compile it")
 	}
 
-	return nil
+	return licenseTypeSchema, nil
 }
