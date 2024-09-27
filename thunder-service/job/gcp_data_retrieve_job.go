@@ -115,11 +115,9 @@ func (job *GcpDataRetrieveJob) Run() {
 		projectCh := make(chan *cloudresourcemanager.Project, len(projects))
 
 		for _, project := range projects {
-			if project.ProjectId == job.Config.ThunderService.GcpDataRetrieveJob.ProjectID {
-				projectWg.Add(1)
+			projectWg.Add(1)
 
-				go worker(project, &projectWg, projectCh)
-			}
+			go worker(project, &projectWg, projectCh)
 		}
 
 		go func() {

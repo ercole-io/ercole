@@ -269,12 +269,9 @@ type GcpDataRetrieveJob struct {
 	// RunAtStartup contains true if the job should run when the service start, otherwise false
 	RunAtStartup bool
 	// *Threshold contain the number of times that indicates a significant value
-	AvgCpuUtilizationThreshold uint
-	MaxCpuUtilizationThreshold uint
-	MaxMemUtilizationThreshold uint
-
-	ProjectID string
-
+	AvgCpuUtilizationThreshold  uint
+	MaxCpuUtilizationThreshold  uint
+	MaxMemUtilizationThreshold  uint
 	AvgCpuPercentage            uint
 	MaxCpuPercentage            uint
 	MaxMemPercentage            uint
