@@ -106,12 +106,20 @@ type AlertService struct {
 	// Emailer contains the settings about the emailer
 	Emailer Emailer
 
-	AckAlertJob AckAlertJob
+	AckAlertJob    AckAlertJob
+	RemoveAlertJob RemoveAlertJob
 }
 
 type AckAlertJob struct {
 	Crontab      string
 	RunAtStartup bool
+	DueDays      int
+}
+
+type RemoveAlertJob struct {
+	Crontab      string
+	RunAtStartup bool
+	DueDays      int
 }
 
 // APIService contains configuration about the api service

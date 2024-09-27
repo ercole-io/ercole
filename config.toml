@@ -41,6 +41,12 @@ QueueBufferSize = 10240
   [AlertService.AckAlertJob]
   Crontab = "@daily"
   RunAtStartup = false
+  DueDays = 60
+
+  [AlertService.RemoveAlertJob]
+  Crontab = "@daily"
+  RunAtStartup = false
+  DueDays = 90
 
   [AlertService.Emailer]
   Enabled = false

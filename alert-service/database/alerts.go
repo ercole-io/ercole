@@ -55,16 +55,36 @@ func (md *MongoDatabase) ExistNoDataAlertByHost(hostname string) (bool, error) {
 	return val > 0, nil
 }
 
-func (md *MongoDatabase) AckOldAlerts() (*mongo.UpdateResult, error) {
+func (md *MongoDatabase) AckOldAlerts(dueDays int) (*mongo.UpdateResult, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	expiredDate := md.TimeNow().AddDate(0, -2, 0)
+	expiredDate := md.TimeNow().AddDate(0, 0, -dueDays)
 	filter := bson.M{"date": bson.M{"$lt": expiredDate}}
 	update := bson.M{"$set": bson.M{"alertStatus": "ACK"}}
 
 	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("alerts").
 		UpdateMany(ctx, filter, update)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
+func (md *MongoDatabase) RemoveOldAlerts(dueDays int) (*mongo.DeleteResult, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	expiredDate := md.TimeNow().AddDate(0, 0, -dueDays)
+	filter := bson.M{
+		"date":        bson.M{"$lt": expiredDate},
+		"alertStatus": "ACK",
+	}
+
+	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("alerts").
+		DeleteMany(ctx, filter)
 
 	if err != nil {
 		return nil, err

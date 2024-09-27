@@ -30,4 +30,13 @@ func (j *Job) Init() {
 	if j.Config.AlertService.AckAlertJob.RunAtStartup {
 		jobrunner.Now(&ackAlertJob)
 	}
+
+	removeAlertJob := RemoveAlertJob{Database: j.Database, Config: j.Config, Log: j.Log}
+	if err := jobrunner.Schedule(j.Config.AlertService.RemoveAlertJob.Crontab, &removeAlertJob); err != nil {
+		j.Log.Errorf("something went wrong scheduling removeAlertJob: %v", err)
+	}
+
+	if j.Config.AlertService.RemoveAlertJob.RunAtStartup {
+		jobrunner.Now(&removeAlertJob)
+	}
 }

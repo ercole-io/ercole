@@ -6,18 +6,18 @@ import (
 	"github.com/ercole-io/ercole/v2/logger"
 )
 
-type AckAlertJob struct {
+type RemoveAlertJob struct {
 	Database database.MongoDatabaseInterface
 	Config   config.Configuration
 	Log      logger.Logger
 }
 
-func (j *AckAlertJob) Run() {
-	res, err := j.Database.AckOldAlerts(j.Config.AlertService.AckAlertJob.DueDays)
+func (j *RemoveAlertJob) Run() {
+	res, err := j.Database.RemoveOldAlerts(j.Config.AlertService.AckAlertJob.DueDays)
 	if err != nil {
-		j.Log.Errorf("ack alert job", err)
+		j.Log.Errorf("remove alert job", err)
 		return
 	}
 
-	j.Log.Infof("matched %v documents and modified %v document\n", res.MatchedCount, res.ModifiedCount)
+	j.Log.Infof("removed %d documents", res.DeletedCount)
 }
