@@ -53,7 +53,7 @@ func (job *GcpDataRetrieveJob) IsMaxCpuUtilizationOptimizable(ctx context.Contex
 		return nil, err
 	}
 
-	if series.Points != nil {
+	if series != nil && series.Points != nil {
 		countVal := job.AuditInstancePoint("max_cpu", series.Points)
 		return &countVal, nil
 	}
