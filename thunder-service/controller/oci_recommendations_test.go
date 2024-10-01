@@ -80,7 +80,7 @@ func TestGetOciRecommendations_Success(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusOK, rr.Code)
-	assert.JSONEq(t, utils.ToJSON(map[string]interface{}{"recommendations": expectedRes}), rr.Body.String())
+	assert.JSONEq(t, utils.ToJSON(map[string]interface{}{"recommendations": expectedRes, "error": nil}), rr.Body.String())
 }
 
 func TestGetOciRecommendations_ClusterNotFoundError(t *testing.T) {

@@ -23,6 +23,7 @@ import (
 
 	"github.com/ercole-io/ercole/v2/thunder-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/golang/gddo/httputil"
 	"github.com/gorilla/mux"
 )
 
@@ -46,21 +47,27 @@ func (ctrl *ThunderController) GetAwsRecommendations(w http.ResponseWriter, r *h
 		return
 	}
 
-	if err == nil {
+	recommendationsDto := dto.ToAwsRecommendationsDto(recommendations)
+
+	choice := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
+
+	switch choice {
+	case "application/json":
 		response := map[string]interface{}{
-			"recommendations": dto.ToAwsRecommendationsDto(recommendations),
+			"recommendations": recommendationsDto,
+			"error":           err,
 		}
+
 		utils.WriteJSONResponse(w, http.StatusOK, response)
+	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+		response, err := ctrl.Service.WriteAwsRecommendationsXlsx(recommendationsDto)
+		if err != nil {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+			return
+		}
 
-		return
+		utils.WriteXLSXResponse(w, response)
 	}
-
-	response := map[string]interface{}{
-		"recommendations": dto.ToAwsRecommendationsDto(recommendations),
-		"error":           err.Error(),
-	}
-
-	utils.WriteJSONResponse(w, http.StatusPartialContent, response)
 }
 
 func (ctrl *ThunderController) GetAwsRecommendationsErrors(w http.ResponseWriter, r *http.Request) {

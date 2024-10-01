@@ -21,6 +21,7 @@ import (
 	"net/http"
 
 	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/golang/gddo/httputil"
 )
 
 //GetOciRecommendations get recommendation related to cloud from Ercole
@@ -43,21 +44,25 @@ func (ctrl *ThunderController) GetOciRecommendations(w http.ResponseWriter, r *h
 		return
 	}
 
-	if err == nil {
+	choice := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
+
+	switch choice {
+	case "application/json":
 		response := map[string]interface{}{
 			"recommendations": recommendations,
+			"error":           err,
 		}
+
 		utils.WriteJSONResponse(w, http.StatusOK, response)
+	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+		response, err := ctrl.Service.WriteOciRecommendationsXlsx(recommendations)
+		if err != nil {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+			return
+		}
 
-		return
+		utils.WriteXLSXResponse(w, response)
 	}
-
-	response := map[string]interface{}{
-		"recommendations": recommendations,
-		"error":           err.Error(),
-	}
-
-	utils.WriteJSONResponse(w, http.StatusPartialContent, response)
 }
 
 func (ctrl *ThunderController) ForceGetOciRecommendations(w http.ResponseWriter, r *http.Request) {

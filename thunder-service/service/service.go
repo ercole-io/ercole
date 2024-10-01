@@ -40,6 +40,7 @@ type ThunderServiceInterface interface {
 	DeleteOciProfile(id primitive.ObjectID) error
 	GetOciObjects() ([]model.OciObjects, error)
 	GetOciRecommendations() ([]model.OciRecommendation, error)
+	WriteOciRecommendationsXlsx(recommendations []model.OciRecommendation) (*excelize.File, error)
 	ForceGetOciRecommendations() error
 	GetOciRecommendationErrors(seqNum uint64) ([]model.OciRecommendationError, error)
 	SelectOciProfile(profileId string, selected bool) error
@@ -52,6 +53,7 @@ type ThunderServiceInterface interface {
 	GetLastAwsRecommendations() ([]model.AwsRecommendation, error)
 	GetAwsRecommendationsBySeqValue(seqValue uint64) ([]model.AwsRecommendation, error)
 	ForceGetAwsRecommendations() error
+	WriteAwsRecommendationsXlsx(recommendations []dto.AwsRecommendationDto) (*excelize.File, error)
 	GetLastAwsObjects() ([]model.AwsObject, error)
 	AddAzureProfile(profile model.AzureProfile) (*model.AzureProfile, error)
 	UpdateAzureProfile(profile model.AzureProfile) (*model.AzureProfile, error)
