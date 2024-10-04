@@ -59,5 +59,5 @@ func (job *GcpDataRetrieveJob) IsAvgCpuUtilizationOptimizable(ctx context.Contex
 		return &countVal, nil
 	}
 
-	return nil, nil
+	return &model.CountValue{IsOptimizable: false}, nil
 }

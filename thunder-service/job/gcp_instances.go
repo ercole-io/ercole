@@ -63,6 +63,8 @@ func (job *GcpDataRetrieveJob) GetInstances(ctx context.Context, projectID strin
 func (job *GcpDataRetrieveJob) FetchGcpInstanceRightsizing(ctx context.Context, gcpInstance model.GcpInstance, seqValue uint64, wg *sync.WaitGroup, ch chan<- model.GcpRecommendation) {
 	defer wg.Done()
 
+	job.Log.Debugf("analyzing instance %v-%s", gcpInstance.GetId(), gcpInstance.GetName())
+
 	avgcpumetrics, err := job.IsAvgCpuUtilizationOptimizable(ctx, gcpInstance)
 	if err != nil {
 		job.Log.Error(err)
@@ -82,6 +84,8 @@ func (job *GcpDataRetrieveJob) FetchGcpInstanceRightsizing(ctx context.Context, 
 	}
 
 	optimizable := avgcpumetrics.IsOptimizable && maxcpumetrics.IsOptimizable && maxmemmetrics.IsOptimizable
+
+	job.Log.Debugf("instance %v-%s is optimizable: %t", gcpInstance.GetId(), gcpInstance.GetName(), optimizable)
 
 	if optimizable {
 		job.Log.Debugf("avgcpumetrics percentage: %.2f", avgcpumetrics.GetPercentage())
