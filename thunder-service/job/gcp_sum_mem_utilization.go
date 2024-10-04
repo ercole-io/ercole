@@ -64,5 +64,5 @@ func (job *GcpDataRetrieveJob) IsMaxMemUtilizationOptimizable(ctx context.Contex
 		return &countVal, nil
 	}
 
-	return nil, nil
+	return &model.CountValue{IsOptimizable: false}, nil
 }
