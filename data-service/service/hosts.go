@@ -98,8 +98,12 @@ func (hds *HostDataService) AlertInvalidHostData(validationErr error, hostdata *
 	errs = append(errs, model.NewAgentError(validationErr))
 
 	hostname := ""
-	if hostdata != nil && hostdata.Errors != nil && len(hostdata.Errors) > 0 {
+
+	if hostdata != nil {
 		hostname = hostdata.Hostname
+	}
+
+	if hostdata != nil && hostdata.Errors != nil && len(hostdata.Errors) > 0 {
 		errs = append(errs, hostdata.Errors...)
 	}
 
