@@ -274,6 +274,19 @@ type MongoDatabaseInterface interface {
 	InsertExadataVmClustername(rackID, hostID, vmname, clustername string) error
 	FindExadataVmClustername(rackID, hostID, vmname string) (*model.OracleExadataVmClustername, error)
 	UpdateExadataVmClustername(rackID, hostID, vmname, clustername string) error
+
+	// COMPLIANCE STATS
+	CountAllHost() (int64, error)
+	CountOracleInstance() (int64, error)
+	CountOracleHosts() (int64, error)
+	CountMySqlInstance() (int64, error)
+	CountMySqlHosts() (int64, error)
+	CountSqlServerlInstance() (int64, error)
+	CountSqlServerHosts() (int64, error)
+	CountPostgreSqlInstance() (int64, error)
+	CountPostgreSqlHosts() (int64, error)
+	CountMongoDbInstance() (int64, error)
+	CountMongoDbHosts() (int64, error)
 }
 
 // MongoDatabase is a implementation

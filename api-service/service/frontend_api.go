@@ -17,7 +17,10 @@
 package service
 
 import (
+	"fmt"
 	"time"
+
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 )
 
 // GetInfoForFrontendDashboard return all informations needed for the frontend dashboard page
@@ -46,4 +49,201 @@ func (as *APIService) GetInfoForFrontendDashboard(location string, environment s
 	out["technologies"] = technologiesObject
 
 	return out, nil
+}
+
+func (as *APIService) GetComplianceStats() (*dto.ComplianceStats, error) {
+	oracleStats, err := as.oracleStats()
+	if err != nil {
+		return nil, err
+	}
+
+	sqlServerStats, err := as.sqlServerStats()
+	if err != nil {
+		return nil, err
+	}
+
+	mysqlStats, err := as.mysqlStats()
+	if err != nil {
+		return nil, err
+	}
+
+	postgresqlStats, err := as.postgreSqlStats()
+	if err != nil {
+		return nil, err
+	}
+
+	mongodbStats, err := as.mongoDbStats()
+	if err != nil {
+		return nil, err
+	}
+
+	hostsCount, err := as.Database.CountAllHost()
+	if err != nil {
+		return nil, err
+	}
+
+	avg := (oracleStats.CompliancePercentageVal + mysqlStats.CompliancePercentageVal + sqlServerStats.CompliancePercentageVal +
+		postgresqlStats.CompliancePercentageVal + mongodbStats.CompliancePercentageVal) / 5
+
+	totStats := dto.Stats{
+		Count:                   int(hostsCount),
+		HostCount:               int(hostsCount),
+		CompliancePercentageVal: avg,
+		CompliancePercentageStr: fmt.Sprintf("%.2f%%", avg),
+	}
+
+	res := dto.ComplianceStats{
+		Ercole:     &totStats,
+		Oracle:     oracleStats,
+		MySql:      mysqlStats,
+		SqlServer:  sqlServerStats,
+		PostgreSql: postgresqlStats,
+		MongoDb:    mongodbStats,
+	}
+
+	return &res, nil
+}
+
+func (as *APIService) oracleStats() (*dto.Stats, error) {
+	count, err := as.Database.CountOracleInstance()
+	if err != nil {
+		return nil, err
+	}
+
+	hostCount, err := as.Database.CountOracleHosts()
+	if err != nil {
+		return nil, err
+	}
+
+	compliances, err := as.GetOracleDatabaseLicensesCompliance()
+	if err != nil {
+		return nil, err
+	}
+
+	compliancePercentage := float64(0.0)
+
+	if len(compliances) > 0 {
+		totCompliance := float64(0.0)
+
+		for _, v := range compliances {
+			totCompliance += v.Compliance
+		}
+
+		compliancePercentage = (totCompliance * 100) / float64(len(compliances))
+	}
+
+	return &dto.Stats{
+		Count:                   int(count),
+		HostCount:               int(hostCount),
+		CompliancePercentageVal: compliancePercentage,
+		CompliancePercentageStr: fmt.Sprintf("%.2f%%", compliancePercentage),
+	}, nil
+}
+
+func (as *APIService) mysqlStats() (*dto.Stats, error) {
+	count, err := as.Database.CountMySqlInstance()
+	if err != nil {
+		return nil, err
+	}
+
+	hostCount, err := as.Database.CountMySqlHosts()
+	if err != nil {
+		return nil, err
+	}
+
+	compliances, err := as.GetMySQLDatabaseLicensesCompliance()
+	if err != nil {
+		return nil, err
+	}
+
+	compliancePercentage := float64(0.0)
+
+	if len(compliances) > 0 {
+		totCompliance := float64(0.0)
+
+		for _, v := range compliances {
+			totCompliance += v.Compliance
+		}
+
+		compliancePercentage = (totCompliance * 100) / float64(len(compliances))
+	}
+
+	return &dto.Stats{
+		Count:                   int(count),
+		HostCount:               int(hostCount),
+		CompliancePercentageVal: compliancePercentage,
+		CompliancePercentageStr: fmt.Sprintf("%.2f%%", compliancePercentage),
+	}, nil
+}
+
+func (as *APIService) sqlServerStats() (*dto.Stats, error) {
+	count, err := as.Database.CountSqlServerlInstance()
+	if err != nil {
+		return nil, err
+	}
+
+	hostCount, err := as.Database.CountSqlServerHosts()
+	if err != nil {
+		return nil, err
+	}
+
+	compliances, err := as.GetSqlServerDatabaseLicensesCompliance()
+	if err != nil {
+		return nil, err
+	}
+
+	compliancePercentage := float64(0.0)
+
+	if len(compliances) > 0 {
+		totCompliance := float64(0.0)
+
+		for _, v := range compliances {
+			totCompliance += v.Compliance
+		}
+
+		compliancePercentage = (totCompliance * 100) / float64(len(compliances))
+	}
+
+	return &dto.Stats{
+		Count:                   int(count),
+		HostCount:               int(hostCount),
+		CompliancePercentageVal: compliancePercentage,
+		CompliancePercentageStr: fmt.Sprintf("%.2f%%", compliancePercentage),
+	}, nil
+}
+
+func (as *APIService) postgreSqlStats() (*dto.Stats, error) {
+	count, err := as.Database.CountPostgreSqlInstance()
+	if err != nil {
+		return nil, err
+	}
+
+	hostCount, err := as.Database.CountPostgreSqlHosts()
+	if err != nil {
+		return nil, err
+	}
+
+	return &dto.Stats{
+		Count:                   int(count),
+		HostCount:               int(hostCount),
+		CompliancePercentageStr: "100%",
+	}, nil
+}
+
+func (as *APIService) mongoDbStats() (*dto.Stats, error) {
+	count, err := as.Database.CountMongoDbInstance()
+	if err != nil {
+		return nil, err
+	}
+
+	hostCount, err := as.Database.CountMongoDbHosts()
+	if err != nil {
+		return nil, err
+	}
+
+	return &dto.Stats{
+		Count:                   int(count),
+		HostCount:               int(hostCount),
+		CompliancePercentageStr: "100%",
+	}, nil
 }

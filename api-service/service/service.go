@@ -232,6 +232,7 @@ type APIServiceInterface interface {
 
 	// GetInfoForFrontendDashboard return all informations needed for the frontend dashboard page
 	GetInfoForFrontendDashboard(location string, environment string, olderThan time.Time) (map[string]interface{}, error)
+	GetComplianceStats() (*dto.ComplianceStats, error)
 
 	// UpdateLicenseIgnoredField update license ignored field (true/false)
 	UpdateLicenseIgnoredField(hostname string, dbname string, licensetypeid string, ignored bool, ignoredComment string) error

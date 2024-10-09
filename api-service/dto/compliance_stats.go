@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2024 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -12,23 +12,20 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
+package dto
 
-package controller
+type ComplianceStats struct {
+	Ercole     *Stats `json:"ercole,omitempty"`
+	Oracle     *Stats `json:"oracle,omitempty"`
+	SqlServer  *Stats `json:"sqlServer,omitempty"`
+	MySql      *Stats `json:"mySql,omitempty"`
+	PostgreSql *Stats `json:"postgreSql,omitempty"`
+	MongoDb    *Stats `json:"mongoDb,omitempty"`
+}
 
-import (
-	"net/http"
-
-	"github.com/ercole-io/ercole/v2/utils"
-)
-
-// GetInfoForFrontendDashboard return all informations needed for the frontend dashboard page
-func (ctrl *APIController) GetInfoForFrontendDashboard(w http.ResponseWriter, r *http.Request) {
-	info, err := ctrl.Service.GetComplianceStats()
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
-		return
-	}
-
-	//Write the data
-	utils.WriteJSONResponse(w, http.StatusOK, info)
+type Stats struct {
+	Count                   int     `json:"count"`
+	HostCount               int     `json:"hostCount"`
+	CompliancePercentageVal float64 `json:"compliancePercentageVal"`
+	CompliancePercentageStr string  `json:"compliancePercentageStr"`
 }
