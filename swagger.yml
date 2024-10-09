@@ -2605,6 +2605,34 @@ components:
           items: 
             type: string
 
+    ComplianceStats:
+      type: object
+      properties:
+        ercole: 
+          $ref: "#/components/schemas/Stats"
+        oracle: 
+          $ref: "#/components/schemas/Stats"
+        sqlServer: 
+          $ref: "#/components/schemas/Stats"
+        mySql: 
+          $ref: "#/components/schemas/Stats"
+        postgreSql: 
+          $ref: "#/components/schemas/Stats"
+        mongoDb: 
+          $ref: "#/components/schemas/Stats"
+
+    Stats:
+      type: object
+      properties:
+        count:
+          type: integer
+        hostCount:
+          type: integer
+        compliancePercentageVal:
+          type: string
+        compliancePercentageStr:
+          type: string
+
   parameters:
     search:
       in: query
@@ -5578,60 +5606,13 @@ paths:
       summary: Return the information required by ercole-web dashboard page
       tags:
         - api-service
-        - fe-user
-        - read
-      parameters:
-        - $ref: "#/components/parameters/location"
-        - $ref: "#/components/parameters/environment"
-        - $ref: "#/components/parameters/older-than"
       responses:
         "200":
           description: OK
-          headers: {}
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  features:
-                    $ref: "#/components/schemas/Features"
-                  technologies:
-                    type: object
-                    description: Supported technologies
-                    required:
-                      - technologies
-                      - total
-                    properties:
-                      technologies:
-                        type: array
-                        description: All supported technologies that can be monitored by Ercole.
-                        items:
-                          $ref: "#/components/schemas/TechnologyStatus"
-                      total:
-                        $ref: "#/components/schemas/AllTechnologyComplianceStatus"
-                required:
-                  - features
-                  - technologies
-              examples:
-                example-1:
-                  value:
-                    features:
-                      Oracle/Database: true
-                      Oracle/Exadata: true
-                    technologies:
-                      technologies:
-                        - product: Oracle/Exadata
-                          compliance: 1
-                          unpaidDues: 0
-                          hostsCount: 2
-                        - product: Oracle/Database
-                          compliance: 0
-                          unpaidDues: 0
-                          hostsCount: 6
-                      total:
-                        compliance: 0.07142857142857142
-                        hostsCount: 14
-                        unpaidDues: 0
+                $ref: "#/components/schemas/ComplianceStats"
         "201":
           description: Created
         "400":
