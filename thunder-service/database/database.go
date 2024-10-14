@@ -51,6 +51,7 @@ type MongoDatabaseInterface interface {
 	AddOciRecommendations(ercoleRecommendations []model.OciRecommendation) error
 	AddOciRecommendationErrors(ociRecommendationErrors []model.OciRecommendationError) error
 	GetOciRecommendationErrors(seqNum uint64) ([]model.OciRecommendationError, error)
+	GetLastOciRecommendationErrorsSeqValue() (uint64, error)
 	GetLastOciSeqValue() (uint64, error)
 	DeleteOldOciRecommendations(dateFrom time.Time) error
 	DeleteOldOciRecommendationErrors(dateFrom time.Time) error

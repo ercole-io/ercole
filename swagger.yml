@@ -8178,6 +8178,48 @@ paths:
       operationId: GetOciRecommendations
       description: Retrieve information related to Oracle Cloud and saved in Ercole EB
     parameters: []
+
+  /oracle-cloud/oci-recommendation-errors:
+    get:
+      summary: Get recommendation errors saved from Oracle Cloud Infrastructure
+      tags:
+        - thunder-service
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                description: ""
+                minItems: 1
+                uniqueItems: true
+                items:
+                  type: object
+                  required:
+                    - seqValue
+                    - profileID
+                    - category
+                    - createdAt
+                    - error
+                  properties:
+                    seqValue:
+                      type: number
+                    profileID:
+                      type: string
+                      minLength: 1
+                    category:
+                      type: string
+                      minLength: 1
+                    createdAt:
+                      type: string
+                      minLength: 1
+                    error:
+                      type: string
+                      minLength: 1
+      operationId: GetOciRecommendationErrors
+      description: Retrieve error information related to Oracle Cloud and saved in Ercole EB
+
   "/oracle-cloud/oci-recommendation-errors/{seqnum}":
     parameters:
       - schema:

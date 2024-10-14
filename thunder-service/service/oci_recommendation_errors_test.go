@@ -80,6 +80,10 @@ func TestGetOciRecommendationErrors(t *testing.T) {
 			},
 		}
 		var seqNum uint64 = 0
+
+		db.EXPECT().GetLastOciRecommendationErrorsSeqValue().
+			Return(seqNum, nil)
+
 		db.EXPECT().GetOciRecommendationErrors(seqNum).
 			Return(expected, nil).Times(1)
 

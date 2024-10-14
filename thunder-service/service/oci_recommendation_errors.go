@@ -21,6 +21,15 @@ import (
 )
 
 func (as *ThunderService) GetOciRecommendationErrors(seqNum uint64) ([]model.OciRecommendationError, error) {
+	if seqNum == 0 {
+		seqValue, err := as.Database.GetLastOciRecommendationErrorsSeqValue()
+		if err != nil {
+			return nil, err
+		}
+
+		seqNum = seqValue
+	}
+
 	ociRecommendationErrors, err := as.Database.GetOciRecommendationErrors(seqNum)
 	if err != nil {
 		return nil, err

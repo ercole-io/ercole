@@ -17,11 +17,13 @@ package database
 
 import (
 	"context"
+	"math"
 	"time"
 
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 const OciRecommendationError_collection = "oci_recommendation_errors"
@@ -110,4 +112,34 @@ func (md *MongoDatabase) DeleteOldOciRecommendationErrors(dateFrom time.Time) er
 	}
 
 	return nil
+}
+
+func (md *MongoDatabase) GetLastOciRecommendationErrorsSeqValue() (uint64, error) {
+	ctx := context.TODO()
+
+	findOptions := options.Find()
+	findOptions.SetSort(bson.M{"seqValue": -1})
+
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(OciRecommendationError_collection).Find(ctx, bson.D{}, findOptions)
+	if err != nil {
+		return math.MaxUint64, utils.NewError(err, "DB ERROR")
+	}
+
+	ociErrorRecommendations := make([]model.OciRecommendationError, 0)
+	if err := cur.All(ctx, &ociErrorRecommendations); err != nil {
+		return math.MaxUint64, utils.NewError(err, "DB ERROR")
+	}
+
+	if err := cur.Err(); err != nil {
+		return math.MaxUint64, utils.NewError(err, "DB ERROR")
+	}
+
+	var retVal uint64
+	if len(ociErrorRecommendations) == 0 {
+		retVal = 0
+	} else {
+		retVal = ociErrorRecommendations[0].SeqValue
+	}
+
+	return retVal, nil
 }
