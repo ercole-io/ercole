@@ -27,10 +27,16 @@ import (
 )
 
 func (ctrl *ThunderController) GetOciRecommendationErrors(w http.ResponseWriter, r *http.Request) {
-	seqNum, err := strconv.ParseUint(mux.Vars(r)["seqnum"], 10, 64)
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, fmt.Errorf("Can't decode seqnum: %w", err))
-		return
+	var seqNum uint64
+
+	if val, ok := mux.Vars(r)["seqnum"]; ok {
+		seqnum, err := strconv.ParseUint(val, 10, 64)
+		if err != nil {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, fmt.Errorf("Can't decode seqnum: %w", err))
+			return
+		}
+
+		seqNum = seqnum
 	}
 
 	data, err := ctrl.Service.GetOciRecommendationErrors(seqNum)
