@@ -110,6 +110,7 @@ func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 	router.HandleFunc("/hosts/technologies/all/databases/licenses-used", ctrl.GetUsedLicensesPerDatabases).Methods("GET")
 	router.HandleFunc("/hosts/{hostname}/technologies/all/databases/licenses-used", ctrl.GetUsedLicensesPerDatabasesByHost).Methods("GET")
 	router.HandleFunc("/hosts/technologies/all/databases/licenses-used-per-host", ctrl.GetUsedLicensesPerHost).Methods("GET")
+	router.HandleFunc("/hosts/technologies/all/databases/licenses-used-cluster-veritas", ctrl.ListClusterVeritasLicenses).Methods("GET")
 	router.HandleFunc("/hosts/technologies/all/databases/licenses-used-per-cluster", ctrl.GetUsedLicensesPerCluster).Methods("GET")
 	router.HandleFunc("/hosts/technologies/all/databases/licenses-compliance", ctrl.GetDatabaseLicensesCompliance).Methods("GET")
 
