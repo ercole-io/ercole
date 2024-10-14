@@ -2633,6 +2633,24 @@ components:
         compliancePercentageStr:
           type: string
 
+    ClusterVeritasLicense:
+      type: object
+      properties:
+        id:
+          type: string
+        hostnames:
+          type: array
+          items: 
+            type: string
+        licenseTypeID:
+          type: string
+        description:
+          type: string
+        metric:
+          type: string
+        count:
+          type: string
+
   parameters:
     search:
       in: query
@@ -7044,6 +7062,35 @@ paths:
           description: Unprocessable Entity
         "500":
           description: Internal server error
+
+  /hosts/technologies/all/databases/licenses-used-cluster-veritas:
+    get:
+      summary: Get Used Licenses Per Cluster Veritas
+      tags:
+        - api-service
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: location
+        - schema:
+            type: string
+          in: query
+          name: environment
+        - schema:
+            type: string
+          in: query
+          name: older-than
+      responses:
+        200:
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ClusterVeritasLicense"
+          
   /hosts/technologies/all/databases/licenses-compliance:
     get:
       summary: Get Database Licenses Compliance

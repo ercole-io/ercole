@@ -287,6 +287,8 @@ type MongoDatabaseInterface interface {
 	CountPostgreSqlHosts() (int64, error)
 	CountMongoDbInstance() (int64, error)
 	CountMongoDbHosts() (int64, error)
+
+	FindClusterVeritasLicenses(filter dto.GlobalFilter) ([]dto.ClusterVeritasLicense, error)
 }
 
 // MongoDatabase is a implementation
