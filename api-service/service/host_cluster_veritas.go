@@ -15,14 +15,54 @@
 package service
 
 import (
+	"strings"
+
+	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/utils/exutils"
 )
 
-func (as *APIService) GetClusterVeritassLicenses(filter dto.GlobalFilter) ([]dto.ClusterVeritasLicense, error) {
+func (as *APIService) GetClusterVeritasLicenses(filter dto.GlobalFilter) ([]dto.ClusterVeritasLicense, error) {
 	clusterVeritasLicenses, err := as.Database.FindClusterVeritasLicenses(filter)
 	if err != nil {
 		return nil, err
 	}
 
 	return clusterVeritasLicenses, nil
+}
+
+func (as *APIService) GetClusterVeritasLicensesXlsx(filter dto.GlobalFilter) (*excelize.File, error) {
+	clusterVeritasLicenses, err := as.Database.FindClusterVeritasLicenses(filter)
+	if err != nil {
+		return nil, err
+	}
+
+	sheet := "Cluster Veritas Licenses"
+	headers := []string{
+		"ID",
+		"Hostnames",
+		"LicenseTypeID",
+		"Description",
+		"Metric",
+		"Count",
+	}
+
+	sheets, err := exutils.NewXLSX(as.Config, sheet, headers...)
+	if err != nil {
+		return nil, err
+	}
+
+	axisHelp := exutils.NewAxisHelper(1)
+
+	for _, val := range clusterVeritasLicenses {
+		nextAxis := axisHelp.NewRow()
+		sheets.SetCellValue(sheet, nextAxis(), val.ID)
+		sheets.SetCellValue(sheet, nextAxis(), strings.Join(val.Hostnames, ", "))
+		sheets.SetCellValue(sheet, nextAxis(), val.LicenseTypeID)
+		sheets.SetCellValue(sheet, nextAxis(), val.Description)
+		sheets.SetCellValue(sheet, nextAxis(), val.Metric)
+		sheets.SetCellValue(sheet, nextAxis(), val.Count)
+	}
+
+	return sheets, err
 }

@@ -19,6 +19,7 @@ import (
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/golang/gddo/httputil"
 )
 
 func (ctrl *APIController) ListClusterVeritasLicenses(w http.ResponseWriter, r *http.Request) {
@@ -28,11 +29,24 @@ func (ctrl *APIController) ListClusterVeritasLicenses(w http.ResponseWriter, r *
 		return
 	}
 
-	res, err := ctrl.Service.GetClusterVeritassLicenses(*filter)
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-		return
-	}
+	choice := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
 
-	utils.WriteJSONResponse(w, http.StatusOK, res)
+	switch choice {
+	case "application/json":
+		res, err := ctrl.Service.GetClusterVeritasLicenses(*filter)
+		if err != nil {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+			return
+		}
+
+		utils.WriteJSONResponse(w, http.StatusOK, res)
+	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+		res, err := ctrl.Service.GetClusterVeritasLicensesXlsx(*filter)
+		if err != nil {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+			return
+		}
+
+		utils.WriteXLSXResponse(w, res)
+	}
 }
