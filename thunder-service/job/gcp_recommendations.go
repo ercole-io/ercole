@@ -66,13 +66,10 @@ func (job *GcpDataRetrieveJob) AuditInstancePoint(queryType string, points []*mo
 	return model.CountValue{IsOptimizable: false}
 }
 
-func (job *GcpDataRetrieveJob) AuditDiskPoint(queryType string, disk model.GcpDisk, points []*monitoringpb.Point) model.OptimizableValue {
+func (job *GcpDataRetrieveJob) AuditDiskPoint(queryType string, disk model.GcpDisk, points []*monitoringpb.Point, targetValue, limit float64) model.OptimizableValue {
 	switch queryType {
 	case "max_read_iops":
 		var maxMeasurement float64
-
-		rIops := disk.ReadIopsPerGib()
-		limit := rIops * (float64(job.Config.ThunderService.GcpDataRetrieveJob.IopsStoragePercentage) / 100)
 
 		for _, point := range points {
 			if point.Value == nil {
@@ -98,7 +95,7 @@ func (job *GcpDataRetrieveJob) AuditDiskPoint(queryType string, disk model.GcpDi
 				disk.InstanceVcpus,
 				disk.IsSharedCore,
 				float64(point.Value.GetInt64Value()),
-				rIops,
+				targetValue,
 				limit,
 			)
 		}
@@ -107,21 +104,18 @@ func (job *GcpDataRetrieveJob) AuditDiskPoint(queryType string, disk model.GcpDi
 			return model.OptimizableValue{
 				IsOptimizable:  true,
 				RetrievedValue: maxMeasurement,
-				TargetValue:    rIops,
+				TargetValue:    targetValue,
 			}
 		}
 
 		return model.OptimizableValue{
 			IsOptimizable:  false,
 			RetrievedValue: maxMeasurement,
-			TargetValue:    rIops,
+			TargetValue:    targetValue,
 		}
 
 	case "max_write_iops":
 		var maxMeasurement float64
-
-		wIops := disk.WriteIopsPerGib()
-		limit := wIops * (float64(job.Config.ThunderService.GcpDataRetrieveJob.IopsStoragePercentage) / 100)
 
 		for _, point := range points {
 			if point.Value == nil {
@@ -147,7 +141,7 @@ func (job *GcpDataRetrieveJob) AuditDiskPoint(queryType string, disk model.GcpDi
 				disk.InstanceVcpus,
 				disk.IsSharedCore,
 				float64(point.Value.GetInt64Value()),
-				wIops,
+				targetValue,
 				limit,
 			)
 		}
@@ -156,21 +150,18 @@ func (job *GcpDataRetrieveJob) AuditDiskPoint(queryType string, disk model.GcpDi
 			return model.OptimizableValue{
 				IsOptimizable:  true,
 				RetrievedValue: maxMeasurement,
-				TargetValue:    wIops,
+				TargetValue:    targetValue,
 			}
 		}
 
 		return model.OptimizableValue{
 			IsOptimizable:  false,
 			RetrievedValue: maxMeasurement,
-			TargetValue:    wIops,
+			TargetValue:    targetValue,
 		}
 
 	case "max_read_throughput":
 		var maxMeasurement, pointValue float64
-
-		rThroughput := disk.ReadThroughputPerMib()
-		limit := rThroughput * (float64(job.Config.ThunderService.GcpDataRetrieveJob.ThroughputStoragePercentage) / 100)
 
 		for _, point := range points {
 			if point.Value == nil {
@@ -198,7 +189,7 @@ func (job *GcpDataRetrieveJob) AuditDiskPoint(queryType string, disk model.GcpDi
 				disk.InstanceVcpus,
 				disk.IsSharedCore,
 				pointValue,
-				rThroughput,
+				targetValue,
 				limit,
 			)
 		}
@@ -207,21 +198,18 @@ func (job *GcpDataRetrieveJob) AuditDiskPoint(queryType string, disk model.GcpDi
 			return model.OptimizableValue{
 				IsOptimizable:  true,
 				RetrievedValue: maxMeasurement,
-				TargetValue:    rThroughput,
+				TargetValue:    targetValue,
 			}
 		}
 
 		return model.OptimizableValue{
 			IsOptimizable:  false,
 			RetrievedValue: maxMeasurement,
-			TargetValue:    rThroughput,
+			TargetValue:    targetValue,
 		}
 
 	case "max_write_throughput":
 		var maxMeasurement, pointValue float64
-
-		wThroughput := disk.WriteThroughputPerMib()
-		limit := wThroughput * (float64(job.Config.ThunderService.GcpDataRetrieveJob.ThroughputStoragePercentage) / 100)
 
 		for _, point := range points {
 			if point.Value == nil {
@@ -249,7 +237,7 @@ func (job *GcpDataRetrieveJob) AuditDiskPoint(queryType string, disk model.GcpDi
 				disk.InstanceVcpus,
 				disk.IsSharedCore,
 				pointValue,
-				wThroughput,
+				targetValue,
 				limit,
 			)
 		}
@@ -258,14 +246,14 @@ func (job *GcpDataRetrieveJob) AuditDiskPoint(queryType string, disk model.GcpDi
 			return model.OptimizableValue{
 				IsOptimizable:  true,
 				RetrievedValue: maxMeasurement,
-				TargetValue:    wThroughput,
+				TargetValue:    targetValue,
 			}
 		}
 
 		return model.OptimizableValue{
 			IsOptimizable:  false,
 			RetrievedValue: maxMeasurement,
-			TargetValue:    wThroughput,
+			TargetValue:    targetValue,
 		}
 	}
 
