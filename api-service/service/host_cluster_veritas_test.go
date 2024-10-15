@@ -48,7 +48,7 @@ func TestGetClusterVeritassLicenses_Success(t *testing.T) {
 
 	db.EXPECT().FindClusterVeritasLicenses(f).Return(expected, nil)
 
-	res, err := as.GetClusterVeritassLicenses(f)
+	res, err := as.GetClusterVeritasLicenses(f)
 
 	require.NoError(t, err)
 

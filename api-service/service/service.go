@@ -258,7 +258,8 @@ type APIServiceInterface interface {
 	GetDatabaseLicensesCompliance() ([]dto.LicenseCompliance, error)
 	GetDatabaseLicensesComplianceAsXLSX() (*excelize.File, error)
 
-	GetClusterVeritassLicenses(filter dto.GlobalFilter) ([]dto.ClusterVeritasLicense, error)
+	GetClusterVeritasLicenses(filter dto.GlobalFilter) ([]dto.ClusterVeritasLicense, error)
+	GetClusterVeritasLicensesXlsx(filter dto.GlobalFilter) (*excelize.File, error)
 
 	// MYSQL
 
