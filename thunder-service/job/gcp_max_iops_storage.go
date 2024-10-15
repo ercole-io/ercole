@@ -53,8 +53,13 @@ func (job *GcpDataRetrieveJob) IsMaxReadIopsStorageOptimizable(ctx context.Conte
 		return nil, err
 	}
 
+	rIops := disk.ReadIopsPerGib()
+	limit := rIops * (float64(job.Config.ThunderService.GcpDataRetrieveJob.IopsStoragePercentage) / 100)
+
+	job.Log.Debugf("disk name: %s - riops: %v - limit: %v", disk.GetName(), rIops, limit)
+
 	if series != nil && series.Points != nil {
-		optValue := job.AuditDiskPoint("max_read_iops", disk, series.Points)
+		optValue := job.AuditDiskPoint("max_read_iops", disk, series.Points, rIops, limit)
 		return &optValue, nil
 	}
 
@@ -91,8 +96,13 @@ func (job *GcpDataRetrieveJob) IsMaxWriteIopsStorageOptimizable(ctx context.Cont
 		return nil, err
 	}
 
+	wIops := disk.WriteIopsPerGib()
+	limit := wIops * (float64(job.Config.ThunderService.GcpDataRetrieveJob.IopsStoragePercentage) / 100)
+
+	job.Log.Debugf("disk name: %s - wiops: %v - limit: %v", disk.GetName(), wIops, limit)
+
 	if series != nil && series.Points != nil {
-		optValue := job.AuditDiskPoint("max_write_iops", disk, series.Points)
+		optValue := job.AuditDiskPoint("max_write_iops", disk, series.Points, wIops, limit)
 		return &optValue, nil
 	}
 

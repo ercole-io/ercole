@@ -53,8 +53,13 @@ func (job *GcpDataRetrieveJob) IsMaxThroughputReadStorageOptimizable(ctx context
 		return nil, err
 	}
 
+	rThroughput := disk.ReadThroughputPerMib()
+	limit := rThroughput * (float64(job.Config.ThunderService.GcpDataRetrieveJob.ThroughputStoragePercentage) / 100)
+
+	job.Log.Debugf("disk name: %s - rThroughput: %v - limit: %v", disk.GetName(), rThroughput, limit)
+
 	if series != nil && series.Points != nil {
-		optValue := job.AuditDiskPoint("max_read_throughput", disk, series.Points)
+		optValue := job.AuditDiskPoint("max_read_throughput", disk, series.Points, rThroughput, limit)
 
 		return &optValue, nil
 	}
@@ -93,8 +98,13 @@ func (job *GcpDataRetrieveJob) IsMaxThroughputWriteStorageOptimizable(ctx contex
 		return nil, err
 	}
 
+	wThroughput := disk.WriteThroughputPerMib()
+	limit := wThroughput * (float64(job.Config.ThunderService.GcpDataRetrieveJob.ThroughputStoragePercentage) / 100)
+
+	job.Log.Debugf("disk name: %s - wThroughput: %v - limit: %v", disk.GetName(), wThroughput, limit)
+
 	if series != nil && series.Points != nil {
-		optValue := job.AuditDiskPoint("max_write_throughput", disk, series.Points)
+		optValue := job.AuditDiskPoint("max_write_throughput", disk, series.Points, wThroughput, limit)
 
 		return &optValue, nil
 	}
