@@ -227,6 +227,7 @@ func (as *APIService) postgreSqlStats() (*dto.Stats, error) {
 		Count:                   int(count),
 		HostCount:               int(hostCount),
 		CompliancePercentageStr: "100%",
+		CompliancePercentageVal: 100,
 	}, nil
 }
 
@@ -245,5 +246,6 @@ func (as *APIService) mongoDbStats() (*dto.Stats, error) {
 		Count:                   int(count),
 		HostCount:               int(hostCount),
 		CompliancePercentageStr: "100%",
+		CompliancePercentageVal: 100,
 	}, nil
 }

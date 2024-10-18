@@ -29,14 +29,14 @@ func (ts *ThunderService) WriteOciRecommendationsXlsx(recommendations []model.Oc
 	}
 
 	for _, recommendation := range recommendations {
-		createOciRecommendationSheetXlsx(f, recommendation.ObjectType, recommendation)
+		createOciRecommendationSheetXlsx(f, recommendation.Category, recommendation)
 	}
 
 	return f, nil
 }
 
-func createOciRecommendationSheetXlsx(file *excelize.File, objectType string, recommendation model.OciRecommendation) {
-	sheetName := objectType
+func createOciRecommendationSheetXlsx(file *excelize.File, category string, recommendation model.OciRecommendation) {
+	sheetName := category
 
 	existingRows := file.GetRows(sheetName)
 	firstEmptyRow := len(existingRows) + 1

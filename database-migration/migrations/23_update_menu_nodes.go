@@ -53,6 +53,24 @@ func init() {
 			Parent: "Oracle",
 		},
 		{
+			Name: "Policy Audit",
+			Roles: []string{
+				"admin",
+				"read_databases",
+				"write_databases",
+			},
+			Parent: "Oracle",
+		},
+		{
+			Name: "PSQL Migrability",
+			Roles: []string{
+				"admin",
+				"read_databases",
+				"write_databases",
+			},
+			Parent: "Oracle",
+		},
+		{
 			Name: "Exadata",
 			Roles: []string{
 				"admin",
