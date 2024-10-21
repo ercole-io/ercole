@@ -48,7 +48,7 @@ func (job *AwsDataRetrieveJob) FetchAwsUnusedIPAddresses(profile model.AwsProfil
 	}
 
 	for _, w := range resultec2Svc.Addresses {
-		if *w.AssociationId == "" {
+		if w.AssociationId == nil || *w.AssociationId == "" {
 			var objectName string
 
 			for _, name := range w.Tags {
