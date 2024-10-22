@@ -98,6 +98,8 @@ func (md *MongoDatabase) SetExadataComponent(rackID string, component model.Orac
 			"components.$[elem].swVersion":         component.SwVersion,
 			"components.$[elem].vms":               component.VMs,
 			"components.$[elem].storageCells":      component.StorageCells,
+			"components.$[elem].reservedCPU":       component.ReservedCPU,
+			"components.$[elem].reservedMemory":    component.ReservedMemory,
 		},
 	}
 
