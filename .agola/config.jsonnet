@@ -15,7 +15,7 @@ local task_build_go_rhel7() = {
     ],
   },
   steps: [
-    { type: 'run', command: 'git clone https://github.com/ercole-io/ercole.git .' },
+    { type: 'clone' },
     {
       type: 'run',
       name: 'build',
@@ -44,7 +44,7 @@ local task_build_go_rhel8() = {
     ],
   },
   steps: [
-    { type: 'run', command: 'git clone https://github.com/ercole-io/ercole.git .' },
+    { type: 'clone' },
     {
       type: 'run',
       name: 'build',
@@ -73,7 +73,7 @@ local task_build_go_rhel9() = {
     ],
   },
   steps: [
-    { type: 'run', command: 'git clone https://github.com/ercole-io/ercole.git .' },
+    { type: 'clone' },
     {
       type: 'run',
       name: 'build',
@@ -374,10 +374,10 @@ local task_build_push_image(push) =
       ] + [  
         task_deploy_repository(dist)
         for dist in ['rhel7', 'rhel8', 'rhel9']
-      ] + [
+      ]/*+ [
         task_upload_asset(dist)
         for dist in ['rhel7', 'rhel8', 'rhel9']
-      ] + [
+      ]*/+ [
         {
           name: 'checkout code',
           runtime: {
