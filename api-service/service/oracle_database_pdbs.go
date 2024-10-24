@@ -54,17 +54,13 @@ func (as *APIService) CreateOracleDatabasePdbsXlsx(filter dto.GlobalFilter) (*ex
 	sheet := "Pluggable dbs"
 	headers := []string{
 		"Hostname",
-		"DBname",
-		"Name",
+		"DB name",
+		"PDB name",
 		"Status",
-		"SegmentsSize",
-		"DatafileSize",
 		"Allocable",
-		"Charset",
-		"Tablespaces",
-		"Schemas",
-		"Services",
-		"GrantDba",
+		"DatafileSize",
+		"SegmentsSize",
+		"Migrable to Postgres",
 	}
 
 	sheets, err := exutils.NewXLSX(as.Config, sheet, headers...)
@@ -80,14 +76,10 @@ func (as *APIService) CreateOracleDatabasePdbsXlsx(filter dto.GlobalFilter) (*ex
 		sheets.SetCellValue(sheet, nextAxis(), val.Dbname)
 		sheets.SetCellValue(sheet, nextAxis(), val.Name)
 		sheets.SetCellValue(sheet, nextAxis(), val.Status)
-		sheets.SetCellValue(sheet, nextAxis(), val.SegmentsSize)
-		sheets.SetCellValue(sheet, nextAxis(), val.DatafileSize)
 		sheets.SetCellValue(sheet, nextAxis(), val.Allocable)
-		sheets.SetCellValue(sheet, nextAxis(), val.Charset)
-		sheets.SetCellValue(sheet, nextAxis(), val.Tablespaces)
-		sheets.SetCellValue(sheet, nextAxis(), val.Schemas)
-		sheets.SetCellValue(sheet, nextAxis(), val.Services)
-		sheets.SetCellValue(sheet, nextAxis(), val.GrantDba)
+		sheets.SetCellValue(sheet, nextAxis(), val.DatafileSize)
+		sheets.SetCellValue(sheet, nextAxis(), val.SegmentsSize)
+		sheets.SetCellValue(sheet, nextAxis(), val.Color)
 	}
 
 	return sheets, err
