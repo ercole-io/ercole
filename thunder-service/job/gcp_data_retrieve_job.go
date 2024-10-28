@@ -221,6 +221,8 @@ func (job *GcpDataRetrieveJob) Run() {
 
 						job.Log.Debugf("added new error - seqvalue: %d - category: %s - msg %d", gcperr.SeqValue, gcperr.Category, gcperr.Msg)
 
+						diskWg.Done()
+
 						continue
 					}
 
