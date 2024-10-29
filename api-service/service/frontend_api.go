@@ -77,17 +77,31 @@ func (as *APIService) GetComplianceStats() (*dto.ComplianceStats, error) {
 		return nil, err
 	}
 
-	hostsCount, err := as.Database.CountAllHost()
+	mariadbStats, err := as.mariaDbStats()
 	if err != nil {
 		return nil, err
 	}
 
+	hostsCount := oracleStats.HostCount +
+		sqlServerStats.HostCount +
+		mysqlStats.HostCount +
+		postgresqlStats.HostCount +
+		mongodbStats.HostCount +
+		mariadbStats.HostCount
+
+	instancesCount := oracleStats.Count +
+		sqlServerStats.Count +
+		mysqlStats.Count +
+		postgresqlStats.Count +
+		mongodbStats.Count +
+		mariadbStats.Count
+
 	avg := (oracleStats.CompliancePercentageVal + mysqlStats.CompliancePercentageVal + sqlServerStats.CompliancePercentageVal +
-		postgresqlStats.CompliancePercentageVal + mongodbStats.CompliancePercentageVal) / 5
+		postgresqlStats.CompliancePercentageVal + mongodbStats.CompliancePercentageVal + mariadbStats.CompliancePercentageVal) / 6
 
 	totStats := dto.Stats{
-		Count:                   int(hostsCount),
-		HostCount:               int(hostsCount),
+		Count:                   instancesCount,
+		HostCount:               hostsCount,
 		CompliancePercentageVal: avg,
 		CompliancePercentageStr: fmt.Sprintf("%.2f%%", avg),
 	}
@@ -99,6 +113,7 @@ func (as *APIService) GetComplianceStats() (*dto.ComplianceStats, error) {
 		SqlServer:  sqlServerStats,
 		PostgreSql: postgresqlStats,
 		MongoDb:    mongodbStats,
+		MariaDB:    mariadbStats,
 	}
 
 	return &res, nil
@@ -130,6 +145,10 @@ func (as *APIService) oracleStats() (*dto.Stats, error) {
 		}
 
 		compliancePercentage = (totCompliance * 100) / float64(len(compliances))
+	}
+
+	if compliancePercentage == 0 {
+		compliancePercentage = 100
 	}
 
 	return &dto.Stats{
@@ -168,6 +187,10 @@ func (as *APIService) mysqlStats() (*dto.Stats, error) {
 		compliancePercentage = (totCompliance * 100) / float64(len(compliances))
 	}
 
+	if compliancePercentage == 0 {
+		compliancePercentage = 100
+	}
+
 	return &dto.Stats{
 		Count:                   int(count),
 		HostCount:               int(hostCount),
@@ -202,6 +225,10 @@ func (as *APIService) sqlServerStats() (*dto.Stats, error) {
 		}
 
 		compliancePercentage = (totCompliance * 100) / float64(len(compliances))
+	}
+
+	if compliancePercentage == 0 {
+		compliancePercentage = 100
 	}
 
 	return &dto.Stats{
@@ -245,6 +272,15 @@ func (as *APIService) mongoDbStats() (*dto.Stats, error) {
 	return &dto.Stats{
 		Count:                   int(count),
 		HostCount:               int(hostCount),
+		CompliancePercentageStr: "100%",
+		CompliancePercentageVal: 100,
+	}, nil
+}
+
+func (as *APIService) mariaDbStats() (*dto.Stats, error) {
+	return &dto.Stats{
+		Count:                   0,
+		HostCount:               0,
 		CompliancePercentageStr: "100%",
 		CompliancePercentageVal: 100,
 	}, nil

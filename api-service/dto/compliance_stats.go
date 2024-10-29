@@ -21,6 +21,7 @@ type ComplianceStats struct {
 	MySql      *Stats `json:"mySql,omitempty"`
 	PostgreSql *Stats `json:"postgreSql,omitempty"`
 	MongoDb    *Stats `json:"mongoDb,omitempty"`
+	MariaDB    *Stats `json:"mariaDb,omitempty"`
 }
 
 type Stats struct {
