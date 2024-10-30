@@ -38,8 +38,7 @@ func (ts *ThunderService) WriteOciRecommendationsXlsx(recommendations []model.Oc
 func createOciRecommendationSheetXlsx(file *excelize.File, category string, recommendation model.OciRecommendation) {
 	sheetName := category
 
-	existingRows := file.GetRows(sheetName)
-	firstEmptyRow := len(existingRows) + 1
+	firstEmptyRow := len(file.GetRows(sheetName)) + 1
 
 	file.SetCellValue(sheetName, fmt.Sprintf("A%d", firstEmptyRow), recommendation.Category)
 	file.SetCellValue(sheetName, fmt.Sprintf("B%d", firstEmptyRow), recommendation.ObjectType)
@@ -47,8 +46,8 @@ func createOciRecommendationSheetXlsx(file *excelize.File, category string, reco
 	file.SetCellValue(sheetName, fmt.Sprintf("D%d", firstEmptyRow), recommendation.Name)
 
 	for _, detail := range recommendation.Details {
-		file.SetCellValue(sheetName, fmt.Sprintf("%s%d", getColumnLetterByHeader(existingRows[0], detail.Name), 1), detail.Name)
-		file.SetCellValue(sheetName, fmt.Sprintf("%s%d", getColumnLetterByHeader(existingRows[0], detail.Name), firstEmptyRow), detail.Value)
+		file.SetCellValue(sheetName, fmt.Sprintf("%s%d", getColumnLetterByHeader(file.GetRows(sheetName)[0], detail.Name), 1), detail.Name)
+		file.SetCellValue(sheetName, fmt.Sprintf("%s%d", getColumnLetterByHeader(file.GetRows(sheetName)[0], detail.Name), firstEmptyRow), detail.Value)
 	}
 }
 
