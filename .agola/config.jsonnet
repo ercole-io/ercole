@@ -1,22 +1,3 @@
-local task_go_test(service) = {
-  name: 'test ' + service,
-  runtime: {
-    type: 'pod',
-    arch: 'amd64',
-    containers: [
-      { image: 'golang:1.20' },
-      { image: 'mongo:6' },
-    ],
-  },
-  steps: [
-    { type: 'restore_workspace', dest_dir: '.' },
-    { type: 'run', name: '', command: 'go install go.uber.org/mock/mockgen@v0.3.0' },
-    { type: 'run', name: '', command: 'go generate -v ./' + service + '/*' },
-    { type: 'run', name: '', command: 'go test -race ./' + service + '/*' },
-  ],
-  depends: ['linters'],
-};
-
 local task_build_push_image() =
   /*
    * Currently, kaniko, has some issues with multi stage builds where it removes
@@ -56,7 +37,7 @@ local task_build_push_image() =
       },
       { type: 'run', command: '/kaniko/executor --context=dir:///kaniko/ercole --dockerfile Dockerfile --destination sorintlab/ercole-services:$AGOLA_GIT_TAG' },
     ],
-    depends: ['check secrets'],
+    depends: ['checkout code'],
   };
 
 local task_build_go_rhel(rhel_version) = {
@@ -68,7 +49,7 @@ local task_build_go_rhel(rhel_version) = {
     ],
   },
   steps: [
-    { type: 'restore_workspace', dest_dir: '.' },
+    { type: 'clone' },
     {
       type: 'run',
       name: 'build',
@@ -196,21 +177,6 @@ local task_deploy_repository(dist) = {
       name: 'ercole',
       tasks: [
         {
-          name: 'clone & save',
-          runtime: {
-            type: 'pod',
-            arch: 'amd64',
-            containers: [
-              { image: 'alpine/git' },
-            ],
-          },
-          steps: [
-            { type: 'clone' },
-            { type: 'save_to_workspace', contents: [{ source_dir: '.', dest_dir: '/', paths: ['**'] }] },
-          ],
-        },
-      ] + [
-        {
           name: 'linters',
           runtime: {
             type: 'pod',
@@ -220,21 +186,29 @@ local task_deploy_repository(dist) = {
             ],
           },
           steps: [
-            { type: 'restore_workspace', dest_dir: '.' },
+            { type: 'clone' },
             { type: 'run', name: 'run golangci-lint', command: 'golangci-lint run --timeout 10m' },
           ],
-          depends: ['clone & save'],
         },
       ] + [
-        task_go_test(service)
-        for service in [
-          'alert-service',
-          'api-service',
-          'chart-service',
-          'data-service',
-          'repo-service',
-          'thunder-service',
-        ]
+        {
+          name: 'test',
+          runtime: {
+            type: 'pod',
+            arch: 'amd64',
+            containers: [
+              { image: 'golang:1.20' },
+              { image: 'mongo:6' },
+            ],
+          },
+          steps: [
+            { type: 'clone' },
+            { type: 'run', name: '', command: 'go install go.uber.org/mock/mockgen@v0.3.0' },
+            { type: 'run', name: '', command: 'go generate -v ./...' },
+            { type: 'run', name: '', command: 'go test -race ./... -v' },
+          ],
+          depends: ['linters'],
+        }
       ] + [
         {
           name: 'check secrets',
@@ -249,18 +223,35 @@ local task_deploy_repository(dist) = {
             GITLEAKS_CONF: { from_variable: 'gitleaks-config' },
           },
           steps: [
-            { type: 'restore_workspace', dest_dir: '.' },
+            { type: 'clone' },
             { type: 'run', name: 'write gitleaks config', command: 'printf "%b" ${GITLEAKS_CONF} > gitleaks.toml' },
             { type: 'run', name: 'detect security leaks', command: 'gitleaks detect -v -c gitleaks.toml' },
           ],
           depends: [
-            'test alert-service',
-            'test api-service',
-            'test chart-service',
-            'test data-service',
-            'test repo-service',
-            'test thunder-service',
+            'test'
           ],
+        },
+      ] + [
+        {
+          name: 'checkout code',
+          runtime: {
+            type: 'pod',
+            arch: 'amd64',
+            containers: [
+              { image: 'alpine/git' },
+            ],
+          },
+          steps: [
+            { type: 'clone' },
+            { type: 'save_to_workspace', contents: [{ source_dir: '.', dest_dir: '.', paths: ['**'] }] },
+          ],
+          depends: [
+            'check secrets'
+          ],
+          when: {
+            branch: 'master',
+            tag: '#.*#',
+          },
         },
       ] + [
         task_build_push_image() + {
