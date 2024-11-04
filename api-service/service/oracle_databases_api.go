@@ -237,7 +237,14 @@ func (as *APIService) SearchOracleDatabasesAsXLSX(filter dto.SearchOracleDatabas
 
 		if val.IsCDB {
 			file.SetCellValue("Databases", fmt.Sprintf("T%d", i), "True")
-			file.SetCellValue("Databases", fmt.Sprintf("U%d", i), val.PDBs)
+
+			pdbnames := make([]string, 0)
+
+			for _, p := range val.PDBs {
+				pdbnames = append(pdbnames, p.Name)
+			}
+
+			file.SetCellValue("Databases", fmt.Sprintf("U%d", i), strings.Join(pdbnames, ","))
 		} else {
 			file.SetCellValue("Databases", fmt.Sprintf("T%d", i), "False")
 			file.SetCellValue("Databases", fmt.Sprintf("U%d", i), "")
@@ -247,6 +254,16 @@ func (as *APIService) SearchOracleDatabasesAsXLSX(filter dto.SearchOracleDatabas
 		file.SetCellValue("Databases", fmt.Sprintf("W%d", i), val.ClusterwareVersion)
 		file.SetCellValue("Databases", fmt.Sprintf("X%d", i), val.Role)
 		file.SetCellValue("Databases", fmt.Sprintf("Y%d", i), strings.Join(val.PoliciesAudit, ","))
+
+		serviceNames := make([]string, 0)
+
+		for _, s := range val.Services {
+			if s.Name != nil {
+				serviceNames = append(serviceNames, *s.Name)
+			}
+		}
+
+		file.SetCellValue("Databases", fmt.Sprintf("Z%d", i), strings.Join(serviceNames, ","))
 	}
 
 	return file, nil
