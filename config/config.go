@@ -337,6 +337,8 @@ type Emailer struct {
 	DisableSSLCertificateValidation bool
 	// AlertType contains the possible type of alert that can be sent
 	AlertType AlertType
+	// AlertSeverity contains the possible severity of alert that can be sent
+	AlertSeverity AlertSeverity
 }
 
 type AlertType struct {
@@ -350,6 +352,10 @@ type AlertType struct {
 	MissingDatabase            bool
 	AgentError                 bool
 	NoData                     bool
+}
+
+type AlertSeverity struct {
+	Warning bool
 }
 
 // AuthenticationProviderConfig contains the settings used to authenticate the users
