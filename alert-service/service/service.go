@@ -126,6 +126,11 @@ func (as *AlertService) ProcessMsg(msg hub.Message) {
 func (as *AlertService) ProcessAlertInsertion(params hub.Fields) {
 	alert := params["alert"].(model.Alert)
 
+	// check if alert severity is enabled
+	if alert.AlertSeverity == model.AlertSeverityWarning && !as.Config.AlertService.Emailer.AlertSeverity.Warning {
+		return
+	}
+
 	// check if alert notification is enabled
 	if alert.IsCode(model.AlertCodeNewServer) && !as.Config.AlertService.Emailer.AlertType.NewHost {
 		return
