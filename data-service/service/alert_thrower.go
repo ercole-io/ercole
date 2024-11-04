@@ -282,7 +282,7 @@ func (hds *HostDataService) throwAgentErrorsAlert(hostname string, errs []model.
 		AlertCategory:           model.AlertCategoryEngine,
 		AlertAffectedTechnology: nil,
 		AlertCode:               model.AlertCodeAgentError,
-		AlertSeverity:           model.AlertSeverityCritical,
+		AlertSeverity:           model.AlertSeverityWarning,
 		AlertStatus:             model.AlertStatusNew,
 		Description:             b.String(),
 		Date:                    hds.TimeNow(),
