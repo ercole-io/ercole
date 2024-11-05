@@ -131,46 +131,68 @@ func (as *AlertService) ProcessAlertInsertion(params hub.Fields) {
 		return
 	}
 
+	to := as.Config.AlertService.Emailer.To
+
 	// check if alert notification is enabled
-	if alert.IsCode(model.AlertCodeNewServer) && !as.Config.AlertService.Emailer.AlertType.NewHost {
+	if alert.IsCode(model.AlertCodeNewServer) && !as.Config.AlertService.Emailer.AlertType.NewHost.Enable {
 		return
 	}
 
-	if alert.IsCode(model.AlertCodeNewDatabase) && !as.Config.AlertService.Emailer.AlertType.NewDatabase {
+	to = append(to, as.Config.AlertService.Emailer.AlertType.NewHost.To...)
+
+	if alert.IsCode(model.AlertCodeNewDatabase) && !as.Config.AlertService.Emailer.AlertType.NewDatabase.Enable {
 		return
 	}
 
-	if alert.IsCode(model.AlertCodeNewLicense) && !as.Config.AlertService.Emailer.AlertType.NewLicense {
+	to = append(to, as.Config.AlertService.Emailer.AlertType.NewDatabase.To...)
+
+	if alert.IsCode(model.AlertCodeNewLicense) && !as.Config.AlertService.Emailer.AlertType.NewLicense.Enable {
 		return
 	}
 
-	if alert.IsCode(model.AlertCodeNewOption) && !as.Config.AlertService.Emailer.AlertType.NewOption {
+	to = append(to, as.Config.AlertService.Emailer.AlertType.NewLicense.To...)
+
+	if alert.IsCode(model.AlertCodeNewOption) && !as.Config.AlertService.Emailer.AlertType.NewOption.Enable {
 		return
 	}
 
-	if alert.IsCode(model.AlertCodeUnlistedRunningDatabase) && !as.Config.AlertService.Emailer.AlertType.NewUnlistedRunningDatabase {
+	to = append(to, as.Config.AlertService.Emailer.AlertType.NewOption.To...)
+
+	if alert.IsCode(model.AlertCodeUnlistedRunningDatabase) && !as.Config.AlertService.Emailer.AlertType.NewUnlistedRunningDatabase.Enable {
 		return
 	}
 
-	if alert.IsCode(model.AlertCodeIncreasedCPUCores) && !as.Config.AlertService.Emailer.AlertType.NewHostCpu {
+	to = append(to, as.Config.AlertService.Emailer.AlertType.NewUnlistedRunningDatabase.To...)
+
+	if alert.IsCode(model.AlertCodeIncreasedCPUCores) && !as.Config.AlertService.Emailer.AlertType.NewHostCpu.Enable {
 		return
 	}
 
-	if alert.IsCode(model.AlertCodeMissingPrimaryDatabase) && !as.Config.AlertService.Emailer.AlertType.MissingPrimaryDatabase {
+	to = append(to, as.Config.AlertService.Emailer.AlertType.NewHostCpu.To...)
+
+	if alert.IsCode(model.AlertCodeMissingPrimaryDatabase) && !as.Config.AlertService.Emailer.AlertType.MissingPrimaryDatabase.Enable {
 		return
 	}
 
-	if alert.IsCode(model.AlertCodeMissingDatabase) && !as.Config.AlertService.Emailer.AlertType.MissingDatabase {
+	to = append(to, as.Config.AlertService.Emailer.AlertType.MissingPrimaryDatabase.To...)
+
+	if alert.IsCode(model.AlertCodeMissingDatabase) && !as.Config.AlertService.Emailer.AlertType.MissingDatabase.Enable {
 		return
 	}
 
-	if alert.IsCode(model.AlertCodeAgentError) && !as.Config.AlertService.Emailer.AlertType.AgentError {
+	to = append(to, as.Config.AlertService.Emailer.AlertType.MissingDatabase.To...)
+
+	if alert.IsCode(model.AlertCodeAgentError) && !as.Config.AlertService.Emailer.AlertType.AgentError.Enable {
 		return
 	}
 
-	if alert.IsCode(model.AlertCodeNoData) && !as.Config.AlertService.Emailer.AlertType.NoData {
+	to = append(to, as.Config.AlertService.Emailer.AlertType.AgentError.To...)
+
+	if alert.IsCode(model.AlertCodeNoData) && !as.Config.AlertService.Emailer.AlertType.NoData.Enable {
 		return
 	}
+
+	to = append(to, as.Config.AlertService.Emailer.AlertType.NoData.To...)
 
 	//Create the subject and message
 	var subject, message string
@@ -184,7 +206,7 @@ func (as *AlertService) ProcessAlertInsertion(params hub.Fields) {
 	}
 
 	// Send the email
-	err := as.Emailer.SendEmail(subject, message, as.Config.AlertService.Emailer.To)
+	err := as.Emailer.SendEmail(subject, message, to)
 	if err != nil {
 		as.Log.Error(err)
 		return
