@@ -342,20 +342,25 @@ type Emailer struct {
 }
 
 type AlertType struct {
-	NewHost                    bool
-	NewDatabase                bool
-	NewLicense                 bool
-	NewOption                  bool
-	NewUnlistedRunningDatabase bool
-	NewHostCpu                 bool
-	MissingPrimaryDatabase     bool
-	MissingDatabase            bool
-	AgentError                 bool
-	NoData                     bool
+	NewHost                    Directive
+	NewDatabase                Directive
+	NewLicense                 Directive
+	NewOption                  Directive
+	NewUnlistedRunningDatabase Directive
+	NewHostCpu                 Directive
+	MissingPrimaryDatabase     Directive
+	MissingDatabase            Directive
+	AgentError                 Directive
+	NoData                     Directive
 }
 
 type AlertSeverity struct {
 	Warning bool
+}
+
+type Directive struct {
+	Enable bool
+	To     []string
 }
 
 // AuthenticationProviderConfig contains the settings used to authenticate the users

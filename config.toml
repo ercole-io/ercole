@@ -58,17 +58,45 @@ QueueBufferSize = 10240
   SMTPPassword = "password"
   DisableSSLCertificateValidation = true
 
-    [AlertService.Emailer.AlertType]
-    NewHost = false
-    NewDatabase = false
-    NewLicense = false
-    NewOption = false
-    NewUnlistedRunningDatabase = false
-    NewHostCpu = false
-    MissingPrimaryDatabase = false
-    MissingDatabase = false
-    AgentError = false
-    NoData = false
+    [AlertService.Emailer.AlertType.NewHost.Directive]
+    Enable = false
+    To = []
+    
+    [AlertService.Emailer.AlertType.NewDatabase.Directive]
+    Enable = false
+    To = []
+
+    [AlertService.Emailer.AlertType.NewLicense.Directive]
+    Enable = false
+    To = []
+    
+    [AlertService.Emailer.AlertType.NewOption.Directive]
+    Enable = false
+    To = []
+
+    [AlertService.Emailer.AlertType.NewUnlistedRunningDatabase.Directive]
+    Enable = false
+    To = []
+    
+    [AlertService.Emailer.AlertType.NewHostCpu.Directive]
+    Enable = false
+    To = []
+
+    [AlertService.Emailer.AlertType.MissingPrimaryDatabase.Directive]
+    Enable = false
+    To = []
+    
+    [AlertService.Emailer.AlertType.MissingDatabase.Directive]
+    Enable = false
+    To = []
+
+    [AlertService.Emailer.AlertType.AgentError.Directive]
+    Enable = false 
+    To = []
+    
+    [AlertService.Emailer.AlertType.NoData.Directive]
+    Enable = false
+    To = []
 
 [APIService]
 RemoteEndpoint = "http://127.0.0.1:11113"
