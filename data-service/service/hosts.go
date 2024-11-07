@@ -85,7 +85,7 @@ func (hds *HostDataService) InsertHostData(hostdata model.HostDataBE) error {
 	}
 
 	if hostdata.Errors != nil && len(hostdata.Errors) > 0 {
-		if err := hds.throwAgentErrorsAlert(hostdata.Hostname, hostdata.Errors); err != nil {
+		if err := hds.throwAgentErrorsNonBlockingAlert(hostdata.Hostname, hostdata.Errors); err != nil {
 			hds.Log.Error(err)
 		}
 	}
@@ -107,7 +107,7 @@ func (hds *HostDataService) AlertInvalidHostData(validationErr error, hostdata *
 		errs = append(errs, hostdata.Errors...)
 	}
 
-	if err := hds.throwAgentErrorsAlert(hostname, errs); err != nil {
+	if err := hds.throwAgentErrorsBlockingAlert(hostname, errs); err != nil {
 		hds.Log.Error(err)
 	}
 }
