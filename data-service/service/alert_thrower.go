@@ -264,7 +264,38 @@ func (hds *HostDataService) throwMissingPrimaryDatabase(hostname, secondaryDbNam
 	return hds.AlertSvcClient.ThrowNewAlert(alert)
 }
 
-func (hds *HostDataService) throwAgentErrorsAlert(hostname string, errs []model.AgentError) error {
+func (hds *HostDataService) throwAgentErrorsBlockingAlert(hostname string, errs []model.AgentError) error {
+	b := strings.Builder{}
+	prefix := ""
+
+	if len(errs) > 1 {
+		prefix = "- "
+	}
+
+	for _, e := range errs {
+		b.WriteString(prefix)
+		b.WriteString(e.Message)
+		b.WriteString("\n")
+	}
+
+	alert := model.Alert{
+		AlertCategory:           model.AlertCategoryEngine,
+		AlertAffectedTechnology: nil,
+		AlertCode:               model.AlertCodeAgentError,
+		AlertSeverity:           model.AlertSeverityCritical,
+		AlertStatus:             model.AlertStatusNew,
+		Description:             b.String(),
+		Date:                    hds.TimeNow(),
+		OtherInfo: map[string]interface{}{
+			"hostname": hostname,
+			"errors":   errs,
+		},
+	}
+
+	return hds.AlertSvcClient.ThrowNewAlert(alert)
+}
+
+func (hds *HostDataService) throwAgentErrorsNonBlockingAlert(hostname string, errs []model.AgentError) error {
 	b := strings.Builder{}
 	prefix := ""
 
