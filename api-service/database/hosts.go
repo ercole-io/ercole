@@ -1327,19 +1327,27 @@ func (md *MongoDatabase) FindVirtualHostWithoutCluster() ([]dto.VirtualHostWitho
 					{Key: "archived", Value: false},
 					{Key: "info.hardwareAbstraction", Value: "VIRT"},
 					{Key: "info.hardwareAbstractionTechnology", Value: bson.D{{Key: "$ne", Value: "HPVRT"}}},
-					{Key: "clusters", Value: primitive.Null{}},
-				},
-			},
-		},
-		bson.D{
-			{Key: "$project",
-				Value: bson.D{
-					{Key: "hostname", Value: 1},
-					{Key: "hardwareAbstractionTechnology", Value: "$info.hardwareAbstractionTechnology"},
 				},
 			},
 		},
 	}
+
+	pipeline = append(pipeline, AddAssociatedClusterNameAndVirtualizationNode(utils.MAX_TIME)...)
+	pipeline = append(pipeline, bson.D{
+		{Key: "$match",
+			Value: bson.D{
+				{Key: "cluster", Value: primitive.Null{}},
+			},
+		},
+	})
+	pipeline = append(pipeline, bson.D{
+		{Key: "$project",
+			Value: bson.D{
+				{Key: "hostname", Value: 1},
+				{Key: "hardwareAbstractionTechnology", Value: "$info.hardwareAbstractionTechnology"},
+			},
+		},
+	})
 
 	ctx := context.TODO()
 
