@@ -67,6 +67,10 @@ func (md *MongoDatabase) SearchAlerts(alertFilter alert_filter.Alert) (*dto.Pagi
 					"$lt":  alertFilter.To,
 				},
 			}),
+			mu.APSet(bson.M{
+				"hostname": "$otherInfo.hostname",
+			}),
+
 			mu.APSearchFilterStage([]interface{}{
 				"$description",
 				"$alertCode",
@@ -75,10 +79,8 @@ func (md *MongoDatabase) SearchAlerts(alertFilter alert_filter.Alert) (*dto.Pagi
 				"$otherInfo.Hostname",
 				"$otherInfo.Dbname",
 				"$otherInfo.Features",
+				"$hostname",
 			}, alertFilter.Keywords),
-			mu.APSet(bson.M{
-				"hostname": "$otherInfo.hostname",
-			}),
 
 			mu.APOptionalStage(len(alertFilter.Location) > 0 || len(alertFilter.Environment) > 0 || alertFilter.OlderThan != utils.MAX_TIME,
 				mu.APLookupPipeline(
