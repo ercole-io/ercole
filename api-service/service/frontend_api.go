@@ -96,14 +96,20 @@ func (as *APIService) GetComplianceStats() (*dto.ComplianceStats, error) {
 		mongodbStats.Count +
 		mariadbStats.Count
 
-	avg := (oracleStats.CompliancePercentageVal + mysqlStats.CompliancePercentageVal + sqlServerStats.CompliancePercentageVal +
-		postgresqlStats.CompliancePercentageVal + mongodbStats.CompliancePercentageVal + mariadbStats.CompliancePercentageVal) / 6
+	weightedSum := (oracleStats.CompliancePercentageVal * float64(oracleStats.HostCount)) +
+		(mysqlStats.CompliancePercentageVal * float64(mysqlStats.HostCount)) +
+		(sqlServerStats.CompliancePercentageVal * float64(sqlServerStats.HostCount)) +
+		(postgresqlStats.CompliancePercentageVal * float64(postgresqlStats.HostCount)) +
+		(mongodbStats.CompliancePercentageVal * float64(mongodbStats.HostCount)) +
+		(mariadbStats.CompliancePercentageVal * float64(mariadbStats.HostCount))
+
+	weightedAvg := weightedSum / float64(hostsCount)
 
 	totStats := dto.Stats{
 		Count:                   instancesCount,
 		HostCount:               hostsCount,
-		CompliancePercentageVal: avg,
-		CompliancePercentageStr: fmt.Sprintf("%.2f%%", avg),
+		CompliancePercentageVal: weightedAvg,
+		CompliancePercentageStr: fmt.Sprintf("%.2f%%", weightedAvg),
 	}
 
 	res := dto.ComplianceStats{
@@ -147,7 +153,7 @@ func (as *APIService) oracleStats() (*dto.Stats, error) {
 		compliancePercentage = (totCompliance * 100) / float64(len(compliances))
 	}
 
-	if compliancePercentage == 0 {
+	if compliancePercentage == 0 || hostCount == 0 {
 		compliancePercentage = 100
 	}
 
@@ -187,7 +193,7 @@ func (as *APIService) mysqlStats() (*dto.Stats, error) {
 		compliancePercentage = (totCompliance * 100) / float64(len(compliances))
 	}
 
-	if compliancePercentage == 0 {
+	if compliancePercentage == 0 || hostCount == 0 {
 		compliancePercentage = 100
 	}
 
@@ -227,7 +233,7 @@ func (as *APIService) sqlServerStats() (*dto.Stats, error) {
 		compliancePercentage = (totCompliance * 100) / float64(len(compliances))
 	}
 
-	if compliancePercentage == 0 {
+	if compliancePercentage == 0 || hostCount == 0 {
 		compliancePercentage = 100
 	}
 
