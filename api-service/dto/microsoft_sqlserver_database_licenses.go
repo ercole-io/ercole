@@ -15,13 +15,13 @@
 
 package dto
 
-// OracleDatabaseUsedLicenseSearchResponse dto
+// SqlServerDatabaseUsedLicenseSearchResponse dto
 type SqlServerDatabaseUsedLicenseSearchResponse struct {
 	Content  []SqlServerDatabaseUsedLicense `json:"content" bson:"content"`
 	Metadata PagingMetadata                 `json:"metadata" bson:"metadata"`
 }
 
-// OracleDatabaseUsedLicense dto
+// SqlServerDatabaseUsedLicense dto
 type SqlServerDatabaseUsedLicense struct {
 	LicenseTypeID  string  `json:"licenseTypeID" bson:"licenseTypeID"`
 	DbName         string  `json:"dbName" bson:"dbName"`

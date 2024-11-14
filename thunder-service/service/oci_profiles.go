@@ -21,10 +21,10 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (as *ThunderService) AddOciProfile(profile model.OciProfile) (*model.OciProfile, error) {
-	profile.ID = as.NewObjectID()
+func (ts *ThunderService) AddOciProfile(profile model.OciProfile) (*model.OciProfile, error) {
+	profile.ID = ts.NewObjectID()
 
-	err := as.Database.AddOciProfile(profile)
+	err := ts.Database.AddOciProfile(profile)
 	if err != nil {
 		return nil, err
 	}
@@ -32,15 +32,15 @@ func (as *ThunderService) AddOciProfile(profile model.OciProfile) (*model.OciPro
 	return &profile, nil
 }
 
-func (as *ThunderService) UpdateOciProfile(profile model.OciProfile) (*model.OciProfile, error) {
-	if err := as.Database.UpdateOciProfile(profile); err != nil {
+func (ts *ThunderService) UpdateOciProfile(profile model.OciProfile) (*model.OciProfile, error) {
+	if err := ts.Database.UpdateOciProfile(profile); err != nil {
 		return nil, err
 	}
 
 	return &profile, nil
 }
-func (as *ThunderService) GetOciProfiles() ([]model.OciProfile, error) {
-	oracle_cloud_profile, err := as.Database.GetOciProfiles(true)
+func (ts *ThunderService) GetOciProfiles() ([]model.OciProfile, error) {
+	oracle_cloud_profile, err := ts.Database.GetOciProfiles(true)
 	if err != nil {
 		return nil, err
 	}
@@ -48,8 +48,8 @@ func (as *ThunderService) GetOciProfiles() ([]model.OciProfile, error) {
 	return oracle_cloud_profile, nil
 }
 
-func (as *ThunderService) GetMapOciProfiles() (map[primitive.ObjectID]model.OciProfile, error) {
-	oracle_cloud_profile_with_id, err := as.Database.GetMapOciProfiles()
+func (ts *ThunderService) GetMapOciProfiles() (map[primitive.ObjectID]model.OciProfile, error) {
+	oracle_cloud_profile_with_id, err := ts.Database.GetMapOciProfiles()
 	if err != nil {
 		return nil, err
 	}
@@ -57,16 +57,16 @@ func (as *ThunderService) GetMapOciProfiles() (map[primitive.ObjectID]model.OciP
 	return oracle_cloud_profile_with_id, nil
 }
 
-func (as *ThunderService) DeleteOciProfile(id primitive.ObjectID) error {
-	if err := as.Database.DeleteOciProfile(id); err != nil {
+func (ts *ThunderService) DeleteOciProfile(id primitive.ObjectID) error {
+	if err := ts.Database.DeleteOciProfile(id); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (as *ThunderService) SelectOciProfile(profileId string, selected bool) error {
-	if err := as.Database.SelectOciProfile(profileId, selected); err != nil {
+func (ts *ThunderService) SelectOciProfile(profileId string, selected bool) error {
+	if err := ts.Database.SelectOciProfile(profileId, selected); err != nil {
 		return err
 	}
 

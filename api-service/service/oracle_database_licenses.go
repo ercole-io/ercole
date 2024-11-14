@@ -30,8 +30,8 @@ func (as *APIService) UpdateLicenseIgnoredField(hostname string, dbname string, 
 	return nil
 }
 
-// If an oracle database has an enterprise license and an option less than 3 months, then the db can be migrated.
-// CanMigrateLicense return if the database can be migrated or not.
+// CanMigrateLicense If an oracle database has an enterprise license and an option less than 3 months, then the db can be migrated.
+// return if the database can be migrated or not.
 func (as *APIService) CanMigrateLicense(hostname string, dbname string, filter dto.GlobalFilter) (bool, error) {
 	isEnt := false
 

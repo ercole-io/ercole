@@ -192,6 +192,23 @@ local task_deploy_repository(dist) = {
         },
       ] + [
         {
+          name: 'staticcheck',
+          runtime: {
+            type: 'pod',
+            arch: 'amd64',
+            containers: [
+              { image: 'golang:1.22' },
+            ],
+          },
+          steps: [
+            { type: 'clone' },
+            { type: 'run', name: 'install staticcheck', command: 'go install honnef.co/go/tools/cmd/staticcheck@latest' },
+            { type: 'run', name: 'run staticcheck', command: 'staticcheck -f=stylish -tests=false ./...' },
+          ],
+          depends: ['linters'],
+        },
+      ] + [
+        {
           name: 'test',
           runtime: {
             type: 'pod',
@@ -207,7 +224,7 @@ local task_deploy_repository(dist) = {
             { type: 'run', name: '', command: 'go generate -v ./...' },
             { type: 'run', name: '', command: 'go test -race ./... -v' },
           ],
-          depends: ['linters'],
+          depends: ['staticcheck'],
         }
       ] + [
         {

@@ -23,7 +23,7 @@ import (
 	"github.com/ercole-io/ercole/v2/logger"
 )
 
-// migrateCmd represents the migrate command
+// NewMigrateStatusCmd represents the migrate command
 func NewMigrateStatusCmd(conf *config.Configuration) *cobra.Command {
 	return &cobra.Command{
 		Use:   "migrate-status",

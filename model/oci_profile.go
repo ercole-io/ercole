@@ -41,12 +41,12 @@ func (pr OciProfile) IsValid() bool {
 		return false
 	}
 
-	var tenancy []string = strings.Split(pr.TenancyOCID, ".")
+	var tenancy = strings.Split(pr.TenancyOCID, ".")
 	if tenancy[1] != "tenancy" {
 		return false
 	}
 
-	var user []string = strings.Split(pr.UserOCID, ".")
+	var user = strings.Split(pr.UserOCID, ".")
 
 	return user[1] == "user"
 }

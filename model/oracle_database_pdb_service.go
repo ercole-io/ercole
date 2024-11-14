@@ -15,7 +15,7 @@
 
 package model
 
-// OracleDatabaseService holds information about an Oracle database service
+// OracleDatabasePdbService holds information about an Oracle database service
 type OracleDatabasePdbService struct {
 	Name            *string     `json:"name" bson:"name,omitempty"`
 	FailoverMethod  *string     `json:"failoverMethod" bson:"failoverMethod,omitempty"`

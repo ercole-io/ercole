@@ -30,11 +30,11 @@ import (
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
-func (as *ThunderService) GetOciNativeRecommendations(profiles []string) ([]model.OciNativeRecommendation, error) {
+func (ts *ThunderService) GetOciNativeRecommendations(profiles []string) ([]model.OciNativeRecommendation, error) {
 	var listRec []model.OciNativeRecommendation
 	listRec = make([]model.OciNativeRecommendation, 0)
 
-	dbProfiles, err := as.GetMapOciProfiles()
+	dbProfiles, err := ts.GetMapOciProfiles()
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +63,7 @@ func (as *ThunderService) GetOciNativeRecommendations(profiles []string) ([]mode
 			continue
 		}
 
-		categoryId, err := as.getOciCategoryId(client, dbProfile.TenancyOCID)
+		categoryId, err := ts.getOciCategoryId(client, dbProfile.TenancyOCID)
 		if err != nil {
 			merr = multierror.Append(merr, err)
 			continue
@@ -112,7 +112,7 @@ func (as *ThunderService) GetOciNativeRecommendations(profiles []string) ([]mode
 	return listRec, merr
 }
 
-func (as *ThunderService) getOciCategoryId(optClient optimizer.OptimizerClient, tenancyOCID string) (string, error) {
+func (ts *ThunderService) getOciCategoryId(optClient optimizer.OptimizerClient, tenancyOCID string) (string, error) {
 	var merr error
 
 	req := optimizer.ListCategoriesRequest{

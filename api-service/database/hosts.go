@@ -790,7 +790,7 @@ func (md *MongoDatabase) GetHostDatas(olderThan time.Time) ([]model.HostDataBE, 
 
 // ListAllLocations list all available locations
 func (md *MongoDatabase) ListAllLocations(location string, environment string, olderThan time.Time) ([]string, error) {
-	var out []string = make([]string, 0)
+	var out = make([]string, 0)
 
 	//Find the matching hostdata
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
@@ -822,7 +822,7 @@ func (md *MongoDatabase) ListAllLocations(location string, environment string, o
 
 // ListEnvironments list environments
 func (md *MongoDatabase) ListEnvironments(location string, environment string, olderThan time.Time) ([]string, error) {
-	var out []string = make([]string, 0)
+	var out = make([]string, 0)
 
 	//Find the matching hostdata
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
@@ -957,7 +957,7 @@ func (md *MongoDatabase) GetHostMinValidCreatedAtDate(hostname string) (time.Tim
 
 // GetListValidHostsByRangeDates get list of valid hosts by range dates
 func (md *MongoDatabase) GetListValidHostsByRangeDates(from time.Time, to time.Time) ([]string, error) {
-	var hosts []string = make([]string, 0)
+	var hosts = make([]string, 0)
 
 	values, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Distinct(
 		context.TODO(),
@@ -980,7 +980,7 @@ func (md *MongoDatabase) GetListValidHostsByRangeDates(from time.Time, to time.T
 
 // GetListDismissedHostsByRangeDates get list of dismissed hosts by range dates
 func (md *MongoDatabase) GetListDismissedHostsByRangeDates(from time.Time, to time.Time) ([]string, error) {
-	var hosts []string = make([]string, 0)
+	var hosts = make([]string, 0)
 
 	values, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Distinct(
 		context.TODO(),
@@ -1003,7 +1003,7 @@ func (md *MongoDatabase) GetListDismissedHostsByRangeDates(from time.Time, to ti
 // ExistNotInClusterHost return true if the host specified by hostname exist and it is not in cluster, otherwise false
 func (md *MongoDatabase) ExistNotInClusterHost(hostname string) (bool, error) {
 	//check that the host exist
-	var out []struct{} = make([]struct{}, 0)
+	var out = make([]struct{}, 0)
 
 	//Find the matching alerts
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
@@ -1047,7 +1047,7 @@ func (md *MongoDatabase) ExistNotInClusterHost(hostname string) (bool, error) {
 }
 
 func (md *MongoDatabase) getHostTechnology(hostname string, olderThan time.Time) (string, error) {
-	var result map[string]bool = make(map[string]bool)
+	var result = make(map[string]bool)
 
 	var out string
 
@@ -1145,7 +1145,7 @@ func (md *MongoDatabase) getHostTechnology(hostname string, olderThan time.Time)
 	return out, nil
 }
 
-// Check if there are any db instances not running on host
+// FindUnlistedRunningDatabases Check if there are any db instances not running on host
 func (md *MongoDatabase) FindUnlistedRunningDatabases(hostname string) ([]string, error) {
 	ctx := context.TODO()
 

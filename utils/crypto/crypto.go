@@ -82,33 +82,33 @@ func GenerateHashAndSalt(password string, salt []byte) (string, string) {
 }
 
 func SuggestPassword() string {
-	mathRand.Seed(time.Now().Unix())
+	r := mathRand.New(mathRand.NewSource(time.Now().UnixNano()))
 
 	var password strings.Builder
 
 	for i := 0; i < minSpecialChar; i++ {
-		random := mathRand.Intn(len(specialCharSet))
+		random := r.Intn(len(specialCharSet))
 		password.WriteString(string(specialCharSet[random]))
 	}
 
 	for i := 0; i < minNum; i++ {
-		random := mathRand.Intn(len(numberSet))
+		random := r.Intn(len(numberSet))
 		password.WriteString(string(numberSet[random]))
 	}
 
 	for i := 0; i < minUpperCase; i++ {
-		random := mathRand.Intn(len(upperCharSet))
+		random := r.Intn(len(upperCharSet))
 		password.WriteString(string(upperCharSet[random]))
 	}
 
 	remainingLength := passwordLength - minSpecialChar - minNum - minUpperCase
 	for i := 0; i < remainingLength; i++ {
-		random := mathRand.Intn(len(allCharSet))
+		random := r.Intn(len(allCharSet))
 		password.WriteString(string(allCharSet[random]))
 	}
 
 	inRune := []rune(password.String())
-	mathRand.Shuffle(len(inRune), func(i, j int) {
+	r.Shuffle(len(inRune), func(i, j int) {
 		inRune[i], inRune[j] = inRune[j], inRune[i]
 	})
 
@@ -116,11 +116,11 @@ func SuggestPassword() string {
 }
 
 func SuggestUsername() string {
-	mathRand.Seed(time.Now().UnixNano())
+	r := mathRand.New(mathRand.NewSource(time.Now().UnixNano()))
 
 	b := make([]rune, usernameLength)
 	for i := range b {
-		b[i] = sample[mathRand.Intn(len(sample))]
+		b[i] = sample[r.Intn(len(sample))]
 	}
 
 	return string(b)

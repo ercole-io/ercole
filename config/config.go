@@ -244,7 +244,7 @@ type OciDataRetrieveJob struct {
 	RunAtStartup bool
 }
 
-// OciDataRetrieveJob contains parameters for the data objects cleaning
+// OciRemoveOldDataObjectsJob contains parameters for the data objects cleaning
 type OciRemoveOldDataObjectsJob struct {
 	// Crontab contains the crontab string used to schedule the cleaning
 	Crontab string

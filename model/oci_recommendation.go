@@ -17,7 +17,7 @@ package model
 
 import "time"
 
-// Recommendation holds informations about a recommendation
+// OciNativeRecommendation holds informations about a recommendation
 type OciNativeRecommendation struct {
 	TenancyOCID         string `json:"tenancyOCID"`
 	Name                string `json:"name"`

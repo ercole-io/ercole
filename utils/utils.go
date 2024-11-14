@@ -59,7 +59,7 @@ func FromJSON(str []byte) interface{} {
 
 //ToJSONMongoCursor extract all items from a cursors and return its json rappresentation
 func ToJSONMongoCursor(cur *mongo.Cursor) string {
-	var out []map[string]interface{} = make([]map[string]interface{}, 0)
+	var out = make([]map[string]interface{}, 0)
 	//Decode the documents
 	for cur.Next(context.TODO()) {
 		var item map[string]interface{}
@@ -279,7 +279,7 @@ func HideMongoDBPassword(uri string) string {
 	return m.ReplaceAllString(uri, "//***:***@")
 }
 
-// Truncate float in 2 decimals
+// TruncateFloat64 truncate float in 2 decimals
 func TruncateFloat64(src float64) float64 {
 	return float64(int(src*100)) / 100
 }

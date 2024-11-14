@@ -15,7 +15,7 @@
 
 package model
 
-// Compartment holds informations about an Oracle Cloud compartment
+// OciCompartment holds informations about an Oracle Cloud compartment
 type OciCompartment struct {
 	CompartmentID string `json:"compartmentID"`
 	Name          string `json:"name"`

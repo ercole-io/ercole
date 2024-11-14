@@ -205,7 +205,7 @@ func TestGetOciNativeRecommendations_PartialContent(t *testing.T) {
 		}
 
 		var strError = "1 error occurred: 'invalid profile id aaa'"
-		var mockError error = errors.New("1 error occurred: 'invalid profile id aaa'")
+		var mockError = errors.New("1 error occurred: 'invalid profile id aaa'")
 
 		var recommendations []model.OciNativeRecommendation
 		recommendation := model.OciNativeRecommendation{
