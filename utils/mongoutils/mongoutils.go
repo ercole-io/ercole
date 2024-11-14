@@ -17,7 +17,6 @@ package mongoutils
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -30,7 +29,7 @@ import (
 // LoadFixtureHostData load the hostdata in the filename and return it
 func LoadFixtureHostData(t *testing.T, filename string) model.HostDataBE {
 	var hd model.HostDataBE
-	raw, err := ioutil.ReadFile(filename)
+	raw, err := os.ReadFile(filename)
 
 	require.NoError(t, err)
 	require.NoError(t, json.Unmarshal(raw, &hd))
@@ -40,7 +39,7 @@ func LoadFixtureHostData(t *testing.T, filename string) model.HostDataBE {
 
 // LoadFixtureHostDataMap load the hostdata in the filename and return it
 func LoadFixtureHostDataMap(t *testing.T, filename string) model.RawObject {
-	raw, err := ioutil.ReadFile(filename)
+	raw, err := os.ReadFile(filename)
 	require.NoError(t, err)
 
 	var hd model.RawObject
@@ -51,7 +50,7 @@ func LoadFixtureHostDataMap(t *testing.T, filename string) model.RawObject {
 
 // LoadFixtureMongoHostDataMap load the mongohostdata in the filename and return it
 func LoadFixtureMongoHostDataMap(t *testing.T, filename string) model.RawObject {
-	raw, err := ioutil.ReadFile(filename)
+	raw, err := os.ReadFile(filename)
 	require.NoError(t, err)
 
 	var hd model.RawObject
@@ -62,7 +61,7 @@ func LoadFixtureMongoHostDataMap(t *testing.T, filename string) model.RawObject 
 
 // LoadFixtureMongoHostDataMapAsHostData load the mongohostdata in the filename and return it as hostdata
 func LoadFixtureMongoHostDataMapAsHostData(t *testing.T, filename string) model.HostDataBE {
-	raw, err := ioutil.ReadFile(filename)
+	raw, err := os.ReadFile(filename)
 	require.NoError(t, err)
 
 	var hd model.HostDataBE

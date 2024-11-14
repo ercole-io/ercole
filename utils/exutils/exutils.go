@@ -33,13 +33,13 @@ type AxisHelper struct {
 // headersOffset is the number of line occupied by headers
 // e.g.:
 // axisHelp := exutils.NewAxisHelper(1) // start from second line
-// for _, val := range aSliceWithValuesForEachRow{
-// 	nextAxis := axisHelp.NewRow()
-
-// 	file.SetCellValue(sheet, nextAxis(), val.Name) // A2, A3... and so on
-// 	file.SetCellValue(sheet, nextAxis(), val.Surname)
-// 	...
-// }
+//
+//	for _, val := range aSliceWithValuesForEachRow{
+//		nextAxis := axisHelp.NewRow()
+//		file.SetCellValue(sheet, nextAxis(), val.Name) // A2, A3... and so on
+//		file.SetCellValue(sheet, nextAxis(), val.Surname)
+//		...
+//	}
 func NewAxisHelper(headersOffset int) *AxisHelper {
 	return &AxisHelper{
 		row: 0 + headersOffset,
@@ -64,7 +64,7 @@ func (ah *AxisHelper) GetIndexRow() int {
 	return ah.row
 }
 
-// NewRow must be used when you want to go to the next row
+// NewRowSincePreviousColumn must be used when you want to go to the next row
 // It returns a `nextAxis` anonymous func that return axis for the new row
 func (ah *AxisHelper) NewRowSincePreviousColumn() func() string {
 	ah.row++

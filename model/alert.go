@@ -121,6 +121,6 @@ fields:
 	return true
 }
 
-func (a Alert) IsCode(code string) bool {
-	return a.AlertCode == code
+func (alert Alert) IsCode(code string) bool {
+	return alert.AlertCode == code
 }

@@ -19,13 +19,13 @@ import (
 	"github.com/ercole-io/ercole/v2/model"
 )
 
-func (as *ThunderService) GetLastAwsObjects() ([]model.AwsObject, error) {
-	lastSeqValue, err := as.Database.GetLastAwsSeqValue()
+func (ts *ThunderService) GetLastAwsObjects() ([]model.AwsObject, error) {
+	lastSeqValue, err := ts.Database.GetLastAwsSeqValue()
 	if err != nil {
 		return nil, err
 	}
 
-	result, err := as.Database.GetAwsObjectsBySeqValue(lastSeqValue)
+	result, err := ts.Database.GetAwsObjectsBySeqValue(lastSeqValue)
 	if err != nil {
 		return nil, err
 	}

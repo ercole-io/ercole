@@ -219,7 +219,7 @@ func (md *MongoDatabase) SearchAlerts(alertFilter alert_filter.Alert) (*dto.Pagi
 		return nil, utils.NewError(err, "DB ERROR")
 	}
 
-	var out []map[string]interface{} = make([]map[string]interface{}, 0)
+	var out = make([]map[string]interface{}, 0)
 
 	for cur.Next(context.TODO()) {
 		var item map[string]interface{}
@@ -316,7 +316,7 @@ func (md *MongoDatabase) GetAlerts(location, environment, status string, from, t
 		return nil, utils.NewError(err, "DB ERROR")
 	}
 
-	var out []map[string]interface{} = make([]map[string]interface{}, 0)
+	var out = make([]map[string]interface{}, 0)
 
 	for cur.Next(context.TODO()) {
 		var item map[string]interface{}

@@ -20,8 +20,8 @@ import (
 	"github.com/ercole-io/ercole/v2/model"
 )
 
-func (as *ThunderService) GetOciObjects() ([]model.OciObjects, error) {
-	oracle_cloud_objects, err := as.Database.GetOciObjects()
+func (ts *ThunderService) GetOciObjects() ([]model.OciObjects, error) {
+	oracle_cloud_objects, err := ts.Database.GetOciObjects()
 
 	if err != nil {
 		return nil, err

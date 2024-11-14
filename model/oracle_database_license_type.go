@@ -42,7 +42,7 @@ func GetAllLicenseTypeMetrics() []string {
 	}
 }
 
-// Factor of multiplication from a license PerCore to a license PerUser ("Named User Plus Perpetual")
+// FactorNamedUser Factor of multiplication from a license PerCore to a license PerUser ("Named User Plus Perpetual")
 const FactorNamedUser float64 = 25
 
 func GetFactorByMetric(metric string) float64 {

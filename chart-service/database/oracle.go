@@ -63,7 +63,7 @@ func (md *MongoDatabase) GetOracleDatabaseChartByVersion(location string, enviro
 
 // GetOracleDatabaseChartByWork return the chart data about the work of all database
 func (md *MongoDatabase) GetOracleDatabaseChartByWork(location string, environment string, olderThan time.Time) ([]dto.ChartBubble, error) {
-	var out []dto.ChartBubble = make([]dto.ChartBubble, 0)
+	var out = make([]dto.ChartBubble, 0)
 	//Find the matching hostdata
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),

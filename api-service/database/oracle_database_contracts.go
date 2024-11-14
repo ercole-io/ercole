@@ -99,7 +99,7 @@ func (md *MongoDatabase) RemoveOracleDatabaseContract(id primitive.ObjectID) err
 
 // ListOracleDatabaseContracts lists the Oracle/Database contracts
 func (md *MongoDatabase) ListOracleDatabaseContracts() ([]dto.OracleDatabaseContractFE, error) {
-	var out []dto.OracleDatabaseContractFE = make([]dto.OracleDatabaseContractFE, 0)
+	var out = make([]dto.OracleDatabaseContractFE, 0)
 
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(oracleDbContractsCollection).
 		Aggregate(

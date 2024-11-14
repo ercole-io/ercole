@@ -18,6 +18,6 @@ import (
 	"github.com/ercole-io/ercole/v2/model"
 )
 
-func (as *ThunderService) GetAwsRDS() ([]model.AwsRDS, error) {
-	return as.Database.GetAwsRDS()
+func (ts *ThunderService) GetAwsRDS() ([]model.AwsRDS, error) {
+	return ts.Database.GetAwsRDS()
 }

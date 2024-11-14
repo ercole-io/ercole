@@ -19,7 +19,7 @@ import (
 	"github.com/ercole-io/ercole/v2/model"
 )
 
-// GetMySqlDatabaseLicenseTypes return the list of MySqlDatabaseLicenseTypes
+// GetMySqlLicenseTypes return the list of MySqlDatabaseLicenseTypes
 func (as *APIService) GetMySqlLicenseTypes() ([]model.MySqlLicenseType, error) {
 	parts := []model.MySqlLicenseType{
 		{

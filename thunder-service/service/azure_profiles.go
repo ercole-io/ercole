@@ -21,25 +21,25 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (as *ThunderService) AddAzureProfile(profile model.AzureProfile) (*model.AzureProfile, error) {
-	profile.ID = as.NewObjectID()
+func (ts *ThunderService) AddAzureProfile(profile model.AzureProfile) (*model.AzureProfile, error) {
+	profile.ID = ts.NewObjectID()
 
-	err := as.Database.AddAzureProfile(profile)
+	err := ts.Database.AddAzureProfile(profile)
 	if err != nil {
 		return nil, err
 	}
 
 	return &profile, nil
 }
-func (as *ThunderService) UpdateAzureProfile(profile model.AzureProfile) (*model.AzureProfile, error) {
-	if err := as.Database.UpdateAzureProfile(profile); err != nil {
+func (ts *ThunderService) UpdateAzureProfile(profile model.AzureProfile) (*model.AzureProfile, error) {
+	if err := ts.Database.UpdateAzureProfile(profile); err != nil {
 		return nil, err
 	}
 
 	return &profile, nil
 }
-func (as *ThunderService) GetAzureProfiles() ([]model.AzureProfile, error) {
-	azure_profile, err := as.Database.GetAzureProfiles(true)
+func (ts *ThunderService) GetAzureProfiles() ([]model.AzureProfile, error) {
+	azure_profile, err := ts.Database.GetAzureProfiles(true)
 	if err != nil {
 		return nil, err
 	}
@@ -47,8 +47,8 @@ func (as *ThunderService) GetAzureProfiles() ([]model.AzureProfile, error) {
 	return azure_profile, nil
 }
 
-func (as *ThunderService) GetMapAzureProfiles() (map[primitive.ObjectID]model.AzureProfile, error) {
-	azure_profile_with_id, err := as.Database.GetMapAzureProfiles()
+func (ts *ThunderService) GetMapAzureProfiles() (map[primitive.ObjectID]model.AzureProfile, error) {
+	azure_profile_with_id, err := ts.Database.GetMapAzureProfiles()
 	if err != nil {
 		return nil, err
 	}
@@ -56,16 +56,16 @@ func (as *ThunderService) GetMapAzureProfiles() (map[primitive.ObjectID]model.Az
 	return azure_profile_with_id, nil
 }
 
-func (as *ThunderService) DeleteAzureProfile(id primitive.ObjectID) error {
-	if err := as.Database.DeleteAzureProfile(id); err != nil {
+func (ts *ThunderService) DeleteAzureProfile(id primitive.ObjectID) error {
+	if err := ts.Database.DeleteAzureProfile(id); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (as *ThunderService) SelectAzureProfile(profileId string, selected bool) error {
-	if err := as.Database.SelectAzureProfile(profileId, selected); err != nil {
+func (ts *ThunderService) SelectAzureProfile(profileId string, selected bool) error {
+	if err := ts.Database.SelectAzureProfile(profileId, selected); err != nil {
 		return err
 	}
 

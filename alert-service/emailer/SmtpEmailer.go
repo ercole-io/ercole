@@ -29,23 +29,23 @@ type SMTPEmailer struct {
 	Config config.Configuration
 }
 
-func (this *SMTPEmailer) SendEmail(subject string, text string, to []string) error {
-	if !this.Config.AlertService.Emailer.Enabled {
+func (emailer *SMTPEmailer) SendEmail(subject string, text string, to []string) error {
+	if !emailer.Config.AlertService.Emailer.Enabled {
 		return nil
 	}
 
 	m := gomail.NewMessage()
-	m.SetHeader("From", this.Config.AlertService.Emailer.From)
+	m.SetHeader("From", emailer.Config.AlertService.Emailer.From)
 	m.SetHeader("To", to...)
 	m.SetHeader("Subject", subject)
 	m.SetBody("text/plain", text)
 
-	d := gomail.NewDialer(this.Config.AlertService.Emailer.SMTPServer,
-		this.Config.AlertService.Emailer.SMTPPort,
-		this.Config.AlertService.Emailer.SMTPUsername,
-		this.Config.AlertService.Emailer.SMTPPassword)
+	d := gomail.NewDialer(emailer.Config.AlertService.Emailer.SMTPServer,
+		emailer.Config.AlertService.Emailer.SMTPPort,
+		emailer.Config.AlertService.Emailer.SMTPUsername,
+		emailer.Config.AlertService.Emailer.SMTPPassword)
 
-	if this.Config.AlertService.Emailer.DisableSSLCertificateValidation {
+	if emailer.Config.AlertService.Emailer.DisableSSLCertificateValidation {
 		d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
 	}
 

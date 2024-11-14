@@ -26,7 +26,7 @@ import (
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
-// migrateCmd represents the migrate command
+// NewMigrateCmd represents the migrate command
 func NewMigrateCmd(conf *config.Configuration) *cobra.Command {
 	return &cobra.Command{
 		Use:   "migrate",

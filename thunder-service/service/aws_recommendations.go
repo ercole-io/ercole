@@ -22,15 +22,15 @@ import (
 	"github.com/ercole-io/ercole/v2/thunder-service/job"
 )
 
-func (as *ThunderService) GetAwsRecommendations() ([]model.AwsRecommendation, error) {
-	selectedProfiles, err := as.Database.GetSelectedAwsProfiles()
+func (ts *ThunderService) GetAwsRecommendations() ([]model.AwsRecommendation, error) {
+	selectedProfiles, err := ts.Database.GetSelectedAwsProfiles()
 	if err != nil {
 		return nil, err
 	}
 
 	awsRecommendations := make([]model.AwsRecommendation, 0)
 	if len(selectedProfiles) > 0 {
-		awsRecommendations, err = as.Database.GetAwsRecommendationsByProfiles(selectedProfiles)
+		awsRecommendations, err = ts.Database.GetAwsRecommendationsByProfiles(selectedProfiles)
 
 		if err != nil {
 			return nil, err
@@ -53,12 +53,12 @@ func (ts *ThunderService) GetAwsRecommendationsBySeqValue(seqValue uint64) ([]mo
 	return ts.Database.GetAwsRecommendationsBySeqValue(seqValue)
 }
 
-func (as *ThunderService) ForceGetAwsRecommendations() error {
+func (ts *ThunderService) ForceGetAwsRecommendations() error {
 	log := logger.NewLogger("THUN", logger.LogVerbosely(true))
 
 	j := &job.AwsDataRetrieveJob{
-		Database: as.Database,
-		Config:   as.Config,
+		Database: ts.Database,
+		Config:   ts.Config,
 		Log:      log,
 	}
 	j.Run()

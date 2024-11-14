@@ -28,7 +28,7 @@ import (
 
 // GetHostsCountUsingTechnologies return a map that contains the number of usages for every features
 func (md *MongoDatabase) GetHostsCountUsingTechnologies(location string, environment string, olderThan time.Time) (map[string]float64, error) {
-	var out map[string]float64 = make(map[string]float64)
+	var out = make(map[string]float64)
 
 	//Find the matching hostdata
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(

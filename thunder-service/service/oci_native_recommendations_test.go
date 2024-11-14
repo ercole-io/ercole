@@ -43,8 +43,11 @@ func TestGetOciNativeRecommendation_InvalidProfileId(t *testing.T) {
 	}
 
 	t.Run("BadRequest", func(t *testing.T) {
-		var expectedMap = make(map[primitive.ObjectID]model.OciProfile)
-		var expectedRes []model.OciNativeRecommendation
+		var (
+			expectedMap = make(map[primitive.ObjectID]model.OciProfile)
+			expectedRes []model.OciNativeRecommendation
+		)
+
 		expectedRes = make([]model.OciNativeRecommendation, 0)
 
 		expected := model.OciProfile{

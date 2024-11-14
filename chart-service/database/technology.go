@@ -31,11 +31,11 @@ import (
 func (md *MongoDatabase) GetTechnologyCount(location string, environment string, olderThan time.Time) (map[string]float64, error) {
 	var out map[string]float64
 	//Create the operating system technology detector
-	var technologyDetector bson.M = bson.M{}
+	var technologyDetector = bson.M{}
 
-	var technologyCounter bson.M = bson.M{}
+	var technologyCounter = bson.M{}
 
-	var unknownOSMatcher bson.A = bson.A{}
+	var unknownOSMatcher = bson.A{}
 
 	// operating system
 	for _, v := range md.OperatingSystemAggregationRules {

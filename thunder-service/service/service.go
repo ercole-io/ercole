@@ -84,10 +84,10 @@ type ThunderService struct {
 	Job         job.OciDataRetrieveJob
 }
 
-func (as *ThunderService) Init() {
-	as.Random = rand.New(rand.NewSource(as.TimeNow().UnixNano()))
+func (ts *ThunderService) Init() {
+	ts.Random = rand.New(rand.NewSource(ts.TimeNow().UnixNano()))
 
-	as.NewObjectID = func() primitive.ObjectID {
-		return primitive.NewObjectIDFromTimestamp(as.TimeNow())
+	ts.NewObjectID = func() primitive.ObjectID {
+		return primitive.NewObjectIDFromTimestamp(ts.TimeNow())
 	}
 }

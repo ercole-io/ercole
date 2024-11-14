@@ -353,11 +353,11 @@ func getLocalFiles(log logger.Logger, index []*ArtifactInfo, distributedFiles st
 func (idx *Index) searchArtifactByArg(arg string) *ArtifactInfo {
 	submatches := utils.FindNamedMatches(artifactNameRegex, arg)
 
-	var repository string = submatches["repository"]
+	var repository = submatches["repository"]
 
-	var name string = submatches["name"]
+	var name = submatches["name"]
 
-	var version string = submatches["version"]
+	var version = submatches["version"]
 
 	var foundArtifact *ArtifactInfo
 

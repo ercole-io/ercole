@@ -15,7 +15,7 @@
 
 package model
 
-// MySqlDatabaseLicenseType holds informations about a single MySqlLicenseType
+// MySqlLicenseType holds informations about a single MySqlLicenseType
 type MySqlLicenseType struct {
 	ID              string `json:"id" bson:"_id"`
 	ItemDescription string `json:"itemDescription" bson:"itemDescription"`

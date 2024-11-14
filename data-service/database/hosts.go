@@ -62,7 +62,7 @@ func (md *MongoDatabase) GetCurrentHostnames() ([]string, error) {
 		return nil, utils.NewError(err, "DB ERROR")
 	}
 
-	var hosts []string = make([]string, 0)
+	var hosts = make([]string, 0)
 	for _, val := range values {
 		hosts = append(hosts, val.(string))
 	}
@@ -84,7 +84,7 @@ func (md *MongoDatabase) FindOldCurrentHostnames(t time.Time) ([]string, error) 
 		return nil, utils.NewError(err, "DB ERROR")
 	}
 
-	var hosts []string = make([]string, 0)
+	var hosts = make([]string, 0)
 	for _, val := range values {
 		hosts = append(hosts, val.(string))
 	}
@@ -92,7 +92,7 @@ func (md *MongoDatabase) FindOldCurrentHostnames(t time.Time) ([]string, error) 
 	return hosts, nil
 }
 
-// FindOldCurrentHosts return the list of current hosts that haven't sent hostdata after time t
+// FindOldCurrentHostdata return the list of current hosts that haven't sent hostdata after time t
 func (md *MongoDatabase) FindOldCurrentHostdata(hostName string, t time.Time) (bool, error) {
 	filter := bson.M{
 		"hostname":    hostName,
@@ -157,7 +157,7 @@ func (md *MongoDatabase) FindOldArchivedHosts(t time.Time) ([]primitive.ObjectID
 		return nil, utils.NewError(err, "DB ERROR")
 	}
 
-	var ids []primitive.ObjectID = make([]primitive.ObjectID, 0)
+	var ids = make([]primitive.ObjectID, 0)
 	for _, val := range values {
 		ids = append(ids, val.(primitive.ObjectID))
 	}
@@ -217,12 +217,12 @@ func (md *MongoDatabase) GetHostnames() ([]string, error) {
 		Distinct(
 			context.TODO(),
 			"hostname",
-			bson.M{"archived":false})
+			bson.M{"archived": false})
 	if err != nil {
 		return nil, utils.NewError(err, "DB ERROR")
 	}
 
-	var hostnames []string = make([]string, 0, len(values))
+	var hostnames = make([]string, 0, len(values))
 	for i := range values {
 		hostnames = append(hostnames, values[i].(string))
 	}

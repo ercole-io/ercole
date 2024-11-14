@@ -66,7 +66,6 @@ var ErrInvalidAck = errors.New("Alert(s) cannot be acknowledged")
 
 var ErrInvalidToken = errors.New("invalid token")
 
-// ErrHostNotInCluster
 var ErrHostNotInCluster = errors.New("host not in cluster")
 
 var ErrInvalidProfileId = errors.New("invalid profile id")

@@ -33,7 +33,7 @@ func (ctrl *ThunderController) GetOciNativeRecommendations(w http.ResponseWriter
 		return
 	}
 
-	var profiles []string = strings.Split(profileList, ",")
+	var profiles = strings.Split(profileList, ",")
 
 	recommendations, err := ctrl.Service.GetOciNativeRecommendations(profiles)
 

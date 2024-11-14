@@ -58,7 +58,7 @@ func (md *MongoDatabase) GetHostsCountStats(location string, environment string,
 
 // GetEnvironmentStats return a array containing the number of hosts per environment
 func (md *MongoDatabase) GetEnvironmentStats(location string, olderThan time.Time) ([]interface{}, error) {
-	var out []interface{} = make([]interface{}, 0)
+	var out = make([]interface{}, 0)
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
@@ -90,7 +90,7 @@ func (md *MongoDatabase) GetEnvironmentStats(location string, olderThan time.Tim
 
 // GetTypeStats return a array containing the number of hosts per type
 func (md *MongoDatabase) GetTypeStats(location string, olderThan time.Time) ([]interface{}, error) {
-	var out []interface{} = make([]interface{}, 0)
+	var out = make([]interface{}, 0)
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
@@ -122,7 +122,7 @@ func (md *MongoDatabase) GetTypeStats(location string, olderThan time.Time) ([]i
 
 // GetOperatingSystemStats return a array containing the number of hosts per operanting system
 func (md *MongoDatabase) GetOperatingSystemStats(location string, olderThan time.Time) ([]interface{}, error) {
-	var out []interface{} = make([]interface{}, 0)
+	var out = make([]interface{}, 0)
 
 	//Create the aggregation branches
 	var switchExpr interface{}

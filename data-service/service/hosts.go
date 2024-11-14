@@ -22,7 +22,7 @@ import (
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
-// UpdateHostInfo saves the hostdata
+// InsertHostData saves the hostdata
 func (hds *HostDataService) InsertHostData(hostdata model.HostDataBE) error {
 	var err error
 
@@ -84,7 +84,7 @@ func (hds *HostDataService) InsertHostData(hostdata model.HostDataBE) error {
 		hds.Log.Error(err)
 	}
 
-	if hostdata.Errors != nil && len(hostdata.Errors) > 0 {
+	if len(hostdata.Errors) > 0 {
 		if err := hds.throwAgentErrorsNonBlockingAlert(hostdata.Hostname, hostdata.Errors); err != nil {
 			hds.Log.Error(err)
 		}

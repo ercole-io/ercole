@@ -102,12 +102,12 @@ var (
 	OracleDatabaseEditionExpress    = "XE"
 )
 
-func (v OracleDatabase) Edition() (dbEdition string) {
-	if strings.Contains(strings.ToUpper(v.Version), "ENTERPRISE") {
+func (od OracleDatabase) Edition() (dbEdition string) {
+	if strings.Contains(strings.ToUpper(od.Version), "ENTERPRISE") {
 		dbEdition = OracleDatabaseEditionEnterprise
-	} else if strings.Contains(strings.ToUpper(v.Version), "EXTREME") {
+	} else if strings.Contains(strings.ToUpper(od.Version), "EXTREME") {
 		dbEdition = OracleDatabaseEditionExtreme
-	} else if strings.Contains(strings.ToUpper(v.Version), "EXPRESS") {
+	} else if strings.Contains(strings.ToUpper(od.Version), "EXPRESS") {
 		dbEdition = OracleDatabaseEditionExpress
 	} else {
 		dbEdition = OracleDatabaseEditionStandard
@@ -116,8 +116,8 @@ func (v OracleDatabase) Edition() (dbEdition string) {
 	return
 }
 
-func (v OracleDatabase) CoreFactor(host Host, hostCoreFactor float64) (float64, error) {
-	dbEdition := v.Edition()
+func (od OracleDatabase) CoreFactor(host Host, hostCoreFactor float64) (float64, error) {
+	dbEdition := od.Edition()
 
 	if host.HardwareAbstractionTechnology == HardwareAbstractionTechnologyOvm ||
 		host.HardwareAbstractionTechnology == HardwareAbstractionTechnologyVmware ||
@@ -131,7 +131,7 @@ func (v OracleDatabase) CoreFactor(host Host, hostCoreFactor float64) (float64, 
 			return 1, nil
 		}
 
-		return 0, utils.NewErrorf("%q db: dbEdition %q unknown", v.Name, dbEdition)
+		return 0, utils.NewErrorf("%q db: dbEdition %q unknown", od.Name, dbEdition)
 	}
 
 	if host.HardwareAbstractionTechnology == HardwareAbstractionTechnologyPhysical {
@@ -147,11 +147,11 @@ func (v OracleDatabase) CoreFactor(host Host, hostCoreFactor float64) (float64, 
 			return float64(host.CPUSockets), nil
 		}
 
-		return 0, utils.NewErrorf("%q db: dbEdition %q unknown", v.Name, dbEdition)
+		return 0, utils.NewErrorf("%q db: dbEdition %q unknown", od.Name, dbEdition)
 	}
 
 	return 0, utils.NewErrorf("%q db: hardwareAbstractionTechnology %q unknown",
-		v.Name, host.HardwareAbstractionTechnology)
+		od.Name, host.HardwareAbstractionTechnology)
 }
 
 func (od OracleDatabase) GetPgaSum() float64 {

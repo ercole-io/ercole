@@ -21,25 +21,25 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (as *ThunderService) AddAwsProfile(profile model.AwsProfile) (*model.AwsProfile, error) {
-	profile.ID = as.NewObjectID()
+func (ts *ThunderService) AddAwsProfile(profile model.AwsProfile) (*model.AwsProfile, error) {
+	profile.ID = ts.NewObjectID()
 
-	err := as.Database.AddAwsProfile(profile)
+	err := ts.Database.AddAwsProfile(profile)
 	if err != nil {
 		return nil, err
 	}
 
 	return &profile, nil
 }
-func (as *ThunderService) UpdateAwsProfile(profile model.AwsProfile) (*model.AwsProfile, error) {
-	if err := as.Database.UpdateAwsProfile(profile); err != nil {
+func (ts *ThunderService) UpdateAwsProfile(profile model.AwsProfile) (*model.AwsProfile, error) {
+	if err := ts.Database.UpdateAwsProfile(profile); err != nil {
 		return nil, err
 	}
 
 	return &profile, nil
 }
-func (as *ThunderService) GetAwsProfiles() ([]model.AwsProfile, error) {
-	aws_profile, err := as.Database.GetAwsProfiles(true)
+func (ts *ThunderService) GetAwsProfiles() ([]model.AwsProfile, error) {
+	aws_profile, err := ts.Database.GetAwsProfiles(true)
 	if err != nil {
 		return nil, err
 	}
@@ -47,8 +47,8 @@ func (as *ThunderService) GetAwsProfiles() ([]model.AwsProfile, error) {
 	return aws_profile, nil
 }
 
-func (as *ThunderService) GetMapAwsProfiles() (map[primitive.ObjectID]model.AwsProfile, error) {
-	aws_profile_with_id, err := as.Database.GetMapAwsProfiles()
+func (ts *ThunderService) GetMapAwsProfiles() (map[primitive.ObjectID]model.AwsProfile, error) {
+	aws_profile_with_id, err := ts.Database.GetMapAwsProfiles()
 	if err != nil {
 		return nil, err
 	}
@@ -56,16 +56,16 @@ func (as *ThunderService) GetMapAwsProfiles() (map[primitive.ObjectID]model.AwsP
 	return aws_profile_with_id, nil
 }
 
-func (as *ThunderService) DeleteAwsProfile(id primitive.ObjectID) error {
-	if err := as.Database.DeleteAwsProfile(id); err != nil {
+func (ts *ThunderService) DeleteAwsProfile(id primitive.ObjectID) error {
+	if err := ts.Database.DeleteAwsProfile(id); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (as *ThunderService) SelectAwsProfile(profileId string, selected bool) error {
-	if err := as.Database.SelectAwsProfile(profileId, selected); err != nil {
+func (ts *ThunderService) SelectAwsProfile(profileId string, selected bool) error {
+	if err := ts.Database.SelectAwsProfile(profileId, selected); err != nil {
 		return err
 	}
 
