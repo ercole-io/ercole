@@ -17,6 +17,12 @@ package dto
 import (
 	ec2types "github.com/aws/aws-sdk-go-v2/service/ec2/types"
 	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/utils"
+)
+
+const (
+	standardEdition   = "standard"
+	enterpriseEdition = "enterprise"
 )
 
 type AwsRDSResponse struct {
@@ -33,6 +39,8 @@ type AwsDbInstance struct {
 	StorageType         string `json:"storageType"`
 	AllocatedStorage    int    `json:"allocatedStorage"`
 	MaxAllocatedStorage int    `json:"maxAllocatedStorage"`
+	Edition             string `json:"edition"`
+	LicensesCount       int    `json:"licensesCount"`
 
 	AwsInstanceTypeDetail
 }
@@ -102,6 +110,8 @@ func ToAwsDbInstance(m *model.AwsDbInstance) *AwsDbInstance {
 			res.Engine = *engine
 		}
 
+		res.Edition = getAwsRdsEdition(engine)
+
 		engineVersion := m.EngineVersion
 		if engineVersion != nil {
 			res.EngineVersion = *engineVersion
@@ -137,6 +147,8 @@ func ToAwsDbInstance(m *model.AwsDbInstance) *AwsDbInstance {
 			res.AwsInstanceTypeDetail = *awsInstanceTypeDetail
 		}
 
+		res.LicensesCount = getLicensesCount(res.Edition, res.DefaultVCpus)
+
 		return res
 	}
 
@@ -165,4 +177,52 @@ func ToAwsRDSResponse(list []model.AwsRDS) AwsRDSResponse {
 	}
 
 	return AwsRDSResponse{instances}
+}
+
+func getAwsRdsEdition(engine *string) string {
+	if engine == nil {
+		return ""
+	}
+
+	standards := []string{
+		"custom-oracle-se2",
+		"custom-oracle-se2-cdb",
+		"oracle-se2",
+		"oracle-se2-cdb",
+	}
+
+	enterprises := []string{
+		"custom-oracle-ee",
+		"custom-oracle-ee-cdb",
+		"oracle-ee",
+		"oracle-ee-cdb",
+	}
+
+	if utils.Contains(standards, *engine) {
+		return standardEdition
+	}
+
+	if utils.Contains(enterprises, *engine) {
+		return enterpriseEdition
+	}
+
+	return ""
+}
+
+func getLicensesCount(edition string, vcpus int) int {
+	var licensesCount int
+
+	if edition == standardEdition {
+		licensesCount = vcpus / 4
+	}
+
+	if edition == enterpriseEdition {
+		licensesCount = vcpus / 2
+	}
+
+	if licensesCount == 0 {
+		licensesCount = 1
+	}
+
+	return licensesCount
 }
