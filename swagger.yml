@@ -2463,6 +2463,10 @@ components:
                 type: integer
               maxAllocatedStorage:
                 type: integer
+              edition:
+                type: string
+              licensesCount:
+                type: string
               instanceType:
                 type: string
               processorManufacturer:
