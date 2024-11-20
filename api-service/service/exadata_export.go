@@ -129,3 +129,41 @@ func (as APIService) getAllExadataInstance() ([]dto.OracleExadataInstance, error
 
 	return res, err
 }
+
+func (as *APIService) GetAllExadataPatchAdvisorsAsXlsx() (*excelize.File, error) {
+	patchAdvisors, err := as.Database.FindAllExadataPatchAdvisors()
+	if err != nil {
+		return nil, err
+	}
+
+	sheet := "Patch Advisors"
+	headers := []string{
+		"RackID",
+		"Hostname",
+		"ImageVersion",
+		"ReleaseDate",
+		"FourMonths",
+		"SixMonths",
+		"TwelveMonths",
+	}
+
+	sheets, err := exutils.NewXLSX(as.Config, sheet, headers...)
+	if err != nil {
+		return nil, err
+	}
+
+	axisHelp := exutils.NewAxisHelper(1)
+
+	for _, val := range patchAdvisors {
+		nextAxis := axisHelp.NewRow()
+		sheets.SetCellValue(sheet, nextAxis(), val.RackID)
+		sheets.SetCellValue(sheet, nextAxis(), val.Hostname)
+		sheets.SetCellValue(sheet, nextAxis(), val.ImageVersion)
+		sheets.SetCellValue(sheet, nextAxis(), val.ReleaseDate.Format("02-01-2006"))
+		sheets.SetCellValue(sheet, nextAxis(), fmt.Sprintf("%t", val.FourMonths))
+		sheets.SetCellValue(sheet, nextAxis(), fmt.Sprintf("%t", val.SixMonths))
+		sheets.SetCellValue(sheet, nextAxis(), fmt.Sprintf("%t", val.TwelveMonths))
+	}
+
+	return sheets, err
+}

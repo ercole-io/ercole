@@ -16,10 +16,12 @@ package database
 
 import (
 	"context"
+	"time"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -409,4 +411,241 @@ func (md *MongoDatabase) updateExadataTime(rackID string) error {
 	}
 
 	return nil
+}
+
+func (md *MongoDatabase) FindExadataPatchAdvisorsByRackID(rackID string) ([]dto.OracleExadataPatchAdvisor, error) {
+	ctx := context.TODO()
+
+	pipeline := bson.A{
+		bson.D{
+			{Key: "$match",
+				Value: bson.D{
+					{Key: "hidden", Value: false},
+					{Key: "rackID", Value: rackID},
+				},
+			},
+		},
+		bson.D{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$components"}}}},
+		bson.D{
+			{Key: "$addFields",
+				Value: bson.D{
+					{Key: "matchesPattern",
+						Value: bson.D{
+							{Key: "$regexFind",
+								Value: bson.D{
+									{Key: "input", Value: "$components.imageVersion"},
+									{Key: "regex", Value: primitive.Regex{Pattern: `\b\d{6}\b`, Options: ""}},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		bson.D{
+			{Key: "$addFields",
+				Value: bson.D{
+					{Key: "extractedDate", Value: "$matchesPattern.match"},
+				},
+			},
+		},
+		bson.D{
+			{Key: "$addFields",
+				Value: bson.D{
+					{Key: "releaseDate",
+						Value: bson.D{
+							{Key: "$cond",
+								Value: bson.A{
+									"$matchesPattern",
+									bson.D{
+										{Key: "$dateFromString",
+											Value: bson.D{
+												{Key: "dateString",
+													Value: bson.D{
+														{Key: "$concat",
+															Value: bson.A{
+																"20",
+																"$extractedDate",
+															},
+														},
+													},
+												},
+												{Key: "format", Value: "%Y%m%d"},
+											},
+										},
+									},
+									primitive.Null{},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		bson.D{
+			{Key: "$project",
+				Value: bson.D{
+					{Key: "rackID", Value: "$components.rackID"},
+					{Key: "hostname", Value: "$components.hostname"},
+					{Key: "imageVersion", Value: "$components.imageVersion"},
+					{Key: "releaseDate", Value: "$releaseDate"},
+					{Key: "fourMonths", Value: bson.D{
+						{Key: "$gte",
+							Value: bson.A{
+								"$releaseDate",
+								time.Now().AddDate(0, -4, 0),
+							},
+						},
+					}},
+					{Key: "sixMonths", Value: bson.D{
+						{Key: "$gte",
+							Value: bson.A{
+								"$releaseDate",
+								time.Now().AddDate(0, -6, 0),
+							},
+						},
+					}},
+					{Key: "twelveMonths", Value: bson.D{
+						{Key: "$gte",
+							Value: bson.A{
+								"$releaseDate",
+								time.Now().AddDate(0, -12, 0),
+							},
+						},
+					}},
+				},
+			},
+		},
+	}
+
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(exadataCollection).Aggregate(ctx, pipeline)
+	if err != nil {
+		return nil, err
+	}
+
+	res := make([]dto.OracleExadataPatchAdvisor, 0)
+
+	if err := cur.All(ctx, &res); err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
+func (md *MongoDatabase) FindAllExadataPatchAdvisors() ([]dto.OracleExadataPatchAdvisor, error) {
+	ctx := context.TODO()
+
+	pipeline := bson.A{
+		bson.D{
+			{Key: "$match",
+				Value: bson.D{
+					{Key: "hidden", Value: false},
+				},
+			},
+		},
+		bson.D{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$components"}}}},
+		bson.D{
+			{Key: "$addFields",
+				Value: bson.D{
+					{Key: "matchesPattern",
+						Value: bson.D{
+							{Key: "$regexFind",
+								Value: bson.D{
+									{Key: "input", Value: "$components.imageVersion"},
+									{Key: "regex", Value: primitive.Regex{Pattern: `\b\d{6}\b`, Options: ""}},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		bson.D{
+			{Key: "$addFields",
+				Value: bson.D{
+					{Key: "extractedDate", Value: "$matchesPattern.match"},
+				},
+			},
+		},
+		bson.D{
+			{Key: "$addFields",
+				Value: bson.D{
+					{Key: "releaseDate",
+						Value: bson.D{
+							{Key: "$cond",
+								Value: bson.A{
+									"$matchesPattern",
+									bson.D{
+										{Key: "$dateFromString",
+											Value: bson.D{
+												{Key: "dateString",
+													Value: bson.D{
+														{Key: "$concat",
+															Value: bson.A{
+																"20",
+																"$extractedDate",
+															},
+														},
+													},
+												},
+												{Key: "format", Value: "%Y%m%d"},
+											},
+										},
+									},
+									primitive.Null{},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		bson.D{
+			{Key: "$project",
+				Value: bson.D{
+					{Key: "rackID", Value: "$components.rackID"},
+					{Key: "hostname", Value: "$components.hostname"},
+					{Key: "imageVersion", Value: "$components.imageVersion"},
+					{Key: "releaseDate", Value: "$releaseDate"},
+					{Key: "fourMonths", Value: bson.D{
+						{Key: "$gte",
+							Value: bson.A{
+								"$releaseDate",
+								time.Now().AddDate(0, -4, 0),
+							},
+						},
+					}},
+					{Key: "sixMonths", Value: bson.D{
+						{Key: "$gte",
+							Value: bson.A{
+								"$releaseDate",
+								time.Now().AddDate(0, -6, 0),
+							},
+						},
+					}},
+					{Key: "twelveMonths", Value: bson.D{
+						{Key: "$gte",
+							Value: bson.A{
+								"$releaseDate",
+								time.Now().AddDate(0, -12, 0),
+							},
+						},
+					}},
+				},
+			},
+		},
+	}
+
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(exadataCollection).Aggregate(ctx, pipeline)
+	if err != nil {
+		return nil, err
+	}
+
+	res := make([]dto.OracleExadataPatchAdvisor, 0)
+
+	if err := cur.All(ctx, &res); err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }

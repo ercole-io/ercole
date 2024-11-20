@@ -146,3 +146,33 @@ func TestShowExadataInstance(t *testing.T) {
 
 	assert.Equal(t, false, exadata.Hidden)
 }
+
+func TestGetExadataPatchAdvisors(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+		Config:   config.Configuration{},
+	}
+
+	expected := []dto.OracleExadataPatchAdvisor{
+		{
+			Hostname:     "exa01db01",
+			RackID:       "3M2ORPFI9W",
+			ImageVersion: "22.1.19.0.0.240119.1",
+			ReleaseDate:  utils.P("2024-01-19T00:00:00Z"),
+			FourMonths:   false,
+			SixMonths:    false,
+			TwelveMonths: false,
+		},
+	}
+
+	db.EXPECT().FindExadataPatchAdvisorsByRackID("3M2ORPFI9W").Return(expected, nil)
+
+	actual, err := as.GetExadataPatchAdvisors("3M2ORPFI9W")
+
+	require.NoError(t, err)
+
+	assert.Equal(t, expected, actual)
+}

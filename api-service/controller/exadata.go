@@ -177,3 +177,31 @@ func (ctrl *APIController) ShowExadataInstance(w http.ResponseWriter, r *http.Re
 
 	w.WriteHeader(http.StatusNoContent)
 }
+
+func (ctrl *APIController) GetExadataPatchAdvisors(w http.ResponseWriter, r *http.Request) {
+	rackID := mux.Vars(r)["rackID"]
+
+	res, err := ctrl.Service.GetExadataPatchAdvisors(rackID)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, res)
+}
+
+func (ctrl *APIController) ExportExadataPatchAdvisors(w http.ResponseWriter, r *http.Request) {
+	accept := r.Header.Get("Accept")
+	if accept == "" || accept != "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, errors.New("invalid Content-Type"))
+		return
+	}
+
+	res, err := ctrl.Service.GetAllExadataPatchAdvisorsAsXlsx()
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	utils.WriteXLSXResponse(w, res)
+}

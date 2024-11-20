@@ -1138,6 +1138,23 @@ components:
           type: string
         quantity:
           type: number
+    ExadataPatchAdvisor:
+      type: object
+      properties:
+        hostname:
+          type: string
+        rackID:
+          type: string
+        imageVersion:
+          type: string
+        releaseDate:
+          type: string
+        fourMonths:
+          type: boolean
+        sixMonths:
+          type: boolean
+        twelveMonths:
+          type: boolean
     HostData:
       description: A hostdata from FE
       type: object
@@ -5203,6 +5220,27 @@ paths:
               properties:
                   clusterName:
                     type: string
+
+  /exadata/{rackID}/components/patch-advisors:
+    get:
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: rackID
+          required: true
+      tags:
+        - api-service
+      summary: List patch advisors by rackID
+      responses:
+        "200":
+          description: OK
+          content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/ExadataPatchAdvisor"
 
   "/exadata/{rackID}/components/{hostID}":
     post:
