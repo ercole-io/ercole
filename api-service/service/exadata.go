@@ -100,8 +100,8 @@ func (as *APIService) ShowExadataInstance(rackID string) error {
 	return as.Database.UpdateExadataInstance(*instance)
 }
 
-func (as *APIService) GetExadataPatchAdvisors(rackId string) ([]dto.OracleExadataPatchAdvisor, error) {
-	patchAdvisors, err := as.Database.FindExadataPatchAdvisorsByRackID(rackId)
+func (as *APIService) GetExadataPatchAdvisors() ([]dto.OracleExadataPatchAdvisor, error) {
+	patchAdvisors, err := as.Database.FindAllExadataPatchAdvisors()
 	if err != nil {
 		return nil, err
 	}

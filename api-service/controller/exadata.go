@@ -22,6 +22,7 @@ import (
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/golang/gddo/httputil"
 	"github.com/gorilla/mux"
 )
 
@@ -178,30 +179,25 @@ func (ctrl *APIController) ShowExadataInstance(w http.ResponseWriter, r *http.Re
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func (ctrl *APIController) GetExadataPatchAdvisors(w http.ResponseWriter, r *http.Request) {
-	rackID := mux.Vars(r)["rackID"]
+func (ctrl *APIController) ListExadataPatchAdvisors(w http.ResponseWriter, r *http.Request) {
+	choice := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
 
-	res, err := ctrl.Service.GetExadataPatchAdvisors(rackID)
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-		return
+	switch choice {
+	case "application/json":
+		res, err := ctrl.Service.GetExadataPatchAdvisors()
+		if err != nil {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+			return
+		}
+
+		utils.WriteJSONResponse(w, http.StatusOK, res)
+	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+		res, err := ctrl.Service.GetAllExadataPatchAdvisorsAsXlsx()
+		if err != nil {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+			return
+		}
+
+		utils.WriteXLSXResponse(w, res)
 	}
-
-	utils.WriteJSONResponse(w, http.StatusOK, res)
-}
-
-func (ctrl *APIController) ExportExadataPatchAdvisors(w http.ResponseWriter, r *http.Request) {
-	accept := r.Header.Get("Accept")
-	if accept == "" || accept != "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, errors.New("invalid Content-Type"))
-		return
-	}
-
-	res, err := ctrl.Service.GetAllExadataPatchAdvisorsAsXlsx()
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	utils.WriteXLSXResponse(w, res)
 }

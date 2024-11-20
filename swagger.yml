@@ -5221,17 +5221,11 @@ paths:
                   clusterName:
                     type: string
 
-  /exadata/{rackID}/components/patch-advisors:
+  /exadata/patch-advisors:
     get:
-      parameters:
-        - schema:
-            type: string
-          in: path
-          name: rackID
-          required: true
       tags:
         - api-service
-      summary: List patch advisors by rackID
+      summary: List patch advisors
       responses:
         "200":
           description: OK

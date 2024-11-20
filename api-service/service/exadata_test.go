@@ -168,9 +168,9 @@ func TestGetExadataPatchAdvisors(t *testing.T) {
 		},
 	}
 
-	db.EXPECT().FindExadataPatchAdvisorsByRackID("3M2ORPFI9W").Return(expected, nil)
+	db.EXPECT().FindAllExadataPatchAdvisors().Return(expected, nil)
 
-	actual, err := as.GetExadataPatchAdvisors("3M2ORPFI9W")
+	actual, err := as.GetExadataPatchAdvisors()
 
 	require.NoError(t, err)
 
