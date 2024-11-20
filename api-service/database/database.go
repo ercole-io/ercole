@@ -275,7 +275,6 @@ type MongoDatabaseInterface interface {
 	FindExadataVmClustername(rackID, hostID, vmname string) (*model.OracleExadataVmClustername, error)
 	UpdateExadataVmClustername(rackID, hostID, vmname, clustername string) error
 
-	FindExadataPatchAdvisorsByRackID(rackID string) ([]dto.OracleExadataPatchAdvisor, error)
 	FindAllExadataPatchAdvisors() ([]dto.OracleExadataPatchAdvisor, error)
 
 	// COMPLIANCE STATS

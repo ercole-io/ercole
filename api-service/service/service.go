@@ -338,7 +338,7 @@ type APIServiceInterface interface {
 	GetAllExadataInstanceAsXlsx() (*excelize.File, error)
 	HideExadataInstance(rackID string) error
 	ShowExadataInstance(rackID string) error
-	GetExadataPatchAdvisors(rackId string) ([]dto.OracleExadataPatchAdvisor, error)
+	GetExadataPatchAdvisors() ([]dto.OracleExadataPatchAdvisor, error)
 	GetAllExadataPatchAdvisorsAsXlsx() (*excelize.File, error)
 }
 
