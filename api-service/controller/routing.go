@@ -218,6 +218,8 @@ func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 	router.HandleFunc("/exadata/{rackID}/rdma", ctrl.UpdateExadataRdma).Methods("POST")
 	router.HandleFunc("/exadata/{rackID}/hide", ctrl.HideExadataInstance).Methods("PATCH")
 	router.HandleFunc("/exadata/{rackID}/show", ctrl.ShowExadataInstance).Methods("PATCH")
+	router.HandleFunc("/exadata/{rackID}/components/patch-advisors", ctrl.GetExadataPatchAdvisors).Methods("GET")
+	router.HandleFunc("/exadata/patch-advisors/export", ctrl.ExportExadataPatchAdvisors).Methods("GET")
 
 	ctrl.setupSettingsRoutes(router.PathPrefix("/settings").Subrouter())
 	ctrl.setupFrontendAPIRoutes(router.PathPrefix("/frontend").Subrouter())
