@@ -96,14 +96,22 @@ func (as *APIService) GetComplianceStats() (*dto.ComplianceStats, error) {
 		mongodbStats.Count +
 		mariadbStats.Count
 
-	weightedSum := (oracleStats.CompliancePercentageVal * float64(oracleStats.HostCount)) +
-		(mysqlStats.CompliancePercentageVal * float64(mysqlStats.HostCount)) +
-		(sqlServerStats.CompliancePercentageVal * float64(sqlServerStats.HostCount)) +
-		(postgresqlStats.CompliancePercentageVal * float64(postgresqlStats.HostCount)) +
-		(mongodbStats.CompliancePercentageVal * float64(mongodbStats.HostCount)) +
-		(mariadbStats.CompliancePercentageVal * float64(mariadbStats.HostCount))
+	var weightedSum, weightedAvg float64
 
-	weightedAvg := weightedSum / float64(hostsCount)
+	if hostsCount > 0 {
+		weightedSum = (oracleStats.CompliancePercentageVal * float64(oracleStats.HostCount)) +
+			(mysqlStats.CompliancePercentageVal * float64(mysqlStats.HostCount)) +
+			(sqlServerStats.CompliancePercentageVal * float64(sqlServerStats.HostCount)) +
+			(postgresqlStats.CompliancePercentageVal * float64(postgresqlStats.HostCount)) +
+			(mongodbStats.CompliancePercentageVal * float64(mongodbStats.HostCount)) +
+			(mariadbStats.CompliancePercentageVal * float64(mariadbStats.HostCount))
+
+		weightedAvg = weightedSum / float64(hostsCount)
+	}
+
+	if weightedAvg == 0 || hostsCount == 0 {
+		weightedAvg = 100
+	}
 
 	totStats := dto.Stats{
 		Count:                   instancesCount,
