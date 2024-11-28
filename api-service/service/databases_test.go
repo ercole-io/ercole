@@ -933,6 +933,9 @@ func TestGetUsedLicensesPerDatabases_VMWareCluster_Success(t *testing.T) {
 		db.EXPECT().GetSqlServerDatabaseLicenseTypes().
 			Return(sqlServerLicenseTypes, nil),
 	)
+
+	db.EXPECT().ExistHostdata("topolino-hostname").Return(true, nil).AnyTimes()
+
 	actual, err := as.GetUsedLicensesPerDatabases("", globalFilter)
 	require.NoError(t, err)
 
@@ -1030,6 +1033,9 @@ func TestGetUsedLicensesPerDatabases_VeritasCluster_Success(t *testing.T) {
 		db.EXPECT().GetSqlServerDatabaseLicenseTypes().
 			Return(sqlServerLicenseTypes, nil),
 	)
+
+	db.EXPECT().ExistHostdata("topolino-hostname").Return(true, nil).AnyTimes()
+
 	actual, err := as.GetUsedLicensesPerDatabases("", globalFilter)
 	require.NoError(t, err)
 
@@ -1202,6 +1208,8 @@ func TestGetUsedLicensesPerDatabasesAsXLSX_Success(t *testing.T) {
 			Return(sqlServerLicenseTypes, nil),
 	)
 
+	db.EXPECT().ExistHostdata("topolino-hostname").Return(true, nil).AnyTimes()
+
 	actual, err := as.GetUsedLicensesPerDatabasesAsXLSX(globalFilter)
 	require.NoError(t, err)
 
@@ -1344,6 +1352,9 @@ func TestGetOracleDatabasesUsedLicenses_Host_WithActiveDataguardAndGoldenGate_Su
 		db.EXPECT().GetHost("topolino-hostname", utils.MAX_TIME, false).
 			Return(&host, nil).AnyTimes(),
 	)
+
+	db.EXPECT().ExistHostdata("topolino-hostname").Return(true, nil).AnyTimes()
+
 	actual, err := as.getOracleDatabasesUsedLicenses("", globalFilter)
 	require.NoError(t, err)
 
@@ -1514,6 +1525,9 @@ func TestGetOracleDatabasesUsedLicenses_VeritasCluster_WithActiveDataguardAndGol
 		db.EXPECT().GetHost("topolino-hostname", utils.MAX_TIME, false).
 			Return(&host, nil).AnyTimes(),
 	)
+
+	db.EXPECT().ExistHostdata("topolino-hostname").Return(true, nil).AnyTimes()
+
 	actual, err := as.getOracleDatabasesUsedLicenses("", globalFilter)
 	require.NoError(t, err)
 
@@ -1655,6 +1669,9 @@ func TestGetOracleDatabasesUsedLicenses_Host_WithRacAndRacOneNode_Success(t *tes
 		db.EXPECT().GetHost("topolino-hostname", utils.MAX_TIME, false).
 			Return(&host, nil).AnyTimes(),
 	)
+
+	db.EXPECT().ExistHostdata("topolino-hostname").Return(true, nil).AnyTimes()
+
 	actual, err := as.getOracleDatabasesUsedLicenses("", globalFilter)
 	require.NoError(t, err)
 
@@ -1790,6 +1807,9 @@ func TestGetOracleDatabasesUsedLicenses_VeritasCluster_WithRacAndRacOneNode_Succ
 		db.EXPECT().GetHost("topolino-hostname", utils.MAX_TIME, false).
 			Return(&host, nil).AnyTimes(),
 	)
+
+	db.EXPECT().ExistHostdata("topolino-hostname").Return(true, nil).AnyTimes()
+
 	actual, err := as.getOracleDatabasesUsedLicenses("", globalFilter)
 	require.NoError(t, err)
 
@@ -1977,6 +1997,11 @@ func TestGetOracleDatabasesUsedLicenses_VmwareCluster_WithRacAndRacOneNode_Succe
 		db.EXPECT().GetHost("topolino-hostname", utils.MAX_TIME, false).
 			Return(&host, nil).AnyTimes(),
 	)
+
+	db.EXPECT().ExistHostdata("topolino-hostname").Return(true, nil).AnyTimes()
+
+	db.EXPECT().ExistHostdata("qui").Return(true, nil).AnyTimes()
+
 	actual, err := as.getOracleDatabasesUsedLicenses("", globalFilter)
 	require.NoError(t, err)
 
@@ -2193,6 +2218,8 @@ func TestGetDatabaseLicensesComplianceAsXLSX_Success(t *testing.T) {
 			Times(1).
 			Return(sqlServerLicenseTypes, nil),
 	)
+
+	db.EXPECT().ExistHostdata("pluto").Return(true, nil).AnyTimes()
 
 	actual, err := as.GetDatabaseLicensesComplianceAsXLSX()
 	require.NoError(t, err)
@@ -2411,6 +2438,8 @@ func TestGetDatabaseLicensesCompliance_Success(t *testing.T) {
 			Times(1).
 			Return(sqlServerLicenseTypes, nil),
 	)
+
+	db.EXPECT().ExistHostdata("pluto").Return(true, nil).AnyTimes()
 
 	actual, err := as.GetDatabaseLicensesCompliance()
 	require.NoError(t, err)
@@ -2634,6 +2663,8 @@ func TestGetUsedLicensesPerHost_Success(t *testing.T) {
 			Return(sqlServerLicenseTypes, nil),
 	)
 
+	db.EXPECT().ExistHostdata("pluto").Return(true, nil).AnyTimes()
+
 	actual, err := as.GetUsedLicensesPerHost(filter)
 	require.NoError(t, err)
 
@@ -2822,6 +2853,8 @@ func TestGetUsedLicensesPerHostAsXLSX_Success(t *testing.T) {
 			Return(sqlServerLicenseTypes, nil),
 	)
 
+	db.EXPECT().ExistHostdata("pluto").Return(true, nil).AnyTimes()
+
 	actual, err := as.GetUsedLicensesPerHostAsXLSX(filter)
 	require.NoError(t, err)
 
@@ -2898,6 +2931,8 @@ func TestGetUsedLicensesPerCluster_OneVm_Success(t *testing.T) {
 		db.EXPECT().GetClusters(filter).
 			Return(clusters, nil),
 	)
+
+	db.EXPECT().ExistHostdata("vm1").Return(true, nil).AnyTimes()
 
 	actual, actErr := as.GetUsedLicensesPerCluster(filter)
 	require.NoError(t, actErr)
@@ -3025,6 +3060,9 @@ func TestGetUsedLicensesPerCluster_MultipleVms_Success(t *testing.T) {
 			Return(clusters, nil),
 	)
 
+	db.EXPECT().ExistHostdata("vm1").Return(true, nil).AnyTimes()
+	db.EXPECT().ExistHostdata("vm2").Return(true, nil).AnyTimes()
+
 	actual, actErr := as.GetUsedLicensesPerCluster(filter)
 	require.NoError(t, actErr)
 
@@ -3104,6 +3142,8 @@ func TestGetUsedLicensesPerClusterAsXLSX_Success(t *testing.T) {
 		db.EXPECT().GetClusters(filter).
 			Return(clusters, nil),
 	)
+
+	db.EXPECT().ExistHostdata("vm1").Return(true, nil).AnyTimes()
 
 	actual, err := as.GetUsedLicensesPerClusterAsXLSX(filter)
 	require.NoError(t, err)
@@ -3193,6 +3233,8 @@ func TestGetDatabaseLicensesComplianceSqlServerHostWithContractContract_Success(
 			Return(sqlServerLicenseTypes, nil),
 	)
 
+	db.EXPECT().ExistHostdata("homer").Return(true, nil).AnyTimes()
+
 	actual, err := as.GetDatabaseLicensesCompliance()
 	require.NoError(t, err)
 
@@ -3279,6 +3321,8 @@ func TestGetDatabaseLicensesComplianceSqlServerHostNoContract_Success(t *testing
 			Times(1).
 			Return(sqlServerLicenseTypes, nil),
 	)
+
+	db.EXPECT().ExistHostdata("homer").Return(true, nil).AnyTimes()
 
 	actual, err := as.GetDatabaseLicensesCompliance()
 	require.NoError(t, err)
@@ -3460,6 +3504,8 @@ func TestGetDatabaseLicensesComplianceSqlServerHostInClusterWithContract_Success
 		db.EXPECT().ExistHostdata("plutohost").
 			Return(true, nil),
 	)
+
+	db.EXPECT().ExistHostdata("plutocluster").Return(true, nil).AnyTimes()
 
 	actual, err := as.GetDatabaseLicensesCompliance()
 	require.NoError(t, err)
