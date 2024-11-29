@@ -148,13 +148,15 @@ func (job *GcpDataRetrieveJob) Run() {
 			instanceCh := make(chan model.GcpInstance, len(instances))
 
 			for _, instance := range instances {
-				instanceWg.Add(1)
+				if instance.GetStatus() == "RUNNING" {
+					instanceWg.Add(1)
 
-				go worker(model.GcpInstance{
-					Instance:  instance,
-					Project:   project,
-					ProfileID: profile.ID,
-				}, &instanceWg, instanceCh)
+					go worker(model.GcpInstance{
+						Instance:  instance,
+						Project:   project,
+						ProfileID: profile.ID,
+					}, &instanceWg, instanceCh)
+				}
 			}
 
 			go func() {
