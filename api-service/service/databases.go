@@ -464,6 +464,8 @@ func (as *APIService) getOracleDatabasesUsedLicenses(hostname string, filter dto
 		clustersMap[cluster.Name] = cluster
 	}
 
+	hypervisorLicenses := make([]dto.DatabaseUsedLicense, 0)
+
 	for i, l := range usedLicenses {
 		if usedLicenses[i].Metric == model.LicenseTypeMetricNamedUserPlusPerpetual {
 			usedLicenses[i].UsedLicenses *= model.GetFactorByMetric(usedLicenses[i].Metric)
@@ -490,6 +492,8 @@ func (as *APIService) getOracleDatabasesUsedLicenses(hostname string, filter dto
 
 			usedLicenses[i].OlvmCapped = isCapped
 
+			hypervisorLicenses = append(hypervisorLicenses, usedLicenses[i])
+
 			continue
 		}
 
@@ -509,6 +513,11 @@ func (as *APIService) getOracleDatabasesUsedLicenses(hostname string, filter dto
 	usedLicenses = as.manageStandardDBVersionLicenses(usedLicenses, clusters, hostdatasPerHostname)
 
 	as.CalcVeritasClusterLicenses(usedLicenses)
+
+	errHypervisor := as.checkOlvmCappedHypervisorLicenses(hypervisorLicenses, clustersMap)
+	if errHypervisor != nil {
+		return nil, errHypervisor
+	}
 
 	return usedLicenses, nil
 }
@@ -1003,4 +1012,31 @@ func (as *APIService) GetUsedLicensesPerClusterAsXLSX(filter dto.GlobalFilter) (
 	}
 
 	return sheets, err
+}
+
+func (as *APIService) checkOlvmCappedHypervisorLicenses(licenses []dto.DatabaseUsedLicense, clustersmap map[string]dto.Cluster) error {
+	olvmCapped := true
+
+	for _, license := range licenses {
+		if cluster, ok := clustersmap[license.ClusterName]; ok {
+			for _, vm := range cluster.VMs {
+				vmExist, err := as.Database.ExistHostdata(vm.Hostname)
+				if err != nil {
+					return err
+				}
+
+				if !vm.CappedCPU && vmExist {
+					if !license.Ignored {
+						olvmCapped = false
+					}
+				}
+			}
+		}
+	}
+
+	for i := 0; i < len(licenses); i++ {
+		licenses[i].OlvmCapped = olvmCapped
+	}
+
+	return nil
 }
