@@ -283,3 +283,15 @@ func HideMongoDBPassword(uri string) string {
 func TruncateFloat64(src float64) float64 {
 	return float64(int(src*100)) / 100
 }
+
+func RemoveDuplicate[T comparable](slice []T) []T {
+	keys := make(map[T]bool)
+	list := []T{}
+	for _, item := range slice {
+		if _, value := keys[item]; !value {
+			keys[item] = true
+			list = append(list, item)
+		}
+	}
+	return list
+}

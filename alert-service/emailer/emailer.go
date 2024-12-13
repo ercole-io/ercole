@@ -15,8 +15,12 @@
 
 package emailer
 
+import "bytes"
+
 // Emailer contains the interface of a email senders
 type Emailer interface {
 	// SendEmail send a email
 	SendEmail(subject string, text string, to []string) error
+	SendHtmlEmail(subject, text string, to []string) error
+	SendReportEmail(subject string, to []string, attachmentBuff bytes.Buffer) error
 }
