@@ -240,6 +240,7 @@ func serveAlertService(config config.Configuration, wg *sync.WaitGroup) {
 		Config:   config,
 		Database: db,
 		Log:      log,
+		Emailer:  emailer,
 	}
 	job.Init()
 

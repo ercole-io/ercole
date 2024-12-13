@@ -92,3 +92,42 @@ func (md *MongoDatabase) RemoveOldAlerts(dueDays int) (*mongo.DeleteResult, erro
 
 	return res, nil
 }
+
+func (md *MongoDatabase) FindAlertsByDate(startDate, endDate time.Time) ([]model.Alert, error) {
+	ctx := context.TODO()
+
+	start := time.Date(
+		startDate.Year(),
+		startDate.Month(),
+		startDate.Day(),
+		0, 0, 0, 0, startDate.Location())
+
+	end := time.Date(
+		endDate.Year(),
+		endDate.Month(),
+		endDate.Day(),
+		23, 59, 59, 9999, endDate.Location())
+
+	filter := bson.D{
+		{Key: "date",
+			Value: bson.D{
+				{Key: "$gte", Value: start},
+				{Key: "$lte", Value: end},
+			},
+		},
+		{Key: "alertStatus", Value: "NEW"},
+	}
+
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("alerts").Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+
+	alerts := make([]model.Alert, 0)
+
+	if err := cur.All(ctx, &alerts); err != nil {
+		return nil, err
+	}
+
+	return alerts, nil
+}

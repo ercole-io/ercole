@@ -46,6 +46,7 @@ type MongoDatabaseInterface interface {
 
 	AckOldAlerts(dueDays int) (*mongo.UpdateResult, error)
 	RemoveOldAlerts(dueDays int) (*mongo.DeleteResult, error)
+	FindAlertsByDate(startDate, endDate time.Time) ([]model.Alert, error) 
 }
 
 // MongoDatabase is a implementation

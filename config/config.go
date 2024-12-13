@@ -108,6 +108,7 @@ type AlertService struct {
 
 	AckAlertJob    AckAlertJob
 	RemoveAlertJob RemoveAlertJob
+	ReportAlertJob ReportAlertJob
 }
 
 type AckAlertJob struct {
@@ -120,6 +121,11 @@ type RemoveAlertJob struct {
 	Crontab      string
 	RunAtStartup bool
 	DueDays      int
+}
+
+type ReportAlertJob struct {
+	Crontab      string
+	RunAtStartup bool
 }
 
 // APIService contains configuration about the api service
