@@ -16,14 +16,15 @@
 package job
 
 import (
+	"context"
 	"strings"
 	"time"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/ec2"
-	"github.com/aws/aws-sdk-go/service/rds"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/cloudwatch"
+	"github.com/aws/aws-sdk-go-v2/service/cloudwatch/types"
+	"github.com/aws/aws-sdk-go-v2/service/ec2"
+	"github.com/aws/aws-sdk-go-v2/service/rds"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/thunder-service/database"
 )
@@ -33,17 +34,14 @@ func (job *AwsDataRetrieveJob) FetchAwsUnusedDatabaseInstance(profile model.AwsP
 
 	listRec := make([]interface{}, 0)
 
-	sess, err := session.NewSession(&aws.Config{
-		Region:      aws.String(profile.Region),
-		Credentials: credentials.NewStaticCredentials(profile.AccessKeyId, *profile.SecretAccessKey, ""),
-	})
+	cfg, err := job.loadDefaultConfig(profile)
 	if err != nil {
 		return err
 	}
 
-	rdsSvc := rds.New(sess)
+	rdsClient := rds.NewFromConfig(*cfg)
 
-	resultrdsSvc, err := rdsSvc.DescribeDBInstances(nil)
+	resultrdsSvc, err := rdsClient.DescribeDBInstances(context.Background(), nil)
 	if err != nil {
 		return err
 	}
@@ -86,24 +84,21 @@ func (job *AwsDataRetrieveJob) FetchAwsUnusedServiceDecommissioning3DB(profile m
 
 	listRec := make([]interface{}, 0)
 
-	sess, err := session.NewSession(&aws.Config{
-		Region:      aws.String(profile.Region),
-		Credentials: credentials.NewStaticCredentials(profile.AccessKeyId, *profile.SecretAccessKey, ""),
-	})
+	cfg, err := job.loadDefaultConfig(profile)
 	if err != nil {
 		return err
 	}
 
-	rdsSvc := rds.New(sess)
+	rdsClient := rds.NewFromConfig(*cfg)
 
-	resultrdsSvc, err := rdsSvc.DescribeDBInstances(nil)
+	resultrdsSvc, err := rdsClient.DescribeDBInstances(context.Background(), nil)
 	if err != nil {
 		return err
 	}
 
-	ec2Svc := ec2.New(sess)
+	ec2client := ec2.NewFromConfig(*cfg)
 
-	instanceTypes, err := ec2Svc.DescribeInstanceTypes(nil)
+	instanceTypes, err := ec2client.DescribeInstanceTypes(context.Background(), nil)
 	if err != nil {
 		return err
 	}
@@ -116,7 +111,16 @@ func (job *AwsDataRetrieveJob) FetchAwsUnusedServiceDecommissioning3DB(profile m
 
 		var average, maximum float64
 
-		averageCPU := GetMetricStatistics(sess, "DBInstanceIdentifier", *w.DBInstanceIdentifier, "CPUUtilization", "AWS/RDS", 3600, "Average", "Percent", timePast, timeNow)
+		averageCPU := GetMetricStatistics(*cfg, cloudwatch.GetMetricStatisticsInput{
+			EndTime:    aws.Time(timeNow),
+			MetricName: aws.String("CPUUtilization"),
+			Namespace:  aws.String("AWS/RDS"),
+			Period:     aws.Int32(3600),
+			StartTime:  aws.Time(timePast),
+			Statistics: []types.Statistic{types.StatisticAverage},
+			Dimensions: []types.Dimension{{Name: aws.String("DBInstanceIdentifier"), Value: w.DBInstanceIdentifier}},
+			Unit:       types.StandardUnitPercent,
+		})
 		countAverageCPU := 0
 
 		for _, op := range averageCPU.Datapoints {
@@ -127,7 +131,16 @@ func (job *AwsDataRetrieveJob) FetchAwsUnusedServiceDecommissioning3DB(profile m
 			}
 		}
 
-		maxCPU := GetMetricStatistics(sess, "DBInstanceIdentifier", *w.DBInstanceIdentifier, "CPUUtilization", "AWS/RDS", 3600, "Maximum", "Percent", timePast, timeNow)
+		maxCPU := GetMetricStatistics(*cfg, cloudwatch.GetMetricStatisticsInput{
+			EndTime:    aws.Time(timeNow),
+			MetricName: aws.String("CPUUtilization"),
+			Namespace:  aws.String("AWS/RDS"),
+			Period:     aws.Int32(3600),
+			StartTime:  aws.Time(timePast),
+			Statistics: []types.Statistic{types.StatisticMaximum},
+			Dimensions: []types.Dimension{{Name: aws.String("DBInstanceIdentifier"), Value: w.DBInstanceIdentifier}},
+			Unit:       types.StandardUnitPercent,
+		})
 		countMaxCPU := 0
 
 		for _, op := range maxCPU.Datapoints {
@@ -141,7 +154,7 @@ func (job *AwsDataRetrieveJob) FetchAwsUnusedServiceDecommissioning3DB(profile m
 		isKoCPU := false
 
 		for _, v := range instanceTypes.InstanceTypes {
-			if *v.InstanceType == shape && *v.VCpuInfo.DefaultVCpus == 1 {
+			if string(v.InstanceType) == shape && *v.VCpuInfo.DefaultVCpus == 1 {
 				isKoCPU = true
 			}
 
