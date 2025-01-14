@@ -1,13 +1,27 @@
 run:
-  go: "1.21"
-  timeout: 5m
+  go: '1.21'
+  timeout: 10m
   tests: false
 
-  skip-dirs:
-    - utils
+issues:
+  exclude-rules:
+  - path: /
+    linters:
+    - typecheck
+
+  - path: ^utils/
+    linters:
+      - errcheck
+      - gosimple
+      - govet
+      - ineffassign
+      - staticcheck
+      - unused
+      - wsl
 
 output:
-  format: colored-line-number
+  formats:
+    - format: colored-line-number
   sort-results: true
 
 linters-settings:
@@ -23,9 +37,6 @@ linters:
     - staticcheck
     - unused
     - wsl
-
-  disable:
-    - typecheck
 
 severity:
   default-severity: error
