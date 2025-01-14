@@ -187,7 +187,7 @@ local task_deploy_repository(dist) = {
           },
           steps: [
             { type: 'clone' },
-            { type: 'run', name: 'run golangci-lint', command: 'golangci-lint run --timeout 10m' },
+            { type: 'run', name: 'run golangci-lint', command: 'golangci-lint run' },
           ],
         },
       ] + [
