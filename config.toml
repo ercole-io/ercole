@@ -110,6 +110,7 @@ PGASGASumTargetPercentage = 0
 EnableOciMenu = false
 EnableAwsMenu = false
 EnableGcpMenu = false
+LocationAlias = "Location"
 DefaultDatabaseTags = [
   "coolest",
   "very important",
