@@ -22,9 +22,14 @@ const (
 	AllLocation     = "All"
 )
 
+var (
+	AllLocations = []string{"All"}
+)
+
 type Role struct {
-	Name        string `json:"name" bson:"name"`
-	Description string `json:"description" bson:"description"`
-	Location    string `json:"location" bson:"location"`
-	Permission  string `json:"permission" bson:"permission"`
+	Name        string   `json:"name" bson:"name"`
+	Description string   `json:"description" bson:"description"`
+	Location    string   `json:"location" bson:"location"`
+	Permission  string   `json:"permission" bson:"permission"`
+	Locations   []string `json:"locations" bson:"locations"`
 }

@@ -2,7 +2,7 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
     "required": [
-        "name","description", "location", "permission"
+        "name","description", "locations", "permission"
     ],
     "properties": {
         "name": {
@@ -14,8 +14,31 @@
             "type": "string",
             "minLength": 1
         },
-        "location": {
-            "type": "string"
+        "locations": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^(?i)[a-z]+$"
+            },
+            "uniqueItems": true,
+            "allOf": [
+                {
+                    "if": {
+                        "contains": { "pattern": "^(?i)all$" }
+                    },
+                    "then": {
+                        "minItems": 1,
+                        "maxItems": 1,
+                        "items": { "pattern": "^(?i)all$" }
+                    },
+                    "else": {
+                        "items": {
+                            "not": { "pattern": "^(?i)all$" }
+                        }
+                    }
+                }
+            ]
         },
         "permission": {
             "type": "string",

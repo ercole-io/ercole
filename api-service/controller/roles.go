@@ -73,9 +73,9 @@ func (ctrl *APIController) AddRole(w http.ResponseWriter, r *http.Request) {
 
 func (ctrl *APIController) UpdateRole(w http.ResponseWriter, r *http.Request) {
 	roleName := mux.Vars(r)["roleName"]
-	role := &model.Role{Name: roleName}
+	role := model.Role{Name: roleName}
 
-	if err := utils.Decode(r.Body, role); err != nil {
+	if err := utils.Decode(r.Body, &role); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
 		return
 	}
@@ -85,7 +85,7 @@ func (ctrl *APIController) UpdateRole(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := ctrl.Service.UpdateRole(*role); err != nil {
+	if err := ctrl.Service.UpdateRole(role); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}

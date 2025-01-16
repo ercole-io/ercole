@@ -141,3 +141,7 @@ func (as *APIService) UpdatePassword(username string, oldPass string, newPass st
 
 	return nil
 }
+
+func (as *APIService) GetUserLocations(username string) ([]string, error) {
+	return as.Database.GetUserLocations(username)
+}
