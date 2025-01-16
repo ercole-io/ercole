@@ -24,13 +24,14 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
 // FilterByLocationAndEnvironmentSteps return the steps required to filter the data by the location and environment field.
 func FilterByLocationAndEnvironmentSteps(location string, environment string) interface{} {
 	return bson.A{
-		mu.APOptionalStage(location != "", mu.APMatch(bson.M{
+		mu.APOptionalStage(location != "" && location != model.AllLocation, mu.APMatch(bson.M{
 			"location": bson.M{"$in": strings.Split(location, ",")},
 		})),
 		mu.APOptionalStage(environment != "", mu.APMatch(bson.M{

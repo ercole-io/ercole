@@ -21,7 +21,6 @@ import (
 
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/schema"
-	"github.com/ercole-io/ercole/v2/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -45,10 +44,6 @@ func (as *APIService) GetRoles() ([]model.Role, error) {
 }
 
 func (as *APIService) AddRole(role model.Role) error {
-	if err := as.getLocationError(role.Location); err != nil {
-		return err
-	}
-
 	raw, err := json.Marshal(role)
 	if err != nil {
 		return err
@@ -62,10 +57,6 @@ func (as *APIService) AddRole(role model.Role) error {
 }
 
 func (as *APIService) UpdateRole(role model.Role) error {
-	if err := as.getLocationError(role.Location); err != nil {
-		return err
-	}
-
 	raw, err := json.Marshal(role)
 	if err != nil {
 		return err
@@ -77,7 +68,7 @@ func (as *APIService) UpdateRole(role model.Role) error {
 
 	documents := bson.D{
 		primitive.E{Key: "description", Value: role.Description},
-		primitive.E{Key: "location", Value: role.Location},
+		primitive.E{Key: "locations", Value: role.Locations},
 		primitive.E{Key: "permission", Value: role.Permission},
 	}
 
@@ -90,17 +81,4 @@ func (as *APIService) UpdateRole(role model.Role) error {
 
 func (as *APIService) RemoveRole(roleName string) error {
 	return as.Database.RemoveRole(roleName)
-}
-
-func (as *APIService) getLocationError(location string) error {
-	locations, err := as.ListAllLocations("", "", utils.MAX_TIME)
-	if err != nil {
-		return err
-	}
-
-	if !utils.Contains(locations, location) && location != "All" {
-		return utils.ErrInvalidLocation
-	}
-
-	return nil
 }

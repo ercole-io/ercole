@@ -427,39 +427,13 @@ func (as *APIService) ListAllLocations(location string, environment string, olde
 
 // ListLocations list locations
 func (as *APIService) ListLocations(user interface{}) ([]string, error) {
-	var locations []string
+	u := user.(model.User)
 
-	var m = make(map[string]bool)
-
-	for _, groupName := range user.(model.User).Groups {
-		group, err := as.Database.GetGroup(groupName)
-		if err != nil {
-			return nil, err
-		}
-
-		for _, roleName := range group.Roles {
-			role, err := as.Database.GetRole(roleName)
-			if err != nil {
-				return nil, err
-			}
-
-			if role.Location == model.AllLocation {
-				allLocations, errAll := as.ListAllLocations("", "", utils.MAX_TIME)
-				if errAll != nil {
-					return nil, errAll
-				}
-
-				return allLocations, nil
-			}
-
-			if !m[role.Location] {
-				locations = append(locations, role.Location)
-				m[role.Location] = true
-			}
-		}
+	if u.IsAdmin() {
+		return as.Database.ListAllLocations("", "", utils.MAX_TIME)
 	}
 
-	return locations, nil
+	return as.Database.GetUserLocations(u.Username)
 }
 
 // ListEnvironments list environments

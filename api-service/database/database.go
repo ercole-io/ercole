@@ -256,6 +256,7 @@ type MongoDatabaseInterface interface {
 	UpdateUserLastLogin(user model.User) error
 	RemoveUser(username string) error
 	UpdatePassword(username string, password string, salt string) error
+	GetUserLocations(username string) ([]string, error)
 
 	// TREE
 	GetNodesByRoles(roles []string) ([]model.Node, error)

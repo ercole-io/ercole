@@ -1974,9 +1974,11 @@ components:
         description:
           type: string
           minLength: 1
-        location:
-          type: string
-          minLength: 1
+        locations:
+          type: array
+          items:
+            type: string
+            minLength: 1
         permission:
           type: string
           enum:
@@ -1986,7 +1988,7 @@ components:
       required:
         - name
         - description
-        - location
+        - locations
         - permission
     Group:
       description: ""

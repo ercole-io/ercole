@@ -132,3 +132,55 @@ func (md *MongoDatabase) UpdatePassword(username string, password string, salt s
 
 	return nil
 }
+
+func (md *MongoDatabase) GetUserLocations(username string) ([]string, error) {
+	ctx := context.TODO()
+	locations := make([]string, 0)
+
+	pipeline := bson.A{
+		bson.D{{Key: "$match", Value: bson.D{{Key: "username", Value: username}}}},
+		bson.D{{Key: "$unwind", Value: "$groups"}},
+		bson.D{
+			{Key: "$lookup",
+				Value: bson.D{
+					{Key: "from", Value: "groups"},
+					{Key: "localField", Value: "groups"},
+					{Key: "foreignField", Value: "name"},
+					{Key: "as", Value: "groupDetails"},
+				},
+			},
+		},
+		bson.D{{Key: "$unwind", Value: "$groupDetails"}},
+		bson.D{{Key: "$unwind", Value: "$groupDetails.roles"}},
+		bson.D{
+			{Key: "$lookup",
+				Value: bson.D{
+					{Key: "from", Value: "roles"},
+					{Key: "localField", Value: "groupDetails.roles"},
+					{Key: "foreignField", Value: "name"},
+					{Key: "as", Value: "roleDetails"},
+				},
+			},
+		},
+		bson.D{{Key: "$unwind", Value: "$roleDetails"}},
+		bson.D{{Key: "$project", Value: bson.D{{Key: "location", Value: "$roleDetails.locations"}}}},
+		bson.D{{Key: "$unwind", Value: "$location"}},
+		bson.D{{Key: "$group", Value: bson.D{{Key: "_id", Value: "$location"}}}},
+	}
+
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(userCollection).Aggregate(ctx, pipeline)
+	if err != nil {
+		return nil, err
+	}
+
+	for cur.Next(ctx) {
+		var item map[string]string
+		if cur.Decode(&item) != nil {
+			return nil, utils.NewError(err, "decode ERROR")
+		}
+
+		locations = append(locations, item["_id"])
+	}
+
+	return locations, nil
+}

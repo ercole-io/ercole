@@ -322,6 +322,7 @@ type APIServiceInterface interface {
 	NewPassword(username string) (string, error)
 	UpdatePassword(username string, oldPass string, newPass string) error
 	MatchPassword(user *model.User, password string) bool
+	GetUserLocations(username string) ([]string, error)
 
 	GetNodes(groups []string) ([]model.Node, error)
 	GetNode(name string) (*model.Node, error)

@@ -105,12 +105,12 @@ func TestAddRole(t *testing.T) {
 	expected := model.Role{
 		Name:        "Test",
 		Description: "test role",
-		Location:    "IT",
 		Permission:  "admin",
+		Locations:   []string{"IT"},
 	}
 
 	t.Run("Success", func(t *testing.T) {
-		db.EXPECT().ListAllLocations("", "", utils.MAX_TIME).Return([]string{"IT"}, nil)
+		db.EXPECT().ListAllLocations("", "", utils.MAX_TIME).Return([]string{"IT"}, nil).AnyTimes()
 		db.EXPECT().AddRole(expected).Return(nil)
 
 		err := as.AddRole(expected)
@@ -118,7 +118,7 @@ func TestAddRole(t *testing.T) {
 	})
 
 	t.Run("Error location", func(t *testing.T) {
-		db.EXPECT().ListAllLocations("", "", utils.MAX_TIME).Return([]string{}, nil)
+		db.EXPECT().ListAllLocations("", "", utils.MAX_TIME).Return([]string{}, nil).AnyTimes()
 		db.EXPECT().AddRole(expected).Return(utils.ErrInvalidLocation).AnyTimes()
 
 		err := as.AddRole(expected)
@@ -137,18 +137,18 @@ func TestUpdateRole(t *testing.T) {
 	expected := model.Role{
 		Name:        "Test",
 		Description: "test role",
-		Location:    "IT",
 		Permission:  "admin",
+		Locations:   []string{"IT"},
 	}
 
 	documents := bson.D{
 		primitive.E{Key: "description", Value: "new description"},
-		primitive.E{Key: "location", Value: expected.Location},
+		primitive.E{Key: "locations", Value: expected.Locations},
 		primitive.E{Key: "permission", Value: expected.Permission},
 	}
 
 	t.Run("Success", func(t *testing.T) {
-		db.EXPECT().ListAllLocations("", "", utils.MAX_TIME).Return([]string{"IT"}, nil)
+		db.EXPECT().ListAllLocations("", "", utils.MAX_TIME).Return([]string{"IT"}, nil).AnyTimes()
 		db.EXPECT().UpdateRole("Test", documents).Return(nil)
 
 		expected.Description = "new description"
@@ -157,7 +157,7 @@ func TestUpdateRole(t *testing.T) {
 	})
 
 	t.Run("Error location", func(t *testing.T) {
-		db.EXPECT().ListAllLocations("", "", utils.MAX_TIME).Return([]string{}, nil)
+		db.EXPECT().ListAllLocations("", "", utils.MAX_TIME).Return([]string{}, nil).AnyTimes()
 
 		db.EXPECT().UpdateRole("Test", documents).Return(utils.ErrInvalidLocation).AnyTimes()
 
