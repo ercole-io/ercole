@@ -159,6 +159,8 @@ type APIService struct {
 	EnableOciMenu bool
 	EnableAwsMenu bool
 	EnableGcpMenu bool
+
+	LocationAlias string
 }
 
 // RepoService contains configuration about the repo service
