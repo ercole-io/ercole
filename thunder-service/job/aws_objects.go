@@ -16,55 +16,51 @@
 package job
 
 import (
+	"context"
+	"errors"
 	"time"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/awserr"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/ec2"
-	"github.com/aws/aws-sdk-go/service/efs"
-	"github.com/aws/aws-sdk-go/service/elb"
-	"github.com/aws/aws-sdk-go/service/rds"
-	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/ec2"
+	"github.com/aws/aws-sdk-go-v2/service/efs"
+	"github.com/aws/aws-sdk-go-v2/service/elasticloadbalancing"
+	"github.com/aws/aws-sdk-go-v2/service/rds"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
+	smithy "github.com/aws/smithy-go"
 	"github.com/ercole-io/ercole/v2/model"
 )
 
 func (job *AwsDataRetrieveJob) FetchObjectsCount(profile model.AwsProfile, seq uint64) error {
-	sess, err := session.NewSession(&aws.Config{
-		Region:      aws.String(profile.Region),
-		Credentials: credentials.NewStaticCredentials(profile.AccessKeyId, *profile.SecretAccessKey, ""),
-	})
+	cfg, err := job.loadDefaultConfig(profile)
+	if err != nil {
+		return err
+	}
+	bucketsCount, err := job.getBucketsCount(*cfg)
 	if err != nil {
 		return err
 	}
 
-	bucketsCount, err := job.getBucketsCount(sess)
+	volumesCount, err := job.getVolumesCount(*cfg)
 	if err != nil {
 		return err
 	}
 
-	volumesCount, err := job.getVolumesCount(sess)
+	loadBalancersCount, err := job.getLoadBalancersCount(*cfg)
 	if err != nil {
 		return err
 	}
 
-	loadBalancersCount, err := job.getLoadBalancersCount(sess)
+	dbInstancesCount, err := job.getDbInstancesCount(*cfg)
 	if err != nil {
 		return err
 	}
 
-	dbInstancesCount, err := job.getDbInstancesCount(sess)
+	vpcsCount, err := job.getVpcsCount(*cfg)
 	if err != nil {
 		return err
 	}
 
-	vpcsCount, err := job.getVpcsCount(sess)
-	if err != nil {
-		return err
-	}
-
-	fileSystemsCount, err := job.getFileSystemsCount(sess)
+	fileSystemsCount, err := job.getFileSystemsCount(*cfg)
 	if err != nil {
 		return err
 	}
@@ -108,10 +104,10 @@ func (job *AwsDataRetrieveJob) FetchObjectsCount(profile model.AwsProfile, seq u
 	return nil
 }
 
-func (job *AwsDataRetrieveJob) getBucketsCount(session *session.Session) (*int, error) {
-	svc := s3.New(session)
+func (job *AwsDataRetrieveJob) getBucketsCount(cfg aws.Config) (*int, error) {
+	svc := s3.NewFromConfig(cfg)
 
-	result, err := svc.ListBuckets(nil)
+	result, err := svc.ListBuckets(context.Background(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -119,10 +115,10 @@ func (job *AwsDataRetrieveJob) getBucketsCount(session *session.Session) (*int, 
 	return aws.Int(len(result.Buckets)), nil
 }
 
-func (job *AwsDataRetrieveJob) getVolumesCount(session *session.Session) (*int, error) {
-	svc := ec2.New(session)
+func (job *AwsDataRetrieveJob) getVolumesCount(cfg aws.Config) (*int, error) {
+	svc := ec2.NewFromConfig(cfg)
 
-	result, err := svc.DescribeVolumes(nil)
+	result, err := svc.DescribeVolumes(context.Background(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -130,10 +126,10 @@ func (job *AwsDataRetrieveJob) getVolumesCount(session *session.Session) (*int, 
 	return aws.Int(len(result.Volumes)), nil
 }
 
-func (job *AwsDataRetrieveJob) getLoadBalancersCount(session *session.Session) (*int, error) {
-	svc := elb.New(session)
+func (job *AwsDataRetrieveJob) getLoadBalancersCount(cfg aws.Config) (*int, error) {
+	svc := elasticloadbalancing.NewFromConfig(cfg)
 
-	result, err := svc.DescribeLoadBalancers(nil)
+	result, err := svc.DescribeLoadBalancers(context.Background(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -141,10 +137,10 @@ func (job *AwsDataRetrieveJob) getLoadBalancersCount(session *session.Session) (
 	return aws.Int(len(result.LoadBalancerDescriptions)), nil
 }
 
-func (job *AwsDataRetrieveJob) getDbInstancesCount(session *session.Session) (*int, error) {
-	svc := rds.New(session)
+func (job *AwsDataRetrieveJob) getDbInstancesCount(cfg aws.Config) (*int, error) {
+	svc := rds.NewFromConfig(cfg)
 
-	result, err := svc.DescribeDBInstances(nil)
+	result, err := svc.DescribeDBInstances(context.Background(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -152,10 +148,10 @@ func (job *AwsDataRetrieveJob) getDbInstancesCount(session *session.Session) (*i
 	return aws.Int(len(result.DBInstances)), nil
 }
 
-func (job *AwsDataRetrieveJob) getVpcsCount(session *session.Session) (*int, error) {
-	svc := ec2.New(session)
+func (job *AwsDataRetrieveJob) getVpcsCount(cfg aws.Config) (*int, error) {
+	svc := ec2.NewFromConfig(cfg)
 
-	result, err := svc.DescribeVpcs(nil)
+	result, err := svc.DescribeVpcs(context.Background(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -163,13 +159,14 @@ func (job *AwsDataRetrieveJob) getVpcsCount(session *session.Session) (*int, err
 	return aws.Int(len(result.Vpcs)), nil
 }
 
-func (job *AwsDataRetrieveJob) getFileSystemsCount(session *session.Session) (*int, error) {
-	svc := efs.New(session)
+func (job *AwsDataRetrieveJob) getFileSystemsCount(cfg aws.Config) (*int, error) {
+	svc := efs.NewFromConfig(cfg)
 
-	result, err := svc.DescribeFileSystems(nil)
+	result, err := svc.DescribeFileSystems(context.Background(), nil)
 	if err != nil {
-		if aerr, ok := err.(awserr.Error); ok {
-			if aerr.Code() == "AccessDeniedException" {
+		var ae smithy.APIError
+		if errors.As(err, &ae) {
+			if ae.ErrorCode() == "AccessDeniedException" {
 				job.Log.Warn(err)
 				return aws.Int(0), nil
 			}

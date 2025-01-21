@@ -16,34 +16,15 @@
 package job
 
 import (
-	"time"
+	"context"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/cloudwatch"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/cloudwatch"
 )
 
-func GetMetricStatistics(sess *session.Session, dimensionName string, dimensionValue string, metric string, namespace string, period int64, statistics string, unit string, startTime time.Time, endTime time.Time) *cloudwatch.GetMetricStatisticsOutput {
-	svc := cloudwatch.New(sess)
-
-	params := &cloudwatch.GetMetricStatisticsInput{
-		EndTime:    aws.Time(endTime),
-		MetricName: aws.String(metric),
-		Namespace:  aws.String(namespace),
-		Period:     aws.Int64(period),
-		StartTime:  aws.Time(startTime),
-		Statistics: []*string{
-			aws.String(statistics),
-		},
-		Dimensions: []*cloudwatch.Dimension{
-			{
-				Name:  aws.String(dimensionName),
-				Value: aws.String(dimensionValue),
-			},
-		},
-		Unit: aws.String(unit),
-	}
-	resp, err := svc.GetMetricStatistics(params)
+func GetMetricStatistics(cfg aws.Config, params cloudwatch.GetMetricStatisticsInput) *cloudwatch.GetMetricStatisticsOutput {
+	svc := cloudwatch.NewFromConfig(cfg)
+	resp, err := svc.GetMetricStatistics(context.Background(), &params)
 
 	if err != nil {
 		return nil

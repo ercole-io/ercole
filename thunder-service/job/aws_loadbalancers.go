@@ -17,14 +17,13 @@
 package job
 
 import (
+	"context"
 	"fmt"
 	"time"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/elb"
-	"github.com/aws/aws-sdk-go/service/elbv2"
+	"github.com/aws/aws-sdk-go-v2/service/elasticloadbalancing"
+	"github.com/aws/aws-sdk-go-v2/service/elasticloadbalancingv2"
+	"github.com/aws/aws-sdk-go-v2/service/elasticloadbalancingv2/types"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/thunder-service/database"
 )
@@ -34,37 +33,37 @@ func (job *AwsDataRetrieveJob) FetchAwsUnusedLoadBalancers(profile model.AwsProf
 
 	listRec := make([]interface{}, 0)
 
-	sess, err := session.NewSession(&aws.Config{
-		Region:      aws.String(profile.Region),
-		Credentials: credentials.NewStaticCredentials(profile.AccessKeyId, *profile.SecretAccessKey, ""),
-	})
+	cfg, err := job.loadDefaultConfig(profile)
 	if err != nil {
 		return err
 	}
 
-	elbSvc := elb.New(sess)
+	elbSvc := elasticloadbalancing.NewFromConfig(*cfg)
 
-	var resultelbSvc *elb.DescribeInstanceHealthOutput
+	var resultelbSvc *elasticloadbalancing.DescribeInstanceHealthOutput
 
 	var errSvc error
 
-	resultelbSvc_c, err := elbSvc.DescribeLoadBalancers(nil)
+	resultelbSvc_c, err := elbSvc.DescribeLoadBalancers(context.Background(), nil)
 	if err != nil {
 		return err
 	}
 
 	for _, l := range resultelbSvc_c.LoadBalancerDescriptions {
 		if *l.LoadBalancerName != "" {
-			params := elb.DescribeInstanceHealthInput{
+			params := elasticloadbalancing.DescribeInstanceHealthInput{
 				LoadBalancerName: l.LoadBalancerName,
 			}
-			resultelbSvc, errSvc = elbSvc.DescribeInstanceHealth(&params)
+			resultelbSvc, errSvc = elbSvc.DescribeInstanceHealth(context.Background(), &params)
 
 			if errSvc != nil {
 				return err
 			}
 
 			for _, p := range resultelbSvc.InstanceStates {
+				if p.State == nil {
+					continue
+				}
 				if *p.State == "OutOfService" {
 					recommendation.SeqValue = seqValue
 					recommendation.ProfileID = profile.ID
@@ -86,15 +85,15 @@ func (job *AwsDataRetrieveJob) FetchAwsUnusedLoadBalancers(profile model.AwsProf
 		}
 	}
 
-	elbv2Svc := elbv2.New(sess)
+	elbv2Svc := elasticloadbalancingv2.NewFromConfig(*cfg)
 
-	resultelbv2Svc, err := elbv2Svc.DescribeLoadBalancers(nil)
+	resultelbv2Svc, err := elbv2Svc.DescribeLoadBalancers(context.Background(), nil)
 	if err != nil {
 		return err
 	}
 
 	for _, l := range resultelbv2Svc.LoadBalancers {
-		if *l.State.Code == "failed" {
+		if l.State.Code == types.LoadBalancerStateEnumFailed {
 			recommendation.SeqValue = seqValue
 			recommendation.ProfileID = profile.ID
 			recommendation.Category = model.AwsUnusedResource
@@ -105,7 +104,7 @@ func (job *AwsDataRetrieveJob) FetchAwsUnusedLoadBalancers(profile model.AwsProf
 			recommendation.Details = []map[string]interface{}{
 				{"RESOURCE_NAME": *l.LoadBalancerName},
 				{"RESOURCE_TYPE": "Load Balancer"},
-				{"RESOURCE_STATUS": fmt.Sprintf("%v", *l.State.Code)},
+				{"RESOURCE_STATUS": l.State.Code},
 			}
 			recommendation.CreatedAt = time.Now().UTC()
 
