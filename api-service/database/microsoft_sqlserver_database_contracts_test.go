@@ -45,7 +45,7 @@ var msContractSample = model.SqlServerDatabaseContract{
 }
 
 func (m *MongodbSuite) TestInsertSqlServerDatabaseContract_Success() {
-	aerr := m.db.InsertSqlServerDatabaseContract(msContractSample)
+	_, aerr := m.db.InsertSqlServerDatabaseContract(msContractSample)
 	require.NoError(m.T(), aerr)
 	defer m.db.Client.Database(m.dbname).Collection(sqlServerDbContractsCollection).DeleteMany(context.TODO(), bson.M{})
 
@@ -64,17 +64,17 @@ func (m *MongodbSuite) TestInsertSqlServerDatabaseContract_Success() {
 func (m *MongodbSuite) TestInsertSqlServerDatabaseContract_DuplicateError() {
 	defer m.db.Client.Database(m.dbname).Collection(sqlServerDbContractsCollection).DeleteMany(context.TODO(), bson.M{})
 
-	err := m.db.InsertSqlServerDatabaseContract(msContractSample)
+	_, err := m.db.InsertSqlServerDatabaseContract(msContractSample)
 	require.NoError(m.T(), err)
 
-	err = m.db.InsertSqlServerDatabaseContract(msContractSample)
+	_, err = m.db.InsertSqlServerDatabaseContract(msContractSample)
 	require.Error(m.T(), err, "Should not accept two contracts with same ID")
 }
 
 func (m *MongodbSuite) TestUpdateSqlServerDatabaseContract() {
 	defer m.db.Client.Database(m.dbname).Collection(sqlServerDbContractsCollection).DeleteMany(context.TODO(), bson.M{})
 
-	err := m.db.InsertSqlServerDatabaseContract(msContractSample)
+	_, err := m.db.InsertSqlServerDatabaseContract(msContractSample)
 	require.NoError(m.T(), err)
 
 	m.T().Run("id_exist", func(t *testing.T) {
@@ -113,7 +113,7 @@ func (m *MongodbSuite) TestUpdateSqlServerDatabaseContract() {
 func (m *MongodbSuite) TestRemoveSqlServerDatabaseContract() {
 	defer m.db.Client.Database(m.dbname).Collection(sqlServerDbContractsCollection).DeleteMany(context.TODO(), bson.M{})
 
-	err := m.db.InsertSqlServerDatabaseContract(msContractSample)
+	_, err := m.db.InsertSqlServerDatabaseContract(msContractSample)
 	require.NoError(m.T(), err)
 
 	err = m.db.RemoveSqlServerDatabaseContract(msContractSample.ID)
@@ -154,7 +154,7 @@ func (m *MongodbSuite) TestListSqlServerDatabaseContracts() {
 	m.T().Run("Empty collection", func(t *testing.T) {
 		defer m.db.Client.Database(m.dbname).Collection(sqlServerDbContractsCollection).DeleteMany(context.TODO(), bson.M{})
 
-		out, err := m.db.ListSqlServerDatabaseContracts()
+		out, err := m.db.ListSqlServerDatabaseContracts([]string{})
 		m.Require().NoError(err)
 
 		assert.Equal(m.T(), []model.SqlServerDatabaseContract{}, out)
@@ -162,10 +162,10 @@ func (m *MongodbSuite) TestListSqlServerDatabaseContracts() {
 
 	m.T().Run("One contract", func(t *testing.T) {
 		defer m.db.Client.Database(m.dbname).Collection(sqlServerDbContractsCollection).DeleteMany(context.TODO(), bson.M{})
-		err := m.db.InsertSqlServerDatabaseContract(contractSample)
+		_, err := m.db.InsertSqlServerDatabaseContract(contractSample)
 		require.NoError(m.T(), err)
 
-		out, err := m.db.ListSqlServerDatabaseContracts()
+		out, err := m.db.ListSqlServerDatabaseContracts([]string{})
 		m.Require().NoError(err)
 
 		assert.Equal(m.T(), []model.SqlServerDatabaseContract{

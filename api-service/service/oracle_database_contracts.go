@@ -103,7 +103,7 @@ func (as *APIService) GetOracleDatabaseContracts(filter dto.GetOracleDatabaseCon
 		return as.mockGetOracleDatabaseContracts(filter)
 	}
 
-	contracts, err := as.Database.ListOracleDatabaseContracts()
+	contracts, err := as.Database.ListOracleDatabaseContracts(filter)
 	if err != nil {
 		return nil, err
 	}
@@ -142,6 +142,7 @@ func (as *APIService) GetOracleDatabaseContractsAsXLSX(filter dto.GetOracleDatab
 		"Metric",
 		"CSI",
 		"Reference Number",
+		"Location",
 		"Support Expiration",
 		"Status",
 		"Product Order Date",
@@ -173,6 +174,7 @@ func (as *APIService) GetOracleDatabaseContractsAsXLSX(filter dto.GetOracleDatab
 		sheets.SetCellValue(sheet, nextAxis(), val.Metric)
 		sheets.SetCellValue(sheet, nextAxis(), val.CSI)
 		sheets.SetCellValue(sheet, nextAxis(), val.ReferenceNumber)
+		sheets.SetCellValue(sheet, nextAxis(), val.Location)
 
 		if val.SupportExpiration != nil {
 			sheets.SetCellValue(sheet, nextAxis(), val.SupportExpiration)
@@ -706,7 +708,7 @@ func (as *APIService) DeleteHostFromOracleDatabaseContracts(hostname string) err
 		return err
 	}
 
-	listContracts, err := as.Database.ListOracleDatabaseContracts()
+	listContracts, err := as.Database.ListOracleDatabaseContracts(dto.NewGetOracleDatabaseContractsFilter())
 	if err != nil {
 		return err
 	}

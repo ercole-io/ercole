@@ -508,7 +508,8 @@ func TestGetMySQLContracts_Success(t *testing.T) {
 		},
 	}
 
-	as.EXPECT().GetMySQLContracts().
+	as.EXPECT().ListLocations(gomock.Any()).Return([]string{}, nil)
+	as.EXPECT().GetMySQLContracts(gomock.Any()).
 		Return(contracts, nil)
 
 	expBytes, err := json.Marshal(contracts)
@@ -541,7 +542,8 @@ func TestGetMySQLContracts_InternalServerError(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	as.EXPECT().GetMySQLContracts().
+	as.EXPECT().ListLocations(gomock.Any()).Return([]string{}, nil)
+	as.EXPECT().GetMySQLContracts(gomock.Any()).
 		Return(nil, errMock)
 
 	req, err := http.NewRequest("GET", "/?environment=TEST", nil)
@@ -577,8 +579,9 @@ func TestGetMySQLContractsXLSX_Success(t *testing.T) {
 
 	xlsx := excelize.File{}
 
+	as.EXPECT().ListLocations(gomock.Any()).Return([]string{}, nil)
 	as.EXPECT().
-		GetMySQLContractsAsXLSX().
+		GetMySQLContractsAsXLSX(gomock.Any()).
 		Return(&xlsx, nil)
 
 	rr := httptest.NewRecorder()
@@ -606,8 +609,9 @@ func TestGetMySQLContractsXLSX_InternalServerError1(t *testing.T) {
 		Log: logger.NewLogger("TEST"),
 	}
 
+	as.EXPECT().ListLocations(gomock.Any()).Return([]string{}, nil)
 	as.EXPECT().
-		GetMySQLContractsAsXLSX().
+		GetMySQLContractsAsXLSX(gomock.Any()).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()

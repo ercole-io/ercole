@@ -344,7 +344,7 @@ func (as *APIService) SearchHostsAsXLSX(filters dto.SearchHostsFilters) (*exceli
 }
 
 func (as *APIService) getCSIsByHostname() (res map[string][]string, err error) {
-	contracts, aerr := as.Database.ListOracleDatabaseContracts()
+	contracts, aerr := as.Database.ListOracleDatabaseContracts(dto.NewGetOracleDatabaseContractsFilter())
 	if aerr != nil {
 		return nil, aerr
 	}

@@ -25,6 +25,7 @@ import (
 	"os"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/hashicorp/go-version"
@@ -86,6 +87,16 @@ func Intptr(v int64) *int64 {
 func Contains(a []string, x string) bool {
 	for _, n := range a {
 		if x == n {
+			return true
+		}
+	}
+	return false
+}
+
+// ContainsI return true if a contains x (insensitive-case), otherwise false.
+func ContainsI(a []string, x string) bool {
+	for _, n := range a {
+		if strings.EqualFold(x, n) {
 			return true
 		}
 	}

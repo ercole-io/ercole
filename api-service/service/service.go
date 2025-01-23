@@ -209,8 +209,8 @@ type APIServiceInterface interface {
 
 	// SQL SERVER DATABASE CONTRACTS
 	AddSqlServerDatabaseContract(contract model.SqlServerDatabaseContract) (*model.SqlServerDatabaseContract, error)
-	GetSqlServerDatabaseContracts() ([]model.SqlServerDatabaseContract, error)
-	GetSqlServerDatabaseContractsAsXLSX() (*excelize.File, error)
+	GetSqlServerDatabaseContracts(locations []string) ([]model.SqlServerDatabaseContract, error)
+	GetSqlServerDatabaseContractsAsXLSX(locations []string) (*excelize.File, error)
 	DeleteSqlServerDatabaseContract(id primitive.ObjectID) error
 	UpdateSqlServerDatabaseContract(contract model.SqlServerDatabaseContract) (*model.SqlServerDatabaseContract, error)
 
@@ -274,8 +274,8 @@ type APIServiceInterface interface {
 
 	AddMySQLContract(contract model.MySQLContract) (*model.MySQLContract, error)
 	UpdateMySQLContract(contract model.MySQLContract) (*model.MySQLContract, error)
-	GetMySQLContracts() ([]model.MySQLContract, error)
-	GetMySQLContractsAsXLSX() (*excelize.File, error)
+	GetMySQLContracts(locations []string) ([]model.MySQLContract, error)
+	GetMySQLContractsAsXLSX(locations []string) (*excelize.File, error)
 	DeleteMySQLContract(id primitive.ObjectID) error
 
 	ImportMySQLDatabaseContracts(reader *csv.Reader) error

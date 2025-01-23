@@ -40,6 +40,7 @@ type OracleDatabaseContract struct {
 	HostsLiteral      LiteralStrSlice    `json:"-" bson:"-" csv:"Hosts,omitempty"`
 	Status            string             `json:"status" bson:"status" csv:"Status,omitempty"`
 	ProductOrderDate  *dateTime          `json:"productOrderDate" bson:"productOrderDate" csv:"Product Order Date,omitempty"`
+	Location          string             `json:"location" bson:"location" csv:"Location,omitempty"`
 }
 
 func (contract OracleDatabaseContract) Check() error {

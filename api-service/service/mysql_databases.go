@@ -127,7 +127,7 @@ func (as *APIService) GetMySQLUsedLicenses(hostname string, filter dto.GlobalFil
 		clusters[cluster.Hostname] = cluster
 	}
 
-	contracts, err := as.Database.GetMySQLContracts()
+	contracts, err := as.Database.GetMySQLContracts([]string{filter.Location})
 	if err != nil {
 		return nil, err
 	}
@@ -186,7 +186,7 @@ func (as *APIService) GetMySQLDatabaseLicensesCompliance() ([]dto.LicenseComplia
 		return []dto.LicenseCompliance{}, nil
 	}
 
-	contracts, err := as.Database.GetMySQLContracts()
+	contracts, err := as.Database.GetMySQLContracts([]string{})
 	if err != nil {
 		return nil, err
 	}

@@ -128,20 +128,20 @@ func TestGetMySQLContracts(t *testing.T) {
 				Hosts:            []string{},
 			},
 		}
-		db.EXPECT().GetMySQLContracts().
+		db.EXPECT().GetMySQLContracts(gomock.Any()).
 			Return(expected, nil).Times(1)
 
-		actual, err := as.GetMySQLContracts()
+		actual, err := as.GetMySQLContracts([]string{})
 		require.NoError(t, err)
 
 		assert.Equal(t, expected, actual)
 	})
 
 	t.Run("Error", func(t *testing.T) {
-		db.EXPECT().GetMySQLContracts().
+		db.EXPECT().GetMySQLContracts(gomock.Any()).
 			Return(nil, errMock).Times(1)
 
-		actual, err := as.GetMySQLContracts()
+		actual, err := as.GetMySQLContracts([]string{})
 		require.EqualError(t, err, "MockError")
 
 		assert.Nil(t, actual)
@@ -170,18 +170,19 @@ func TestGetMySQLContractsAsXLSX_Success(t *testing.T) {
 		},
 	}
 
-	db.EXPECT().GetMySQLContracts().
+	db.EXPECT().GetMySQLContracts(gomock.Any()).
 		Return(data, nil).Times(1)
 
-	actual, err := as.GetMySQLContractsAsXLSX()
+	actual, err := as.GetMySQLContractsAsXLSX([]string{})
 	require.NoError(t, err)
 	assert.Equal(t, "server", actual.GetCellValue("Contracts", "A2"))
 	assert.Equal(t, "", actual.GetCellValue("Contracts", "B2"))
 	assert.Equal(t, "", actual.GetCellValue("Contracts", "C2"))
 	assert.Equal(t, "", actual.GetCellValue("Contracts", "D2"))
-	assert.Equal(t, "42", actual.GetCellValue("Contracts", "E2"))
-	assert.Equal(t, "[pippo]", actual.GetCellValue("Contracts", "F2"))
-	assert.Equal(t, "pluto", actual.GetCellValue("Contracts", "G3"))
+	assert.Equal(t, "", actual.GetCellValue("Contracts", "E2"))
+	assert.Equal(t, "42", actual.GetCellValue("Contracts", "F2"))
+	assert.Equal(t, "[pippo]", actual.GetCellValue("Contracts", "G2"))
+	assert.Equal(t, "pluto", actual.GetCellValue("Contracts", "H3"))
 }
 
 func TestDeleteMySQLContract(t *testing.T) {

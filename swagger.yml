@@ -1956,6 +1956,8 @@ components:
           type: array
           items:
             type: string
+        location:
+          type: string
       required:
         - id
         - type
@@ -2171,6 +2173,8 @@ components:
           type: array
           items:
             type: string
+        location:
+          type: string
     OracleGrantDba:
       type: object
       properties:
@@ -5851,6 +5855,8 @@ paths:
                           type: string
                         productOrderDate:
                           type: string
+                        location:
+                          type: string
                 required:
                   - contracts
               examples:
@@ -5873,6 +5879,7 @@ paths:
                           coveredLicensesCount: 0
                           totalCoveredLicensesCount: 0
                           consumedLicensesCount: 2
+                      location: italy
                     - id: 5f6a118267d1127af38db23a
                       contractID: "222"
                       licenseTypeID: L10001
@@ -5892,6 +5899,7 @@ paths:
                           coveredLicensesCount: 0
                           totalCoveredLicensesCount: 0
                           consumedLicensesCount: 2
+                      location: italy
       operationId: GetOracleDatabaseContracts
       parameters:
         - schema:
@@ -6016,6 +6024,8 @@ paths:
                   type: boolean
                 supportExpiration:
                   type: string
+                location:
+                  type: string
             examples:
               example-1:
                 value:
@@ -6028,6 +6038,7 @@ paths:
                   hosts:
                     - ercsoldbx
                   basket: false
+                  location: italy
       description: Add Oracle database contract
     put:
       summary: Update Oracle Database Contract
@@ -6065,6 +6076,8 @@ paths:
                   type: string
                 id:
                   type: string
+                location:
+                  type: string
             examples:
               example-1:
                 value:
@@ -6078,6 +6091,7 @@ paths:
                   hosts:
                     - ercsoldbx
                   basket: false
+                  location: italy
       description: Update Oracle database contract
       tags:
         - api-service
@@ -6865,6 +6879,8 @@ paths:
                           type: array
                           items:
                             type: string
+                        location:
+                          type: string
                 required:
                   - contracts
       operationId: GetMySQLContracts

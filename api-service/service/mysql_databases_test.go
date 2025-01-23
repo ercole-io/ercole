@@ -318,7 +318,7 @@ func TestGetMySQLUsedLicenses(t *testing.T) {
 				Return(tc.usedLicenses, nil),
 			db.EXPECT().GetClusters(any).
 				Return(tc.clusters, nil),
-			db.EXPECT().GetMySQLContracts().
+			db.EXPECT().GetMySQLContracts(gomock.Any()).
 				Return(tc.contracts, nil),
 			db.EXPECT().GetCluster("plutocluster", utils.MAX_TIME).
 				Return(&cluster, nil).AnyTimes(),
@@ -456,7 +456,7 @@ func TestGetMySQLDatabaseLicensesCompliance(t *testing.T) {
 				Return(tc.usedLicenses, nil),
 			db.EXPECT().GetClusters(filter).
 				Return(tc.clusters, nil),
-			db.EXPECT().GetMySQLContracts().
+			db.EXPECT().GetMySQLContracts(gomock.Any()).
 				Return(tc.contracts, nil).AnyTimes(),
 		)
 

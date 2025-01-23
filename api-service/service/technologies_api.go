@@ -19,6 +19,7 @@ package service
 import (
 	"time"
 
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 )
@@ -113,7 +114,7 @@ func (as *APIService) ListManagedTechnologies(sortBy string, sortDesc bool, loca
 }
 
 func createOracleTechnologyStatus(as *APIService, hostsCount float64) (*model.TechnologyStatus, error) {
-	contracts, err := as.Database.ListOracleDatabaseContracts()
+	contracts, err := as.Database.ListOracleDatabaseContracts(dto.NewGetOracleDatabaseContractsFilter())
 	if err != nil {
 		return nil, err
 	}

@@ -257,7 +257,7 @@ func TestListManagedTechnologies_Success(t *testing.T) {
 				model.TechnologyMicrosoftSQLServer: 42,
 			}, nil),
 		db.EXPECT().
-			ListOracleDatabaseContracts().
+			ListOracleDatabaseContracts(gomock.Any()).
 			Return(sampleListOracleDatabaseContracts, nil),
 
 		db.EXPECT().
@@ -270,17 +270,17 @@ func TestListManagedTechnologies_Success(t *testing.T) {
 
 		db.EXPECT().GetMySQLUsedLicenses("", globalFilterAny).
 			Return(usedLicenses, nil),
-		db.EXPECT().GetMySQLContracts().
+		db.EXPECT().GetMySQLContracts(gomock.Any()).
 			Return(contracts, nil),
-		db.EXPECT().GetMySQLContracts().
+		db.EXPECT().GetMySQLContracts(gomock.Any()).
 			Return(contracts, nil),
 
 		db.EXPECT().SearchSqlServerDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 			Return(&sqlServerLics, nil),
-		db.EXPECT().ListSqlServerDatabaseContracts().
+		db.EXPECT().ListSqlServerDatabaseContracts(gomock.Any()).
 			Times(1).
 			Return(sqlServerContracts, nil),
-		db.EXPECT().ListSqlServerDatabaseContracts().
+		db.EXPECT().ListSqlServerDatabaseContracts(gomock.Any()).
 			Times(1).
 			Return(sqlServerContracts, nil),
 		db.EXPECT().GetSqlServerDatabaseLicenseTypes().
@@ -470,7 +470,7 @@ func TestListManagedTechnologies_Success2(t *testing.T) {
 				model.TechnologyMicrosoftSQLServer: 42,
 			}, nil),
 		db.EXPECT().
-			ListOracleDatabaseContracts().
+			ListOracleDatabaseContracts(gomock.Any()).
 			Return(returnedContracts, nil),
 
 		db.EXPECT().
@@ -483,17 +483,17 @@ func TestListManagedTechnologies_Success2(t *testing.T) {
 
 		db.EXPECT().GetMySQLUsedLicenses("", globalFilterAny).
 			Return(usedLicenses, nil),
-		db.EXPECT().GetMySQLContracts().
+		db.EXPECT().GetMySQLContracts(gomock.Any()).
 			Return(contracts, nil),
-		db.EXPECT().GetMySQLContracts().
+		db.EXPECT().GetMySQLContracts(gomock.Any()).
 			Return(contracts, nil),
 
 		db.EXPECT().SearchSqlServerDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 			Return(&sqlServerLics, nil),
-		db.EXPECT().ListSqlServerDatabaseContracts().
+		db.EXPECT().ListSqlServerDatabaseContracts(gomock.Any()).
 			Times(1).
 			Return(sqlServerContracts, nil),
-		db.EXPECT().ListSqlServerDatabaseContracts().
+		db.EXPECT().ListSqlServerDatabaseContracts(gomock.Any()).
 			Times(1).
 			Return(sqlServerContracts, nil),
 		db.EXPECT().GetSqlServerDatabaseLicenseTypes().
@@ -551,7 +551,7 @@ func TestListManagedTechnologies_FailInternalServerErrors(t *testing.T) {
 					model.TechnologyMicrosoftSQLServer:       43,
 				}, nil),
 			db.EXPECT().
-				ListOracleDatabaseContracts().
+				ListOracleDatabaseContracts(gomock.Any()).
 				Return(nil, aerrMock),
 		)
 
@@ -608,7 +608,7 @@ func TestListManagedTechnologies_FailInternalServerErrors(t *testing.T) {
 					model.TechnologyMicrosoftSQLServer:       43,
 				}, nil),
 			db.EXPECT().
-				ListOracleDatabaseContracts().
+				ListOracleDatabaseContracts(gomock.Any()).
 				Return(sampleListOracleDatabaseContracts, nil),
 			db.EXPECT().SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 				Return(nil, aerrMock),

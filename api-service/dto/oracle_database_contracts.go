@@ -58,6 +58,8 @@ type OracleDatabaseContractFE struct {
 
 	Status           string     `json:"status"`
 	ProductOrderDate *time.Time `json:"productOrderDate"`
+
+	Location string `json:"location"`
 }
 
 // OracleDatabaseContractAssociatedHostFE contains the informations about an associated host in contract
@@ -91,6 +93,7 @@ type GetOracleDatabaseContractsFilter struct {
 	AvailableLicensesPerCoreGTE int
 	AvailableLicensesPerUserLTE int
 	AvailableLicensesPerUserGTE int
+	Locations                   []string
 }
 
 func NewGetOracleDatabaseContractsFilter() GetOracleDatabaseContractsFilter {
@@ -103,6 +106,7 @@ func NewGetOracleDatabaseContractsFilter() GetOracleDatabaseContractsFilter {
 		AvailableLicensesPerCoreGTE: -1,
 		AvailableLicensesPerUserLTE: -1,
 		AvailableLicensesPerUserGTE: -1,
+		Locations:                   []string{},
 	}
 }
 

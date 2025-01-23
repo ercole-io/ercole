@@ -16,11 +16,8 @@
 package service
 
 import (
-	"errors"
-
 	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/ercole-io/ercole/v2/model"
-	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/ercole-io/ercole/v2/utils/exutils"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -36,23 +33,7 @@ func (as *APIService) AddSqlServerDatabaseContract(contract model.SqlServerDatab
 
 	contract.ID = as.NewObjectID()
 
-	err := as.Database.InsertSqlServerDatabaseContract(contract)
-	if err != nil {
-		return nil, err
-	}
-
-	agrs, err := as.GetSqlServerDatabaseContracts()
-	if err != nil {
-		return nil, err
-	}
-
-	for _, agr := range agrs {
-		if agr.ID == contract.ID {
-			return &agr, nil
-		}
-	}
-
-	return nil, utils.NewError(errors.New("Can't find contract which has just been saved"))
+	return as.Database.InsertSqlServerDatabaseContract(contract)
 }
 
 func (as *APIService) sqlServerLicenseTypeIDExists(licenseTypeID string) error {
@@ -64,8 +45,8 @@ func (as *APIService) sqlServerLicenseTypeIDExists(licenseTypeID string) error {
 	return nil
 }
 
-func (as *APIService) GetSqlServerDatabaseContracts() ([]model.SqlServerDatabaseContract, error) {
-	contracts, err := as.Database.ListSqlServerDatabaseContracts()
+func (as *APIService) GetSqlServerDatabaseContracts(locations []string) ([]model.SqlServerDatabaseContract, error) {
+	contracts, err := as.Database.ListSqlServerDatabaseContracts(locations)
 	if err != nil {
 		return nil, err
 	}
@@ -73,8 +54,8 @@ func (as *APIService) GetSqlServerDatabaseContracts() ([]model.SqlServerDatabase
 	return contracts, nil
 }
 
-func (as *APIService) GetSqlServerDatabaseContractsAsXLSX() (*excelize.File, error) {
-	contracts, err := as.GetSqlServerDatabaseContracts()
+func (as *APIService) GetSqlServerDatabaseContractsAsXLSX(locations []string) (*excelize.File, error) {
+	contracts, err := as.GetSqlServerDatabaseContracts(locations)
 	if err != nil {
 		return nil, err
 	}
@@ -85,6 +66,7 @@ func (as *APIService) GetSqlServerDatabaseContractsAsXLSX() (*excelize.File, err
 		"ContractID",
 		"LicensesNumber",
 		"Support Expiration",
+		"Location",
 		"Hosts",
 		"Clusters",
 	}
@@ -107,6 +89,8 @@ func (as *APIService) GetSqlServerDatabaseContractsAsXLSX() (*excelize.File, err
 		} else {
 			sheets.SetCellValue(sheet, nextAxis(), "")
 		}
+
+		sheets.SetCellValue(sheet, nextAxis(), val.Location)
 
 		for _, val2 := range val.Hosts {
 			sheets.DuplicateRow(sheet, axisHelp.GetIndexRow())
@@ -143,16 +127,5 @@ func (as *APIService) UpdateSqlServerDatabaseContract(contract model.SqlServerDa
 		return nil, err
 	}
 
-	agrs, err := as.GetSqlServerDatabaseContracts()
-	if err != nil {
-		return nil, err
-	}
-
-	for _, agr := range agrs {
-		if agr.ID == contract.ID {
-			return &agr, nil
-		}
-	}
-
-	return nil, utils.NewError(errors.New("Can't find contract which has just been saved"))
+	return &contract, nil
 }

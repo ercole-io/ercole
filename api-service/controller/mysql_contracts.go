@@ -22,6 +22,7 @@ import (
 
 	"github.com/golang/gddo/httputil"
 
+	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
@@ -95,18 +96,26 @@ func (ctrl *APIController) UpdateMySQLContract(w http.ResponseWriter, r *http.Re
 }
 
 func (ctrl *APIController) GetMySQLContracts(w http.ResponseWriter, r *http.Request) {
+	user := context.Get(r, "user")
+
+	locations, err := ctrl.Service.ListLocations(user)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
 	choice := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
 
 	switch choice {
 	case "application/json":
-		ctrl.GetMySQLContractsJSON(w, r)
+		ctrl.GetMySQLContractsJSON(w, r, locations)
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-		ctrl.GetMySQLContractsXLSX(w, r)
+		ctrl.GetMySQLContractsXLSX(w, r, locations)
 	}
 }
 
-func (ctrl *APIController) GetMySQLContractsJSON(w http.ResponseWriter, r *http.Request) {
-	contracts, err := ctrl.Service.GetMySQLContracts()
+func (ctrl *APIController) GetMySQLContractsJSON(w http.ResponseWriter, r *http.Request, locations []string) {
+	contracts, err := ctrl.Service.GetMySQLContracts(locations)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
@@ -118,8 +127,8 @@ func (ctrl *APIController) GetMySQLContractsJSON(w http.ResponseWriter, r *http.
 	utils.WriteJSONResponse(w, http.StatusOK, response)
 }
 
-func (ctrl *APIController) GetMySQLContractsXLSX(w http.ResponseWriter, r *http.Request) {
-	xlsx, err := ctrl.Service.GetMySQLContractsAsXLSX()
+func (ctrl *APIController) GetMySQLContractsXLSX(w http.ResponseWriter, r *http.Request, locations []string) {
+	xlsx, err := ctrl.Service.GetMySQLContractsAsXLSX(locations)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
