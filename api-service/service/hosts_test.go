@@ -281,7 +281,7 @@ func TestSearchHostsAsLMS(t *testing.T) {
 					return hosts, nil
 				}),
 			db.EXPECT().
-				ListOracleDatabaseContracts().
+				ListOracleDatabaseContracts(gomock.Any()).
 				Return([]dto.OracleDatabaseContractFE{}, nil),
 			db.EXPECT().
 				GetListValidHostsByRangeDates(filterslms.From, filterslms.To).
@@ -416,7 +416,7 @@ func TestSearchHostsAsLMS(t *testing.T) {
 					return hosts, nil
 				}),
 			db.EXPECT().
-				ListOracleDatabaseContracts().
+				ListOracleDatabaseContracts(gomock.Any()).
 				Return(contracts, nil),
 		)
 
@@ -1004,7 +1004,7 @@ func TestDismissHost_Success(t *testing.T) {
 		"hostnames",
 		commonFilters,
 	).Return(expectedRes, nil)
-	db.EXPECT().ListOracleDatabaseContracts().Return(listContracts, nil)
+	db.EXPECT().ListOracleDatabaseContracts(gomock.Any()).Return(listContracts, nil)
 
 	asc.EXPECT().ThrowNewAlert(gomock.Any()).Return(nil).Do(func(alert model.Alert) {
 		assert.Equal(t, model.TechnologyOracleDatabasePtr, alert.AlertAffectedTechnology)
@@ -1051,7 +1051,7 @@ func TestDismissHost_Fail(t *testing.T) {
 		"hostnames",
 		commonFilters,
 	).Return(expectedRes, nil)
-	db.EXPECT().ListOracleDatabaseContracts().Return(listContracts, nil)
+	db.EXPECT().ListOracleDatabaseContracts(gomock.Any()).Return(listContracts, nil)
 	db.EXPECT().DismissHost("foobar").Return(aerrMock).Times(1)
 
 	err := as.DismissHost("foobar")

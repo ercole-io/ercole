@@ -795,7 +795,7 @@ func TestGetUsedLicensesPerDatabases_Success(t *testing.T) {
 			Return(usedLicensesMySQL, nil),
 		db.EXPECT().GetClusters(globalFilterAny).
 			Return(clusters, nil),
-		db.EXPECT().GetMySQLContracts().
+		db.EXPECT().GetMySQLContracts(gomock.Any()).
 			Return(contracts, nil),
 		db.EXPECT().GetCluster("plutocluster", utils.MAX_TIME).
 			Return(&cluster, nil),
@@ -804,7 +804,7 @@ func TestGetUsedLicensesPerDatabases_Success(t *testing.T) {
 			Return(&sqlServerLics, nil),
 		db.EXPECT().GetClusters(globalFilterAny).
 			Return(clusters, nil),
-		db.EXPECT().ListSqlServerDatabaseContracts().
+		db.EXPECT().ListSqlServerDatabaseContracts(gomock.Any()).
 			Return(sqlServerContracts, nil),
 		db.EXPECT().GetSqlServerDatabaseLicenseTypes().
 			Return(sqlServerLicenseTypes, nil),
@@ -921,14 +921,14 @@ func TestGetUsedLicensesPerDatabases_VMWareCluster_Success(t *testing.T) {
 			Return(usedLicensesMySQL, nil),
 		db.EXPECT().GetClusters(globalFilterAny).
 			Return(clusters, nil),
-		db.EXPECT().GetMySQLContracts().
+		db.EXPECT().GetMySQLContracts(gomock.Any()).
 			Return(contracts, nil),
 
 		db.EXPECT().SearchSqlServerDatabaseUsedLicenses("", "", false, -1, -1, globalFilter.Location, globalFilter.Environment, globalFilter.OlderThan).
 			Return(&sqlServerLics, nil),
 		db.EXPECT().GetClusters(globalFilterAny).
 			Return(clusters, nil),
-		db.EXPECT().ListSqlServerDatabaseContracts().
+		db.EXPECT().ListSqlServerDatabaseContracts(gomock.Any()).
 			Return(sqlServerContracts, nil),
 		db.EXPECT().GetSqlServerDatabaseLicenseTypes().
 			Return(sqlServerLicenseTypes, nil),
@@ -1021,14 +1021,14 @@ func TestGetUsedLicensesPerDatabases_VeritasCluster_Success(t *testing.T) {
 			Return(usedLicensesMySQL, nil),
 		db.EXPECT().GetClusters(globalFilterAny).
 			Return(clusters, nil),
-		db.EXPECT().GetMySQLContracts().
+		db.EXPECT().GetMySQLContracts(gomock.Any()).
 			Return(contracts, nil),
 
 		db.EXPECT().SearchSqlServerDatabaseUsedLicenses("", "", false, -1, -1, globalFilter.Location, globalFilter.Environment, globalFilter.OlderThan).
 			Return(&sqlServerLics, nil),
 		db.EXPECT().GetClusters(globalFilterAny).
 			Return(clusters, nil),
-		db.EXPECT().ListSqlServerDatabaseContracts().
+		db.EXPECT().ListSqlServerDatabaseContracts(gomock.Any()).
 			Return(sqlServerContracts, nil),
 		db.EXPECT().GetSqlServerDatabaseLicenseTypes().
 			Return(sqlServerLicenseTypes, nil),
@@ -1193,7 +1193,7 @@ func TestGetUsedLicensesPerDatabasesAsXLSX_Success(t *testing.T) {
 			Return(usedLicenses, nil),
 		db.EXPECT().GetClusters(globalFilterAny).
 			Return(clusters, nil),
-		db.EXPECT().GetMySQLContracts().
+		db.EXPECT().GetMySQLContracts(gomock.Any()).
 			Return(contracts, nil),
 		db.EXPECT().GetCluster("plutocluster", utils.MAX_TIME).
 			Return(&cluster, nil),
@@ -1202,7 +1202,7 @@ func TestGetUsedLicensesPerDatabasesAsXLSX_Success(t *testing.T) {
 			Return(&sqlServerLics, nil),
 		db.EXPECT().GetClusters(globalFilterAny).
 			Return(clusters, nil),
-		db.EXPECT().ListSqlServerDatabaseContracts().
+		db.EXPECT().ListSqlServerDatabaseContracts(gomock.Any()).
 			Return(sqlServerContracts, nil),
 		db.EXPECT().GetSqlServerDatabaseLicenseTypes().
 			Return(sqlServerLicenseTypes, nil),
@@ -2178,7 +2178,7 @@ func TestGetDatabaseLicensesComplianceAsXLSX_Success(t *testing.T) {
 	db.EXPECT().GetClusters(globalFilterAny).
 		Return(clusters, nil).AnyTimes()
 	gomock.InOrder(
-		db.EXPECT().ListOracleDatabaseContracts().
+		db.EXPECT().ListOracleDatabaseContracts(gomock.Any()).
 			Return(oracleContracts, nil),
 		db.EXPECT().SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 			Return(&searchResponse, nil),
@@ -2197,21 +2197,21 @@ func TestGetDatabaseLicensesComplianceAsXLSX_Success(t *testing.T) {
 
 		db.EXPECT().GetMySQLUsedLicenses("", globalFilterAny).
 			Return(usedLicenses, nil),
-		db.EXPECT().GetMySQLContracts().
+		db.EXPECT().GetMySQLContracts(gomock.Any()).
 			Return(contracts, nil),
 		db.EXPECT().GetCluster("plutocluster", utils.MAX_TIME).
 			Return(&cluster, nil),
-		db.EXPECT().GetMySQLContracts().
+		db.EXPECT().GetMySQLContracts(gomock.Any()).
 			Return(contracts, nil),
 
 		db.EXPECT().SearchSqlServerDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 			Return(&sqlServerLics, nil),
-		db.EXPECT().ListSqlServerDatabaseContracts().
+		db.EXPECT().ListSqlServerDatabaseContracts(gomock.Any()).
 			Times(1).
 			Return(sqlServerContracts, nil),
 		db.EXPECT().GetCluster("plutocluster", utils.MAX_TIME).
 			Return(&cluster, nil),
-		db.EXPECT().ListSqlServerDatabaseContracts().
+		db.EXPECT().ListSqlServerDatabaseContracts(gomock.Any()).
 			Times(1).
 			Return(sqlServerContracts, nil),
 		db.EXPECT().GetSqlServerDatabaseLicenseTypes().
@@ -2402,7 +2402,7 @@ func TestGetDatabaseLicensesCompliance_Success(t *testing.T) {
 	db.EXPECT().GetClusters(globalFilterAny).
 		Return(clusters, nil).AnyTimes()
 	gomock.InOrder(
-		db.EXPECT().ListOracleDatabaseContracts().
+		db.EXPECT().ListOracleDatabaseContracts(gomock.Any()).
 			Return(oracleContracts, nil),
 		db.EXPECT().SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 			Return(&searchResponse, nil),
@@ -2421,17 +2421,17 @@ func TestGetDatabaseLicensesCompliance_Success(t *testing.T) {
 
 		db.EXPECT().GetMySQLUsedLicenses("", globalFilterAny).
 			Return(usedLicenses, nil),
-		db.EXPECT().GetMySQLContracts().
+		db.EXPECT().GetMySQLContracts(gomock.Any()).
 			Return(contracts, nil).AnyTimes(),
 
 		db.EXPECT().SearchSqlServerDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 			Return(&sqlServerLics, nil),
-		db.EXPECT().ListSqlServerDatabaseContracts().
+		db.EXPECT().ListSqlServerDatabaseContracts(gomock.Any()).
 			Times(1).
 			Return(sqlServerContracts, nil),
 		db.EXPECT().GetCluster("plutocluster", utils.MAX_TIME).
 			Return(&cluster, nil),
-		db.EXPECT().ListSqlServerDatabaseContracts().
+		db.EXPECT().ListSqlServerDatabaseContracts(gomock.Any()).
 			Times(1).
 			Return(sqlServerContracts, nil),
 		db.EXPECT().GetSqlServerDatabaseLicenseTypes().
@@ -2649,14 +2649,14 @@ func TestGetUsedLicensesPerHost_Success(t *testing.T) {
 
 		db.EXPECT().GetMySQLUsedLicenses("", filter).
 			Return(usedLicenses, nil),
-		db.EXPECT().GetMySQLContracts().
+		db.EXPECT().GetMySQLContracts(gomock.Any()).
 			Return(contracts, nil),
 		db.EXPECT().GetCluster("PLUTO-CLUSTER-NAME", utils.MAX_TIME).
 			Return(&cluster, nil),
 
 		db.EXPECT().SearchSqlServerDatabaseUsedLicenses("", "", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
 			Return(&sqlServerLics, nil),
-		db.EXPECT().ListSqlServerDatabaseContracts().
+		db.EXPECT().ListSqlServerDatabaseContracts(gomock.Any()).
 			Times(1).
 			Return(sqlServerContracts, nil),
 		db.EXPECT().GetSqlServerDatabaseLicenseTypes().
@@ -2837,14 +2837,14 @@ func TestGetUsedLicensesPerHostAsXLSX_Success(t *testing.T) {
 
 		db.EXPECT().GetMySQLUsedLicenses("", filter).
 			Return(usedLicenses, nil),
-		db.EXPECT().GetMySQLContracts().
+		db.EXPECT().GetMySQLContracts(gomock.Any()).
 			Return(contracts, nil),
 		db.EXPECT().GetCluster("plutocluster", utils.MAX_TIME).
 			Return(&cluster, nil),
 
 		db.EXPECT().SearchSqlServerDatabaseUsedLicenses("", "", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
 			Return(&sqlServerLics, nil),
-		db.EXPECT().ListSqlServerDatabaseContracts().
+		db.EXPECT().ListSqlServerDatabaseContracts(gomock.Any()).
 			Times(1).
 			Return(sqlServerContracts, nil),
 		db.EXPECT().GetCluster("plutocluster", utils.MAX_TIME).
@@ -2919,11 +2919,11 @@ func TestGetUsedLicensesPerCluster_OneVm_Success(t *testing.T) {
 			Return(licenseTypes1, nil),
 		db.EXPECT().GetMySQLUsedLicenses("", filter).
 			Return(usedLicensesMySQL, nil),
-		db.EXPECT().GetMySQLContracts().
+		db.EXPECT().GetMySQLContracts(gomock.Any()).
 			Return(contracts, nil),
 		db.EXPECT().SearchSqlServerDatabaseUsedLicenses("", "", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
 			Return(&sqlServerLics, nil),
-		db.EXPECT().ListSqlServerDatabaseContracts().
+		db.EXPECT().ListSqlServerDatabaseContracts(gomock.Any()).
 			Times(1).
 			Return(sqlServerContracts, nil),
 		db.EXPECT().GetSqlServerDatabaseLicenseTypes().
@@ -3047,11 +3047,11 @@ func TestGetUsedLicensesPerCluster_MultipleVms_Success(t *testing.T) {
 			Return(licenseTypes1, nil),
 		db.EXPECT().GetMySQLUsedLicenses("", filter).
 			Return(usedLicensesMySQL, nil),
-		db.EXPECT().GetMySQLContracts().
+		db.EXPECT().GetMySQLContracts(gomock.Any()).
 			Return(contracts, nil),
 		db.EXPECT().SearchSqlServerDatabaseUsedLicenses("", "", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
 			Return(&sqlServerLics, nil),
-		db.EXPECT().ListSqlServerDatabaseContracts().
+		db.EXPECT().ListSqlServerDatabaseContracts(gomock.Any()).
 			Times(1).
 			Return(sqlServerContracts, nil),
 		db.EXPECT().GetSqlServerDatabaseLicenseTypes().
@@ -3130,11 +3130,11 @@ func TestGetUsedLicensesPerClusterAsXLSX_Success(t *testing.T) {
 			Return(licenseTypes1, nil),
 		db.EXPECT().GetMySQLUsedLicenses("", filter).
 			Return(usedLicensesMySQL, nil),
-		db.EXPECT().GetMySQLContracts().
+		db.EXPECT().GetMySQLContracts(gomock.Any()).
 			Return(contracts, nil),
 		db.EXPECT().SearchSqlServerDatabaseUsedLicenses("", "", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
 			Return(&sqlServerLics, nil),
-		db.EXPECT().ListSqlServerDatabaseContracts().
+		db.EXPECT().ListSqlServerDatabaseContracts(gomock.Any()).
 			Times(1).
 			Return(sqlServerContracts, nil),
 		db.EXPECT().GetSqlServerDatabaseLicenseTypes().
@@ -3198,7 +3198,7 @@ func TestGetDatabaseLicensesComplianceSqlServerHostWithContractContract_Success(
 	db.EXPECT().GetClusters(globalFilterAny).
 		Return(clusters, nil).AnyTimes()
 	gomock.InOrder(
-		db.EXPECT().ListOracleDatabaseContracts().
+		db.EXPECT().ListOracleDatabaseContracts(gomock.Any()).
 			Return(oracleContracts, nil),
 		db.EXPECT().SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 			Return(&searchResponse, nil),
@@ -3217,15 +3217,15 @@ func TestGetDatabaseLicensesComplianceSqlServerHostWithContractContract_Success(
 
 		db.EXPECT().GetMySQLUsedLicenses("", globalFilterAny).
 			Return(usedLicenses, nil),
-		db.EXPECT().GetMySQLContracts().
+		db.EXPECT().GetMySQLContracts(gomock.Any()).
 			Return(contracts, nil),
 
 		db.EXPECT().SearchSqlServerDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 			Return(&sqlServerLics, nil),
-		db.EXPECT().ListSqlServerDatabaseContracts().
+		db.EXPECT().ListSqlServerDatabaseContracts(gomock.Any()).
 			Times(1).
 			Return(sqlServerContracts, nil),
-		db.EXPECT().ListSqlServerDatabaseContracts().
+		db.EXPECT().ListSqlServerDatabaseContracts(gomock.Any()).
 			Times(1).
 			Return(sqlServerContracts, nil),
 		db.EXPECT().GetSqlServerDatabaseLicenseTypes().
@@ -3287,7 +3287,7 @@ func TestGetDatabaseLicensesComplianceSqlServerHostNoContract_Success(t *testing
 	db.EXPECT().GetClusters(globalFilterAny).
 		Return(clusters, nil).AnyTimes()
 	gomock.InOrder(
-		db.EXPECT().ListOracleDatabaseContracts().
+		db.EXPECT().ListOracleDatabaseContracts(gomock.Any()).
 			Return(oracleContracts, nil),
 		db.EXPECT().SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 			Return(&searchResponse, nil),
@@ -3306,15 +3306,15 @@ func TestGetDatabaseLicensesComplianceSqlServerHostNoContract_Success(t *testing
 
 		db.EXPECT().GetMySQLUsedLicenses("", globalFilterAny).
 			Return(usedLicenses, nil),
-		db.EXPECT().GetMySQLContracts().
+		db.EXPECT().GetMySQLContracts(gomock.Any()).
 			Return(contracts, nil),
 
 		db.EXPECT().SearchSqlServerDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 			Return(&sqlServerLics, nil),
-		db.EXPECT().ListSqlServerDatabaseContracts().
+		db.EXPECT().ListSqlServerDatabaseContracts(gomock.Any()).
 			Times(1).
 			Return(sqlServerContracts, nil),
-		db.EXPECT().ListSqlServerDatabaseContracts().
+		db.EXPECT().ListSqlServerDatabaseContracts(gomock.Any()).
 			Times(1).
 			Return(sqlServerContracts, nil),
 		db.EXPECT().GetSqlServerDatabaseLicenseTypes().
@@ -3464,7 +3464,7 @@ func TestGetDatabaseLicensesComplianceSqlServerHostInClusterWithContract_Success
 	db.EXPECT().GetClusters(globalFilterAny).
 		Return(clusters, nil).AnyTimes()
 	gomock.InOrder(
-		db.EXPECT().ListOracleDatabaseContracts().
+		db.EXPECT().ListOracleDatabaseContracts(gomock.Any()).
 			Return(oracleContracts, nil),
 		db.EXPECT().SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 			Return(&searchResponse, nil),
@@ -3483,17 +3483,17 @@ func TestGetDatabaseLicensesComplianceSqlServerHostInClusterWithContract_Success
 
 		db.EXPECT().GetMySQLUsedLicenses("", globalFilterAny).
 			Return(usedLicenses, nil),
-		db.EXPECT().GetMySQLContracts().
+		db.EXPECT().GetMySQLContracts(gomock.Any()).
 			Return(contracts, nil),
 
 		db.EXPECT().SearchSqlServerDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 			Return(&sqlServerLics, nil),
-		db.EXPECT().ListSqlServerDatabaseContracts().
+		db.EXPECT().ListSqlServerDatabaseContracts(gomock.Any()).
 			Times(1).
 			Return(sqlServerContracts, nil),
 		db.EXPECT().GetCluster("PLUTO-CLUSTER-NAME", utils.MAX_TIME).
 			Return(&cluster, nil),
-		db.EXPECT().ListSqlServerDatabaseContracts().
+		db.EXPECT().ListSqlServerDatabaseContracts(gomock.Any()).
 			Times(1).
 			Return(sqlServerContracts, nil),
 		db.EXPECT().GetSqlServerDatabaseLicenseTypes().

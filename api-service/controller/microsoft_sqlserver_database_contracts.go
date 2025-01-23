@@ -25,6 +25,7 @@ import (
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/golang/gddo/httputil"
+	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
 )
 
@@ -119,18 +120,26 @@ func (ctrl *APIController) UpdateSqlServerDatabaseContract(w http.ResponseWriter
 }
 
 func (ctrl *APIController) GetSqlServerDatabaseContracts(w http.ResponseWriter, r *http.Request) {
+	user := context.Get(r, "user")
+
+	locations, err := ctrl.Service.ListLocations(user)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
 	choice := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
 
 	switch choice {
 	case "application/json":
-		ctrl.GetSqlServerDatabaseContractsJSON(w, r)
+		ctrl.GetSqlServerDatabaseContractsJSON(w, r, locations)
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-		ctrl.GetSqlServerDatabaseContractsXLSX(w, r)
+		ctrl.GetSqlServerDatabaseContractsXLSX(w, r, locations)
 	}
 }
 
-func (ctrl *APIController) GetSqlServerDatabaseContractsJSON(w http.ResponseWriter, r *http.Request) {
-	contracts, err := ctrl.Service.GetSqlServerDatabaseContracts()
+func (ctrl *APIController) GetSqlServerDatabaseContractsJSON(w http.ResponseWriter, r *http.Request, locations []string) {
+	contracts, err := ctrl.Service.GetSqlServerDatabaseContracts(locations)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
@@ -143,18 +152,8 @@ func (ctrl *APIController) GetSqlServerDatabaseContractsJSON(w http.ResponseWrit
 	utils.WriteJSONResponse(w, http.StatusOK, response)
 }
 
-func (ctrl *APIController) GetSqlServerDatabaseContractsXLSX(w http.ResponseWriter, r *http.Request) {
-	xlsx, err := ctrl.Service.GetSqlServerDatabaseContractsAsXLSX()
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
-		return
-	}
-
-	utils.WriteXLSXResponse(w, xlsx)
-}
-
-func (ctrl *APIController) GetSqlServerDatabaseContractsAsXLSX(w http.ResponseWriter, r *http.Request) {
-	xlsx, err := ctrl.Service.GetSqlServerDatabaseContractsAsXLSX()
+func (ctrl *APIController) GetSqlServerDatabaseContractsXLSX(w http.ResponseWriter, r *http.Request, locations []string) {
+	xlsx, err := ctrl.Service.GetSqlServerDatabaseContractsAsXLSX(locations)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return

@@ -222,7 +222,7 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 			Return(getTechnologiesUsageRes, nil),
 
 		db.EXPECT().
-			ListOracleDatabaseContracts().
+			ListOracleDatabaseContracts(gomock.Any()).
 			Return(contracts, nil),
 		db.EXPECT().SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 			Return(&oracleLics, nil),
@@ -235,17 +235,17 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 
 		db.EXPECT().GetMySQLUsedLicenses("", globalFilterAny).
 			Return(usedLicenses, nil),
-		db.EXPECT().GetMySQLContracts().
+		db.EXPECT().GetMySQLContracts(gomock.Any()).
 			Return(mySqlcontracts, nil),
-		db.EXPECT().GetMySQLContracts().
+		db.EXPECT().GetMySQLContracts(gomock.Any()).
 			Return(mySqlcontracts, nil),
 
 		db.EXPECT().SearchSqlServerDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 			Return(&sqlServerLics, nil),
-		db.EXPECT().ListSqlServerDatabaseContracts().
+		db.EXPECT().ListSqlServerDatabaseContracts(gomock.Any()).
 			Times(1).
 			Return(sqlServerContracts, nil),
-		db.EXPECT().ListSqlServerDatabaseContracts().
+		db.EXPECT().ListSqlServerDatabaseContracts(gomock.Any()).
 			Times(1).
 			Return(sqlServerContracts, nil),
 		db.EXPECT().GetSqlServerDatabaseLicenseTypes().
@@ -260,7 +260,7 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 			Return(getTechnologiesUsageRes2, nil),
 
 		db.EXPECT().
-			ListOracleDatabaseContracts().
+			ListOracleDatabaseContracts(gomock.Any()).
 			Return(contracts, nil),
 		db.EXPECT().SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 			Return(&oracleLics, nil),
@@ -273,17 +273,17 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 
 		db.EXPECT().GetMySQLUsedLicenses("", globalFilterAny).
 			Return(usedLicenses, nil),
-		db.EXPECT().GetMySQLContracts().
+		db.EXPECT().GetMySQLContracts(gomock.Any()).
 			Return(mySqlcontracts, nil),
-		db.EXPECT().GetMySQLContracts().
+		db.EXPECT().GetMySQLContracts(gomock.Any()).
 			Return(mySqlcontracts, nil),
 
 		db.EXPECT().SearchSqlServerDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 			Return(&sqlServerLics, nil),
-		db.EXPECT().ListSqlServerDatabaseContracts().
+		db.EXPECT().ListSqlServerDatabaseContracts(gomock.Any()).
 			Times(1).
 			Return(sqlServerContracts, nil),
-		db.EXPECT().ListSqlServerDatabaseContracts().
+		db.EXPECT().ListSqlServerDatabaseContracts(gomock.Any()).
 			Times(1).
 			Return(sqlServerContracts, nil),
 		db.EXPECT().GetSqlServerDatabaseLicenseTypes().
@@ -454,7 +454,7 @@ func TestGetInfoForFrontendDashboard_Fail2(t *testing.T) {
 			Return(getTechnologiesUsageRes, nil).AnyTimes().MinTimes(1),
 
 		db.EXPECT().
-			ListOracleDatabaseContracts().
+			ListOracleDatabaseContracts(gomock.Any()).
 			Return(contracts, nil).AnyTimes().MinTimes(1),
 		db.EXPECT().SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 			Return(&oracleLics, nil),
@@ -467,17 +467,17 @@ func TestGetInfoForFrontendDashboard_Fail2(t *testing.T) {
 
 		db.EXPECT().GetMySQLUsedLicenses("", globalFilterAny).
 			Return(usedLicenses, nil),
-		db.EXPECT().GetMySQLContracts().
+		db.EXPECT().GetMySQLContracts(gomock.Any()).
 			Return(mySqlcontracts, nil),
-		db.EXPECT().GetMySQLContracts().
+		db.EXPECT().GetMySQLContracts(gomock.Any()).
 			Return(mySqlcontracts, nil),
 
 		db.EXPECT().SearchSqlServerDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 			Return(&sqlServerLics, nil),
-		db.EXPECT().ListSqlServerDatabaseContracts().
+		db.EXPECT().ListSqlServerDatabaseContracts(gomock.Any()).
 			Times(1).
 			Return(sqlServerContracts, nil),
-		db.EXPECT().ListSqlServerDatabaseContracts().
+		db.EXPECT().ListSqlServerDatabaseContracts(gomock.Any()).
 			Times(1).
 			Return(sqlServerContracts, nil),
 		db.EXPECT().GetSqlServerDatabaseLicenseTypes().

@@ -43,8 +43,8 @@ func (as *APIService) UpdateMySQLContract(contract model.MySQLContract) (*model.
 	return &contract, nil
 }
 
-func (as *APIService) GetMySQLContracts() ([]model.MySQLContract, error) {
-	contracts, err := as.Database.GetMySQLContracts()
+func (as *APIService) GetMySQLContracts(locations []string) ([]model.MySQLContract, error) {
+	contracts, err := as.Database.GetMySQLContracts(locations)
 	if err != nil {
 		return nil, err
 	}
@@ -60,8 +60,8 @@ func (as *APIService) DeleteMySQLContract(id primitive.ObjectID) error {
 	return nil
 }
 
-func (as *APIService) GetMySQLContractsAsXLSX() (*excelize.File, error) {
-	contracts, err := as.GetMySQLContracts()
+func (as *APIService) GetMySQLContractsAsXLSX(locations []string) (*excelize.File, error) {
+	contracts, err := as.GetMySQLContracts(locations)
 	if err != nil {
 		return nil, err
 	}
@@ -72,6 +72,7 @@ func (as *APIService) GetMySQLContractsAsXLSX() (*excelize.File, error) {
 		"Contract Number",
 		"CSI",
 		"Support Expiration",
+		"Location",
 		"Number of licenses",
 		"Clusters",
 		"Host",
@@ -96,6 +97,7 @@ func (as *APIService) GetMySQLContractsAsXLSX() (*excelize.File, error) {
 			sheets.SetCellValue(sheet, nextAxis(), "")
 		}
 
+		sheets.SetCellValue(sheet, nextAxis(), val.Location)
 		sheets.SetCellValue(sheet, nextAxis(), val.NumberOfLicenses)
 		sheets.SetCellValue(sheet, nextAxis(), val.Clusters)
 

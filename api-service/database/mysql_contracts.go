@@ -58,9 +58,9 @@ func (md *MongoDatabase) UpdateMySQLContract(contract model.MySQLContract) error
 	return nil
 }
 
-func (md *MongoDatabase) GetMySQLContracts() ([]model.MySQLContract, error) {
+func (md *MongoDatabase) GetMySQLContracts(locations []string) ([]model.MySQLContract, error) {
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(mySQLContractCollection).
-		Find(context.TODO(), bson.D{})
+		Aggregate(context.TODO(), filterExistingLocations(locations))
 	if err != nil {
 		return nil, utils.NewError(err, "DB ERROR")
 	}

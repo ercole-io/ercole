@@ -24,6 +24,7 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
@@ -154,7 +155,9 @@ func (ctrl *APIController) GetUsedLicensesPerDatabases(w http.ResponseWriter, r 
 			return
 		}
 
-		filter.Location = strings.Join(locations, ",")
+		if !utils.ContainsI(locations, model.AllLocation) {
+			filter.Location = strings.Join(locations, ",")
+		}
 	}
 
 	hostname := ""

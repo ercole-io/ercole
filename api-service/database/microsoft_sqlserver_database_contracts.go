@@ -26,14 +26,16 @@ import (
 
 const sqlServerDbContractsCollection = "ms_sqlserver_database_contracts"
 
-func (md *MongoDatabase) InsertSqlServerDatabaseContract(contract model.SqlServerDatabaseContract) error {
-	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(sqlServerDbContractsCollection).
+func (md *MongoDatabase) InsertSqlServerDatabaseContract(contract model.SqlServerDatabaseContract) (*model.SqlServerDatabaseContract, error) {
+	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(sqlServerDbContractsCollection).
 		InsertOne(context.TODO(), contract)
 	if err != nil {
-		return utils.NewError(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 
-	return nil
+	contract.ID = res.InsertedID.(primitive.ObjectID)
+
+	return &contract, nil
 }
 
 func (md *MongoDatabase) UpdateSqlServerDatabaseContract(contract model.SqlServerDatabaseContract) error {
@@ -68,12 +70,12 @@ func (md *MongoDatabase) RemoveSqlServerDatabaseContract(id primitive.ObjectID) 
 	return nil
 }
 
-func (md *MongoDatabase) ListSqlServerDatabaseContracts() ([]model.SqlServerDatabaseContract, error) {
+func (md *MongoDatabase) ListSqlServerDatabaseContracts(locations []string) ([]model.SqlServerDatabaseContract, error) {
 	ctx := context.TODO()
 	out := make([]model.SqlServerDatabaseContract, 0)
 
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(sqlServerDbContractsCollection).
-		Find(ctx, bson.M{})
+		Aggregate(ctx, filterExistingLocations(locations))
 	if err != nil {
 		return nil, utils.NewError(err, "DB ERROR")
 	}

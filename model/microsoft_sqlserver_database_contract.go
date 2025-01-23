@@ -33,6 +33,7 @@ type SqlServerDatabaseContract struct {
 	Clusters          []string           `json:"clusters" bson:"clusters" csv:"-"`
 	HostsLiteral      LiteralStrSlice    `json:"-" bson:"-" csv:"-"`
 	ClusterLiteral    LiteralStrSlice    `json:"-" bson:"-" csv:"-"`
+	Location          string             `json:"location" bson:"location" csv:"Location"`
 }
 
 const (

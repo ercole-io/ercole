@@ -92,7 +92,7 @@ func (as *APIService) GetSqlServerUsedLicenses(hostname string, filter dto.Globa
 		clusters[cluster.Name] = cluster
 	}
 
-	contracts, err := as.Database.ListSqlServerDatabaseContracts()
+	contracts, err := as.Database.ListSqlServerDatabaseContracts([]string{})
 	if err != nil {
 		return nil, err
 	}
@@ -151,7 +151,7 @@ func (as *APIService) GetSqlServerDatabaseLicensesCompliance() ([]dto.LicenseCom
 		return []dto.LicenseCompliance{}, nil
 	}
 
-	contracts, err := as.Database.ListSqlServerDatabaseContracts()
+	contracts, err := as.Database.ListSqlServerDatabaseContracts([]string{})
 	if err != nil {
 		return nil, err
 	}

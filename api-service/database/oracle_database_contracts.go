@@ -98,13 +98,18 @@ func (md *MongoDatabase) RemoveOracleDatabaseContract(id primitive.ObjectID) err
 }
 
 // ListOracleDatabaseContracts lists the Oracle/Database contracts
-func (md *MongoDatabase) ListOracleDatabaseContracts() ([]dto.OracleDatabaseContractFE, error) {
+func (md *MongoDatabase) ListOracleDatabaseContracts(filter dto.GetOracleDatabaseContractsFilter) ([]dto.OracleDatabaseContractFE, error) {
 	var out = make([]dto.OracleDatabaseContractFE, 0)
 
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(oracleDbContractsCollection).
 		Aggregate(
 			context.TODO(),
 			mu.MAPipeline(
+				bson.M{"$match": bson.M{"$or": bson.A{
+					bson.M{"location": ""},
+					bson.M{"location": bson.M{"$in": filter.Locations}},
+					bson.M{"location": bson.M{"$exists": false}},
+				}}},
 				mu.APLookupSimple("oracle_database_license_types", "licenseTypeID", "_id", "licenseType"),
 				mu.APUnwind("$licenseType"),
 				mu.APSet(bson.M{

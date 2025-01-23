@@ -214,7 +214,7 @@ func (m *MongodbSuite) TestListOracleDatabaseContracts() {
 	m.T().Run("Empty collection", func(t *testing.T) {
 		defer m.db.Client.Database(m.dbname).Collection(oracleDbContractsCollection).DeleteMany(context.TODO(), bson.M{})
 
-		out, err := m.db.ListOracleDatabaseContracts()
+		out, err := m.db.ListOracleDatabaseContracts(dto.NewGetOracleDatabaseContractsFilter())
 		m.Require().NoError(err)
 
 		assert.Equal(m.T(), []dto.OracleDatabaseContractFE{}, out)
@@ -225,7 +225,7 @@ func (m *MongodbSuite) TestListOracleDatabaseContracts() {
 		err := m.db.InsertOracleDatabaseContract(contractSample)
 		require.NoError(m.T(), err)
 
-		out, err := m.db.ListOracleDatabaseContracts()
+		out, err := m.db.ListOracleDatabaseContracts(dto.NewGetOracleDatabaseContractsFilter())
 		m.Require().NoError(err)
 
 		assert.Equal(m.T(), []dto.OracleDatabaseContractFE{
@@ -259,7 +259,7 @@ func (m *MongodbSuite) TestListOracleDatabaseContracts() {
 		err = m.db.InsertOracleDatabaseContract(contractSample3)
 		require.NoError(m.T(), err)
 
-		out, err := m.db.ListOracleDatabaseContracts()
+		out, err := m.db.ListOracleDatabaseContracts(dto.NewGetOracleDatabaseContractsFilter())
 		m.Require().NoError(err)
 
 		assert.Equal(m.T(), []dto.OracleDatabaseContractFE{

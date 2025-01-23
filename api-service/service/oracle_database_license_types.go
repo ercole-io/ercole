@@ -63,7 +63,7 @@ func (as *APIService) GetOracleDatabaseLicenseType(id string) (*model.OracleData
 }
 
 func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompliance, error) {
-	contracts, err := as.Database.ListOracleDatabaseContracts()
+	contracts, err := as.Database.ListOracleDatabaseContracts(dto.NewGetOracleDatabaseContractsFilter())
 	if err != nil {
 		return nil, err
 	}

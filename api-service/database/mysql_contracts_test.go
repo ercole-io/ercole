@@ -102,14 +102,14 @@ func (m *MongodbSuite) TestGetMySQLContracts() {
 		_, err := m.db.Client.Database(m.dbname).Collection(mySQLContractCollection).InsertMany(context.TODO(), contractsInt)
 		require.Nil(m.T(), err)
 
-		actual, err := m.db.GetMySQLContracts()
+		actual, err := m.db.GetMySQLContracts([]string{})
 		m.Require().NoError(err)
 
 		assert.Equal(t, contracts, actual)
 	})
 
 	m.T().Run("should_load_empty", func(t *testing.T) {
-		actual, err := m.db.GetMySQLContracts()
+		actual, err := m.db.GetMySQLContracts([]string{})
 		m.Require().NoError(err)
 
 		contracts := make([]model.MySQLContract, 0)

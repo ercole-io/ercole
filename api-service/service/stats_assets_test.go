@@ -77,7 +77,7 @@ func TestGetTotalTechnologiesComplianceStats_Success(t *testing.T) {
 			AvailableLicensesPerUser: 0,
 		},
 	}
-	db.EXPECT().ListOracleDatabaseContracts().Return(returnedContracts, nil)
+	db.EXPECT().ListOracleDatabaseContracts(gomock.Any()).Return(returnedContracts, nil)
 
 	oracleLics := dto.OracleDatabaseUsedLicenseSearchResponse{
 		Content: []dto.OracleDatabaseUsedLicense{
@@ -183,17 +183,17 @@ func TestGetTotalTechnologiesComplianceStats_Success(t *testing.T) {
 
 		db.EXPECT().GetMySQLUsedLicenses("", globalFilterAny).
 			Return(usedLicenses, nil),
-		db.EXPECT().GetMySQLContracts().
+		db.EXPECT().GetMySQLContracts(gomock.Any()).
 			Return(contracts, nil),
-		db.EXPECT().GetMySQLContracts().
+		db.EXPECT().GetMySQLContracts(gomock.Any()).
 			Return(contracts, nil),
 
 		db.EXPECT().SearchSqlServerDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 			Return(&sqlServerLics, nil),
-		db.EXPECT().ListSqlServerDatabaseContracts().
+		db.EXPECT().ListSqlServerDatabaseContracts(gomock.Any()).
 			Times(1).
 			Return(sqlServerContracts, nil),
-		db.EXPECT().ListSqlServerDatabaseContracts().
+		db.EXPECT().ListSqlServerDatabaseContracts(gomock.Any()).
 			Times(1).
 			Return(sqlServerContracts, nil),
 		db.EXPECT().GetSqlServerDatabaseLicenseTypes().

@@ -411,7 +411,7 @@ func TestGetOracleDatabaseContracts_Success(t *testing.T) {
 	db.EXPECT().GetClusters(globalFilterAny).
 		Return(clusters, nil).AnyTimes()
 	gomock.InOrder(
-		db.EXPECT().ListOracleDatabaseContracts().
+		db.EXPECT().ListOracleDatabaseContracts(gomock.Any()).
 			Return(returnedContracts, nil),
 
 		db.EXPECT().
@@ -582,7 +582,7 @@ func TestGetOracleDatabaseContractsCluster_Success(t *testing.T) {
 		Return(clusters, nil).AnyTimes()
 	db.EXPECT().GetCluster("bart", utils.MAX_TIME).Return(&cluster, nil).AnyTimes()
 	gomock.InOrder(
-		db.EXPECT().ListOracleDatabaseContracts().
+		db.EXPECT().ListOracleDatabaseContracts(gomock.Any()).
 			Return(returnedContracts, nil),
 
 		db.EXPECT().
@@ -753,7 +753,7 @@ func TestGetOracleDatabaseContractsClusterCappedCPU_Success(t *testing.T) {
 		Return(clusters, nil).AnyTimes()
 	db.EXPECT().GetCluster("bart", utils.MAX_TIME).Return(&cluster, nil).AnyTimes()
 	gomock.InOrder(
-		db.EXPECT().ListOracleDatabaseContracts().
+		db.EXPECT().ListOracleDatabaseContracts(gomock.Any()).
 			Return(returnedContracts, nil),
 
 		db.EXPECT().
@@ -957,7 +957,7 @@ func TestGetOracleDatabaseContractsClusterCappedCPU2_Success(t *testing.T) {
 	}
 
 	db.EXPECT().ExistHostdata(gomock.Any()).Return(false, nil).AnyTimes()
-	db.EXPECT().ListOracleDatabaseContracts().
+	db.EXPECT().ListOracleDatabaseContracts(gomock.Any()).
 		Return(returnedContracts, nil)
 
 	db.EXPECT().
@@ -1062,7 +1062,7 @@ func TestGetOracleDatabaseContracts_SuccessFilter1(t *testing.T) {
 	db.EXPECT().GetClusters(globalFilterAny).
 		Return(clusters, nil).AnyTimes()
 	gomock.InOrder(
-		db.EXPECT().ListOracleDatabaseContracts().
+		db.EXPECT().ListOracleDatabaseContracts(gomock.Any()).
 			Return(returnedContracts, nil),
 		db.EXPECT().
 			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
@@ -1088,7 +1088,7 @@ func TestGetOracleDatabaseContracts_SuccessFilter1(t *testing.T) {
 	assert.Empty(t, res)
 
 	gomock.InOrder(
-		db.EXPECT().ListOracleDatabaseContracts().
+		db.EXPECT().ListOracleDatabaseContracts(gomock.Any()).
 			Return(returnedContracts, nil),
 
 		db.EXPECT().
@@ -1115,7 +1115,7 @@ func TestGetOracleDatabaseContracts_SuccessFilter1(t *testing.T) {
 	assert.Empty(t, res)
 
 	gomock.InOrder(
-		db.EXPECT().ListOracleDatabaseContracts().
+		db.EXPECT().ListOracleDatabaseContracts(gomock.Any()).
 			Return(returnedContracts, nil),
 
 		db.EXPECT().
@@ -1174,7 +1174,7 @@ func TestGetOracleDatabaseContracts_Failed2(t *testing.T) {
 	}
 
 	gomock.InOrder(
-		db.EXPECT().ListOracleDatabaseContracts().
+		db.EXPECT().ListOracleDatabaseContracts(gomock.Any()).
 			Return(returnedContracts, nil),
 		db.EXPECT().SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 			Return(nil, aerrMock),
@@ -2758,7 +2758,7 @@ func TestDeleteHostFromOracleDatabaseContracts(t *testing.T) {
 				Return([]map[string]interface{}{
 					{"hostname": "ercsoldbx"},
 				}, nil),
-			db.EXPECT().ListOracleDatabaseContracts().
+			db.EXPECT().ListOracleDatabaseContracts(gomock.Any()).
 				Return(listContract, nil),
 			db.EXPECT().GetOracleDatabaseContract(anotherId).
 				Return(&contract, nil).AnyTimes(),
@@ -2847,10 +2847,11 @@ func TestGetOracleDatabaseContractsAsXLSX_Success(t *testing.T) {
 
 	assert.Equal(t, "", actual.GetCellValue("Contracts", "H2"))
 	assert.Equal(t, "", actual.GetCellValue("Contracts", "I2"))
+	assert.Equal(t, "", actual.GetCellValue("Contracts", "J2"))
 
-	assert.Equal(t, "0", actual.GetCellValue("Contracts", "J2"))
 	assert.Equal(t, "0", actual.GetCellValue("Contracts", "K2"))
-	assert.Equal(t, "350", actual.GetCellValue("Contracts", "L2"))
-	assert.Equal(t, "0", actual.GetCellValue("Contracts", "M2"))
+	assert.Equal(t, "0", actual.GetCellValue("Contracts", "L2"))
+	assert.Equal(t, "350", actual.GetCellValue("Contracts", "M2"))
 	assert.Equal(t, "0", actual.GetCellValue("Contracts", "N2"))
+	assert.Equal(t, "0", actual.GetCellValue("Contracts", "O2"))
 }
