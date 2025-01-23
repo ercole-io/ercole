@@ -18,17 +18,20 @@ package controller
 import (
 	"net/http"
 
+	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/gorilla/context"
 )
 
 // GetInfoForFrontendDashboard return all informations needed for the frontend dashboard page
 func (ctrl *APIController) GetInfoForFrontendDashboard(w http.ResponseWriter, r *http.Request) {
-	info, err := ctrl.Service.GetComplianceStats()
+	user := context.Get(r, "user").(model.User)
+
+	info, err := ctrl.Service.GetComplianceStats(user)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
-	//Write the data
 	utils.WriteJSONResponse(w, http.StatusOK, info)
 }

@@ -17,6 +17,7 @@ package service
 
 import (
 	"testing"
+	"time"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/logger"
@@ -496,4 +497,591 @@ func TestGetInfoForFrontendDashboard_Fail2(t *testing.T) {
 	_, err := as.GetInfoForFrontendDashboard("Italy", "PRD", utils.P("2019-12-05T14:02:03Z"))
 
 	require.Equal(t, aerrMock, err)
+}
+
+func TestGetComplianceStatsAsAdmin(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+		Log:      logger.NewLogger("TEST"),
+	}
+
+	hostdatas := []model.HostDataBE{
+		{
+			ClusterMembershipStatus: model.ClusterMembershipStatus{
+				OracleClusterware:       false,
+				SunCluster:              false,
+				HACMP:                   false,
+				VeritasClusterServer:    false,
+				VeritasClusterHostnames: []string{},
+			},
+		},
+	}
+
+	globalFilterAny := dto.GlobalFilter{
+		Location:    "",
+		Environment: "",
+		OlderThan:   utils.MAX_TIME,
+	}
+
+	clusters := []dto.Cluster{
+		{
+			ID:                          [12]byte{},
+			CreatedAt:                   time.Time{},
+			Hostname:                    "cluster1",
+			HostnameAgentVirtualization: "",
+			Name:                        "name1",
+			Environment:                 "",
+			Location:                    "",
+			FetchEndpoint:               "",
+			CPU:                         12,
+			Sockets:                     0,
+			Type:                        "",
+			VirtualizationNodes:         []string{},
+			VirtualizationNodesCount:    0,
+			VirtualizationNodesStats:    []dto.VirtualizationNodesStat{},
+			VMs: []dto.VM{
+				{
+					CappedCPU:          false,
+					Hostname:           "vm1",
+					Name:               "",
+					VirtualizationNode: "",
+				},
+			},
+			VMsCount:            0,
+			VMsErcoleAgentCount: 0,
+		},
+	}
+
+	licenseTypes := []model.OracleDatabaseLicenseType{
+		{
+			ID:              "A12345",
+			ItemDescription: "ThisDesc",
+			Metric:          "ThisMetric",
+			Cost:            0,
+			Aliases:         []string{},
+			Option:          false,
+		},
+		{
+			ID:              "A98765",
+			ItemDescription: "ThisDesc",
+			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
+			Cost:            0,
+			Aliases:         []string{},
+			Option:          false,
+		},
+	}
+
+	var instancesCount, hostsCount int64 = 1, 1
+
+	oracleContracts := []dto.OracleDatabaseContractFE{
+		{
+			ItemDescription: "foobar",
+		},
+	}
+
+	oracleLics := dto.OracleDatabaseUsedLicenseSearchResponse{
+		Content: []dto.OracleDatabaseUsedLicense{
+			{
+				LicenseTypeID: "A12345",
+				DbName:        "topolino-dbname",
+				Hostname:      "topolino-hostname",
+				UsedLicenses:  2,
+			},
+			{
+				LicenseTypeID: "A98765",
+				DbName:        "topolino-dbname",
+				Hostname:      "topolino-hostname",
+				UsedLicenses:  2,
+			},
+		},
+	}
+
+	sqlServerLics := dto.SqlServerDatabaseUsedLicenseSearchResponse{
+		Content: []dto.SqlServerDatabaseUsedLicense{
+			{
+				LicenseTypeID: licenseTypesID,
+				DbName:        "topolino-dbname",
+				Hostname:      "topolino-hostname",
+				UsedLicenses:  8,
+			},
+		},
+	}
+
+	sqlServerContracts := []model.SqlServerDatabaseContract{
+		{
+			ID:             [12]byte{},
+			Type:           model.SqlServerContractTypeCluster,
+			LicensesNumber: 12,
+			ContractID:     "abc",
+			LicenseTypeID:  "359-06320",
+			Clusters:       []string{},
+			Hosts:          []string{},
+		},
+		{
+			ID:             [12]byte{},
+			Type:           model.SqlServerContractTypeHost,
+			LicensesNumber: 12,
+			ContractID:     "abc",
+			LicenseTypeID:  "359-06320",
+			Clusters:       []string{},
+			Hosts:          []string{},
+		},
+	}
+
+	sqlServerLicenseTypes := []model.SqlServerDatabaseLicenseType{
+		{
+			ID:              licenseTypesID,
+			ItemDescription: "SQL Server Enterprise Edition",
+			Edition:         "ENT",
+			Version:         "2019",
+		},
+	}
+
+	usedLicenses := []dto.MySQLUsedLicense{
+		{
+			Hostname:        "pluto",
+			InstanceName:    "pluto-instance",
+			InstanceEdition: model.MySQLEditionEnterprise,
+			ContractType:    "",
+		},
+	}
+
+	mySqlcontracts := []model.MySQLContract{
+		{
+			ID:               [12]byte{},
+			Type:             model.MySQLContractTypeCluster,
+			NumberOfLicenses: 12,
+			Clusters:         []string{},
+			Hosts:            []string{},
+		},
+	}
+
+	db.EXPECT().
+		GetOracleDatabaseLicenseTypes().
+		Return(licenseTypes, nil).
+		AnyTimes()
+
+	db.EXPECT().
+		GetClusters(globalFilterAny).
+		Return(clusters, nil).
+		AnyTimes()
+
+	db.EXPECT().
+		GetHostDatas(utils.MAX_TIME).
+		Times(1).
+		Return(hostdatas, nil).
+		AnyTimes()
+
+	gomock.InOrder(
+		db.EXPECT().
+			CountOracleInstance().
+			Return(instancesCount, nil),
+		db.EXPECT().
+			CountOracleHosts().
+			Return(hostsCount, nil),
+		db.EXPECT().
+			ListOracleDatabaseContracts().
+			Return(oracleContracts, nil),
+		db.EXPECT().
+			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
+			Return(&oracleLics, nil),
+
+		db.EXPECT().
+			CountSqlServerlInstance().
+			Return(instancesCount, nil),
+		db.EXPECT().
+			CountSqlServerHosts().
+			Return(hostsCount, nil),
+		db.EXPECT().
+			SearchSqlServerDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
+			Return(&sqlServerLics, nil),
+		db.EXPECT().
+			ListSqlServerDatabaseContracts().
+			Times(2).
+			Return(sqlServerContracts, nil),
+		db.EXPECT().
+			GetSqlServerDatabaseLicenseTypes().
+			Return(sqlServerLicenseTypes, nil),
+
+		db.EXPECT().
+			CountMySqlInstance().
+			Return(instancesCount, nil),
+		db.EXPECT().
+			CountMySqlHosts().
+			Return(hostsCount, nil),
+		db.EXPECT().
+			GetMySQLUsedLicenses("", globalFilterAny).
+			Return(usedLicenses, nil),
+		db.EXPECT().
+			GetMySQLContracts().
+			Times(2).
+			Return(mySqlcontracts, nil),
+
+		db.EXPECT().
+			CountPostgreSqlInstance().
+			Return(instancesCount, nil),
+		db.EXPECT().
+			CountPostgreSqlHosts().
+			Return(hostsCount, nil),
+
+		db.EXPECT().
+			CountMongoDbInstance().
+			Return(instancesCount, nil),
+		db.EXPECT().
+			CountMongoDbHosts().
+			Return(hostsCount, nil),
+	)
+
+	user := model.User{
+		Groups: []string{model.GroupAdmin},
+	}
+	expectedRes := map[string]interface{}{
+		"ercole": map[string]interface{}{
+			"compliancePercentageStr": "100.00%",
+			"compliancePercentageVal": 100,
+			"count":                   5,
+			"hostCount":               5,
+		},
+		"mariaDb": map[string]interface{}{
+			"compliancePercentageStr": "100%",
+			"compliancePercentageVal": 100,
+			"count":                   0,
+			"hostCount":               0,
+		},
+		"mongoDb": map[string]interface{}{
+			"compliancePercentageStr": "100%",
+			"compliancePercentageVal": 100,
+			"count":                   1,
+			"hostCount":               1,
+		},
+		"mySql": map[string]interface{}{
+			"compliancePercentageStr": "100.00%",
+			"compliancePercentageVal": 100,
+			"count":                   1,
+			"hostCount":               1,
+		},
+		"oracle": map[string]interface{}{
+			"compliancePercentageStr": "100.00%",
+			"compliancePercentageVal": 100,
+			"count":                   1,
+			"hostCount":               1,
+		},
+		"postgreSql": map[string]interface{}{
+			"compliancePercentageStr": "100%",
+			"compliancePercentageVal": 100,
+			"count":                   1,
+			"hostCount":               1,
+		},
+		"sqlServer": map[string]interface{}{
+			"compliancePercentageStr": "100.00%",
+			"compliancePercentageVal": 100,
+			"count":                   1,
+			"hostCount":               1,
+		},
+	}
+
+	res, err := as.GetComplianceStats(user)
+
+	require.NoError(t, err)
+	assert.JSONEq(t, utils.ToJSON(expectedRes), utils.ToJSON(res))
+}
+
+func TestGetComplianceStatsAsUser(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+		Log:      logger.NewLogger("TEST"),
+	}
+
+	hostdatas := []model.HostDataBE{
+		{
+			ClusterMembershipStatus: model.ClusterMembershipStatus{
+				OracleClusterware:       false,
+				SunCluster:              false,
+				HACMP:                   false,
+				VeritasClusterServer:    false,
+				VeritasClusterHostnames: []string{},
+			},
+		},
+	}
+
+	globalFilterAny := dto.GlobalFilter{
+		Location:    "",
+		Environment: "",
+		OlderThan:   utils.MAX_TIME,
+	}
+
+	clusters := []dto.Cluster{
+		{
+			ID:                          [12]byte{},
+			CreatedAt:                   time.Time{},
+			Hostname:                    "cluster1",
+			HostnameAgentVirtualization: "",
+			Name:                        "name1",
+			Environment:                 "",
+			Location:                    "",
+			FetchEndpoint:               "",
+			CPU:                         12,
+			Sockets:                     0,
+			Type:                        "",
+			VirtualizationNodes:         []string{},
+			VirtualizationNodesCount:    0,
+			VirtualizationNodesStats:    []dto.VirtualizationNodesStat{},
+			VMs: []dto.VM{
+				{
+					CappedCPU:          false,
+					Hostname:           "vm1",
+					Name:               "",
+					VirtualizationNode: "",
+				},
+			},
+			VMsCount:            0,
+			VMsErcoleAgentCount: 0,
+		},
+	}
+
+	licenseTypes := []model.OracleDatabaseLicenseType{
+		{
+			ID:              "A12345",
+			ItemDescription: "ThisDesc",
+			Metric:          "ThisMetric",
+			Cost:            0,
+			Aliases:         []string{},
+			Option:          false,
+		},
+		{
+			ID:              "A98765",
+			ItemDescription: "ThisDesc",
+			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
+			Cost:            0,
+			Aliases:         []string{},
+			Option:          false,
+		},
+	}
+
+	var instancesCount, hostsCount int64 = 1, 1
+
+	oracleContracts := []dto.OracleDatabaseContractFE{
+		{
+			ItemDescription: "foobar",
+		},
+	}
+
+	oracleLics := dto.OracleDatabaseUsedLicenseSearchResponse{
+		Content: []dto.OracleDatabaseUsedLicense{
+			{
+				LicenseTypeID: "A12345",
+				DbName:        "topolino-dbname",
+				Hostname:      "topolino-hostname",
+				UsedLicenses:  2,
+			},
+			{
+				LicenseTypeID: "A98765",
+				DbName:        "topolino-dbname",
+				Hostname:      "topolino-hostname",
+				UsedLicenses:  2,
+			},
+		},
+	}
+
+	sqlServerLics := dto.SqlServerDatabaseUsedLicenseSearchResponse{
+		Content: []dto.SqlServerDatabaseUsedLicense{
+			{
+				LicenseTypeID: licenseTypesID,
+				DbName:        "topolino-dbname",
+				Hostname:      "topolino-hostname",
+				UsedLicenses:  8,
+			},
+		},
+	}
+
+	sqlServerContracts := []model.SqlServerDatabaseContract{
+		{
+			ID:             [12]byte{},
+			Type:           model.SqlServerContractTypeCluster,
+			LicensesNumber: 12,
+			ContractID:     "abc",
+			LicenseTypeID:  "359-06320",
+			Clusters:       []string{},
+			Hosts:          []string{},
+		},
+		{
+			ID:             [12]byte{},
+			Type:           model.SqlServerContractTypeHost,
+			LicensesNumber: 12,
+			ContractID:     "abc",
+			LicenseTypeID:  "359-06320",
+			Clusters:       []string{},
+			Hosts:          []string{},
+		},
+	}
+
+	sqlServerLicenseTypes := []model.SqlServerDatabaseLicenseType{
+		{
+			ID:              licenseTypesID,
+			ItemDescription: "SQL Server Enterprise Edition",
+			Edition:         "ENT",
+			Version:         "2019",
+		},
+	}
+
+	usedLicenses := []dto.MySQLUsedLicense{
+		{
+			Hostname:        "pluto",
+			InstanceName:    "pluto-instance",
+			InstanceEdition: model.MySQLEditionEnterprise,
+			ContractType:    "",
+		},
+	}
+
+	mySqlcontracts := []model.MySQLContract{
+		{
+			ID:               [12]byte{},
+			Type:             model.MySQLContractTypeCluster,
+			NumberOfLicenses: 12,
+			Clusters:         []string{},
+			Hosts:            []string{},
+		},
+	}
+
+	user := model.User{
+		Username: "foobar",
+	}
+
+	locations := []string{"wonderland"}
+
+	db.EXPECT().
+		GetUserLocations(user.Username).
+		Return(locations, nil)
+
+	db.EXPECT().
+		GetOracleDatabaseLicenseTypes().
+		Return(licenseTypes, nil).
+		AnyTimes()
+
+	db.EXPECT().
+		GetClusters(globalFilterAny).
+		Return(clusters, nil).
+		AnyTimes()
+
+	db.EXPECT().
+		GetHostDatas(utils.MAX_TIME).
+		Times(1).
+		Return(hostdatas, nil).
+		AnyTimes()
+
+	gomock.InOrder(
+		db.EXPECT().
+			CountOracleInstanceByLocations(locations).
+			Return(instancesCount, nil),
+		db.EXPECT().
+			CountOracleHostsByLocations(locations).
+			Return(hostsCount, nil),
+		db.EXPECT().
+			ListOracleDatabaseContracts().
+			Return(oracleContracts, nil),
+		db.EXPECT().
+			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
+			Return(&oracleLics, nil),
+
+		db.EXPECT().
+			CountSqlServerlInstanceByLocations(locations).
+			Return(instancesCount, nil),
+		db.EXPECT().
+			CountSqlServerHostsByLocations(locations).
+			Return(hostsCount, nil),
+		db.EXPECT().
+			SearchSqlServerDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
+			Return(&sqlServerLics, nil),
+		db.EXPECT().
+			ListSqlServerDatabaseContracts().
+			Times(2).
+			Return(sqlServerContracts, nil),
+		db.EXPECT().
+			GetSqlServerDatabaseLicenseTypes().
+			Return(sqlServerLicenseTypes, nil),
+
+		db.EXPECT().
+			CountMySqlInstanceByLocations(locations).
+			Return(instancesCount, nil),
+		db.EXPECT().
+			CountMySqlHostsByLocations(locations).
+			Return(hostsCount, nil),
+		db.EXPECT().
+			GetMySQLUsedLicenses("", globalFilterAny).
+			Return(usedLicenses, nil),
+		db.EXPECT().
+			GetMySQLContracts().
+			Times(2).
+			Return(mySqlcontracts, nil),
+
+		db.EXPECT().
+			CountPostgreSqlInstanceByLocations(locations).
+			Return(instancesCount, nil),
+		db.EXPECT().
+			CountPostgreSqlHostsByLocations(locations).
+			Return(hostsCount, nil),
+
+		db.EXPECT().
+			CountMongoDbInstanceByLocations(locations).
+			Return(instancesCount, nil),
+		db.EXPECT().
+			CountMongoDbHostsByLocations(locations).
+			Return(hostsCount, nil),
+	)
+
+	expectedRes := map[string]interface{}{
+		"ercole": map[string]interface{}{
+			"compliancePercentageStr": "100.00%",
+			"compliancePercentageVal": 100,
+			"count":                   5,
+			"hostCount":               5,
+		},
+		"mariaDb": map[string]interface{}{
+			"compliancePercentageStr": "100%",
+			"compliancePercentageVal": 100,
+			"count":                   0,
+			"hostCount":               0,
+		},
+		"mongoDb": map[string]interface{}{
+			"compliancePercentageStr": "100%",
+			"compliancePercentageVal": 100,
+			"count":                   1,
+			"hostCount":               1,
+		},
+		"mySql": map[string]interface{}{
+			"compliancePercentageStr": "100.00%",
+			"compliancePercentageVal": 100,
+			"count":                   1,
+			"hostCount":               1,
+		},
+		"oracle": map[string]interface{}{
+			"compliancePercentageStr": "100.00%",
+			"compliancePercentageVal": 100,
+			"count":                   1,
+			"hostCount":               1,
+		},
+		"postgreSql": map[string]interface{}{
+			"compliancePercentageStr": "100%",
+			"compliancePercentageVal": 100,
+			"count":                   1,
+			"hostCount":               1,
+		},
+		"sqlServer": map[string]interface{}{
+			"compliancePercentageStr": "100.00%",
+			"compliancePercentageVal": 100,
+			"count":                   1,
+			"hostCount":               1,
+		},
+	}
+
+	res, err := as.GetComplianceStats(user)
+
+	require.NoError(t, err)
+	assert.JSONEq(t, utils.ToJSON(expectedRes), utils.ToJSON(res))
 }
