@@ -21,6 +21,14 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+const (
+	oraclePipelinePathMatch     = "$features.oracle.database.databases"
+	mysqlPipelinePathMatch      = "$features.mysql.instances"
+	sqlServerPipelinePathMatch  = "$features.microsoft.sqlServer.instances"
+	postgresqlPipelinePathMatch = "$features.postgresql.instances"
+	mongoPipelinePathMatch      = "$features.mongodb.instances"
+)
+
 func (md *MongoDatabase) CountAllHost() (int64, error) {
 	filter := bson.D{
 		{Key: "archived", Value: false},
@@ -36,266 +44,114 @@ func (md *MongoDatabase) CountAllHost() (int64, error) {
 }
 
 func (md *MongoDatabase) CountOracleInstance() (int64, error) {
-	ctx := context.TODO()
-	pipeline := bson.A{
-		bson.D{{Key: "$match", Value: bson.D{{Key: "archived", Value: false}}}},
-		bson.D{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$features.oracle.database.databases"}}}},
-		bson.D{
-			{Key: "$group",
-				Value: bson.D{
-					{Key: "_id", Value: primitive.Null{}},
-					{Key: "count", Value: bson.D{{Key: "$sum", Value: 1}}},
-				},
-			},
-		},
-	}
+	pipeline := md.getCountInstancePipeline(oraclePipelinePathMatch)
+	return md.count(pipeline)
+}
 
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(hostCollection).
-		Aggregate(ctx, pipeline)
-	if err != nil {
-		return 0, err
-	}
-
-	var out int64
-
-	for cur.Next(ctx) {
-		var item map[string]int64
-		if cur.Decode(&item) != nil {
-			return 0, err
-		}
-
-		out = item["count"]
-	}
-
-	return out, nil
+func (md *MongoDatabase) CountOracleInstanceByLocations(locations []string) (int64, error) {
+	pipeline := md.getCountInstancePipeline(oraclePipelinePathMatch, locations...)
+	return md.count(pipeline)
 }
 
 func (md *MongoDatabase) CountOracleHosts() (int64, error) {
-	ctx := context.TODO()
-	pipeline := bson.A{
-		bson.D{{Key: "$match", Value: bson.D{{Key: "archived", Value: false}}}},
-		bson.D{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$features.oracle.database.databases"}}}},
-		bson.D{{Key: "$group", Value: bson.D{{Key: "_id", Value: "$hostname"}}}},
-		bson.D{{Key: "$count", Value: "count"}},
-	}
+	pipeline := md.getCountHostPipeline(oraclePipelinePathMatch)
+	return md.count(pipeline)
+}
 
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(hostCollection).
-		Aggregate(ctx, pipeline)
-	if err != nil {
-		return 0, err
-	}
-
-	var out int64
-
-	for cur.Next(ctx) {
-		var item map[string]int64
-		if cur.Decode(&item) != nil {
-			return 0, err
-		}
-
-		out = item["count"]
-	}
-
-	return out, nil
+func (md *MongoDatabase) CountOracleHostsByLocations(locations []string) (int64, error) {
+	pipeline := md.getCountHostPipeline(oraclePipelinePathMatch, locations...)
+	return md.count(pipeline)
 }
 
 func (md *MongoDatabase) CountMySqlInstance() (int64, error) {
-	ctx := context.TODO()
-	pipeline := bson.A{
-		bson.D{{Key: "$match", Value: bson.D{{Key: "archived", Value: false}}}},
-		bson.D{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$features.mysql.instances"}}}},
-		bson.D{
-			{Key: "$group",
-				Value: bson.D{
-					{Key: "_id", Value: primitive.Null{}},
-					{Key: "count", Value: bson.D{{Key: "$sum", Value: 1}}},
-				},
-			},
-		},
-	}
+	pipeline := md.getCountInstancePipeline(mysqlPipelinePathMatch)
+	return md.count(pipeline)
+}
 
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(hostCollection).
-		Aggregate(ctx, pipeline)
-	if err != nil {
-		return 0, err
-	}
-
-	var out int64
-
-	for cur.Next(ctx) {
-		var item map[string]int64
-		if cur.Decode(&item) != nil {
-			return 0, err
-		}
-
-		out = item["count"]
-	}
-
-	return out, nil
+func (md *MongoDatabase) CountMySqlInstanceByLocations(locations []string) (int64, error) {
+	pipeline := md.getCountInstancePipeline(mysqlPipelinePathMatch, locations...)
+	return md.count(pipeline)
 }
 
 func (md *MongoDatabase) CountMySqlHosts() (int64, error) {
-	ctx := context.TODO()
-	pipeline := bson.A{
-		bson.D{{Key: "$match", Value: bson.D{{Key: "archived", Value: false}}}},
-		bson.D{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$features.mysql.instances"}}}},
-		bson.D{{Key: "$group", Value: bson.D{{Key: "_id", Value: "$hostname"}}}},
-		bson.D{{Key: "$count", Value: "count"}},
-	}
+	pipeline := md.getCountHostPipeline(mysqlPipelinePathMatch)
+	return md.count(pipeline)
+}
 
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(hostCollection).
-		Aggregate(ctx, pipeline)
-	if err != nil {
-		return 0, err
-	}
-
-	var out int64
-
-	for cur.Next(ctx) {
-		var item map[string]int64
-		if cur.Decode(&item) != nil {
-			return 0, err
-		}
-
-		out = item["count"]
-	}
-
-	return out, nil
+func (md *MongoDatabase) CountMySqlHostsByLocations(locations []string) (int64, error) {
+	pipeline := md.getCountHostPipeline(mysqlPipelinePathMatch, locations...)
+	return md.count(pipeline)
 }
 
 func (md *MongoDatabase) CountSqlServerlInstance() (int64, error) {
-	ctx := context.TODO()
-	pipeline := bson.A{
-		bson.D{{Key: "$match", Value: bson.D{{Key: "archived", Value: false}}}},
-		bson.D{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$features.microsoft.sqlServer.instances"}}}},
-		bson.D{
-			{Key: "$group",
-				Value: bson.D{
-					{Key: "_id", Value: primitive.Null{}},
-					{Key: "count", Value: bson.D{{Key: "$sum", Value: 1}}},
-				},
-			},
-		},
-	}
+	pipeline := md.getCountInstancePipeline(sqlServerPipelinePathMatch)
+	return md.count(pipeline)
+}
 
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(hostCollection).
-		Aggregate(ctx, pipeline)
-	if err != nil {
-		return 0, err
-	}
-
-	var out int64
-
-	for cur.Next(ctx) {
-		var item map[string]int64
-		if cur.Decode(&item) != nil {
-			return 0, err
-		}
-
-		out = item["count"]
-	}
-
-	return out, nil
+func (md *MongoDatabase) CountSqlServerlInstanceByLocations(locations []string) (int64, error) {
+	pipeline := md.getCountInstancePipeline(sqlServerPipelinePathMatch, locations...)
+	return md.count(pipeline)
 }
 
 func (md *MongoDatabase) CountSqlServerHosts() (int64, error) {
-	ctx := context.TODO()
-	pipeline := bson.A{
-		bson.D{{Key: "$match", Value: bson.D{{Key: "archived", Value: false}}}},
-		bson.D{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$features.microsoft.sqlServer.instances"}}}},
-		bson.D{{Key: "$group", Value: bson.D{{Key: "_id", Value: "$hostname"}}}},
-		bson.D{{Key: "$count", Value: "count"}},
-	}
+	pipeline := md.getCountHostPipeline(sqlServerPipelinePathMatch)
+	return md.count(pipeline)
+}
 
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(hostCollection).
-		Aggregate(ctx, pipeline)
-	if err != nil {
-		return 0, err
-	}
-
-	var out int64
-
-	for cur.Next(ctx) {
-		var item map[string]int64
-		if cur.Decode(&item) != nil {
-			return 0, err
-		}
-
-		out = item["count"]
-	}
-
-	return out, nil
+func (md *MongoDatabase) CountSqlServerHostsByLocations(locations []string) (int64, error) {
+	pipeline := md.getCountHostPipeline(sqlServerPipelinePathMatch, locations...)
+	return md.count(pipeline)
 }
 
 func (md *MongoDatabase) CountPostgreSqlInstance() (int64, error) {
-	ctx := context.TODO()
-	pipeline := bson.A{
-		bson.D{{Key: "$match", Value: bson.D{{Key: "archived", Value: false}}}},
-		bson.D{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$features.postgresql.instances"}}}},
-		bson.D{
-			{Key: "$group",
-				Value: bson.D{
-					{Key: "_id", Value: primitive.Null{}},
-					{Key: "count", Value: bson.D{{Key: "$sum", Value: 1}}},
-				},
-			},
-		},
-	}
+	pipeline := md.getCountInstancePipeline(postgresqlPipelinePathMatch)
+	return md.count(pipeline)
+}
 
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(hostCollection).
-		Aggregate(ctx, pipeline)
-	if err != nil {
-		return 0, err
-	}
-
-	var out int64
-
-	for cur.Next(ctx) {
-		var item map[string]int64
-		if cur.Decode(&item) != nil {
-			return 0, err
-		}
-
-		out = item["count"]
-	}
-
-	return out, nil
+func (md *MongoDatabase) CountPostgreSqlInstanceByLocations(locations []string) (int64, error) {
+	pipeline := md.getCountInstancePipeline(postgresqlPipelinePathMatch, locations...)
+	return md.count(pipeline)
 }
 
 func (md *MongoDatabase) CountPostgreSqlHosts() (int64, error) {
-	ctx := context.TODO()
-	pipeline := bson.A{
-		bson.D{{Key: "$match", Value: bson.D{{Key: "archived", Value: false}}}},
-		bson.D{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$features.postgresql.instances"}}}},
-		bson.D{{Key: "$group", Value: bson.D{{Key: "_id", Value: "$hostname"}}}},
-		bson.D{{Key: "$count", Value: "count"}},
-	}
+	pipeline := md.getCountHostPipeline(postgresqlPipelinePathMatch)
+	return md.count(pipeline)
+}
 
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(hostCollection).
-		Aggregate(ctx, pipeline)
-	if err != nil {
-		return 0, err
-	}
-
-	var out int64
-
-	for cur.Next(ctx) {
-		var item map[string]int64
-		if cur.Decode(&item) != nil {
-			return 0, err
-		}
-
-		out = item["count"]
-	}
-
-	return out, nil
+func (md *MongoDatabase) CountPostgreSqlHostsByLocations(locations []string) (int64, error) {
+	pipeline := md.getCountHostPipeline(postgresqlPipelinePathMatch, locations...)
+	return md.count(pipeline)
 }
 
 func (md *MongoDatabase) CountMongoDbInstance() (int64, error) {
-	ctx := context.TODO()
+	pipeline := md.getCountInstancePipeline(mongoPipelinePathMatch)
+	return md.count(pipeline)
+}
+
+func (md *MongoDatabase) CountMongoDbInstanceByLocations(locations []string) (int64, error) {
+	pipeline := md.getCountInstancePipeline(mongoPipelinePathMatch, locations...)
+	return md.count(pipeline)
+}
+
+func (md *MongoDatabase) CountMongoDbHosts() (int64, error) {
+	pipeline := md.getCountHostPipeline(mongoPipelinePathMatch)
+	return md.count(pipeline)
+}
+
+func (md *MongoDatabase) CountMongoDbHostsByLocations(locations []string) (int64, error) {
+	pipeline := md.getCountHostPipeline(mongoPipelinePathMatch, locations...)
+	return md.count(pipeline)
+}
+
+func (md *MongoDatabase) getCountInstancePipeline(path string, locations ...string) bson.A {
+	match := bson.D{{Key: "archived", Value: false}}
+	if len(locations) > 0 {
+		match = append(match, bson.E{Key: "location", Value: bson.M{"$in": locations}})
+	}
+
 	pipeline := bson.A{
-		bson.D{{Key: "$match", Value: bson.D{{Key: "archived", Value: false}}}},
-		bson.D{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$features.mongodb.instances"}}}},
+		bson.D{{Key: "$match", Value: match}},
+		bson.D{{Key: "$unwind", Value: bson.D{{Key: "path", Value: path}}}},
 		bson.D{
 			{Key: "$group",
 				Value: bson.D{
@@ -306,37 +162,28 @@ func (md *MongoDatabase) CountMongoDbInstance() (int64, error) {
 		},
 	}
 
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(hostCollection).
-		Aggregate(ctx, pipeline)
-	if err != nil {
-		return 0, err
-	}
-
-	var out int64
-
-	for cur.Next(ctx) {
-		var item map[string]int64
-		if cur.Decode(&item) != nil {
-			return 0, err
-		}
-
-		out = item["count"]
-	}
-
-	return out, nil
+	return pipeline
 }
 
-func (md *MongoDatabase) CountMongoDbHosts() (int64, error) {
-	ctx := context.TODO()
+func (md *MongoDatabase) getCountHostPipeline(path string, locations ...string) bson.A {
+	match := bson.D{{Key: "archived", Value: false}}
+	if len(locations) > 0 {
+		match = append(match, bson.E{Key: "location", Value: bson.M{"$in": locations}})
+	}
+
 	pipeline := bson.A{
-		bson.D{{Key: "$match", Value: bson.D{{Key: "archived", Value: false}}}},
-		bson.D{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$features.mongodb.instances"}}}},
+		bson.D{{Key: "$match", Value: match}},
+		bson.D{{Key: "$unwind", Value: bson.D{{Key: "path", Value: path}}}},
 		bson.D{{Key: "$group", Value: bson.D{{Key: "_id", Value: "$hostname"}}}},
 		bson.D{{Key: "$count", Value: "count"}},
 	}
 
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(hostCollection).
-		Aggregate(ctx, pipeline)
+	return pipeline
+}
+
+func (md *MongoDatabase) count(pipeline bson.A) (int64, error) {
+	ctx := context.TODO()
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(hostCollection).Aggregate(ctx, pipeline)
 	if err != nil {
 		return 0, err
 	}

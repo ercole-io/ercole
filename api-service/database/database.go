@@ -280,16 +280,36 @@ type MongoDatabaseInterface interface {
 
 	// COMPLIANCE STATS
 	CountAllHost() (int64, error)
+
 	CountOracleInstance() (int64, error)
+	CountOracleInstanceByLocations(locations []string) (int64, error)
+
 	CountOracleHosts() (int64, error)
+	CountOracleHostsByLocations(locations []string) (int64, error)
+
 	CountMySqlInstance() (int64, error)
+	CountMySqlInstanceByLocations(locations []string) (int64, error)
+
 	CountMySqlHosts() (int64, error)
+	CountMySqlHostsByLocations(locations []string) (int64, error)
+
 	CountSqlServerlInstance() (int64, error)
+	CountSqlServerlInstanceByLocations(locations []string) (int64, error)
+
 	CountSqlServerHosts() (int64, error)
+	CountSqlServerHostsByLocations(locations []string) (int64, error)
+
 	CountPostgreSqlInstance() (int64, error)
+	CountPostgreSqlInstanceByLocations(locations []string) (int64, error)
+
 	CountPostgreSqlHosts() (int64, error)
+	CountPostgreSqlHostsByLocations(locations []string) (int64, error)
+
 	CountMongoDbInstance() (int64, error)
+	CountMongoDbInstanceByLocations(locations []string) (int64, error)
+
 	CountMongoDbHosts() (int64, error)
+	CountMongoDbHostsByLocations(locations []string) (int64, error)
 
 	FindClusterVeritasLicenses(filter dto.GlobalFilter) ([]dto.ClusterVeritasLicense, error)
 }

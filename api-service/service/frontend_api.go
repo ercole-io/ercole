@@ -18,9 +18,11 @@ package service
 
 import (
 	"fmt"
+	"slices"
 	"time"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/model"
 )
 
 // GetInfoForFrontendDashboard return all informations needed for the frontend dashboard page
@@ -51,33 +53,41 @@ func (as *APIService) GetInfoForFrontendDashboard(location string, environment s
 	return out, nil
 }
 
-func (as *APIService) GetComplianceStats() (*dto.ComplianceStats, error) {
-	oracleStats, err := as.oracleStats()
+func (as *APIService) GetComplianceStats(user model.User) (*dto.ComplianceStats, error) {
+	locations := model.AllLocations
+	if !user.IsAdmin() {
+		var err error
+		if locations, err = as.ListLocations(user); err != nil {
+			return nil, err
+		}
+	}
+
+	oracleStats, err := as.oracleStats(locations)
 	if err != nil {
 		return nil, err
 	}
 
-	sqlServerStats, err := as.sqlServerStats()
+	sqlServerStats, err := as.sqlServerStats(locations)
 	if err != nil {
 		return nil, err
 	}
 
-	mysqlStats, err := as.mysqlStats()
+	mysqlStats, err := as.mysqlStats(locations)
 	if err != nil {
 		return nil, err
 	}
 
-	postgresqlStats, err := as.postgreSqlStats()
+	postgresqlStats, err := as.postgreSqlStats(locations)
 	if err != nil {
 		return nil, err
 	}
 
-	mongodbStats, err := as.mongoDbStats()
+	mongodbStats, err := as.mongoDbStats(locations)
 	if err != nil {
 		return nil, err
 	}
 
-	mariadbStats, err := as.mariaDbStats()
+	mariadbStats, err := as.mariaDbStats(locations)
 	if err != nil {
 		return nil, err
 	}
@@ -133,15 +143,24 @@ func (as *APIService) GetComplianceStats() (*dto.ComplianceStats, error) {
 	return &res, nil
 }
 
-func (as *APIService) oracleStats() (*dto.Stats, error) {
-	count, err := as.Database.CountOracleInstance()
-	if err != nil {
-		return nil, err
-	}
+func (as *APIService) oracleStats(locations []string) (*dto.Stats, error) {
+	var count, hostCount int64
+	var err error
 
-	hostCount, err := as.Database.CountOracleHosts()
-	if err != nil {
-		return nil, err
+	if slices.Contains(locations, model.AllLocation) {
+		if count, err = as.Database.CountOracleInstance(); err != nil {
+			return nil, err
+		}
+		if hostCount, err = as.Database.CountOracleHosts(); err != nil {
+			return nil, err
+		}
+	} else {
+		if count, err = as.Database.CountOracleInstanceByLocations(locations); err != nil {
+			return nil, err
+		}
+		if hostCount, err = as.Database.CountOracleHostsByLocations(locations); err != nil {
+			return nil, err
+		}
 	}
 
 	compliances, err := as.GetOracleDatabaseLicensesCompliance()
@@ -173,15 +192,24 @@ func (as *APIService) oracleStats() (*dto.Stats, error) {
 	}, nil
 }
 
-func (as *APIService) mysqlStats() (*dto.Stats, error) {
-	count, err := as.Database.CountMySqlInstance()
-	if err != nil {
-		return nil, err
-	}
+func (as *APIService) mysqlStats(locations []string) (*dto.Stats, error) {
+	var count, hostCount int64
+	var err error
 
-	hostCount, err := as.Database.CountMySqlHosts()
-	if err != nil {
-		return nil, err
+	if slices.Contains(locations, model.AllLocation) {
+		if count, err = as.Database.CountMySqlInstance(); err != nil {
+			return nil, err
+		}
+		if hostCount, err = as.Database.CountMySqlHosts(); err != nil {
+			return nil, err
+		}
+	} else {
+		if count, err = as.Database.CountMySqlInstanceByLocations(locations); err != nil {
+			return nil, err
+		}
+		if hostCount, err = as.Database.CountMySqlHostsByLocations(locations); err != nil {
+			return nil, err
+		}
 	}
 
 	compliances, err := as.GetMySQLDatabaseLicensesCompliance()
@@ -213,15 +241,24 @@ func (as *APIService) mysqlStats() (*dto.Stats, error) {
 	}, nil
 }
 
-func (as *APIService) sqlServerStats() (*dto.Stats, error) {
-	count, err := as.Database.CountSqlServerlInstance()
-	if err != nil {
-		return nil, err
-	}
+func (as *APIService) sqlServerStats(locations []string) (*dto.Stats, error) {
+	var count, hostCount int64
+	var err error
 
-	hostCount, err := as.Database.CountSqlServerHosts()
-	if err != nil {
-		return nil, err
+	if slices.Contains(locations, model.AllLocation) {
+		if count, err = as.Database.CountSqlServerlInstance(); err != nil {
+			return nil, err
+		}
+		if hostCount, err = as.Database.CountSqlServerHosts(); err != nil {
+			return nil, err
+		}
+	} else {
+		if count, err = as.Database.CountSqlServerlInstanceByLocations(locations); err != nil {
+			return nil, err
+		}
+		if hostCount, err = as.Database.CountSqlServerHostsByLocations(locations); err != nil {
+			return nil, err
+		}
 	}
 
 	compliances, err := as.GetSqlServerDatabaseLicensesCompliance()
@@ -253,34 +290,24 @@ func (as *APIService) sqlServerStats() (*dto.Stats, error) {
 	}, nil
 }
 
-func (as *APIService) postgreSqlStats() (*dto.Stats, error) {
-	count, err := as.Database.CountPostgreSqlInstance()
-	if err != nil {
-		return nil, err
-	}
+func (as *APIService) postgreSqlStats(locations []string) (*dto.Stats, error) {
+	var count, hostCount int64
+	var err error
 
-	hostCount, err := as.Database.CountPostgreSqlHosts()
-	if err != nil {
-		return nil, err
-	}
-
-	return &dto.Stats{
-		Count:                   int(count),
-		HostCount:               int(hostCount),
-		CompliancePercentageStr: "100%",
-		CompliancePercentageVal: 100,
-	}, nil
-}
-
-func (as *APIService) mongoDbStats() (*dto.Stats, error) {
-	count, err := as.Database.CountMongoDbInstance()
-	if err != nil {
-		return nil, err
-	}
-
-	hostCount, err := as.Database.CountMongoDbHosts()
-	if err != nil {
-		return nil, err
+	if slices.Contains(locations, model.AllLocation) {
+		if count, err = as.Database.CountPostgreSqlInstance(); err != nil {
+			return nil, err
+		}
+		if hostCount, err = as.Database.CountPostgreSqlHosts(); err != nil {
+			return nil, err
+		}
+	} else {
+		if count, err = as.Database.CountPostgreSqlInstanceByLocations(locations); err != nil {
+			return nil, err
+		}
+		if hostCount, err = as.Database.CountPostgreSqlHostsByLocations(locations); err != nil {
+			return nil, err
+		}
 	}
 
 	return &dto.Stats{
@@ -291,7 +318,35 @@ func (as *APIService) mongoDbStats() (*dto.Stats, error) {
 	}, nil
 }
 
-func (as *APIService) mariaDbStats() (*dto.Stats, error) {
+func (as *APIService) mongoDbStats(locations []string) (*dto.Stats, error) {
+	var count, hostCount int64
+	var err error
+
+	if slices.Contains(locations, model.AllLocation) {
+		if count, err = as.Database.CountMongoDbInstance(); err != nil {
+			return nil, err
+		}
+		if hostCount, err = as.Database.CountMongoDbHosts(); err != nil {
+			return nil, err
+		}
+	} else {
+		if count, err = as.Database.CountMongoDbInstanceByLocations(locations); err != nil {
+			return nil, err
+		}
+		if hostCount, err = as.Database.CountMongoDbHostsByLocations(locations); err != nil {
+			return nil, err
+		}
+	}
+
+	return &dto.Stats{
+		Count:                   int(count),
+		HostCount:               int(hostCount),
+		CompliancePercentageStr: "100%",
+		CompliancePercentageVal: 100,
+	}, nil
+}
+
+func (as *APIService) mariaDbStats(locations []string) (*dto.Stats, error) {
 	return &dto.Stats{
 		Count:                   0,
 		HostCount:               0,
