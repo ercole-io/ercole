@@ -683,7 +683,7 @@ func TestGetComplianceStatsAsAdmin(t *testing.T) {
 			CountOracleHosts().
 			Return(hostsCount, nil),
 		db.EXPECT().
-			ListOracleDatabaseContracts().
+			ListOracleDatabaseContracts(gomock.Any()).
 			Return(oracleContracts, nil),
 		db.EXPECT().
 			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
@@ -699,7 +699,7 @@ func TestGetComplianceStatsAsAdmin(t *testing.T) {
 			SearchSqlServerDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 			Return(&sqlServerLics, nil),
 		db.EXPECT().
-			ListSqlServerDatabaseContracts().
+			ListSqlServerDatabaseContracts(gomock.Any()).
 			Times(2).
 			Return(sqlServerContracts, nil),
 		db.EXPECT().
@@ -716,7 +716,7 @@ func TestGetComplianceStatsAsAdmin(t *testing.T) {
 			GetMySQLUsedLicenses("", globalFilterAny).
 			Return(usedLicenses, nil),
 		db.EXPECT().
-			GetMySQLContracts().
+			GetMySQLContracts(gomock.Any()).
 			Times(2).
 			Return(mySqlcontracts, nil),
 
@@ -983,7 +983,7 @@ func TestGetComplianceStatsAsUser(t *testing.T) {
 			CountOracleHostsByLocations(locations).
 			Return(hostsCount, nil),
 		db.EXPECT().
-			ListOracleDatabaseContracts().
+			ListOracleDatabaseContracts(gomock.Any()).
 			Return(oracleContracts, nil),
 		db.EXPECT().
 			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
@@ -999,7 +999,7 @@ func TestGetComplianceStatsAsUser(t *testing.T) {
 			SearchSqlServerDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 			Return(&sqlServerLics, nil),
 		db.EXPECT().
-			ListSqlServerDatabaseContracts().
+			ListSqlServerDatabaseContracts(gomock.Any()).
 			Times(2).
 			Return(sqlServerContracts, nil),
 		db.EXPECT().
@@ -1016,7 +1016,7 @@ func TestGetComplianceStatsAsUser(t *testing.T) {
 			GetMySQLUsedLicenses("", globalFilterAny).
 			Return(usedLicenses, nil),
 		db.EXPECT().
-			GetMySQLContracts().
+			GetMySQLContracts(gomock.Any()).
 			Times(2).
 			Return(mySqlcontracts, nil),
 
