@@ -172,7 +172,7 @@ func (job *OciDataRetrieveJob) GetOciSISRightsizing(profiles []string, seqValue 
 					dbList[dbRefId] = dbTmp
 
 					if err1 != nil {
-						recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
+						recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err1.Error())
 						errors = append(errors, recError)
 
 						continue
@@ -181,7 +181,7 @@ func (job *OciDataRetrieveJob) GetOciSISRightsizing(profiles []string, seqValue 
 					hostnamesAndStatus, err2 := job.getHostamesAndStatus(dbClient, compartment.CompartmentID, dbVal.DBSystemID, dbIdType)
 
 					if err2 != nil {
-						recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err.Error())
+						recError := ore.SetOciRecommendationError(seqValue, profileId, model.OciObjectStorageOptimization, time.Now().UTC(), err2.Error())
 						errors = append(errors, recError)
 
 						continue
