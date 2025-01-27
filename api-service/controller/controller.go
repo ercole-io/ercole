@@ -25,6 +25,9 @@ import (
 	"github.com/ercole-io/ercole/v2/api-service/service"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
+	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/gorilla/context"
 )
 
 // APIControllerInterface is a interface that wrap methods used to querying data
@@ -260,4 +263,13 @@ type APIController struct {
 	Log logger.Logger
 	// Authenticator contains the authenticator
 	Authenticator []auth.AuthenticationProvider
+}
+
+func (ctrl *APIController) userHasAccessToLocation(r *http.Request, location string) bool {
+	locations, err := ctrl.Service.ListLocations(context.Get(r, "user"))
+	if err != nil {
+		return false
+	}
+
+	return utils.ContainsSomeI(locations, location, model.AllLocation)
 }

@@ -16,9 +16,9 @@
 package controller
 
 import (
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 	"time"
 
@@ -78,6 +78,7 @@ func TestSearchHosts_JSONPaged(t *testing.T) {
 		LTECPUThreads:  -1,
 		GTECPUThreads:  -1,
 	}
+
 	as.EXPECT().
 		GetHostDataSummaries(gomock.Any()).
 		DoAndReturn(func(actual dto.SearchHostsFilters) ([]dto.HostDataSummary, error) {
@@ -182,13 +183,6 @@ func TestSearchHosts_JSONUnpaged(t *testing.T) {
 		GTECPUThreads:  -1,
 	}
 
-	var user interface{}
-	var locations []string
-
-	as.EXPECT().
-		ListLocations(user).
-		Return(locations, nil)
-
 	as.EXPECT().
 		SearchHosts("full", gomock.Any()).
 		DoAndReturn(func(_ string, actual dto.SearchHostsFilters) ([]map[string]interface{}, error) {
@@ -253,13 +247,6 @@ func TestSearchHosts_JSONHostnames(t *testing.T) {
 		GTECPUThreads:  -1,
 	}
 
-	var user interface{}
-	var locations []string
-
-	as.EXPECT().
-		ListLocations(user).
-		Return(locations, nil)
-
 	as.EXPECT().
 		SearchHosts("hostnames", gomock.Any()).
 		DoAndReturn(func(_ string, actual dto.SearchHostsFilters) ([]map[string]interface{}, error) {
@@ -289,13 +276,6 @@ func TestSearchHosts_JSONUnprocessableEntity1(t *testing.T) {
 		Config:  config.Configuration{},
 		Log:     logger.NewLogger("TEST"),
 	}
-
-	var user interface{}
-	var locations []string
-
-	as.EXPECT().
-		ListLocations(user).
-		Return(locations, nil)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchHosts)
@@ -422,13 +402,6 @@ func TestSearchHosts_JSONInternalServerError(t *testing.T) {
 		GTECPUThreads:  -1,
 	}
 
-	var user interface{}
-	var locations []string
-
-	as.EXPECT().
-		ListLocations(user).
-		Return(locations, nil)
-
 	as.EXPECT().
 		SearchHosts("full", gomock.Any()).
 		DoAndReturn(func(_ string, actual dto.SearchHostsFilters) ([]map[string]interface{}, error) {
@@ -484,6 +457,7 @@ func TestSearchHosts_LMSSuccess(t *testing.T) {
 		From:               utils.MIN_TIME,
 		To:                 utils.MAX_TIME,
 	}
+
 	as.EXPECT().
 		SearchHostsAsLMS(gomock.Any()).
 		DoAndReturn(func(actual dto.SearchHostsAsLMS) (*excelize.File, error) {
@@ -590,6 +564,7 @@ func TestSearchHosts_LMSSuccessInternalServerError1(t *testing.T) {
 		From:               utils.MIN_TIME,
 		To:                 utils.MAX_TIME,
 	}
+
 	as.EXPECT().
 		SearchHostsAsLMS(gomock.Any()).
 		DoAndReturn(func(actual dto.SearchHostsAsLMS) ([]map[string]interface{}, error) {
@@ -741,13 +716,6 @@ func TestSearchHosts_XLSXInternalServerError1(t *testing.T) {
 		LTECPUThreads:  -1,
 		GTECPUThreads:  -1,
 	}
-
-	var user interface{}
-	var locations []string
-
-	as.EXPECT().
-		ListLocations(user).
-		Return(locations, nil)
 
 	as.EXPECT().
 		SearchHostsAsXLSX(filters).
@@ -959,12 +927,17 @@ func TestGetHost_MongoJSONSuccess(t *testing.T) {
 	}
 
 	var res dto.HostData
-	raw, err := ioutil.ReadFile("../../fixture/test_dataservice_mongohostdata_05.json")
+	raw, err := os.ReadFile("../../fixture/test_dataservice_mongohostdata_05.json")
 	require.NoError(t, err)
 	err = bson.UnmarshalExtJSON(raw, true, &res)
 	require.NoError(t, err)
-	expectedRes, err := ioutil.ReadFile("../../fixture/test_dataservice_mongohostdata_05.json")
+	expectedRes, err := os.ReadFile("../../fixture/test_dataservice_mongohostdata_05.json")
 	require.NoError(t, err)
+
+	var user interface{}
+	as.EXPECT().
+		ListLocations(user).
+		Return([]string{"Italy", "Germany", "France"}, nil)
 
 	as.EXPECT().
 		GetHost("foobar", utils.P("2020-06-10T11:54:59Z"), true).
@@ -1153,6 +1126,15 @@ func TestDismissHost_Success(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
+	as.EXPECT().
+		GetHost("foobar", utils.MAX_TIME, true).
+		Return(&dto.HostData{Location: "Italy"}, nil)
+
+	var user interface{}
+	as.EXPECT().
+		ListLocations(user).
+		Return([]string{"Italy", "Germany", "France"}, nil)
+
 	as.EXPECT().DismissHost("foobar").Return(nil)
 
 	rr := httptest.NewRecorder()
@@ -1207,7 +1189,7 @@ func TestDismissHost_FailNotFound(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	as.EXPECT().DismissHost("foobar").Return(utils.ErrHostNotFound)
+	as.EXPECT().GetHost("foobar", utils.MAX_TIME, true).Return(nil, utils.ErrHostNotFound)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.DismissHost)
@@ -1232,6 +1214,15 @@ func TestDismissHost_FailInternalServerError(t *testing.T) {
 		Config:  config.Configuration{},
 		Log:     logger.NewLogger("TEST"),
 	}
+
+	as.EXPECT().
+		GetHost("foobar", utils.MAX_TIME, true).
+		Return(&dto.HostData{Location: "Italy"}, nil)
+
+	var user interface{}
+	as.EXPECT().
+		ListLocations(user).
+		Return([]string{"Italy", "Germany", "France"}, nil)
 
 	as.EXPECT().DismissHost("foobar").Return(aerrMock)
 

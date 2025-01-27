@@ -36,13 +36,13 @@ import (
 var MIN_TIME time.Time = time.Unix(0, 0)
 var MAX_TIME time.Time = time.Now().AddDate(1000, 0, 0)
 
-//ToJSON convert v to a string containing the equivalent json rappresentation
+// ToJSON convert v to a string containing the equivalent json rappresentation
 func ToJSON(v interface{}) string {
 	raw, _ := json.Marshal(v)
 	return string(raw)
 }
 
-//ToMongoJSON convert v to a string containing the equivalent json rappresentation
+// ToMongoJSON convert v to a string containing the equivalent json rappresentation
 func ToMongoJSON(v interface{}) string {
 	raw, err := bson.MarshalExtJSON(v, false, false)
 	if err != nil {
@@ -51,14 +51,14 @@ func ToMongoJSON(v interface{}) string {
 	return string(raw)
 }
 
-//FromJSON convert a json str to interface containing the equivalent json rappresentation
+// FromJSON convert a json str to interface containing the equivalent json rappresentation
 func FromJSON(str []byte) interface{} {
 	var out map[string]interface{}
 	json.Unmarshal(str, &out)
 	return out
 }
 
-//ToJSONMongoCursor extract all items from a cursors and return its json rappresentation
+// ToJSONMongoCursor extract all items from a cursors and return its json rappresentation
 func ToJSONMongoCursor(cur *mongo.Cursor) string {
 	var out = make([]map[string]interface{}, 0)
 	//Decode the documents
@@ -72,13 +72,13 @@ func ToJSONMongoCursor(cur *mongo.Cursor) string {
 	return ToIdentedJSON(out)
 }
 
-//ToIdentedJSON convert v to a string containing the equivalent idented json rappresentation
+// ToIdentedJSON convert v to a string containing the equivalent idented json rappresentation
 func ToIdentedJSON(v interface{}) string {
 	raw, _ := json.MarshalIndent(v, "", "  ")
 	return string(raw)
 }
 
-//Intptr return a point to the int passed in the argument
+// Intptr return a point to the int passed in the argument
 func Intptr(v int64) *int64 {
 	return &v
 }
@@ -305,4 +305,13 @@ func RemoveDuplicate[T comparable](slice []T) []T {
 		}
 	}
 	return list
+}
+
+func ContainsSomeI(slice []string, items ...string) bool {
+	for _, n := range slice {
+		if ContainsI(items, n) {
+			return true
+		}
+	}
+	return false
 }

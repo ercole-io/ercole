@@ -35,3 +35,37 @@ func TestHideMongoDBPassword_Fail(t *testing.T) {
 	x := HideMongoDBPassword("mongodb://sysop:moon@localhost:27017/")
 	assert.NotEqual(t, x, "mongodb://sysop:moon@localhost:27017/")
 }
+
+func TestContainsSomeI(t *testing.T) {
+	tests := []struct {
+		title    string
+		expected bool
+		list     []string
+		values   []string
+	}{
+		{
+			title:    "ContainsSome should return true",
+			expected: true,
+			list:     []string{"a", "b", "c"},
+			values:   []string{"a", "e"},
+		},
+		{
+			title:    "ContainsSome should return true",
+			expected: true,
+			list:     []string{"a", "b", "c"},
+			values:   []string{"A", "e"},
+		},
+		{
+			title:    "ContainsSome should return false",
+			expected: false,
+			list:     []string{"a", "b", "c"},
+			values:   []string{"d", "e"},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.title, func(t *testing.T) {
+			assert.Equal(t, test.expected, ContainsSomeI(test.list, test.values...))
+		})
+	}
+}
