@@ -358,7 +358,7 @@ func TestGetDatabaseLicensesComplianceXLSX_Success(t *testing.T) {
 	xlsx := excelize.File{}
 
 	as.EXPECT().
-		GetDatabaseLicensesComplianceAsXLSX().
+		GetDatabaseLicensesComplianceAsXLSX(gomock.Any()).
 		Return(&xlsx, nil)
 
 	rr := httptest.NewRecorder()
@@ -387,7 +387,7 @@ func TestGetDatabaseLicensesComplianceXLSX_InternalServerError1(t *testing.T) {
 	}
 
 	as.EXPECT().
-		GetDatabaseLicensesComplianceAsXLSX().
+		GetDatabaseLicensesComplianceAsXLSX(gomock.Any()).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()

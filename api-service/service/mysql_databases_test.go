@@ -460,7 +460,7 @@ func TestGetMySQLDatabaseLicensesCompliance(t *testing.T) {
 				Return(tc.contracts, nil).AnyTimes(),
 		)
 
-		actual, err := as.GetMySQLDatabaseLicensesCompliance()
+		actual, err := as.GetMySQLDatabaseLicensesCompliance([]string{})
 		require.NoError(t, err)
 
 		assert.ElementsMatch(t, tc.expected, actual)

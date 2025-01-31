@@ -48,7 +48,7 @@ type MongoDatabaseInterface interface {
 	// GetHost fetch all informations about a host in the database
 	GetHost(hostname string, olderThan time.Time, raw bool) (*dto.HostData, error)
 	GetHostData(hostname string, olderThan time.Time) (*model.HostDataBE, error)
-	GetHostDatas(olderThan time.Time) ([]model.HostDataBE, error)
+	GetHostDatas(filter dto.GlobalFilter) ([]model.HostDataBE, error)
 	// SearchAlerts search alerts
 	SearchAlerts(alertFilter alert_filter.Alert) (*dto.Pagination, error)
 	// GetAlerts get alerts

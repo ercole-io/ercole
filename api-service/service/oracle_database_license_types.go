@@ -17,6 +17,7 @@ package service
 
 import (
 	"math"
+	"strings"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
@@ -62,13 +63,16 @@ func (as *APIService) GetOracleDatabaseLicenseType(id string) (*model.OracleData
 	}
 }
 
-func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompliance, error) {
-	contracts, err := as.Database.ListOracleDatabaseContracts(dto.NewGetOracleDatabaseContractsFilter())
+func (as *APIService) GetOracleDatabaseLicensesCompliance(locations []string) ([]dto.LicenseCompliance, error) {
+	filter := dto.NewGetOracleDatabaseContractsFilter()
+	filter.Locations = locations
+
+	contracts, err := as.Database.ListOracleDatabaseContracts(filter)
 	if err != nil {
 		return nil, err
 	}
 
-	usages, err := as.getLicensesUsage()
+	usages, err := as.getLicensesUsage(filter.Locations)
 	if err != nil {
 		return nil, err
 	}
@@ -148,9 +152,9 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompli
 	return result, nil
 }
 
-func (as *APIService) getLicensesUsage() ([]dto.HostUsingOracleDatabaseLicenses, error) {
+func (as *APIService) getLicensesUsage(locations []string) ([]dto.HostUsingOracleDatabaseLicenses, error) {
 	filter := dto.GlobalFilter{
-		Location:    "",
+		Location:    strings.Join(locations, ","),
 		Environment: "",
 		OlderThan:   utils.MAX_TIME,
 	}
@@ -163,13 +167,16 @@ func (as *APIService) getLicensesUsage() ([]dto.HostUsingOracleDatabaseLicenses,
 	usages := make([]dto.HostUsingOracleDatabaseLicenses, 0, len(usedLicenses))
 	hostnamesPerLicense := make(map[string]map[string]bool)
 
-	hostdatas, err := as.Database.GetHostDatas(utils.MAX_TIME)
+	hostdatas, err := as.Database.GetHostDatas(dto.GlobalFilter{
+		OlderThan: utils.MAX_TIME,
+		Location:  strings.Join(locations, ","),
+	})
 	if err != nil {
 		return nil, err
 	}
 
 	clusters, err := as.Database.GetClusters(dto.GlobalFilter{
-		Location:    "",
+		Location:    strings.Join(locations, ","),
 		Environment: "",
 		OlderThan:   utils.MAX_TIME,
 	})

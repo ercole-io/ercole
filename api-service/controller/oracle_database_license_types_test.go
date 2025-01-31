@@ -110,7 +110,7 @@ func TestGetOracleDatabaseLicensesCompliance_Success(t *testing.T) {
 		{LicenseTypeID: "PID002", ItemDescription: "itemDesc2", Metric: "Named User Plus Perpetual", Consumed: 275, Covered: 75, Compliance: compliance},
 	}
 	as.EXPECT().
-		GetOracleDatabaseLicensesCompliance().
+		GetOracleDatabaseLicensesCompliance(gomock.Any()).
 		Return(expectedRes, nil)
 
 	rr := httptest.NewRecorder()
@@ -136,7 +136,7 @@ func TestGetOracleDatabaseLicensesCompliance_InternalServerError(t *testing.T) {
 	}
 
 	as.EXPECT().
-		GetOracleDatabaseLicensesCompliance().
+		GetOracleDatabaseLicensesCompliance(gomock.Any()).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()

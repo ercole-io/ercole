@@ -17,6 +17,7 @@
 package service
 
 import (
+	"strings"
 	"time"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
@@ -38,7 +39,7 @@ func (as *APIService) ListManagedTechnologies(sortBy string, sortDesc bool, loca
 		return nil, err
 	}
 
-	licCompliances, err := as.GetDatabaseLicensesCompliance()
+	licCompliances, err := as.GetDatabaseLicensesCompliance(strings.Split(location, ","))
 	if err != nil {
 		return nil, err
 	}
@@ -114,12 +115,13 @@ func (as *APIService) ListManagedTechnologies(sortBy string, sortDesc bool, loca
 }
 
 func createOracleTechnologyStatus(as *APIService, hostsCount float64) (*model.TechnologyStatus, error) {
-	contracts, err := as.Database.ListOracleDatabaseContracts(dto.NewGetOracleDatabaseContractsFilter())
+	filter := dto.NewGetOracleDatabaseContractsFilter()
+	contracts, err := as.Database.ListOracleDatabaseContracts(filter)
 	if err != nil {
 		return nil, err
 	}
 
-	usages, err := as.getLicensesUsage()
+	usages, err := as.getLicensesUsage(filter.Locations)
 	if err != nil {
 		return nil, err
 	}
@@ -149,7 +151,7 @@ func createOracleTechnologyStatus(as *APIService, hostsCount float64) (*model.Te
 }
 
 func createSqlServerTechnologyStatus(as *APIService, hostsCount float64) (*model.TechnologyStatus, error) {
-	licensesCompliance, err := as.GetSqlServerDatabaseLicensesCompliance()
+	licensesCompliance, err := as.GetSqlServerDatabaseLicensesCompliance([]string{})
 	if err != nil {
 		return nil, err
 	}
@@ -174,7 +176,7 @@ func createSqlServerTechnologyStatus(as *APIService, hostsCount float64) (*model
 }
 
 func createMySqlTechnologyStatus(as *APIService, hostsCount float64) (*model.TechnologyStatus, error) {
-	licensesCompliance, err := as.GetMySQLDatabaseLicensesCompliance()
+	licensesCompliance, err := as.GetMySQLDatabaseLicensesCompliance([]string{})
 	if err != nil {
 		return nil, err
 	}

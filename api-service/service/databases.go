@@ -436,7 +436,9 @@ func (as *APIService) getOracleDatabasesUsedLicenses(hostname string, filter dto
 		usedLicenses = append(usedLicenses, g)
 	}
 
-	hostdatas, err := as.Database.GetHostDatas(utils.MAX_TIME)
+	hostdatas, err := as.Database.GetHostDatas(dto.GlobalFilter{
+		OlderThan: utils.MAX_TIME,
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -686,24 +688,24 @@ func (as *APIService) getMySQLUsedLicenses(hostname string, filter dto.GlobalFil
 	return genericLics, nil
 }
 
-func (as *APIService) GetDatabaseLicensesCompliance() ([]dto.LicenseCompliance, error) {
+func (as *APIService) GetDatabaseLicensesCompliance(locations []string) ([]dto.LicenseCompliance, error) {
 	licenses := make([]dto.LicenseCompliance, 0)
 
-	oracle, err := as.GetOracleDatabaseLicensesCompliance()
+	oracle, err := as.GetOracleDatabaseLicensesCompliance(locations)
 	if err != nil {
 		return nil, err
 	}
 
 	licenses = append(licenses, oracle...)
 
-	mysql, err := as.GetMySQLDatabaseLicensesCompliance()
+	mysql, err := as.GetMySQLDatabaseLicensesCompliance(locations)
 	if err != nil {
 		return nil, err
 	}
 
 	licenses = append(licenses, mysql...)
 
-	sqlServer, err := as.GetSqlServerDatabaseLicensesCompliance()
+	sqlServer, err := as.GetSqlServerDatabaseLicensesCompliance(locations)
 	if err != nil {
 		return nil, err
 	}
@@ -724,8 +726,8 @@ func (as *APIService) GetDatabaseLicensesCompliance() ([]dto.LicenseCompliance, 
 	return licenses, nil
 }
 
-func (as *APIService) GetDatabaseLicensesComplianceAsXLSX() (*excelize.File, error) {
-	licenses, err := as.GetDatabaseLicensesCompliance()
+func (as *APIService) GetDatabaseLicensesComplianceAsXLSX(locations []string) (*excelize.File, error) {
+	licenses, err := as.GetDatabaseLicensesCompliance(locations)
 	if err != nil {
 		return nil, err
 	}
@@ -812,7 +814,9 @@ func (as *APIService) GetUsedLicensesPerHost(filter dto.GlobalFilter) ([]dto.Dat
 		return nil, err
 	}
 
-	hostdatas, err := as.Database.GetHostDatas(utils.MAX_TIME)
+	hostdatas, err := as.Database.GetHostDatas(dto.GlobalFilter{
+		OlderThan: utils.MAX_TIME,
+	})
 	if err != nil {
 		return nil, err
 	}

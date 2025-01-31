@@ -167,12 +167,12 @@ func (as *APIService) GetMySQLUsedLicenses(hostname string, filter dto.GlobalFil
 	return usedLicenses, nil
 }
 
-func (as *APIService) GetMySQLDatabaseLicensesCompliance() ([]dto.LicenseCompliance, error) {
+func (as *APIService) GetMySQLDatabaseLicensesCompliance(locations []string) ([]dto.LicenseCompliance, error) {
 	licenses := make(map[string]*dto.LicenseCompliance)
 	purchasedContracts := make(map[string]int)
 
 	any := dto.GlobalFilter{
-		Location:    "",
+		Location:    strings.Join(locations, ","),
 		Environment: "",
 		OlderThan:   utils.MAX_TIME,
 	}
@@ -186,7 +186,7 @@ func (as *APIService) GetMySQLDatabaseLicensesCompliance() ([]dto.LicenseComplia
 		return []dto.LicenseCompliance{}, nil
 	}
 
-	contracts, err := as.Database.GetMySQLContracts([]string{})
+	contracts, err := as.Database.GetMySQLContracts(locations)
 	if err != nil {
 		return nil, err
 	}

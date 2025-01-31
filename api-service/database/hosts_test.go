@@ -1419,7 +1419,7 @@ func (m *MongodbSuite) TestGetHostDatas() {
 	m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_16.json"))
 	m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_17.json"))
 
-	actual, err := m.db.GetHostDatas(utils.MAX_TIME)
+	actual, err := m.db.GetHostDatas(dto.GlobalFilter{OlderThan: utils.MAX_TIME})
 	require.NoError(m.T(), err)
 
 	expected := []model.HostDataBE{
