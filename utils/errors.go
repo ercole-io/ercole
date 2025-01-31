@@ -88,7 +88,7 @@ var ErrConnectLDAPServer = errors.New("Cannot connect to LDAP server")
 
 var ErrSuperUserCannotBeDeleted = errors.New("Super User cannot be deleted")
 
-var ErrPermissionDenied = "Permission denied"
+var ErrPermissionDenied = errors.New("Permission denied")
 
 var ErrInvalidExadata = errors.New("invalid exadata")
 

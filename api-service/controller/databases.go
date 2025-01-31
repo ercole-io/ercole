@@ -17,14 +17,11 @@ package controller
 
 import (
 	"net/http"
-	"strings"
 
 	"github.com/golang/gddo/httputil"
-	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
-	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
@@ -37,18 +34,6 @@ func (ctrl *APIController) SearchDatabases(w http.ResponseWriter, r *http.Reques
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
 		return
-	}
-
-	if filter.Location == "" {
-		user := context.Get(r, "user")
-		locations, errLocation := ctrl.Service.ListLocations(user)
-
-		if errLocation != nil {
-			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, errLocation)
-			return
-		}
-
-		filter.Location = strings.Join(locations, ",")
 	}
 
 	switch choice {
@@ -89,18 +74,6 @@ func (ctrl *APIController) GetDatabasesStatistics(w http.ResponseWriter, r *http
 		return
 	}
 
-	if filter.Location == "" {
-		user := context.Get(r, "user")
-		locations, errLocation := ctrl.Service.ListLocations(user)
-
-		if errLocation != nil {
-			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, errLocation)
-			return
-		}
-
-		filter.Location = strings.Join(locations, ",")
-	}
-
 	stats, err := ctrl.Service.GetDatabasesStatistics(*filter)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
@@ -115,18 +88,6 @@ func (ctrl *APIController) GetUsedLicensesPerDatabasesByHost(w http.ResponseWrit
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
 		return
-	}
-
-	if filter.Location == "" {
-		user := context.Get(r, "user")
-		locations, errLocation := ctrl.Service.ListLocations(user)
-
-		if errLocation != nil {
-			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, errLocation)
-			return
-		}
-
-		filter.Location = strings.Join(locations, ",")
 	}
 
 	hostname := ""
@@ -144,20 +105,6 @@ func (ctrl *APIController) GetUsedLicensesPerDatabases(w http.ResponseWriter, r 
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
 		return
-	}
-
-	if filter.Location == "" {
-		user := context.Get(r, "user")
-		locations, errLocation := ctrl.Service.ListLocations(user)
-
-		if errLocation != nil {
-			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, errLocation)
-			return
-		}
-
-		if !utils.ContainsI(locations, model.AllLocation) {
-			filter.Location = strings.Join(locations, ",")
-		}
 	}
 
 	hostname := ""
@@ -243,18 +190,6 @@ func (ctrl *APIController) GetUsedLicensesPerHost(w http.ResponseWriter, r *http
 		return
 	}
 
-	if filter.Location == "" {
-		user := context.Get(r, "user")
-		locations, errLocation := ctrl.Service.ListLocations(user)
-
-		if errLocation != nil {
-			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, errLocation)
-			return
-		}
-
-		filter.Location = strings.Join(locations, ",")
-	}
-
 	choice := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
 
 	switch choice {
@@ -293,18 +228,6 @@ func (ctrl *APIController) GetUsedLicensesPerCluster(w http.ResponseWriter, r *h
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
 		return
-	}
-
-	if filter.Location == "" {
-		user := context.Get(r, "user")
-		locations, errLocation := ctrl.Service.ListLocations(user)
-
-		if errLocation != nil {
-			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, errLocation)
-			return
-		}
-
-		filter.Location = strings.Join(locations, ",")
 	}
 
 	choice := httputil.NegotiateContentType(r, []string{"application/json",

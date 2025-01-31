@@ -18,14 +18,11 @@ package controller
 import (
 	"errors"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
-	"github.com/ercole-io/ercole/v2/model"
 
 	"github.com/golang/gddo/httputil"
-	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
 
 	"github.com/ercole-io/ercole/v2/utils"
@@ -84,18 +81,6 @@ func (ctrl *APIController) SearchClustersJSON(w http.ResponseWriter, r *http.Req
 	}
 
 	location = r.URL.Query().Get("location")
-	if location == "" {
-		user := context.Get(r, "user")
-		locations, errLocation := ctrl.Service.ListLocations(user)
-
-		if errLocation != nil {
-			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, errLocation)
-			return
-		}
-
-		location = strings.Join(locations, ",")
-	}
-
 	environment = r.URL.Query().Get("environment")
 
 	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
@@ -129,18 +114,6 @@ func (ctrl *APIController) SearchClustersXLSX(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	if filter.Location == "" {
-		user := context.Get(r, "user")
-		locations, errLocation := ctrl.Service.ListLocations(user)
-
-		if errLocation != nil {
-			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, errLocation)
-			return
-		}
-
-		filter.Location = strings.Join(locations, ",")
-	}
-
 	xlsx, err := ctrl.Service.SearchClustersAsXLSX(*filter)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
@@ -160,18 +133,6 @@ func (ctrl *APIController) GetCluster(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	choice := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
-
-	switch choice {
-	case "application/json":
-		ctrl.GetClusterJSON(w, r, clusterName, olderThan)
-	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-		ctrl.GetClusterXLSX(w, r, clusterName, olderThan)
-	}
-}
-
-//GetClusterJSON get cluster data using the filters in the request and returns it in JSON format
-func (ctrl *APIController) GetClusterJSON(w http.ResponseWriter, r *http.Request, clusterName string, olderThan time.Time) {
 	data, err := ctrl.Service.GetCluster(clusterName, olderThan)
 	if errors.Is(err, utils.ErrClusterNotFound) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
@@ -181,41 +142,22 @@ func (ctrl *APIController) GetClusterJSON(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	user := context.Get(r, "user")
-	locations, errLocation := ctrl.Service.ListLocations(user)
-
-	if errLocation != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, errLocation)
+	if !ctrl.userHasAccessToLocation(r, data.Location) {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, utils.ErrPermissionDenied)
 		return
 	}
 
-	var isLocationOk bool
+	choice := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
 
-	for _, location := range locations {
-		if location == data.Location || location == model.AllLocation {
-			isLocationOk = true
-			break
-		}
-	}
-
-	if isLocationOk {
+	switch choice {
+	case "application/json":
 		utils.WriteJSONResponse(w, http.StatusOK, data)
-	} else {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, errors.New(utils.ErrPermissionDenied))
-		return
+	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+		xlsx, err := ctrl.Service.GetClusterXLSX(clusterName, olderThan)
+		if err != nil {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+			return
+		}
+		utils.WriteXLSXResponse(w, xlsx)
 	}
-}
-
-//GetClusterXLSX get cluster data using the filters in the request and returns it in XLSX format
-func (ctrl *APIController) GetClusterXLSX(w http.ResponseWriter, r *http.Request, clusterName string, olderThan time.Time) {
-	xlsx, err := ctrl.Service.GetClusterXLSX(clusterName, olderThan)
-	if errors.Is(err, utils.ErrClusterNotFound) {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
-		return
-	} else if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
-		return
-	}
-
-	utils.WriteXLSXResponse(w, xlsx)
 }

@@ -328,13 +328,6 @@ func TestGetUsedLicensesPerDatabasesAsXLSX_InternalServerError1(t *testing.T) {
 		OlderThan:   utils.MAX_TIME,
 	}
 
-	var user interface{}
-	var locations []string
-
-	as.EXPECT().
-		ListLocations(user).
-		Return(locations, nil)
-
 	as.EXPECT().
 		GetUsedLicensesPerDatabasesAsXLSX(filter).
 		Return(nil, aerrMock)
@@ -487,13 +480,6 @@ func TestGetUsedLicensesPerHostAsXLSX_InternalServerError1(t *testing.T) {
 		OlderThan:   utils.MAX_TIME,
 	}
 
-	var user interface{}
-	var locations []string
-
-	as.EXPECT().
-		ListLocations(user).
-		Return(locations, nil)
-
 	as.EXPECT().
 		GetUsedLicensesPerHostAsXLSX(filter).
 		Return(nil, aerrMock)
@@ -599,13 +585,6 @@ func TestGetUsedLicensesPerClusterAsXLSX_InternalServerError1(t *testing.T) {
 		Environment: "",
 		OlderThan:   utils.MAX_TIME,
 	}
-
-	var user interface{}
-	var locations []string
-
-	as.EXPECT().
-		ListLocations(user).
-		Return(locations, nil)
 
 	as.EXPECT().
 		GetUsedLicensesPerClusterAsXLSX(filter).

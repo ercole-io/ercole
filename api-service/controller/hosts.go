@@ -18,7 +18,6 @@ package controller
 import (
 	"errors"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/golang/gddo/httputil"
@@ -26,7 +25,6 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
-	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
@@ -56,18 +54,6 @@ func (ctrl *APIController) SearchHosts(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
-	}
-
-	if filters.Location == "" {
-		user := context.Get(r, "user")
-		locations, errLocation := ctrl.Service.ListLocations(user)
-
-		if errLocation != nil {
-			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, errLocation)
-			return
-		}
-
-		filters.Location = strings.Join(locations, ",")
 	}
 
 	if requestContentType == "application/json" {
@@ -137,18 +123,6 @@ func (ctrl *APIController) searchHostsLMS(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	if filters.Location == "" {
-		user := context.Get(r, "user")
-		locations, errLocation := ctrl.Service.ListLocations(user)
-
-		if errLocation != nil {
-			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, errLocation)
-			return
-		}
-
-		filters.Location = strings.Join(locations, ",")
-	}
-
 	filters.PageNumber, filters.PageSize = -1, -1
 
 	lms, err := ctrl.Service.SearchHostsAsLMS(*filters)
@@ -165,18 +139,6 @@ func (ctrl *APIController) searchHostsMysqlLMS(w http.ResponseWriter, r *http.Re
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
-	}
-
-	if filters.Location == "" {
-		user := context.Get(r, "user")
-		locations, errLocation := ctrl.Service.ListLocations(user)
-
-		if errLocation != nil {
-			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, errLocation)
-			return
-		}
-
-		filters.Location = strings.Join(locations, ",")
 	}
 
 	lms, err := ctrl.Service.GetHostsMysqlAsLMS(*filters)
@@ -235,29 +197,12 @@ func (ctrl *APIController) GetHostJSON(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user := context.Get(r, "user")
-	locations, errLocation := ctrl.Service.ListLocations(user)
-
-	if errLocation != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, errLocation)
+	if !ctrl.userHasAccessToLocation(r, host.Location) {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.ErrPermissionDenied)
 		return
 	}
 
-	var isLocationOk bool
-
-	for _, location := range locations {
-		if location == host.Location || location == model.AllLocation {
-			isLocationOk = true
-			break
-		}
-	}
-
-	if isLocationOk {
-		utils.WriteJSONResponse(w, http.StatusOK, host)
-	} else {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, errors.New(utils.ErrPermissionDenied))
-		return
-	}
+	utils.WriteJSONResponse(w, http.StatusOK, host)
 }
 
 // GetHostMongoJSON return all'informations about the host requested in the id path variable
@@ -279,6 +224,11 @@ func (ctrl *APIController) GetHostMongoJSON(w http.ResponseWriter, r *http.Reque
 		return
 	} else if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
+
+	if !ctrl.userHasAccessToLocation(r, host.Location) {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.ErrPermissionDenied)
 		return
 	}
 
@@ -332,9 +282,24 @@ func (ctrl *APIController) DismissHost(w http.ResponseWriter, r *http.Request) {
 
 	hostname := mux.Vars(r)["hostname"]
 
-	err := ctrl.Service.DismissHost(hostname)
+	host, err := ctrl.Service.GetHost(hostname, utils.MAX_TIME, true)
 	if errors.Is(err, utils.ErrHostNotFound) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
+		return
+	} else if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
+
+	if !ctrl.userHasAccessToLocation(r, host.Location) {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.ErrPermissionDenied)
+		return
+	}
+
+	err = ctrl.Service.DismissHost(hostname)
+	if errors.Is(err, utils.ErrHostNotFound) {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
+		return
 	} else if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
@@ -346,9 +311,24 @@ func (ctrl *APIController) DismissHost(w http.ResponseWriter, r *http.Request) {
 func (ctrl *APIController) GetMissingDbHost(w http.ResponseWriter, r *http.Request) {
 	hostname := mux.Vars(r)["hostname"]
 
+	host, err := ctrl.Service.GetHost(hostname, utils.MAX_TIME, true)
+	if errors.Is(err, utils.ErrHostNotFound) {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
+		return
+	} else if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
+
+	if !ctrl.userHasAccessToLocation(r, host.Location) {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.ErrPermissionDenied)
+		return
+	}
+
 	res, err := ctrl.Service.IsMissingDB(hostname)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
 	}
 
 	utils.WriteJSONResponse(w, http.StatusOK, struct {
@@ -360,6 +340,7 @@ func (ctrl *APIController) GetAllMissingDb(w http.ResponseWriter, r *http.Reques
 	res, err := ctrl.Service.GetAllMissingDbs()
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
 	}
 
 	utils.WriteJSONResponse(w, http.StatusOK, res)
@@ -369,6 +350,7 @@ func (ctrl *APIController) GetVirtualHostWithoutCluster(w http.ResponseWriter, r
 	res, err := ctrl.Service.GetVirtualHostWithoutCluster()
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
 	}
 
 	utils.WriteJSONResponse(w, http.StatusOK, res)

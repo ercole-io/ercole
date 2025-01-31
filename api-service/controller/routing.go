@@ -56,6 +56,7 @@ func (ctrl *APIController) GetApiControllerHandler(auths []auth.AuthenticationPr
 		}
 
 		subrouter.Use(ap.AuthenticateMiddleware)
+		subrouter.Use(middleware.Location(ctrl.Service))
 		ctrl.setupProtectedRoutes(subrouter.PathPrefix(prefix).Subrouter())
 	}
 
