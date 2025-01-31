@@ -43,6 +43,7 @@ func (ctrl *APIController) GetApiControllerHandler(auths []auth.AuthenticationPr
 
 	for _, ap := range auths {
 		subrouter := router.NewRoute().Subrouter()
+		settingsSubrouter := router.NewRoute().Subrouter()
 		prefix := ""
 
 		if ap.GetType() == auth.BasicType {
@@ -58,6 +59,9 @@ func (ctrl *APIController) GetApiControllerHandler(auths []auth.AuthenticationPr
 		subrouter.Use(ap.AuthenticateMiddleware)
 		subrouter.Use(middleware.Location(ctrl.Service))
 		ctrl.setupProtectedRoutes(subrouter.PathPrefix(prefix).Subrouter())
+
+		settingsSubrouter.Use(ap.AuthenticateMiddleware)
+		ctrl.setupSettingsRoutes(settingsSubrouter.PathPrefix(prefix + "/settings").Subrouter())
 	}
 
 	return router
@@ -221,7 +225,6 @@ func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 	router.HandleFunc("/exadata/{rackID}/hide", ctrl.HideExadataInstance).Methods("PATCH")
 	router.HandleFunc("/exadata/{rackID}/show", ctrl.ShowExadataInstance).Methods("PATCH")
 
-	ctrl.setupSettingsRoutes(router.PathPrefix("/settings").Subrouter())
 	ctrl.setupFrontendAPIRoutes(router.PathPrefix("/frontend").Subrouter())
 	ctrl.setupAdminRoutes(router.PathPrefix("/admin").Subrouter())
 }
