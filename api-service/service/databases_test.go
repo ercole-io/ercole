@@ -787,7 +787,7 @@ func TestGetUsedLicensesPerDatabases_Success(t *testing.T) {
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(licenseTypes, nil),
 
-		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+		db.EXPECT().GetHostDatas(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).
 			Return(hostdatas, nil),
 		db.EXPECT().GetClusters(globalFilterAny).
 			Return(clusters, nil),
@@ -913,7 +913,7 @@ func TestGetUsedLicensesPerDatabases_VMWareCluster_Success(t *testing.T) {
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(licenseTypes, nil),
 
-		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+		db.EXPECT().GetHostDatas(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).
 			Return(hostdatas, nil),
 		db.EXPECT().GetClusters(globalFilterAny).
 			Return(clusters, nil),
@@ -1013,7 +1013,7 @@ func TestGetUsedLicensesPerDatabases_VeritasCluster_Success(t *testing.T) {
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(licenseTypes, nil),
 
-		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+		db.EXPECT().GetHostDatas(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).
 			Return(hostdatas, nil),
 		db.EXPECT().GetClusters(globalFilterAny).
 			Return(clusters, nil),
@@ -1185,7 +1185,7 @@ func TestGetUsedLicensesPerDatabasesAsXLSX_Success(t *testing.T) {
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(licenseTypes, nil),
 
-		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+		db.EXPECT().GetHostDatas(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).
 			Return(hostdatas, nil),
 		db.EXPECT().GetClusters(globalFilterAny).
 			Return(clusters, nil),
@@ -1344,7 +1344,7 @@ func TestGetOracleDatabasesUsedLicenses_Host_WithActiveDataguardAndGoldenGate_Su
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(licenseTypes, nil),
 
-		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+		db.EXPECT().GetHostDatas(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).
 			Return(hostdatas, nil),
 		db.EXPECT().GetClusters(globalFilterAny).
 			Return(clusters, nil),
@@ -1517,7 +1517,7 @@ func TestGetOracleDatabasesUsedLicenses_VeritasCluster_WithActiveDataguardAndGol
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(licenseTypes, nil),
 
-		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+		db.EXPECT().GetHostDatas(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).
 			Return(hostdatas, nil),
 		db.EXPECT().GetClusters(globalFilterAny).
 			Return(clusters, nil),
@@ -1661,7 +1661,7 @@ func TestGetOracleDatabasesUsedLicenses_Host_WithRacAndRacOneNode_Success(t *tes
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(licenseTypesRac, nil),
 
-		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+		db.EXPECT().GetHostDatas(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).
 			Return(hostdatas, nil),
 		db.EXPECT().GetClusters(globalFilterAny).
 			Return(clusters, nil),
@@ -1799,7 +1799,7 @@ func TestGetOracleDatabasesUsedLicenses_VeritasCluster_WithRacAndRacOneNode_Succ
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(licenseTypesRac, nil),
 
-		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+		db.EXPECT().GetHostDatas(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).
 			Return(hostdatas, nil),
 		db.EXPECT().GetClusters(globalFilterAny).
 			Return(clusters, nil),
@@ -1989,7 +1989,7 @@ func TestGetOracleDatabasesUsedLicenses_VmwareCluster_WithRacAndRacOneNode_Succe
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(licenseTypesRac, nil),
 
-		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+		db.EXPECT().GetHostDatas(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).
 			Return(hostdatas, nil),
 		db.EXPECT().GetClusters(globalFilterAny).
 			Return(clusters, nil),
@@ -2171,7 +2171,7 @@ func TestGetDatabaseLicensesComplianceAsXLSX_Success(t *testing.T) {
 		},
 	}
 
-	db.EXPECT().GetHostDatas(utils.MAX_TIME).
+	db.EXPECT().GetHostDatas(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).
 		Return([]model.HostDataBE{{
 			Hostname: "sdlsts101",
 		}}, nil).AnyTimes()
@@ -2221,7 +2221,7 @@ func TestGetDatabaseLicensesComplianceAsXLSX_Success(t *testing.T) {
 
 	db.EXPECT().ExistHostdata("pluto").Return(true, nil).AnyTimes()
 
-	actual, err := as.GetDatabaseLicensesComplianceAsXLSX()
+	actual, err := as.GetDatabaseLicensesComplianceAsXLSX([]string{})
 	require.NoError(t, err)
 
 	assert.Equal(t, "L47225", actual.GetCellValue("Licenses Compliance", "A2"))
@@ -2395,7 +2395,7 @@ func TestGetDatabaseLicensesCompliance_Success(t *testing.T) {
 		},
 	}
 
-	db.EXPECT().GetHostDatas(utils.MAX_TIME).
+	db.EXPECT().GetHostDatas(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).
 		Return([]model.HostDataBE{{
 			Hostname: "homer",
 		}}, nil).AnyTimes()
@@ -2441,7 +2441,7 @@ func TestGetDatabaseLicensesCompliance_Success(t *testing.T) {
 
 	db.EXPECT().ExistHostdata("pluto").Return(true, nil).AnyTimes()
 
-	actual, err := as.GetDatabaseLicensesCompliance()
+	actual, err := as.GetDatabaseLicensesCompliance([]string{})
 	require.NoError(t, err)
 
 	expected := []dto.LicenseCompliance{
@@ -2636,7 +2636,7 @@ func TestGetUsedLicensesPerHost_Success(t *testing.T) {
 		},
 	}
 
-	db.EXPECT().GetHostDatas(utils.MAX_TIME).
+	db.EXPECT().GetHostDatas(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).
 		Return(hostdatas, nil).AnyTimes()
 	db.EXPECT().GetClusters(globalFilterAny).
 		Return(clusters, nil).AnyTimes()
@@ -2824,7 +2824,7 @@ func TestGetUsedLicensesPerHostAsXLSX_Success(t *testing.T) {
 		},
 	}
 
-	db.EXPECT().GetHostDatas(utils.MAX_TIME).
+	db.EXPECT().GetHostDatas(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).
 		Return(hostdatas, nil).AnyTimes()
 	db.EXPECT().GetClusters(globalFilterAny).
 		Return(clusters, nil).AnyTimes()
@@ -2907,7 +2907,7 @@ func TestGetUsedLicensesPerCluster_OneVm_Success(t *testing.T) {
 
 	sqlServerContracts := []model.SqlServerDatabaseContract{}
 
-	db.EXPECT().GetHostDatas(utils.MAX_TIME).
+	db.EXPECT().GetHostDatas(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).
 		Return(hostdatasVm1, nil).AnyTimes()
 	db.EXPECT().GetClusters(globalFilterAny).
 		Return(clusters, nil).AnyTimes()
@@ -3035,7 +3035,7 @@ func TestGetUsedLicensesPerCluster_MultipleVms_Success(t *testing.T) {
 
 	sqlServerContracts := []model.SqlServerDatabaseContract{}
 
-	db.EXPECT().GetHostDatas(utils.MAX_TIME).
+	db.EXPECT().GetHostDatas(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).
 		Return(hostdatasVm1, nil).AnyTimes()
 	db.EXPECT().GetClusters(globalFilterAny).
 		Return(clusters, nil).AnyTimes()
@@ -3118,7 +3118,7 @@ func TestGetUsedLicensesPerClusterAsXLSX_Success(t *testing.T) {
 
 	sqlServerContracts := []model.SqlServerDatabaseContract{}
 
-	db.EXPECT().GetHostDatas(utils.MAX_TIME).
+	db.EXPECT().GetHostDatas(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).
 		Return(hostdatasVm1, nil).AnyTimes()
 	db.EXPECT().GetClusters(globalFilterAny).
 		Return(clusters, nil).AnyTimes()
@@ -3191,7 +3191,7 @@ func TestGetDatabaseLicensesComplianceSqlServerHostWithContractContract_Success(
 		},
 	}
 
-	db.EXPECT().GetHostDatas(utils.MAX_TIME).
+	db.EXPECT().GetHostDatas(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).
 		Return([]model.HostDataBE{{
 			Hostname: "homer",
 		}}, nil).AnyTimes()
@@ -3235,7 +3235,7 @@ func TestGetDatabaseLicensesComplianceSqlServerHostWithContractContract_Success(
 
 	db.EXPECT().ExistHostdata("homer").Return(true, nil).AnyTimes()
 
-	actual, err := as.GetDatabaseLicensesCompliance()
+	actual, err := as.GetDatabaseLicensesCompliance([]string{})
 	require.NoError(t, err)
 
 	expected := []dto.LicenseCompliance{
@@ -3280,7 +3280,7 @@ func TestGetDatabaseLicensesComplianceSqlServerHostNoContract_Success(t *testing
 
 	sqlServerContracts := []model.SqlServerDatabaseContract{}
 
-	db.EXPECT().GetHostDatas(utils.MAX_TIME).
+	db.EXPECT().GetHostDatas(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).
 		Return([]model.HostDataBE{{
 			Hostname: "homer",
 		}}, nil).AnyTimes()
@@ -3324,7 +3324,7 @@ func TestGetDatabaseLicensesComplianceSqlServerHostNoContract_Success(t *testing
 
 	db.EXPECT().ExistHostdata("homer").Return(true, nil).AnyTimes()
 
-	actual, err := as.GetDatabaseLicensesCompliance()
+	actual, err := as.GetDatabaseLicensesCompliance([]string{})
 	require.NoError(t, err)
 
 	expected := []dto.LicenseCompliance{
@@ -3457,7 +3457,7 @@ func TestGetDatabaseLicensesComplianceSqlServerHostInClusterWithContract_Success
 		},
 	}
 
-	db.EXPECT().GetHostDatas(utils.MAX_TIME).
+	db.EXPECT().GetHostDatas(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).
 		Return([]model.HostDataBE{{
 			Hostname: "plutohost",
 		}}, nil).AnyTimes()
@@ -3507,7 +3507,7 @@ func TestGetDatabaseLicensesComplianceSqlServerHostInClusterWithContract_Success
 
 	db.EXPECT().ExistHostdata("plutocluster").Return(true, nil).AnyTimes()
 
-	actual, err := as.GetDatabaseLicensesCompliance()
+	actual, err := as.GetDatabaseLicensesCompliance([]string{})
 	require.NoError(t, err)
 
 	expected := []dto.LicenseCompliance{

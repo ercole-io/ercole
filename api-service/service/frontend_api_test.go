@@ -28,6 +28,20 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
+var (
+	globalFilterAll = dto.GlobalFilter{
+		Location:    "All",
+		Environment: "",
+		OlderThan:   utils.MAX_TIME,
+	}
+
+	globalFilterWonderland = dto.GlobalFilter{
+		Location:    "wonderland",
+		Environment: "",
+		OlderThan:   utils.MAX_TIME,
+	}
+)
+
 func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 	t.Skip("writing new code on this API")
 
@@ -129,12 +143,6 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 				CPUCores: 42,
 			},
 		},
-	}
-
-	globalFilterAny := dto.GlobalFilter{
-		Location:    "",
-		Environment: "",
-		OlderThan:   utils.MAX_TIME,
 	}
 
 	licenseTypes := []model.OracleDatabaseLicenseType{
@@ -376,12 +384,6 @@ func TestGetInfoForFrontendDashboard_Fail2(t *testing.T) {
 		},
 	}
 
-	globalFilterAny := dto.GlobalFilter{
-		Location:    "",
-		Environment: "",
-		OlderThan:   utils.MAX_TIME,
-	}
-
 	sqlServerLics := dto.SqlServerDatabaseUsedLicenseSearchResponse{
 		Content: []dto.SqlServerDatabaseUsedLicense{
 			{
@@ -518,12 +520,6 @@ func TestGetComplianceStatsAsAdmin(t *testing.T) {
 				VeritasClusterHostnames: []string{},
 			},
 		},
-	}
-
-	globalFilterAny := dto.GlobalFilter{
-		Location:    "",
-		Environment: "",
-		OlderThan:   utils.MAX_TIME,
 	}
 
 	clusters := []dto.Cluster{
@@ -670,8 +666,18 @@ func TestGetComplianceStatsAsAdmin(t *testing.T) {
 		AnyTimes()
 
 	db.EXPECT().
-		GetHostDatas(utils.MAX_TIME).
+		GetClusters(globalFilterAll).
+		Return(clusters, nil).
+		AnyTimes()
+
+	db.EXPECT().
+		GetHostDatas(globalFilterAny).
 		Times(1).
+		Return(hostdatas, nil).
+		AnyTimes()
+
+	db.EXPECT().
+		GetHostDatas(globalFilterAll).
 		Return(hostdatas, nil).
 		AnyTimes()
 
@@ -686,9 +692,12 @@ func TestGetComplianceStatsAsAdmin(t *testing.T) {
 			ListOracleDatabaseContracts(gomock.Any()).
 			Return(oracleContracts, nil),
 		db.EXPECT().
-			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
-			Return(&oracleLics, nil),
+			SearchOracleDatabaseUsedLicenses("wonderland", "", false, -1, -1, "All", "", utils.MAX_TIME).
+			Return(&oracleLics, nil).AnyTimes(),
 
+		db.EXPECT().
+			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "All", "", utils.MAX_TIME).
+			Return(&oracleLics, nil).AnyTimes(),
 		db.EXPECT().
 			CountSqlServerlInstance().
 			Return(instancesCount, nil),
@@ -696,7 +705,7 @@ func TestGetComplianceStatsAsAdmin(t *testing.T) {
 			CountSqlServerHosts().
 			Return(hostsCount, nil),
 		db.EXPECT().
-			SearchSqlServerDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
+			SearchSqlServerDatabaseUsedLicenses("", "", false, -1, -1, "All", "", utils.MAX_TIME).
 			Return(&sqlServerLics, nil),
 		db.EXPECT().
 			ListSqlServerDatabaseContracts(gomock.Any()).
@@ -713,7 +722,7 @@ func TestGetComplianceStatsAsAdmin(t *testing.T) {
 			CountMySqlHosts().
 			Return(hostsCount, nil),
 		db.EXPECT().
-			GetMySQLUsedLicenses("", globalFilterAny).
+			GetMySQLUsedLicenses("", globalFilterAll).
 			Return(usedLicenses, nil),
 		db.EXPECT().
 			GetMySQLContracts(gomock.Any()).
@@ -808,12 +817,6 @@ func TestGetComplianceStatsAsUser(t *testing.T) {
 				VeritasClusterHostnames: []string{},
 			},
 		},
-	}
-
-	globalFilterAny := dto.GlobalFilter{
-		Location:    "",
-		Environment: "",
-		OlderThan:   utils.MAX_TIME,
 	}
 
 	clusters := []dto.Cluster{
@@ -970,8 +973,18 @@ func TestGetComplianceStatsAsUser(t *testing.T) {
 		AnyTimes()
 
 	db.EXPECT().
-		GetHostDatas(utils.MAX_TIME).
+		GetClusters(globalFilterWonderland).
+		Return(clusters, nil).
+		AnyTimes()
+
+	db.EXPECT().
+		GetHostDatas(globalFilterAny).
 		Times(1).
+		Return(hostdatas, nil).
+		AnyTimes()
+
+	db.EXPECT().
+		GetHostDatas(globalFilterWonderland).
 		Return(hostdatas, nil).
 		AnyTimes()
 
@@ -986,8 +999,11 @@ func TestGetComplianceStatsAsUser(t *testing.T) {
 			ListOracleDatabaseContracts(gomock.Any()).
 			Return(oracleContracts, nil),
 		db.EXPECT().
-			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
-			Return(&oracleLics, nil),
+			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "wonderland", "", utils.MAX_TIME).
+			Return(&oracleLics, nil).AnyTimes(),
+		db.EXPECT().
+			SearchOracleDatabaseUsedLicenses("wonderland", "", false, -1, -1, "", "", utils.MAX_TIME).
+			Return(&oracleLics, nil).AnyTimes(),
 
 		db.EXPECT().
 			CountSqlServerlInstanceByLocations(locations).
@@ -996,7 +1012,7 @@ func TestGetComplianceStatsAsUser(t *testing.T) {
 			CountSqlServerHostsByLocations(locations).
 			Return(hostsCount, nil),
 		db.EXPECT().
-			SearchSqlServerDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
+			SearchSqlServerDatabaseUsedLicenses("", "", false, -1, -1, "wonderland", "", utils.MAX_TIME).
 			Return(&sqlServerLics, nil),
 		db.EXPECT().
 			ListSqlServerDatabaseContracts(gomock.Any()).
@@ -1013,7 +1029,7 @@ func TestGetComplianceStatsAsUser(t *testing.T) {
 			CountMySqlHostsByLocations(locations).
 			Return(hostsCount, nil),
 		db.EXPECT().
-			GetMySQLUsedLicenses("", globalFilterAny).
+			GetMySQLUsedLicenses("", globalFilterWonderland).
 			Return(usedLicenses, nil),
 		db.EXPECT().
 			GetMySQLContracts(gomock.Any()).

@@ -768,12 +768,13 @@ func (md *MongoDatabase) GetHostData(hostname string, olderThan time.Time) (*mod
 	return &hostdata, nil
 }
 
-func (md *MongoDatabase) GetHostDatas(olderThan time.Time) ([]model.HostDataBE, error) {
+func (md *MongoDatabase) GetHostDatas(filter dto.GlobalFilter) ([]model.HostDataBE, error) {
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").
 		Aggregate(
 			context.TODO(),
 			mu.MAPipeline(
-				FilterByOldnessSteps(olderThan),
+				FilterByOldnessSteps(filter.OlderThan),
+				FilterByLocationAndEnvironmentSteps(filter.Location, filter.Environment),
 			),
 		)
 	if err != nil {

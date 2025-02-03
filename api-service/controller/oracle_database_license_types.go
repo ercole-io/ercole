@@ -19,16 +19,29 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/gorilla/mux"
 
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
 // GetOracleDatabaseLicensesCompliance return list of licenses with usage and compliance
 func (ctrl *APIController) GetOracleDatabaseLicensesCompliance(w http.ResponseWriter, r *http.Request) {
-	licenses, err := ctrl.Service.GetOracleDatabaseLicensesCompliance()
+	f, err := dto.GetGlobalFilter(r)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
+		return
+	}
+
+	locations := []string{}
+	if f.Location != "" {
+		locations = strings.Split(f.Location, ",")
+	}
+
+	licenses, err := ctrl.Service.GetOracleDatabaseLicensesCompliance(locations)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return

@@ -108,7 +108,7 @@ func (as *APIService) GetOracleDatabaseContracts(filter dto.GetOracleDatabaseCon
 		return nil, err
 	}
 
-	usages, err := as.getLicensesUsage()
+	usages, err := as.getLicensesUsage(filter.Locations)
 	if err != nil {
 		return nil, err
 	}

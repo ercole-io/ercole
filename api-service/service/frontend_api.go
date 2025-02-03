@@ -163,7 +163,7 @@ func (as *APIService) oracleStats(locations []string) (*dto.Stats, error) {
 		}
 	}
 
-	compliances, err := as.GetOracleDatabaseLicensesCompliance()
+	compliances, err := as.GetOracleDatabaseLicensesCompliance(locations)
 	if err != nil {
 		return nil, err
 	}
@@ -212,7 +212,7 @@ func (as *APIService) mysqlStats(locations []string) (*dto.Stats, error) {
 		}
 	}
 
-	compliances, err := as.GetMySQLDatabaseLicensesCompliance()
+	compliances, err := as.GetMySQLDatabaseLicensesCompliance(locations)
 	if err != nil {
 		return nil, err
 	}
@@ -261,7 +261,7 @@ func (as *APIService) sqlServerStats(locations []string) (*dto.Stats, error) {
 		}
 	}
 
-	compliances, err := as.GetSqlServerDatabaseLicensesCompliance()
+	compliances, err := as.GetSqlServerDatabaseLicensesCompliance(locations)
 	if err != nil {
 		return nil, err
 	}

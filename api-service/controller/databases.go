@@ -17,6 +17,7 @@ package controller
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/golang/gddo/httputil"
 	"github.com/gorilla/mux"
@@ -149,18 +150,26 @@ func (ctrl *APIController) GetUsedLicensesPerDatabasesAsXLSX(w http.ResponseWrit
 }
 
 func (ctrl *APIController) GetDatabaseLicensesCompliance(w http.ResponseWriter, r *http.Request) {
+	f, err := dto.GetGlobalFilter(r)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
+		return
+	}
+
+	locations := strings.Split(f.Location, ",")
+
 	choice := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
 
 	switch choice {
 	case "application/json":
-		ctrl.GetDatabaseLicensesComplianceJSON(w, r)
+		ctrl.GetDatabaseLicensesComplianceJSON(w, r, locations)
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-		ctrl.GetDatabaseLicensesComplianceXLSX(w, r)
+		ctrl.GetDatabaseLicensesComplianceXLSX(w, r, locations)
 	}
 }
 
-func (ctrl *APIController) GetDatabaseLicensesComplianceJSON(w http.ResponseWriter, r *http.Request) {
-	licenses, err := ctrl.Service.GetDatabaseLicensesCompliance()
+func (ctrl *APIController) GetDatabaseLicensesComplianceJSON(w http.ResponseWriter, r *http.Request, locations []string) {
+	licenses, err := ctrl.Service.GetDatabaseLicensesCompliance(locations)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
@@ -173,8 +182,8 @@ func (ctrl *APIController) GetDatabaseLicensesComplianceJSON(w http.ResponseWrit
 	utils.WriteJSONResponse(w, http.StatusOK, response)
 }
 
-func (ctrl *APIController) GetDatabaseLicensesComplianceXLSX(w http.ResponseWriter, r *http.Request) {
-	xlsx, err := ctrl.Service.GetDatabaseLicensesComplianceAsXLSX()
+func (ctrl *APIController) GetDatabaseLicensesComplianceXLSX(w http.ResponseWriter, r *http.Request, locations []string) {
+	xlsx, err := ctrl.Service.GetDatabaseLicensesComplianceAsXLSX(locations)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return

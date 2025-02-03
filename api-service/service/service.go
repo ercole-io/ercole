@@ -144,7 +144,7 @@ type APIServiceInterface interface {
 	// ORACLE DATABASE LICENSES
 
 	GetOracleDatabaseLicenseTypes() ([]model.OracleDatabaseLicenseType, error)
-	GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompliance, error)
+	GetOracleDatabaseLicensesCompliance(locations []string) ([]dto.LicenseCompliance, error)
 	DeleteOracleDatabaseLicenseType(id string) error
 	AddOracleDatabaseLicenseType(licenseType model.OracleDatabaseLicenseType) (*model.OracleDatabaseLicenseType, error)
 	UpdateOracleDatabaseLicenseType(licenseType model.OracleDatabaseLicenseType) (*model.OracleDatabaseLicenseType, error)
@@ -255,8 +255,8 @@ type APIServiceInterface interface {
 	GetUsedLicensesPerHostAsXLSX(filter dto.GlobalFilter) (*excelize.File, error)
 	GetUsedLicensesPerCluster(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicensePerCluster, error)
 	GetUsedLicensesPerClusterAsXLSX(filter dto.GlobalFilter) (*excelize.File, error)
-	GetDatabaseLicensesCompliance() ([]dto.LicenseCompliance, error)
-	GetDatabaseLicensesComplianceAsXLSX() (*excelize.File, error)
+	GetDatabaseLicensesCompliance(locations []string) ([]dto.LicenseCompliance, error)
+	GetDatabaseLicensesComplianceAsXLSX(locations []string) (*excelize.File, error)
 
 	GetClusterVeritasLicenses(filter dto.GlobalFilter) ([]dto.ClusterVeritasLicense, error)
 	GetClusterVeritasLicensesXlsx(filter dto.GlobalFilter) (*excelize.File, error)

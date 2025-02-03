@@ -233,7 +233,7 @@ func TestGetLicensesCompliance(t *testing.T) {
 
 	var clusters []dto.Cluster
 
-	db.EXPECT().GetHostDatas(utils.MAX_TIME).
+	db.EXPECT().GetHostDatas(globalFilterAny).
 		Return(hostdatas, nil).AnyTimes()
 	db.EXPECT().GetClusters(filter).
 		Return(clusters, nil).AnyTimes()
@@ -257,7 +257,7 @@ func TestGetLicensesCompliance(t *testing.T) {
 			Return(expectedLicenseTypes, nil),
 	)
 
-	actual, err := as.GetOracleDatabaseLicensesCompliance()
+	actual, err := as.GetOracleDatabaseLicensesCompliance([]string{})
 	require.NoError(t, err)
 
 	expected := []dto.LicenseCompliance{
@@ -471,7 +471,7 @@ func TestGetLicensesCompliance_Veritas(t *testing.T) {
 
 	var clusters []dto.Cluster
 
-	db.EXPECT().GetHostDatas(utils.MAX_TIME).
+	db.EXPECT().GetHostDatas(globalFilterAny).
 		Return(hostdatas, nil).AnyTimes()
 	db.EXPECT().GetClusters(filter).
 		Return(clusters, nil).AnyTimes()
@@ -496,7 +496,7 @@ func TestGetLicensesCompliance_Veritas(t *testing.T) {
 			Return(expectedLicenseTypes, nil),
 	)
 
-	actual, err := as.GetOracleDatabaseLicensesCompliance()
+	actual, err := as.GetOracleDatabaseLicensesCompliance([]string{})
 	require.NoError(t, err)
 
 	expected := []dto.LicenseCompliance{
