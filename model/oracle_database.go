@@ -74,6 +74,7 @@ type OracleDatabase struct {
 	PoliciesAudit               []string                          `json:"policiesAudit,omitempty" bson:"policiesAudit,omitempty"`
 	PgaSum                      float64                           `json:"pgaSum"`
 	SgaSum                      float64                           `json:"sgaSum"`
+	DiskGroups                  []OracleDatabaseDiskGroup         `json:"diskGroups" bson:"diskGroups"`
 }
 
 var (

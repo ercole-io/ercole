@@ -56,6 +56,20 @@
                             "$numberDouble": "6.0"
                         },
                         "dataguard": false,
+                        "diskGroups": [
+                            {
+                                "diskGroupName": "group 1",
+                                "totalSpace": {
+                                    "$numberDouble": "200.0"
+                                },
+                                "usedSpace": {
+                                    "$numberDouble": "50.0"
+                                },
+                                "freeSpace": {
+                                    "$numberDouble": "150.0"
+                                }
+                            }
+                        ],
                         "elapsed": {
                             "$numberDouble": "12059.18"
                         },
