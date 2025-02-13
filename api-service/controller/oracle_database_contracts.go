@@ -21,9 +21,9 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strings"
 
 	"github.com/golang/gddo/httputil"
-	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
@@ -117,11 +117,9 @@ func (ctrl *APIController) UpdateOracleDatabaseContract(w http.ResponseWriter, r
 }
 
 func (ctrl *APIController) GetOracleDatabaseContracts(w http.ResponseWriter, r *http.Request) {
-	user := context.Get(r, "user")
-
-	locations, err := ctrl.Service.ListLocations(user)
+	filter, err := dto.GetGlobalFilter(r)
 	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
 		return
 	}
 
@@ -131,7 +129,7 @@ func (ctrl *APIController) GetOracleDatabaseContracts(w http.ResponseWriter, r *
 		return
 	}
 
-	searchOracleDatabaseContractsFilters.Locations = locations
+	searchOracleDatabaseContractsFilters.Locations = strings.Split(filter.Location, ",")
 
 	choice := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
 

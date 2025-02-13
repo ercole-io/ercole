@@ -251,7 +251,6 @@ func TestGetSqlServerDatabaseContracts_Success(t *testing.T) {
 		},
 	}
 
-	as.EXPECT().ListLocations(gomock.Any()).Return([]string{}, nil)
 	as.EXPECT().
 		GetSqlServerDatabaseContracts(gomock.Any()).
 		Return(contracts, nil)

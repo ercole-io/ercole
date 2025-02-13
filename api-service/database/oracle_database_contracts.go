@@ -105,11 +105,10 @@ func (md *MongoDatabase) ListOracleDatabaseContracts(filter dto.GetOracleDatabas
 		Aggregate(
 			context.TODO(),
 			mu.MAPipeline(
-				mu.APOptionalStage(len(filter.Locations) > 0, bson.M{"$match": bson.M{"$or": bson.A{
-					bson.M{"location": ""},
-					bson.M{"location": bson.M{"$in": filter.Locations}},
-					bson.M{"location": bson.M{"$exists": false}},
-				}}}),
+				mu.APOptionalStage(len(filter.Locations) > 0 && !utils.Contains(filter.Locations, ""),
+					bson.M{"$match": bson.M{"$or": bson.A{
+						bson.M{"location": bson.M{"$in": filter.Locations}},
+					}}}),
 				mu.APLookupSimple("oracle_database_license_types", "licenseTypeID", "_id", "licenseType"),
 				mu.APUnwind("$licenseType"),
 				mu.APSet(bson.M{

@@ -154,27 +154,23 @@ func FilterExadata(filter dto.GlobalFilter, hidden bool) bson.D {
 }
 
 func filterExistingLocations(locations []string) bson.A {
-	return bson.A{
-		bson.D{
-			{Key: "$match",
-				Value: bson.D{
-					{Key: "$or",
-						Value: bson.A{
-							bson.D{{Key: "location", Value: ""}},
-							bson.D{
-								{Key: "location",
-									Value: bson.D{
-										{Key: "$in",
-											Value: locations,
-										},
-									},
+	if len(locations) > 0 && !utils.Contains(locations, "") {
+		return bson.A{
+			bson.D{
+				{Key: "$match",
+					Value: bson.D{
+						{Key: "location",
+							Value: bson.D{
+								{Key: "$in",
+									Value: locations,
 								},
 							},
-							bson.D{{Key: "location", Value: bson.D{{Key: "$exists", Value: false}}}},
 						},
 					},
 				},
 			},
-		},
+		}
 	}
+
+	return bson.A{}
 }
