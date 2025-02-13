@@ -19,13 +19,14 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/golang/gddo/httputil"
 
-	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 )
@@ -96,13 +97,13 @@ func (ctrl *APIController) UpdateMySQLContract(w http.ResponseWriter, r *http.Re
 }
 
 func (ctrl *APIController) GetMySQLContracts(w http.ResponseWriter, r *http.Request) {
-	user := context.Get(r, "user")
-
-	locations, err := ctrl.Service.ListLocations(user)
+	filter, err := dto.GetGlobalFilter(r)
 	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
 		return
 	}
+
+	locations := strings.Split(filter.Location, ",")
 
 	choice := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
 

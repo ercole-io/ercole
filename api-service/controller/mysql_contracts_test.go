@@ -508,7 +508,6 @@ func TestGetMySQLContracts_Success(t *testing.T) {
 		},
 	}
 
-	as.EXPECT().ListLocations(gomock.Any()).Return([]string{}, nil)
 	as.EXPECT().GetMySQLContracts(gomock.Any()).
 		Return(contracts, nil)
 
@@ -542,7 +541,6 @@ func TestGetMySQLContracts_InternalServerError(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	as.EXPECT().ListLocations(gomock.Any()).Return([]string{}, nil)
 	as.EXPECT().GetMySQLContracts(gomock.Any()).
 		Return(nil, errMock)
 
@@ -579,7 +577,6 @@ func TestGetMySQLContractsXLSX_Success(t *testing.T) {
 
 	xlsx := excelize.File{}
 
-	as.EXPECT().ListLocations(gomock.Any()).Return([]string{}, nil)
 	as.EXPECT().
 		GetMySQLContractsAsXLSX(gomock.Any()).
 		Return(&xlsx, nil)
@@ -609,7 +606,6 @@ func TestGetMySQLContractsXLSX_InternalServerError1(t *testing.T) {
 		Log: logger.NewLogger("TEST"),
 	}
 
-	as.EXPECT().ListLocations(gomock.Any()).Return([]string{}, nil)
 	as.EXPECT().
 		GetMySQLContractsAsXLSX(gomock.Any()).
 		Return(nil, aerrMock)

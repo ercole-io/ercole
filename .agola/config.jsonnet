@@ -202,7 +202,7 @@ local task_deploy_repository(dist) = {
           },
           steps: [
             { type: 'clone' },
-            { type: 'run', name: 'install staticcheck', command: 'go install honnef.co/go/tools/cmd/staticcheck@latest' },
+            { type: 'run', name: 'install staticcheck', command: 'go install honnef.co/go/tools/cmd/staticcheck@v0.5.1' },
             { type: 'run', name: 'run staticcheck', command: 'staticcheck -f=stylish -tests=false ./...' },
           ],
           depends: ['linters'],

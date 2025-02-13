@@ -394,7 +394,6 @@ func TestGetOracleDatabaseContracts_Success(t *testing.T) {
 		},
 	}
 
-	as.EXPECT().ListLocations(gomock.Any()).Return([]string{}, nil)
 	as.EXPECT().
 		GetOracleDatabaseContracts(dto.GetOracleDatabaseContractsFilter{
 			ContractID:                  "",
@@ -413,7 +412,7 @@ func TestGetOracleDatabaseContracts_Success(t *testing.T) {
 			AvailableLicensesPerCoreGTE: -1,
 			AvailableLicensesPerUserLTE: -1,
 			AvailableLicensesPerUserGTE: -1,
-			Locations:                   []string{},
+			Locations:                   []string{""},
 		}).
 		Return(contracts, nil)
 
@@ -445,7 +444,6 @@ func TestGetOracleDatabaseContracts_FailedUnprocessableEntity(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	as.EXPECT().ListLocations(gomock.Any()).Return([]string{}, nil)
 
 	handler := http.HandlerFunc(ac.GetOracleDatabaseContracts)
 	req, err := http.NewRequest("GET", "/?unlimited=sasasd", nil)
@@ -467,9 +465,11 @@ func TestGetOracleDatabaseContracts_FailedInternalServerError(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	as.EXPECT().ListLocations(gomock.Any()).Return([]string{}, nil)
+	f := dto.NewGetOracleDatabaseContractsFilter()
+	f.Locations = []string{""}
+
 	as.EXPECT().
-		GetOracleDatabaseContracts(dto.NewGetOracleDatabaseContractsFilter()).
+		GetOracleDatabaseContracts(f).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
@@ -1157,12 +1157,11 @@ func TestGetOracleDatabaseContractsXLSX_Success(t *testing.T) {
 		AvailableLicensesPerCoreGTE: -1,
 		AvailableLicensesPerUserLTE: -1,
 		AvailableLicensesPerUserGTE: -1,
-		Locations:                   []string{},
+		Locations:                   []string{""},
 	}
 
 	xlsx := excelize.File{}
 
-	as.EXPECT().ListLocations(gomock.Any()).Return([]string{}, nil)
 	as.EXPECT().
 		GetOracleDatabaseContractsAsXLSX(filter).
 		Return(&xlsx, nil)
@@ -1194,7 +1193,6 @@ func TestGetOracleDatabaseContractsXLSX_UnprocessableEntity1(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	as.EXPECT().ListLocations(gomock.Any()).Return([]string{}, nil)
 
 	handler := http.HandlerFunc(ac.GetOracleDatabaseContracts)
 	req, err := http.NewRequest("GET", "/?unlimited=sadasddasasd", nil)
@@ -1236,10 +1234,9 @@ func TestGetOracleDatabaseContractsXLSX_InternalServerError1(t *testing.T) {
 		AvailableLicensesPerCoreGTE: -1,
 		AvailableLicensesPerUserLTE: -1,
 		AvailableLicensesPerUserGTE: -1,
-		Locations:                   []string{},
+		Locations:                   []string{""},
 	}
 
-	as.EXPECT().ListLocations(gomock.Any()).Return([]string{}, nil)
 	as.EXPECT().
 		GetOracleDatabaseContractsAsXLSX(filter).
 		Return(nil, aerrMock)
