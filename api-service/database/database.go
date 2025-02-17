@@ -162,6 +162,7 @@ type MongoDatabaseInterface interface {
 	FindAllOracleDatabasePartitionings(filter dto.GlobalFilter) ([]dto.OracleDatabasePartitioning, error)
 	FindAllOraclePDBPartitionings(filter dto.GlobalFilter) ([]dto.OracleDatabasePartitioning, error)
 	FindOraclePDBChangesByHostname(filter dto.GlobalFilter, hostname string, start time.Time, end time.Time) ([]dto.OraclePdbChange, error)
+	GetOracleDiskGroups(filter dto.GlobalFilter) ([]dto.OracleDatabaseDiskGroupDto, error)
 
 	// ReplaceHostData adds a new hostdata to the database
 	ReplaceHostData(hostData model.HostDataBE) error
