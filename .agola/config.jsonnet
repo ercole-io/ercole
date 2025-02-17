@@ -214,7 +214,7 @@ local task_deploy_repository(dist) = {
             type: 'pod',
             arch: 'amd64',
             containers: [
-              { image: 'golang:1.21' },
+              { image: 'golang:1.20' },
               { image: 'mongo:6' },
             ],
           },
