@@ -183,6 +183,7 @@ func (md *MongoDatabase) getCountHostPipeline(path string, locations ...string) 
 
 func (md *MongoDatabase) count(pipeline bson.A) (int64, error) {
 	ctx := context.TODO()
+	
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(hostCollection).Aggregate(ctx, pipeline)
 	if err != nil {
 		return 0, err
