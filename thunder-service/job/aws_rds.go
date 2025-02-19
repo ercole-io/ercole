@@ -19,6 +19,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
 	"github.com/aws/aws-sdk-go-v2/service/ec2/types"
 	"github.com/aws/aws-sdk-go-v2/service/rds"
@@ -27,19 +29,23 @@ import (
 )
 
 func (job *AwsDataRetrieveJob) FetchRDS(profile model.AwsProfile, seqValue uint64) error {
-	cfg, err := job.loadDefaultConfig(profile)
+	credsProvider := credentials.NewStaticCredentialsProvider(profile.AccessKeyId, *profile.SecretAccessKey, "")
+
+	cfg, err := config.LoadDefaultConfig(context.Background(),
+		config.WithCredentialsProvider(credsProvider),
+		config.WithRegion(profile.Region))
 	if err != nil {
 		return err
 	}
 
-	rdsclient := rds.NewFromConfig(*cfg)
+	rdsclient := rds.NewFromConfig(cfg)
 
 	res, err := rdsclient.DescribeDBInstances(context.Background(), &rds.DescribeDBInstancesInput{})
 	if err != nil {
 		return err
 	}
 
-	ec2client := ec2.NewFromConfig(*cfg)
+	ec2client := ec2.NewFromConfig(cfg)
 
 	awsdbinstances := make([]model.AwsDbInstance, 0, len(res.DBInstances))
 

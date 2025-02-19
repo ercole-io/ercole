@@ -17,26 +17,32 @@
 package job
 
 import (
-	"context"
 	"time"
 
-	"github.com/aws/aws-sdk-go-v2/service/ec2"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/thunder-service/database"
 )
 
 func (job *AwsDataRetrieveJob) FetchAwsUnusedIPAddresses(profile model.AwsProfile, seqValue uint64) error {
 	var recommendation model.AwsRecommendation
+
 	listRec := make([]interface{}, 0)
 
-	cfg, err := job.loadDefaultConfig(profile)
+	sess, err := session.NewSession(&aws.Config{
+		Region:      aws.String(profile.Region),
+		Credentials: credentials.NewStaticCredentials(profile.AccessKeyId, *profile.SecretAccessKey, ""),
+	})
 	if err != nil {
 		return err
 	}
 
-	ec2client := ec2.NewFromConfig(*cfg)
+	ec2Svc := ec2.New(sess)
 
-	resultec2Svc, err := ec2client.DescribeAddresses(context.Background(), nil)
+	resultec2Svc, err := ec2Svc.DescribeAddresses(nil)
 	if err != nil {
 		return err
 	}

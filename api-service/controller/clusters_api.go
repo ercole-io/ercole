@@ -158,6 +158,7 @@ func (ctrl *APIController) GetCluster(w http.ResponseWriter, r *http.Request) {
 			utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 			return
 		}
+
 		utils.WriteXLSXResponse(w, xlsx)
 	}
 }

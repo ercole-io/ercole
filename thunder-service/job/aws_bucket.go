@@ -16,28 +16,31 @@
 package job
 
 import (
-	"context"
-	"errors"
 	"time"
 
-	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/aws/aws-sdk-go-v2/service/s3/types"
-	smithy "github.com/aws/smithy-go"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/awserr"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/thunder-service/database"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func (job *AwsDataRetrieveJob) FetchObjectStorageOptimization(profile model.AwsProfile, seq uint64) error {
-	cfg, err := job.loadDefaultConfig(profile)
+	sess, err := session.NewSession(&aws.Config{
+		Region:      aws.String(profile.Region),
+		Credentials: credentials.NewStaticCredentials(profile.AccessKeyId, *profile.SecretAccessKey, ""),
+	})
 	if err != nil {
 		return err
 	}
 
-	s3client := s3.NewFromConfig(*cfg)
+	svc := s3.New(sess)
 	input := &s3.ListBucketsInput{}
 
-	result, err := s3client.ListBuckets(context.Background(), input)
+	result, err := svc.ListBuckets(input)
 	if err != nil {
 		return err
 	}
@@ -46,7 +49,7 @@ func (job *AwsDataRetrieveJob) FetchObjectStorageOptimization(profile model.AwsP
 
 	for _, v := range result.Buckets {
 		go func(name string, profileID primitive.ObjectID, seq uint64) {
-			if err := job.FetchBucketLifecycleConfiguration(name, profile.ID, seq, s3client); err != nil {
+			if err := job.FetchBucketLifecycleConfiguration(name, profile.ID, seq, svc); err != nil {
 				c <- err
 			}
 		}(*v.Name, profile.ID, seq)
@@ -55,18 +58,17 @@ func (job *AwsDataRetrieveJob) FetchObjectStorageOptimization(profile model.AwsP
 	return <-c
 }
 
-func (job *AwsDataRetrieveJob) FetchBucketLifecycleConfiguration(bucketName string, profileID primitive.ObjectID, seqValue uint64, s3client *s3.Client) error {
+func (job *AwsDataRetrieveJob) FetchBucketLifecycleConfiguration(bucketName string, profileID primitive.ObjectID, seqValue uint64, svc *s3.S3) error {
 	inputBucket := s3.GetBucketLifecycleConfigurationInput{
-		Bucket: &bucketName,
+		Bucket: aws.String(bucketName),
 	}
 
-	_, err := s3client.GetBucketLifecycleConfiguration(context.Background(), &inputBucket)
+	_, err := svc.GetBucketLifecycleConfiguration(&inputBucket)
 	if err != nil {
-		var ae smithy.APIError
-		if errors.As(err, &ae) {
-			switch ae.ErrorCode() {
+		if aerr, ok := err.(awserr.Error); ok {
+			switch aerr.Code() {
 			case "NoSuchLifecycleConfiguration":
-				bucketObject, errObj := s3client.ListObjects(context.Background(), &s3.ListObjectsInput{Bucket: &bucketName})
+				bucketObject, errObj := svc.ListObjects(&s3.ListObjectsInput{Bucket: aws.String(bucketName)})
 				if errObj != nil {
 					return errObj
 				}
@@ -97,14 +99,14 @@ func (job *AwsDataRetrieveJob) FetchBucketLifecycleConfiguration(bucketName stri
 					},
 					CreatedAt: time.Now(),
 					Errors: []map[string]string{
-						{ae.ErrorCode(): ae.Error()},
+						{aerr.Code(): aerr.Error()},
 					},
 				}
 				if errDb := job.Database.AddAwsObject(awsRecommendation, database.AwsRecommendationCollection); errDb != nil {
 					return errDb
 				}
 			default:
-				return ae
+				return aerr
 			}
 		} else {
 			return err
@@ -114,7 +116,7 @@ func (job *AwsDataRetrieveJob) FetchBucketLifecycleConfiguration(bucketName stri
 	return nil
 }
 
-func (job *AwsDataRetrieveJob) sumSize(contents []types.Object, c chan int64) {
+func (job *AwsDataRetrieveJob) sumSize(contents []*s3.Object, c chan int64) {
 	var sum int64
 
 	for _, cnt := range contents {

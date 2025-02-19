@@ -16,12 +16,6 @@
 package job
 
 import (
-	"context"
-	"errors"
-
-	"github.com/aws/aws-sdk-go-v2/aws"
-	awsConfig "github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
@@ -131,21 +125,4 @@ func (job *AwsDataRetrieveJob) Run() {
 	}
 
 	job.Log.Error(<-c)
-}
-
-func (job *AwsDataRetrieveJob) loadDefaultConfig(profile model.AwsProfile) (*aws.Config, error) {
-	if profile.SecretAccessKey == nil {
-		return nil, errors.New("Provided nil secret access key")
-	}
-
-	credsProvider := credentials.NewStaticCredentialsProvider(profile.AccessKeyId, *profile.SecretAccessKey, "")
-
-	cfg, err := awsConfig.LoadDefaultConfig(context.Background(),
-		awsConfig.WithCredentialsProvider(credsProvider),
-		awsConfig.WithRegion(profile.Region))
-	if err != nil {
-		return nil, err
-	}
-
-	return &cfg, nil
 }

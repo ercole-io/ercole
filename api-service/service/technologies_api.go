@@ -116,6 +116,7 @@ func (as *APIService) ListManagedTechnologies(sortBy string, sortDesc bool, loca
 
 func createOracleTechnologyStatus(as *APIService, hostsCount float64) (*model.TechnologyStatus, error) {
 	filter := dto.NewGetOracleDatabaseContractsFilter()
+	
 	contracts, err := as.Database.ListOracleDatabaseContracts(filter)
 	if err != nil {
 		return nil, err
