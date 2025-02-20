@@ -316,7 +316,17 @@ func (as *APIService) SearchHostsAsXLSX(filters dto.SearchHostsFilters) (*exceli
 		}
 
 		file.SetCellValue(sheet, nextAxis(), os)
-		file.SetCellValue(sheet, nextAxis(), val.ClusterMembershipStatus.OracleClusterware)
+
+		isClustered := false
+		if val.ClusterMembershipStatus.HACMP ||
+			val.ClusterMembershipStatus.OracleClusterware ||
+			val.ClusterMembershipStatus.SunCluster ||
+			val.ClusterMembershipStatus.VeritasClusterServer {
+			isClustered = true
+		}
+
+		file.SetCellValue(sheet, nextAxis(), isClustered)
+
 		file.SetCellValue(sheet, nextAxis(), val.Info.KernelVersion)
 		file.SetCellValue(sheet, nextAxis(), val.Info.MemoryTotal)
 		file.SetCellValue(sheet, nextAxis(), val.Info.SwapTotal)
