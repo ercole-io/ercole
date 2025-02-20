@@ -2443,6 +2443,23 @@ components:
           type: number
         pdb:
           type: string
+    OracleDatabaseDiskGroup:
+      type: object
+      properties:
+        diskGroupName:
+          type: string
+        totalSpace:
+          type: number
+        usedSpace:
+          type: number
+        freeSpace:
+          type: number
+        hostname:
+          type: string
+        databases:
+          type: array
+          items:
+            type: string
     OracleDatabaseMissing:
       type: object
       properties:
@@ -4008,7 +4025,26 @@ paths:
                 items:
                   $ref: "#/components/schemas/OraclePdbPoliciesAuditListResponse"
 
-
+  /hosts/technologies/oracle/databases/diskgroups:
+    get:
+      summary: Get Oracle database disk group list
+      tags:
+        - api-service
+      parameters:
+        - $ref: "#/components/parameters/location"
+        - $ref: "#/components/parameters/environment"
+        - $ref: "#/components/parameters/older-than"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ""
+                type: array
+                items:
+                  $ref: "#/components/schemas/OracleDatabaseDiskGroup"
+      operationId: GetOracleDiskGroups
   /hosts/technologies/oracle/databases/partitionings:
     get:
       summary: Get Oracle database partitioning list
