@@ -175,6 +175,10 @@ type APIServiceInterface interface {
 	ListOracleDatabasePartitionings(filter dto.GlobalFilter) ([]dto.OracleDatabasePartitioning, error)
 	CreateOracleDatabasePartitioningsXlsx(filter dto.GlobalFilter) (*excelize.File, error)
 
+	// ORACLE DATABASE DISK GROUPS
+	GetOracleDiskGroups(filter dto.GlobalFilter) ([]dto.OracleDatabaseDiskGroupDto, error)
+	CreateOracleDiskGroupsXLSX(filter dto.GlobalFilter) (*excelize.File, error)
+
 	// ORACLE DATABASE PLUGGABLE DBS
 	ListOracleDatabasePdbs(filter dto.GlobalFilter) ([]dto.OracleDatabasePluggableDatabase, error)
 	CreateOracleDatabasePdbsXlsx(filter dto.GlobalFilter) (*excelize.File, error)
