@@ -62,9 +62,6 @@
                                 "totalSpace": {
                                     "$numberDouble": "200.0"
                                 },
-                                "usedSpace": {
-                                    "$numberDouble": "50.0"
-                                },
                                 "freeSpace": {
                                     "$numberDouble": "150.0"
                                 }

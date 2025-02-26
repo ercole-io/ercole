@@ -19,6 +19,5 @@ package model
 type OracleDatabaseDiskGroup struct {
 	DiskGroupName string  `json:"diskGroupName" bson:"diskGroupName"`
 	TotalSpace    float64 `json:"totalSpace" bson:"totalSpace"`
-	UsedSpace     float64 `json:"usedSpace" bson:"usedSpace"`
 	FreeSpace     float64 `json:"freeSpace" bson:"freeSpace"`
 }

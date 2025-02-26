@@ -176,7 +176,8 @@ type APIServiceInterface interface {
 	CreateOracleDatabasePartitioningsXlsx(filter dto.GlobalFilter) (*excelize.File, error)
 
 	// ORACLE DATABASE DISK GROUPS
-	GetOracleDiskGroups(filter dto.GlobalFilter) ([]dto.OracleDatabaseDiskGroupDto, error)
+	GetOracleDiskGroups(hostname, dbname string) ([]dto.OracleDatabaseDiskGroupDto, error)
+	ListOracleDiskGroups(filter dto.GlobalFilter) ([]dto.OracleDatabaseDiskGroupDto, error)
 	CreateOracleDiskGroupsXLSX(filter dto.GlobalFilter) (*excelize.File, error)
 
 	// ORACLE DATABASE PLUGGABLE DBS
