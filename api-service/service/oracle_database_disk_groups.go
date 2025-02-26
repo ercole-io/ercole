@@ -21,8 +21,17 @@ import (
 	"github.com/ercole-io/ercole/v2/utils/exutils"
 )
 
-func (as *APIService) GetOracleDiskGroups(filter dto.GlobalFilter) ([]dto.OracleDatabaseDiskGroupDto, error) {
-	result, err := as.Database.GetOracleDiskGroups(filter)
+func (as *APIService) GetOracleDiskGroups(hostname string, dbname string) ([]dto.OracleDatabaseDiskGroupDto, error) {
+	result, err := as.Database.GetOracleDiskGroups(hostname, dbname)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (as *APIService) ListOracleDiskGroups(filter dto.GlobalFilter) ([]dto.OracleDatabaseDiskGroupDto, error) {
+	result, err := as.Database.ListOracleDiskGroups(filter)
 	if err != nil {
 		return nil, err
 	}
@@ -31,7 +40,7 @@ func (as *APIService) GetOracleDiskGroups(filter dto.GlobalFilter) ([]dto.Oracle
 }
 
 func (as *APIService) CreateOracleDiskGroupsXLSX(filter dto.GlobalFilter) (*excelize.File, error) {
-	result, err := as.Database.GetOracleDiskGroups(filter)
+	result, err := as.Database.ListOracleDiskGroups(filter)
 	if err != nil {
 		return nil, err
 	}
@@ -42,8 +51,10 @@ func (as *APIService) CreateOracleDiskGroupsXLSX(filter dto.GlobalFilter) (*exce
 		"Databases",
 		"Disk group name",
 		"Total space",
-		"Used space",
 		"Free space",
+		"Percentage of free space",
+		"Used space",
+		"Percentage of used space",
 	}
 
 	sheets, err := exutils.NewXLSX(as.Config, sheet, headers...)
@@ -59,8 +70,10 @@ func (as *APIService) CreateOracleDiskGroupsXLSX(filter dto.GlobalFilter) (*exce
 		sheets.SetCellValue(sheet, nextAxis(), val.Databases)
 		sheets.SetCellValue(sheet, nextAxis(), val.OracleDatabaseDiskGroup.DiskGroupName)
 		sheets.SetCellValue(sheet, nextAxis(), val.OracleDatabaseDiskGroup.TotalSpace)
-		sheets.SetCellValue(sheet, nextAxis(), val.OracleDatabaseDiskGroup.UsedSpace)
 		sheets.SetCellValue(sheet, nextAxis(), val.OracleDatabaseDiskGroup.FreeSpace)
+		sheets.SetCellValue(sheet, nextAxis(), val.PercentageFreeSpace)
+		sheets.SetCellValue(sheet, nextAxis(), val.UsedSpace)
+		sheets.SetCellValue(sheet, nextAxis(), val.PercentageUsedSpace)
 	}
 
 	return sheets, err

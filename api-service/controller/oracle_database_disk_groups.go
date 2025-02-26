@@ -22,9 +22,23 @@ import (
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/golang/gddo/httputil"
+	"github.com/gorilla/mux"
 )
 
 func (ctrl *APIController) GetOracleDiskGroups(w http.ResponseWriter, r *http.Request) {
+	hostname := mux.Vars(r)["hostname"]
+	dbname := mux.Vars(r)["dbname"]
+
+	res, err := ctrl.Service.GetOracleDiskGroups(hostname, dbname)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, res)
+}
+
+func (ctrl *APIController) ListOracleDiskGroups(w http.ResponseWriter, r *http.Request) {
 	choice := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
 
 	filter, err := dto.GetGlobalFilter(r)
@@ -35,7 +49,7 @@ func (ctrl *APIController) GetOracleDiskGroups(w http.ResponseWriter, r *http.Re
 
 	switch choice {
 	case "application/json":
-		result, err := ctrl.GetOracleDiskGroupsJSON(filter)
+		result, err := ctrl.listOracleDiskGroupsJSON(filter)
 		if err != nil {
 			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 			return
@@ -43,7 +57,7 @@ func (ctrl *APIController) GetOracleDiskGroups(w http.ResponseWriter, r *http.Re
 
 		utils.WriteJSONResponse(w, http.StatusOK, result)
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-		result, err := ctrl.GetOracleDiskGroupsXLSX(filter)
+		result, err := ctrl.listOracleDiskGroupsXLSX(filter)
 		if err != nil {
 			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 			return
@@ -53,10 +67,10 @@ func (ctrl *APIController) GetOracleDiskGroups(w http.ResponseWriter, r *http.Re
 	}
 }
 
-func (ctrl *APIController) GetOracleDiskGroupsJSON(filters *dto.GlobalFilter) ([]dto.OracleDatabaseDiskGroupDto, error) {
-	return ctrl.Service.GetOracleDiskGroups(*filters)
+func (ctrl *APIController) listOracleDiskGroupsJSON(filters *dto.GlobalFilter) ([]dto.OracleDatabaseDiskGroupDto, error) {
+	return ctrl.Service.ListOracleDiskGroups(*filters)
 }
 
-func (ctrl *APIController) GetOracleDiskGroupsXLSX(filters *dto.GlobalFilter) (*excelize.File, error) {
+func (ctrl *APIController) listOracleDiskGroupsXLSX(filters *dto.GlobalFilter) (*excelize.File, error) {
 	return ctrl.Service.CreateOracleDiskGroupsXLSX(*filters)
 }

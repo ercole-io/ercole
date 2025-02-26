@@ -28,7 +28,7 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
-func TestGetOracleDiskGroups_Success(t *testing.T) {
+func TestListOracleDiskGroups_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -47,19 +47,18 @@ func TestGetOracleDiskGroups_Success(t *testing.T) {
 			OracleDatabaseDiskGroup: model.OracleDatabaseDiskGroup{
 				DiskGroupName: "disk one",
 				TotalSpace:    100,
-				UsedSpace:     25,
 				FreeSpace:     75,
 			},
 		},
 	}
-	db.EXPECT().GetOracleDiskGroups(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).Return(expected, nil)
+	db.EXPECT().ListOracleDiskGroups(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).Return(expected, nil)
 
-	res, err := as.GetOracleDiskGroups(dto.GlobalFilter{OlderThan: utils.MAX_TIME})
+	res, err := as.ListOracleDiskGroups(dto.GlobalFilter{OlderThan: utils.MAX_TIME})
 	require.NoError(t, err)
 	assert.Equal(t, expected, res)
 }
 
-func TestGetOracleDiskGroups_Error(t *testing.T) {
+func TestListOracleDiskGroups_Error(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -69,9 +68,9 @@ func TestGetOracleDiskGroups_Error(t *testing.T) {
 	}
 
 	e := errors.New("connection error")
-	db.EXPECT().GetOracleDiskGroups(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).Return(nil, e)
+	db.EXPECT().ListOracleDiskGroups(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).Return(nil, e)
 
-	res, err := as.GetOracleDiskGroups(dto.GlobalFilter{OlderThan: utils.MAX_TIME})
+	res, err := as.ListOracleDiskGroups(dto.GlobalFilter{OlderThan: utils.MAX_TIME})
 	require.ErrorIs(t, err, e)
 	assert.Nil(t, res)
 }

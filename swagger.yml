@@ -2450,10 +2450,21 @@ components:
           type: string
         totalSpace:
           type: number
-        usedSpace:
-          type: number
+          example: 1000
         freeSpace:
           type: number
+          example: 750
+        percentageFreeSpace:
+          type: number
+          example: 75
+          description: Percentage of free space (if totalSpace is zero, this value is 0)
+        usedSpace:
+          type: number
+          example: 250
+        percentageUsedSpace:
+          type: number
+          example: 25
+          description: Percentage of used space (if totalSpace is zero, this value is 0)
         hostname:
           type: string
         databases:
@@ -4025,6 +4036,33 @@ paths:
                 items:
                   $ref: "#/components/schemas/OraclePdbPoliciesAuditListResponse"
 
+  /hosts/{hostname}/technologies/oracle/databases/{dbname}/diskgroups:
+    get:
+      summary: Get Oracle database disk group related to one hostname and db
+      tags:
+        - api-service
+      parameters:
+      - schema:
+          type: string
+        name: hostname
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: dbname
+        in: path
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ""
+                type: array
+                items:
+                  $ref: "#/components/schemas/OracleDatabaseDiskGroup"
+      operationId: GetOracleDiskGroups
   /hosts/technologies/oracle/databases/diskgroups:
     get:
       summary: Get Oracle database disk group list
@@ -4044,7 +4082,7 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/OracleDatabaseDiskGroup"
-      operationId: GetOracleDiskGroups
+      operationId: ListOracleDiskGroups
   /hosts/technologies/oracle/databases/partitionings:
     get:
       summary: Get Oracle database partitioning list

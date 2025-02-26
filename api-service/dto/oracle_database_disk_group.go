@@ -19,6 +19,9 @@ import "github.com/ercole-io/ercole/v2/model"
 
 type OracleDatabaseDiskGroupDto struct {
 	model.OracleDatabaseDiskGroup `bson:"oracleDatabaseDiskGroup"`
+	PercentageFreeSpace           float64  `json:"percentageFreeSpace" bson:"percentageFreeSpace"`
+	UsedSpace                     float64  `json:"usedSpace" bson:"usedSpace"`
+	PercentageUsedSpace           float64  `json:"percentageUsedSpace" bson:"percentageUsedSpace"`
 	Hostname                      string   `json:"hostname" bson:"hostname"`
 	Databases                     []string `json:"databases" bson:"databases"`
 }
