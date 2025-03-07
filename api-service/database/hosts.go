@@ -158,28 +158,7 @@ func (md *MongoDatabase) getHosts(mode string, filters dto.SearchHostsFilters, o
 						model.TechnologyPostgreSQLPostgreSQL: "$features.postgresql.instances.name",
 						model.TechnologyMongoDBMongoDB:       "$features.mongodb.instances.name",
 					},
-					"isMissingDB": bson.D{
-						{Key: "$concatArrays",
-							Value: bson.A{
-								bson.D{
-									{Key: "$ifNull",
-										Value: bson.A{
-											"$features.oracle.database.unlistedRunningDatabases",
-											bson.A{},
-										},
-									},
-								},
-								bson.D{
-									{Key: "$ifNull",
-										Value: bson.A{
-											"$features.oracle.database.unretrievedDatabases",
-											bson.A{},
-										},
-									},
-								},
-							},
-						},
-					},
+					"missingDatabases": "$features.oracle.database.missingDatabases",
 					"technology": bson.D{
 						{Key: "$switch",
 							Value: bson.D{
@@ -1141,49 +1120,6 @@ func (md *MongoDatabase) getHostTechnology(hostname string, olderThan time.Time)
 			out = technology
 			break
 		}
-	}
-
-	return out, nil
-}
-
-// FindUnlistedRunningDatabases Check if there are any db instances not running on host
-func (md *MongoDatabase) FindUnlistedRunningDatabases(hostname string) ([]string, error) {
-	ctx := context.TODO()
-
-	out := make([]string, 0)
-
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(hostCollection).
-		Aggregate(ctx, bson.A{
-			bson.D{
-				{Key: "$match",
-					Value: bson.D{
-						{Key: "archived", Value: false},
-						{Key: "hostname", Value: hostname},
-					},
-				},
-			},
-			bson.D{
-				{Key: "$unwind",
-					Value: bson.D{
-						{Key: "path", Value: "$features.oracle.database.unlistedRunningDatabases"},
-						{Key: "preserveNullAndEmptyArrays", Value: false},
-					},
-				},
-			},
-			bson.D{{Key: "$project", Value: bson.D{{Key: "db", Value: "$features.oracle.database.unlistedRunningDatabases"}}}},
-			bson.D{{Key: "$group", Value: bson.D{{Key: "_id", Value: "$db"}}}},
-		})
-	if err != nil {
-		return nil, err
-	}
-
-	for cur.Next(ctx) {
-		var item map[string]string
-		if cur.Decode(&item) != nil {
-			return nil, utils.NewError(err, "Decode ERROR")
-		}
-
-		out = append(out, item["_id"])
 	}
 
 	return out, nil
