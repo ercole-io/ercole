@@ -161,6 +161,9 @@ type APIService struct {
 	EnableGcpMenu bool
 
 	LocationAlias string
+
+	// ScopeAsLocation overwrite the location filter in licenses & contracts APIs (es. "location1,location2,location3")
+	ScopeAsLocation string
 }
 
 // RepoService contains configuration about the repo service
