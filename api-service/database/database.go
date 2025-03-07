@@ -191,9 +191,8 @@ type MongoDatabaseInterface interface {
 	// ExistNotInClusterHost return true if the host specified by hostname exist and it is not in cluster, otherwise false
 	ExistNotInClusterHost(hostname string) (bool, error)
 	// Check if there are any db instances not running on host
-	FindUnlistedRunningDatabases(hostname string) ([]string, error)
-	FindUnretrievedDatabases(hostname string) ([]string, error)
-	FindAllMissingDatabases() ([]dto.OracleDatabaseMissing, error)
+	GetMissingDatabases() ([]dto.OracleDatabaseMissingDbs, error)
+	GetMissingDatabasesByHostname(hostname string) ([]model.MissingDatabase, error)
 	DbExist(hostname, dbname string) (bool, error)
 
 	FindVirtualHostWithoutCluster() ([]dto.VirtualHostWithoutCluster, error)

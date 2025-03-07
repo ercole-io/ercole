@@ -120,9 +120,8 @@ type APIControllerInterface interface {
 	// DismissHost dismiss the specified host in the request
 	DismissHost(w http.ResponseWriter, r *http.Request)
 
-	GetMissingDbHost(w http.ResponseWriter, r *http.Request)
-
-	GetAllMissingDb(w http.ResponseWriter, r *http.Request)
+	GetMissingDatabases(w http.ResponseWriter, r *http.Request)
+	GetMissingDatabasesByHostname(w http.ResponseWriter, r *http.Request)
 
 	GetVirtualHostWithoutCluster(w http.ResponseWriter, r *http.Request)
 
