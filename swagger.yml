@@ -1252,10 +1252,10 @@ components:
                     properties:
                       "":
                         type: string
-                unlistedRunningDatabases:
+                missingDatabases:
                   type: array
                   items:
-                    type: string
+                    $ref: '#/components/schemas/MissingDatabase'
         racNodeNames:
           type: string
           nullable: true
@@ -1326,10 +1326,6 @@ components:
                 format: date-time
               cpuAvg:
                 type: number
-        isMissingDB:
-          type: array
-          items:
-            type: string
         memorySum:
           type: number
         memorySumPercentage:

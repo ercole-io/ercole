@@ -52,19 +52,21 @@ func (hds *HostDataService) oracleDatabasesChecks(previousHostdata, hostdata *mo
 
 	var unlistedDatabasesAlerts []model.Alert
 
-	for _, dbname := range hostdata.Features.Oracle.Database.UnlistedRunningDatabases {
-		if err := hds.ackOldUnlistedRunningDatabasesAlerts(hostdata.Hostname, dbname); err != nil {
-			hds.Log.Errorf("Can't ack UnlistedRunningDatabases alerts by filter")
-		}
+	for _, db := range hostdata.Features.Oracle.Database.MissingDatabases {
+		if !db.Ignored {
+			if err := hds.ackOldUnlistedRunningDatabasesAlerts(hostdata.Hostname, db.Name); err != nil {
+				hds.Log.Errorf("Can't ack UnlistedRunningDatabases alerts by filter")
+			}
 
-		unlistedDatabasesAlerts = append(unlistedDatabasesAlerts,
-			model.Alert{
-				OtherInfo: map[string]interface{}{
-					"hostname": hostdata.Hostname,
-					"dbname":   dbname,
+			unlistedDatabasesAlerts = append(unlistedDatabasesAlerts,
+				model.Alert{
+					OtherInfo: map[string]interface{}{
+						"hostname": hostdata.Hostname,
+						"dbname":   db.Name,
+					},
 				},
-			},
-		)
+			)
+		}
 	}
 
 	if err := hds.throwUnlistedRunningDatabasesAlert(unlistedDatabasesAlerts); err != nil {

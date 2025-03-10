@@ -134,8 +134,8 @@ var hostData1 model.HostDataBE = model.HostDataBE{
 	Features: model.Features{
 		Oracle: &model.OracleFeature{
 			Database: &model.OracleDatabaseFeature{
-				UnlistedRunningDatabases: []string{"FOOBAR"},
-				Databases:                []model.OracleDatabase{},
+				MissingDatabases: []model.MissingDatabase{},
+				Databases:        []model.OracleDatabase{},
 			},
 		},
 	},
@@ -152,8 +152,8 @@ var hostData2 model.HostDataBE = model.HostDataBE{
 	Features: model.Features{
 		Oracle: &model.OracleFeature{
 			Database: &model.OracleDatabaseFeature{
-				UnlistedRunningDatabases: []string{},
-				Databases:                []model.OracleDatabase{},
+				MissingDatabases: []model.MissingDatabase{},
+				Databases:        []model.OracleDatabase{},
 			},
 		},
 	},
@@ -170,7 +170,7 @@ var hostData3 model.HostDataBE = model.HostDataBE{
 	Features: model.Features{
 		Oracle: &model.OracleFeature{
 			Database: &model.OracleDatabaseFeature{
-				UnlistedRunningDatabases: []string{},
+				MissingDatabases: []model.MissingDatabase{},
 				Databases: []model.OracleDatabase{
 					{
 						Name:     "acd",
@@ -193,7 +193,7 @@ var hostData4 model.HostDataBE = model.HostDataBE{
 	Features: model.Features{
 		Oracle: &model.OracleFeature{
 			Database: &model.OracleDatabaseFeature{
-				UnlistedRunningDatabases: []string{},
+				MissingDatabases: []model.MissingDatabase{},
 				Databases: []model.OracleDatabase{
 					{
 						Name: "acd",
@@ -229,7 +229,7 @@ var hostData5 model.HostDataBE = model.HostDataBE{
 	Features: model.Features{
 		Oracle: &model.OracleFeature{
 			Database: &model.OracleDatabaseFeature{
-				UnlistedRunningDatabases: []string{},
+				MissingDatabases: []model.MissingDatabase{},
 				Databases: []model.OracleDatabase{
 					{
 						Name: "acd",
@@ -288,7 +288,7 @@ var hostData6 model.HostDataBE = model.HostDataBE{
 	Features: model.Features{
 		Oracle: &model.OracleFeature{
 			Database: &model.OracleDatabaseFeature{
-				UnlistedRunningDatabases: []string{},
+				MissingDatabases: []model.MissingDatabase{},
 				Databases: []model.OracleDatabase{
 					{
 						Name: "acd",
@@ -890,7 +890,7 @@ func TestCheckMissingDatabases_OneMissing(t *testing.T) {
 		Features: model.Features{
 			Oracle: &model.OracleFeature{
 				Database: &model.OracleDatabaseFeature{
-					UnlistedRunningDatabases: []string{},
+					MissingDatabases: []model.MissingDatabase{},
 					Databases: []model.OracleDatabase{
 						{
 							Name:     "first",
@@ -917,7 +917,7 @@ func TestCheckMissingDatabases_OneMissing(t *testing.T) {
 		Features: model.Features{
 			Oracle: &model.OracleFeature{
 				Database: &model.OracleDatabaseFeature{
-					UnlistedRunningDatabases: []string{},
+					MissingDatabases: []model.MissingDatabase{},
 					Databases: []model.OracleDatabase{
 						{
 							Name:     "first",
@@ -1002,7 +1002,7 @@ func TestCheckMissingDatabases_AllMissing(t *testing.T) {
 		Features: model.Features{
 			Oracle: &model.OracleFeature{
 				Database: &model.OracleDatabaseFeature{
-					UnlistedRunningDatabases: []string{},
+					MissingDatabases: []model.MissingDatabase{},
 					Databases: []model.OracleDatabase{
 						{
 							Name:     "first",
@@ -1029,8 +1029,8 @@ func TestCheckMissingDatabases_AllMissing(t *testing.T) {
 		Features: model.Features{
 			Oracle: &model.OracleFeature{
 				Database: &model.OracleDatabaseFeature{
-					UnlistedRunningDatabases: []string{},
-					Databases:                []model.OracleDatabase{},
+					MissingDatabases: []model.MissingDatabase{},
+					Databases:        []model.OracleDatabase{},
 				},
 			},
 		},
