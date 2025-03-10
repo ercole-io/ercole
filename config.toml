@@ -111,6 +111,7 @@ EnableOciMenu = false
 EnableAwsMenu = false
 EnableGcpMenu = false
 LocationAlias = "Location"
+ScopeAsLocation = ""
 DefaultDatabaseTags = [
   "coolest",
   "very important",
