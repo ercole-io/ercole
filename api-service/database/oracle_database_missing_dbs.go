@@ -20,6 +20,7 @@ import (
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/utils"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -88,4 +89,29 @@ func (md *MongoDatabase) GetMissingDatabasesByHostname(hostname string) ([]model
 	}
 
 	return res, nil
+}
+
+func (md *MongoDatabase) UpdateMissingDatabaseIgnoredField(hostname string, dbname string, ignored bool, ignoredComment string) error {
+	result, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(hostCollection).
+		UpdateOne(context.TODO(),
+			bson.D{
+				{Key: "archived", Value: false},
+				{Key: "hostname", Value: hostname},
+				{Key: "features.oracle.database.missingDatabases.name", Value: dbname},
+			},
+			bson.D{
+				{Key: "$set", Value: bson.M{
+					"features.oracle.database.missingDatabases.$.ignored":        ignored,
+					"features.oracle.database.missingDatabases.$.ignoredComment": ignoredComment,
+				}},
+			})
+	if err != nil {
+		return utils.NewError(err, "DB ERROR")
+	}
+
+	if result.MatchedCount != 1 {
+		return utils.ErrMissingDatabaseNotFound
+	}
+
+	return nil
 }
