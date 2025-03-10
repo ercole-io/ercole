@@ -248,6 +248,18 @@ func (ctrl *APIController) ListLocations(w http.ResponseWriter, r *http.Request)
 	utils.WriteJSONResponse(w, http.StatusOK, locations)
 }
 
+func (ctrl *APIController) ListLocationsLicenses(w http.ResponseWriter, r *http.Request) {
+	user := context.Get(r, "user")
+
+	locations, err := ctrl.Service.ListLocationsLicenses(user)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, locations)
+}
+
 // ListEnvironments list the environments using the filters in the request
 func (ctrl *APIController) ListEnvironments(w http.ResponseWriter, r *http.Request) {
 	var location, environment string

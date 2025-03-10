@@ -4129,6 +4129,25 @@ paths:
           $ref: "#/components/responses/error"
         "500":
           $ref: "#/components/responses/error"
+
+  /hosts/technologies/all/databases/licenses/locations:
+    get:
+      tags:
+        - api-service
+      operationId: ListLocationsLicenses
+      summary: List locations using config.ScopeAsLocation
+      description: List locations using config.ScopeAsLocation
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                uniqueItems: true
+
   /hosts/environments:
     get:
       tags:

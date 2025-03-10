@@ -446,6 +446,29 @@ func (as *APIService) ListLocations(user interface{}) ([]string, error) {
 	return as.Database.GetUserLocations(u.Username)
 }
 
+func (as *APIService) ListLocationsLicenses(user interface{}) ([]string, error) {
+	locations, err := as.ListLocations(user)
+	if err != nil {
+		return nil, err
+	}
+
+	if as.Config.APIService.ScopeAsLocation != "" {
+		mergedLocations := make([]string, 0)
+		mergedLocations = append(mergedLocations, as.Config.APIService.ScopeAsLocation)
+		scopes := strings.Split(as.Config.APIService.ScopeAsLocation, ",")
+
+		for _, location := range locations {
+			if !utils.ContainsI(scopes, location) {
+				mergedLocations = append(mergedLocations, location)
+			}
+		}
+
+		return mergedLocations, nil
+	}
+
+	return locations, nil
+}
+
 // ListEnvironments list environments
 func (as *APIService) ListEnvironments(location string, environment string, olderThan time.Time) ([]string, error) {
 	return as.Database.ListEnvironments(location, environment, olderThan)

@@ -119,6 +119,8 @@ func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 	router.HandleFunc("/hosts/technologies/all/databases/licenses-used-per-cluster", ctrl.GetUsedLicensesPerCluster).Methods("GET")
 	router.HandleFunc("/hosts/technologies/all/databases/licenses-compliance", ctrl.GetDatabaseLicensesCompliance).Methods("GET")
 
+	router.HandleFunc("/hosts/technologies/all/databases/licenses/locations", ctrl.ListLocationsLicenses).Methods("GET")
+
 	router.HandleFunc("/hosts/technologies/all/databases/grant-dba", ctrl.ListOracleGrantDbaByHostname).Methods("GET")
 
 	// ORACLE

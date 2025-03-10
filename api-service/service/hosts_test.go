@@ -1114,3 +1114,100 @@ func TestGetVirtualHostWithoutCluster_Success(t *testing.T) {
 
 	assert.Equal(t, expected, actual)
 }
+
+func TestListLocationsLicenses(t *testing.T) {
+	testCases := []struct {
+		name          string
+		config        config.Configuration
+		user          model.User
+		buildStubs    func(db *MockMongoDatabaseInterface)
+		checkResponse func(t *testing.T, res []string, err error)
+	}{
+		{
+			name: "Ok user",
+			config: config.Configuration{
+				APIService: config.APIService{
+					ScopeAsLocation: "loc1,loc2,loc3",
+				},
+			},
+			user: model.User{
+				Username: "user01",
+			},
+			buildStubs: func(db *MockMongoDatabaseInterface) {
+				db.EXPECT().GetUserLocations("user01").
+					Return([]string{"loc1", "loc2", "loc3", "loc4"}, nil)
+			},
+
+			checkResponse: func(t *testing.T, res []string, err error) {
+				assert.NoError(t, err)
+				assert.NotEmpty(t, res)
+				expectedResult := []string{"loc1,loc2,loc3", "loc4"}
+				assert.Equal(t, expectedResult, res)
+			},
+		},
+		{
+			name: "Ok Admin",
+			config: config.Configuration{
+				APIService: config.APIService{
+					ScopeAsLocation: "loc1,loc2,loc3",
+				},
+			},
+			user: model.User{
+				Username: "user01",
+				Groups:   []string{"admin"},
+			},
+			buildStubs: func(db *MockMongoDatabaseInterface) {
+				db.EXPECT().ListAllLocations("", "", utils.MAX_TIME).
+					Return([]string{"loc1", "loc2", "loc3", "loc4"}, nil)
+			},
+
+			checkResponse: func(t *testing.T, res []string, err error) {
+				assert.NoError(t, err)
+				assert.NotEmpty(t, res)
+				expectedResult := []string{"loc1,loc2,loc3", "loc4"}
+				assert.Equal(t, expectedResult, res)
+			},
+		},
+		{
+			name: "ScopeAsLocation empty",
+			config: config.Configuration{
+				APIService: config.APIService{
+					ScopeAsLocation: "",
+				},
+			},
+			user: model.User{
+				Username: "user01",
+			},
+			buildStubs: func(db *MockMongoDatabaseInterface) {
+				db.EXPECT().GetUserLocations("user01").
+					Return([]string{"loc1", "loc2", "loc3", "loc4"}, nil)
+			},
+
+			checkResponse: func(t *testing.T, res []string, err error) {
+				assert.NoError(t, err)
+				assert.NotEmpty(t, res)
+				expectedResult := []string{"loc1", "loc2", "loc3", "loc4"}
+				assert.Equal(t, expectedResult, res)
+			},
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+
+			mockCtrl := gomock.NewController(t)
+			defer mockCtrl.Finish()
+			db := NewMockMongoDatabaseInterface(mockCtrl)
+
+			as := APIService{
+				Database: db,
+				Config:   tc.config,
+			}
+
+			tc.buildStubs(db)
+
+			res, err := as.ListLocationsLicenses(tc.user)
+
+			tc.checkResponse(t, res, err)
+		})
+	}
+}

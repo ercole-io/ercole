@@ -86,6 +86,7 @@ type APIServiceInterface interface {
 	ListAllLocations(location string, environment string, olderThan time.Time) ([]string, error)
 	// ListLocations list locations
 	ListLocations(user interface{}) ([]string, error)
+	ListLocationsLicenses(user interface{}) ([]string, error)
 	// ListEnvironments list environments
 	ListEnvironments(location string, environment string, olderThan time.Time) ([]string, error)
 

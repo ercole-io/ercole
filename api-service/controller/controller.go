@@ -71,6 +71,7 @@ type APIControllerInterface interface {
 
 	// ListLocations list locations using the filters in the request
 	ListLocations(w http.ResponseWriter, r *http.Request)
+	ListLocationsLicenses(w http.ResponseWriter, r *http.Request)
 	// ListEnvironments list environments using the filters in the request
 	ListEnvironments(w http.ResponseWriter, r *http.Request)
 	// GetHostsCountStats return the number of the hosts using the filters in the request
