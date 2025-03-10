@@ -93,3 +93,5 @@ var ErrPermissionDenied = errors.New("Permission denied")
 var ErrInvalidExadata = errors.New("invalid exadata")
 
 var ErrInvalidOracleContract = errors.New("invalid oracle contract")
+
+var ErrMissingDatabaseNotFound = errors.New("Missing database not found")

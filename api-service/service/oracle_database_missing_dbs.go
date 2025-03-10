@@ -29,3 +29,11 @@ func (as *APIService) GetMissingDatabases() ([]dto.OracleDatabaseMissingDbs, err
 func (as *APIService) GetMissingDatabasesByHostname(hostname string) ([]model.MissingDatabase, error) {
 	return as.Database.GetMissingDatabasesByHostname(hostname)
 }
+
+func (as *APIService) UpdateMissingDatabaseIgnoredField(hostname string, dbname string, ignored bool, ignoredComment string) error {
+	if err := as.Database.UpdateMissingDatabaseIgnoredField(hostname, dbname, ignored, ignoredComment); err != nil {
+		return err
+	}
+
+	return nil
+}

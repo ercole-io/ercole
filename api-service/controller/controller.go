@@ -122,6 +122,7 @@ type APIControllerInterface interface {
 
 	GetMissingDatabases(w http.ResponseWriter, r *http.Request)
 	GetMissingDatabasesByHostname(w http.ResponseWriter, r *http.Request)
+	UpdateMissingDatabaseIgnoredField(w http.ResponseWriter, r *http.Request)
 
 	GetVirtualHostWithoutCluster(w http.ResponseWriter, r *http.Request)
 

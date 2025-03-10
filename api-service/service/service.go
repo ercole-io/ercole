@@ -228,6 +228,7 @@ type APIServiceInterface interface {
 
 	GetMissingDatabases() ([]dto.OracleDatabaseMissingDbs, error)
 	GetMissingDatabasesByHostname(hostname string) ([]model.MissingDatabase, error)
+	UpdateMissingDatabaseIgnoredField(hostname string, dbname string, ignored bool, ignoredComment string) error
 
 	GetVirtualHostWithoutCluster() ([]dto.VirtualHostWithoutCluster, error)
 

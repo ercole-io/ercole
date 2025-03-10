@@ -167,6 +167,7 @@ func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 
 	router.HandleFunc("/hosts/technologies/oracle/missing-dbs", ctrl.GetMissingDatabases).Methods("GET")
 	router.HandleFunc("/hosts/{hostname}/technologies/oracle/missing-dbs", ctrl.GetMissingDatabasesByHostname).Methods("GET")
+	router.HandleFunc("/hosts/{hostname}/technologies/oracle/missing-dbs/{dbname}/ignored/{ignored}", ctrl.UpdateMissingDatabaseIgnoredField).Methods("PUT")
 
 	// ORACLE CONTRACTS
 	router.HandleFunc("/contracts/oracle/database", ctrl.AddOracleDatabaseContract).Methods("POST")

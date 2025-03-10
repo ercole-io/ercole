@@ -194,6 +194,8 @@ type MongoDatabaseInterface interface {
 	GetMissingDatabases() ([]dto.OracleDatabaseMissingDbs, error)
 	GetMissingDatabasesByHostname(hostname string) ([]model.MissingDatabase, error)
 	DbExist(hostname, dbname string) (bool, error)
+	// UpdateMissingDatabaseIgnoredField update ignored and ignoredComment fields of the missing database
+	UpdateMissingDatabaseIgnoredField(hostname string, dbname string, ignored bool, ignoredComment string) error
 
 	FindVirtualHostWithoutCluster() ([]dto.VirtualHostWithoutCluster, error)
 
