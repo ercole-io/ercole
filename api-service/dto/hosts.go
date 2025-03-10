@@ -188,7 +188,7 @@ type HostDataSummary struct {
 	VirtualizationNode      string                        `json:"virtualizationNode" bson:"virtualizationNode"`
 	Cluster                 string                        `json:"cluster" bson:"cluster"`
 	Databases               map[string][]string           `json:"databases" bson:"databases"` // map[Technology] []database names
-	IsMissingDB             []string                      `json:"isMissingDB,omitempty"`
+	MissingDatabases        []model.MissingDatabase       `json:"missingDatabases,omitempty"`
 	Technology              string                        `json:"technology" bson:"technology"`
 }
 

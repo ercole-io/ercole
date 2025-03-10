@@ -301,7 +301,9 @@ func (as *APIService) SearchHostsAsXLSX(filters dto.SearchHostsFilters) (*exceli
 			technology.WriteString(k)
 		}
 
-		missingdbs.WriteString(strings.Join(val.IsMissingDB, " "))
+		for _, v := range val.MissingDatabases {
+			missingdbs.WriteString(fmt.Sprintf("%s ", v.Name))
+		}
 
 		file.SetCellValue(sheet, nextAxis(), databases.String())
 		file.SetCellValue(sheet, nextAxis(), missingdbs.String())

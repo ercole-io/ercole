@@ -538,7 +538,7 @@ func TestSearchHostsAsXLSX(t *testing.T) {
 			VirtualizationNode: "",
 			Cluster:            "",
 			Databases:          map[string][]string{},
-			IsMissingDB:        []string{},
+			MissingDatabases:   []model.MissingDatabase{},
 		},
 
 		{
