@@ -50,28 +50,7 @@ func (hds *HostDataService) oracleDatabasesChecks(previousHostdata, hostdata *mo
 
 	hds.ignoreRacLicenses(hostdata)
 
-	var unlistedDatabasesAlerts []model.Alert
-
-	for _, db := range hostdata.Features.Oracle.Database.MissingDatabases {
-		if !db.Ignored {
-			if err := hds.ackOldUnlistedRunningDatabasesAlerts(hostdata.Hostname, db.Name); err != nil {
-				hds.Log.Errorf("Can't ack UnlistedRunningDatabases alerts by filter")
-			}
-
-			unlistedDatabasesAlerts = append(unlistedDatabasesAlerts,
-				model.Alert{
-					OtherInfo: map[string]interface{}{
-						"hostname": hostdata.Hostname,
-						"dbname":   db.Name,
-					},
-				},
-			)
-		}
-	}
-
-	if err := hds.throwUnlistedRunningDatabasesAlert(unlistedDatabasesAlerts); err != nil {
-		hds.Log.Error(err)
-	}
+	hds.ignorePreviousMissingDatabases(previousHostdata, hostdata)
 
 	if previousHostdata != nil && previousHostdata.Info.CPUCores < hostdata.Info.CPUCores {
 		if err := hds.throwAugmentedCPUCoresAlert(hostdata.Hostname,
@@ -396,6 +375,52 @@ func (hds *HostDataService) checkNewLicenses(previous, new *model.HostDataBE, li
 	}
 
 	if err := hds.throwNewOptionAlerts(newOptionAlerts); err != nil {
+		hds.Log.Error(err)
+	}
+}
+
+func (hds *HostDataService) ignorePreviousMissingDatabases(previous, new *model.HostDataBE) {
+	if previous == nil ||
+		previous.Features.Oracle == nil ||
+		previous.Features.Oracle.Database == nil {
+		return
+	}
+
+	prevIgnoredMissingDBS := map[string]model.MissingDatabase{}
+	for _, db := range previous.Features.Oracle.Database.MissingDatabases {
+		if db.Ignored {
+			prevIgnoredMissingDBS[db.Name] = db
+		}
+	}
+
+	new.Features.Oracle.Database.MissingDatabases = []model.MissingDatabase{}
+	for _, v := range new.Features.Oracle.Database.UnlistedRunningDatabases {
+		missingDB := model.MissingDatabase{Name: v}
+		if _, ok := prevIgnoredMissingDBS[v]; ok {
+			missingDB = prevIgnoredMissingDBS[v]
+		}
+
+		new.Features.Oracle.Database.MissingDatabases = append(new.Features.Oracle.Database.MissingDatabases, missingDB)
+	}
+
+	var alerts []model.Alert
+	for _, db := range new.Features.Oracle.Database.MissingDatabases {
+		if err := hds.ackOldUnlistedRunningDatabasesAlerts(new.Hostname, db.Name); err != nil {
+			hds.Log.Errorf("Can't ack UnlistedRunningDatabases alerts by filter")
+		}
+		if !db.Ignored {
+			alerts = append(alerts,
+				model.Alert{
+					OtherInfo: map[string]interface{}{
+						"hostname": new.Hostname,
+						"dbname":   db.Name,
+					},
+				},
+			)
+		}
+	}
+
+	if err := hds.throwUnlistedRunningDatabasesAlert(alerts); err != nil {
 		hds.Log.Error(err)
 	}
 }
