@@ -387,6 +387,7 @@ func (hds *HostDataService) ignorePreviousMissingDatabases(previous, new *model.
 	}
 
 	prevIgnoredMissingDBS := map[string]model.MissingDatabase{}
+
 	for _, db := range previous.Features.Oracle.Database.MissingDatabases {
 		if db.Ignored {
 			prevIgnoredMissingDBS[db.Name] = db
@@ -404,10 +405,12 @@ func (hds *HostDataService) ignorePreviousMissingDatabases(previous, new *model.
 	}
 
 	var alerts []model.Alert
+
 	for _, db := range new.Features.Oracle.Database.MissingDatabases {
 		if err := hds.ackOldUnlistedRunningDatabasesAlerts(new.Hostname, db.Name); err != nil {
 			hds.Log.Errorf("Can't ack UnlistedRunningDatabases alerts by filter")
 		}
+
 		if !db.Ignored {
 			alerts = append(alerts,
 				model.Alert{
