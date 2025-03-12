@@ -46,32 +46,12 @@ func init() {
 func addMissingDatabases(client *mongo.Database) error {
 	collectionName := "hosts"
 
-	filter := bson.M{"$or": bson.A{
-		bson.M{
-			"$expr": bson.M{
-				"$gt": bson.A{
-					bson.M{
-						"$size": bson.M{
-							"$ifNull": bson.A{"$features.oracle.database.unretrievedDatabases", bson.A{}},
-						},
-					},
-					0,
-				},
-			},
+	filter := bson.M{
+		"$or": bson.A{
+			bson.D{{Key: "features.oracle.database.unlistedRunningDatabases", Value: bson.D{{Key: "$exists", Value: true}}}},
+			bson.D{{Key: "features.oracle.database.unretrievedDatabases", Value: bson.D{{Key: "$exists", Value: true}}}},
 		},
-		bson.M{
-			"$expr": bson.M{
-				"$gt": bson.A{
-					bson.M{
-						"$size": bson.M{
-							"$ifNull": bson.A{"$features.oracle.database.unlistedRunningDatabases", bson.A{}},
-						},
-					},
-					0,
-				},
-			},
-		},
-	}}
+	}
 
 	pipeline := mongo.Pipeline{
 		{{
