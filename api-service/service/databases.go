@@ -350,6 +350,8 @@ func (as *APIService) GetUsedLicensesPerDatabasesAsXLSX(filter dto.GlobalFilter)
 		"Metric",
 		"Used Licenses",
 		"Cluster Licenses",
+		"Ignored",
+		"Ignored Comment",
 	}
 
 	sheets, err := exutils.NewXLSX(as.Config, sheet, headers...)
@@ -368,6 +370,8 @@ func (as *APIService) GetUsedLicensesPerDatabasesAsXLSX(filter dto.GlobalFilter)
 		sheets.SetCellValue(sheet, nextAxis(), val.Metric)
 		sheets.SetCellValue(sheet, nextAxis(), val.UsedLicenses)
 		sheets.SetCellValue(sheet, nextAxis(), val.ClusterLicenses)
+		sheets.SetCellValue(sheet, nextAxis(), val.Ignored)
+		sheets.SetCellValue(sheet, nextAxis(), val.IgnoredComment)
 	}
 
 	return sheets, err
