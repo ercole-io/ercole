@@ -343,6 +343,14 @@ func (md *MongoDatabase) getHosts(mode string, filters dto.SearchHostsFilters, o
 				})),
 				mu.APOptionalStage(mode == "lms", mu.MAPipeline(
 					mu.APMatch(mu.QOExpr(mu.APOGreater(mu.APOSize("$features.oracle.database.databases"), 0))),
+					bson.M{
+						"$lookup": bson.M{
+							"from":         "oracle_database_license_types",
+							"localField":   "features.oracle.database.databases.licenses.licenseTypeID",
+							"foreignField": "_id",
+							"as":           "licenseDetails",
+						},
+					},
 					mu.APUnwind("$features.oracle.database.databases"),
 					mu.APSet(bson.M{
 						"database": "$features.oracle.database.databases",
@@ -433,7 +441,12 @@ func (md *MongoDatabase) getHosts(mode string, filters dto.SearchHostsFilters, o
 								},
 							},
 						),
-						"licenseMetricAllocated": "processor",
+						"licenseMetricAllocated": bson.M{
+							"$ifNull": bson.A{
+								bson.M{"$arrayElemAt": bson.A{"$licenseDetails.metric", 0}},
+								"processor",
+							},
+						},
 						"usingLicenseCount": mu.APOIfNull(mu.APOArrayElemAt(
 							mu.APOMap(
 								mu.APOFilter("$database.licenses", "lic",
