@@ -538,7 +538,7 @@ func TestSearchHostsAsXLSX(t *testing.T) {
 			VirtualizationNode: "",
 			Cluster:            "",
 			Databases:          map[string][]string{},
-			IsMissingDB:        []string{},
+			MissingDatabases:   []model.MissingDatabase{},
 		},
 
 		{
@@ -713,11 +713,6 @@ func TestGetHostDataSummaries(t *testing.T) {
 		}
 
 		db.EXPECT().GetHostDataSummaries(tc.filters).Return(tc.res, tc.err).Times(1)
-
-		if tc.res != nil {
-			db.EXPECT().FindUnretrievedDatabases("pluto").Return(nil, nil).Times(1)
-			db.EXPECT().FindUnlistedRunningDatabases("pluto").Return(nil, nil).Times(1)
-		}
 
 		res, err := as.GetHostDataSummaries(tc.filters)
 		if tc.err == nil {
@@ -1058,7 +1053,7 @@ func TestDismissHost_Fail(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestGetAllMissingDbs_Success(t *testing.T) {
+func TestGetMissingDatabases_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -1069,19 +1064,31 @@ func TestGetAllMissingDbs_Success(t *testing.T) {
 		AlertSvcClient: asc,
 	}
 
-	expected := []dto.OracleDatabaseMissing{
+	expected := []dto.OracleDatabaseMissingDbs{
 		{
 			Hostname: "host01",
-			MissingDbs: []string{
-				"db01",
-				"db02",
+			MissingDatabases: []model.MissingDatabase{
+				{
+					Name: "db01",
+					Ignorable: model.Ignorable{
+						Ignored:        false,
+						IgnoredComment: "",
+					},
+				},
+				{
+					Name: "db02",
+					Ignorable: model.Ignorable{
+						Ignored:        true,
+						IgnoredComment: "this is no longer needed",
+					},
+				},
 			},
 		},
 	}
 
-	db.EXPECT().FindAllMissingDatabases().Return(expected, nil)
+	db.EXPECT().GetMissingDatabases().Return(expected, nil)
 
-	actual, err := as.GetAllMissingDbs()
+	actual, err := as.GetMissingDatabases()
 
 	require.NoError(t, err)
 

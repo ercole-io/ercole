@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2024 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,11 +13,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package model
+package dto
 
-type OracleDatabaseFeature struct {
-	Databases        []OracleDatabase  `json:"databases" bson:"databases"`
-	MissingDatabases []MissingDatabase `json:"missingDatabases" bson:"missingDatabases"`
+import "github.com/ercole-io/ercole/v2/model"
 
-	UnlistedRunningDatabases []string `json:"unlistedRunningDatabases,omitempty" bson:"-"`
+type OracleDatabaseMissingDbs struct {
+	Hostname         string                  `json:"hostname" bson:"hostname"`
+	MissingDatabases []model.MissingDatabase `json:"missingDatabases" bson:"missingDatabases"`
 }

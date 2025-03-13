@@ -1252,10 +1252,10 @@ components:
                     properties:
                       "":
                         type: string
-                unlistedRunningDatabases:
+                missingDatabases:
                   type: array
                   items:
-                    type: string
+                    $ref: '#/components/schemas/MissingDatabase'
         racNodeNames:
           type: string
           nullable: true
@@ -1326,10 +1326,6 @@ components:
                 format: date-time
               cpuAvg:
                 type: number
-        isMissingDB:
-          type: array
-          items:
-            type: string
         memorySum:
           type: number
         memorySumPercentage:
@@ -2471,15 +2467,24 @@ components:
           type: array
           items:
             type: string
-    OracleDatabaseMissing:
+    MissingDatabase:
+      type: object
+      properties:
+        name:
+          type: string
+        ignored:
+          type: boolean
+        ignoredComment:
+          type: string
+    OracleDatabaseMissingDbs:
       type: object
       properties:
         hostname:
           type: string
-        missingdbs:
+        missingDatabases:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/MissingDatabase'
     VirtualHostWithoutCluster:
       type: object
       properties:
@@ -3184,21 +3189,6 @@ paths:
         "500":
           $ref: "#/components/responses/error"
 
-  /hosts/missing-dbs:
-    get:
-      tags:
-        - api-service
-      description: Get all the missing database (unretrieved and unlisted)
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/OracleDatabaseMissing"
-
   /hosts/no-clusters:
     get:
       tags:
@@ -3214,33 +3204,58 @@ paths:
                 items:
                   $ref: "#/components/schemas/VirtualHostWithoutCluster"
 
-  "/hosts/{hostname}/is-missing-db":
-    parameters:
-      - in: path
-        name: hostname
-        schema:
-          type: string
-        required: true
-        description: hostname of the requested host
-    get:
+  /hosts/{hostname}/technologies/oracle/missing-dbs/{dbname}/ignored/{ignored}:
+    put:
       tags:
         - api-service
-      operationId: GetMissingDbHost
-      summary: Check missing database
-      description: Check if there are any db instances not running on host
+        - fe-user
+        - write
+      operationId: UpdateMissingDatabaseIgnoredField
+      summary: Update missing db ignored and ignoredComment fields
+      description: Update missing db ignored and ignoredComment fields
+      parameters:
+        - in: path
+          name: hostname
+          schema:
+            type: string
+          required: true
+          description: hostname of the requested host
+        - in: path
+          name: dbname
+          schema:
+            type: string
+          required: true
+          description: name of the modifying database
+        - in: path
+          name: ignored
+          schema:
+            type: boolean
+          required: true
+          description: flag ignored
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ignoredComment:
+                  type: string
       responses:
-        "200":
-          description: Ok
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  isMissingDB:
-                    type: array
-                    items:
-                      type: string
-          
+        '204':
+          description: The value of the the ignored field was changed successfully
+        "401":
+          $ref: "#/components/responses/error"
+        "400":
+          $ref: "#/components/responses/error"
+        "403":
+          $ref: "#/components/responses/error"
+        "404":
+          $ref: "#/components/responses/error"
+        "422":
+          $ref: "#/components/responses/error"
+        "500":
+          $ref: "#/components/responses/error"
+
   ? "/hosts/{hostname}/technologies/oracle/databases/{dbname}/licenses/{licenseTypeID}/ignored/{ignored}"
   : parameters:
       - in: path
@@ -3480,6 +3495,20 @@ paths:
             application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
               {}
     parameters: []
+  /hosts/technologies/oracle/missing-dbs:
+    get:
+      tags:
+        - api-service
+      description: Get all hosts with missing databases
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OracleDatabaseMissingDbs"
   /hosts/technologies/oracle/databases:
     get:
       tags:
@@ -3844,6 +3873,30 @@ paths:
             application/json:
               schema: 
                 type: string
+
+  /hosts/{hostname}/technologies/oracle/missing-dbs:
+    parameters:
+      - in: path
+        name: hostname
+        schema:
+          type: string
+        required: true
+        description: hostname of the requested host
+    get:
+      tags:
+        - api-service
+      operationId: GetMissingDatabasesByHostname
+      summary: Check missing database
+      description: Check if there are any db instances not running on host
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MissingDatabase'
 
   "/hosts/technologies/oracle/databases/psql-migrabilities":
     get:

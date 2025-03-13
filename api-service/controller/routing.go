@@ -97,15 +97,12 @@ func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 	router.HandleFunc("/hosts/environments", ctrl.ListEnvironments).Methods("GET")
 	router.HandleFunc("/hosts/clusters", ctrl.SearchClusters).Methods("GET")
 	router.HandleFunc("/hosts/clusters/{name}", ctrl.GetCluster).Methods("GET")
-	router.HandleFunc("/hosts/missing-dbs", ctrl.GetAllMissingDb).Methods("GET")
 
 	router.HandleFunc("/hosts/no-clusters", ctrl.GetVirtualHostWithoutCluster).Methods("GET")
 
 	router.HandleFunc("/hosts/{hostname}", ctrl.GetHost).Methods("GET")
 	router.HandleFunc("/hosts/{hostname}", ctrl.DismissHost).Methods("DELETE")
 	router.HandleFunc("/hosts/{hostname}/technologies/oracle/databases/{dbname}/licenses/{licenseTypeID}/ignored/{ignored}", ctrl.UpdateLicenseIgnoredField).Methods("PUT")
-
-	router.HandleFunc("/hosts/{hostname}/is-missing-db", ctrl.GetMissingDbHost).Methods("GET")
 
 	router.HandleFunc("/hosts/technologies", ctrl.ListTechnologies).Methods("GET")
 
@@ -169,6 +166,10 @@ func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 
 	router.HandleFunc("/hosts/{hostname}/technologies/oracle/databases/{dbname}/pdbs/{pdbname}/psql-migrabilities", ctrl.GetOraclePdbPsqlMigrabilities).Methods("GET")
 	router.HandleFunc("/hosts/{hostname}/technologies/oracle/databases/{dbname}/pdbs/{pdbname}/psql-migrabilities/semaphore", ctrl.GetOraclePdbPsqlMigrabilitiesSemaphore).Methods("GET")
+
+	router.HandleFunc("/hosts/technologies/oracle/missing-dbs", ctrl.GetMissingDatabases).Methods("GET")
+	router.HandleFunc("/hosts/{hostname}/technologies/oracle/missing-dbs", ctrl.GetMissingDatabasesByHostname).Methods("GET")
+	router.HandleFunc("/hosts/{hostname}/technologies/oracle/missing-dbs/{dbname}/ignored/{ignored}", ctrl.UpdateMissingDatabaseIgnoredField).Methods("PUT")
 
 	// ORACLE CONTRACTS
 	router.HandleFunc("/contracts/oracle/database", ctrl.AddOracleDatabaseContract).Methods("POST")
