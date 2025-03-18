@@ -58,6 +58,19 @@ func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsAsLMS) (*excelize.
 		return nil, aerr
 	}
 
+	primaryDbs := make(map[string]string, len(hosts))
+
+	for _, host := range hosts {
+		role, ok := host["dbInstanceRole"]
+		if !ok {
+			continue
+		}
+
+		if host["usingLicenseCount"] != 0.0 && role.(string) == "PRIMARY" {
+			primaryDbs[host["physicalServerName"].(string)] = host["dbInstanceName"].(string)
+		}
+	}
+
 	if filters.From != utils.MIN_TIME || filters.To != utils.MAX_TIME {
 		//HostAdded management
 		createdHosts, err := as.Database.GetListValidHostsByRangeDates(filters.From, filters.To)
@@ -97,7 +110,7 @@ func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsAsLMS) (*excelize.
 					}
 
 					if cHosts[i]["usingLicenseCount"] != 0.0 {
-						setCellValueLMS(lms, sheetHostAdded, j, csiByHostname, cHosts[i])
+						setCellValueLMS(lms, sheetHostAdded, j, csiByHostname, cHosts[i], primaryDbs)
 						j++
 					}
 				}
@@ -142,7 +155,7 @@ func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsAsLMS) (*excelize.
 					}
 
 					if dHosts[i]["usingLicenseCount"] != 0.0 {
-						setCellValueLMS(lms, sheetHostDismissed, z, csiByHostname, dHosts[i])
+						setCellValueLMS(lms, sheetHostDismissed, z, csiByHostname, dHosts[i], primaryDbs)
 						z++
 					}
 				}
@@ -154,7 +167,7 @@ func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsAsLMS) (*excelize.
 
 	for i := 0; i < len(hosts); i++ {
 		if hosts[i]["usingLicenseCount"] != 0.0 {
-			setCellValueLMS(lms, sheetDatabaseEbsDbTier, indexRow, csiByHostname, hosts[i])
+			setCellValueLMS(lms, sheetDatabaseEbsDbTier, indexRow, csiByHostname, hosts[i], primaryDbs)
 			indexRow++
 		}
 	}
@@ -200,7 +213,7 @@ func (as *APIService) GetHostsMysqlAsLMS(filters dto.SearchHostsAsLMS) (*exceliz
 	return lms, nil
 }
 
-func setCellValueLMS(lms *excelize.File, sheetName string, i int, csiByHostname map[string][]string, val map[string]interface{}) {
+func setCellValueLMS(lms *excelize.File, sheetName string, i int, csiByHostname map[string][]string, val map[string]interface{}, primaryDBs map[string]string) {
 	lms.SetCellValue(sheetName, fmt.Sprintf("B%d", i), val["physicalServerName"])
 	lms.SetCellValue(sheetName, fmt.Sprintf("C%d", i), val["virtualServerName"])
 	lms.SetCellValue(sheetName, fmt.Sprintf("D%d", i), val["virtualizationTechnology"])
@@ -209,6 +222,7 @@ func setCellValueLMS(lms *excelize.File, sheetName string, i int, csiByHostname 
 	lms.SetCellValue(sheetName, fmt.Sprintf("G%d", i), val["environment"])
 	lms.SetCellValue(sheetName, fmt.Sprintf("H%d", i), val["options"])
 	lms.SetCellValue(sheetName, fmt.Sprintf("I%d", i), val["usedManagementPacks"])
+	lms.SetCellValue(sheetName, fmt.Sprintf("J%d", i), primaryDBs[val["physicalServerName"].(string)])
 	lms.SetCellValue(sheetName, fmt.Sprintf("N%d", i), val["productVersion"])
 	lms.SetCellValue(sheetName, fmt.Sprintf("O%d", i), val["productLicenseAllocated"])
 	lms.SetCellValue(sheetName, fmt.Sprintf("P%d", i), val["licenseMetricAllocated"])

@@ -397,6 +397,7 @@ func (md *MongoDatabase) getHosts(mode string, filters dto.SearchHostsFilters, o
 							},
 						},
 						"dbInstanceName":        "$database.name",
+						"dbInstanceRole":        "$database.role",
 						"pluggableDatabaseName": "$database.pdbs",
 						"environment":           "$environment",
 						"options": mu.APOJoin(mu.APOMap(
