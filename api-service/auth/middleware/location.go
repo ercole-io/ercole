@@ -57,6 +57,12 @@ func Location(service service.APIServiceInterface) mux.MiddlewareFunc {
 				return
 			}
 
+			splittedLocation := strings.Split(location, ",")
+			if utils.ContainsSomeI(locations, splittedLocation...) {
+				h.ServeHTTP(w, r)
+				return
+			}
+
 			w.WriteHeader(http.StatusForbidden)
 		})
 	}
