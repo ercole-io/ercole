@@ -1,5 +1,6 @@
 {
     "archived": true,
+    "isDR": false,
     "createdAt": {
         "$date": {
             "$numberLong": "1612425631000"

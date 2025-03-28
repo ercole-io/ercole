@@ -30,6 +30,7 @@ func (md *MongoDatabase) FindGrantDbaByHostname(hostname string, filter dto.Glob
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		ctx,
 		mu.MAPipeline(
+			ExcludeDR(),
 			FindByHostname(hostname),
 			FilterByOldnessSteps(filter.OlderThan),
 			FilterByLocationAndEnvironmentSteps(filter.Location, filter.Environment),

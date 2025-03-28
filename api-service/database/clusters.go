@@ -32,6 +32,7 @@ func (md *MongoDatabase) SearchClusters(mode string, keywords []string, sortBy s
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
+			ExcludeDR(),
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			mu.APUnwind("$clusters"),
@@ -112,6 +113,7 @@ func (md *MongoDatabase) GetClusters(filter dto.GlobalFilter) ([]dto.Cluster, er
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
+			ExcludeDR(),
 			FilterByOldnessSteps(filter.OlderThan),
 			FilterByLocationAndEnvironmentSteps(filter.Location, filter.Environment),
 			mu.APUnwind("$clusters"),
@@ -188,6 +190,7 @@ func (md *MongoDatabase) GetCluster(clusterName string, olderThan time.Time) (*d
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
+			ExcludeDR(),
 			FilterByOldnessSteps(olderThan),
 			mu.APUnwind("$clusters"),
 			mu.APProject(bson.M{

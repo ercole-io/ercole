@@ -32,6 +32,7 @@ func (md *MongoDatabase) GetOraclePatchList(filter dto.GlobalFilter) ([]dto.Orac
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		ctx,
 		mu.MAPipeline(
+			ExcludeDR(),
 			FilterByOldnessSteps(filter.OlderThan),
 			FilterByLocationAndEnvironmentSteps(filter.Location, filter.Environment),
 			bson.M{"$unwind": bson.M{"path": "$features.oracle.database.databases"}},
