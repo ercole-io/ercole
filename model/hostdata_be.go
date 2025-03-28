@@ -29,6 +29,7 @@ const ServerSchemaVersion int = 1
 type HostDataBE struct {
 	ID                  primitive.ObjectID `json:"id" bson:"_id"`
 	Archived            bool               `json:"archived" bson:"archived"`
+	IsDR                bool               `json:"isDR" bson:"isDR"`
 	CreatedAt           time.Time          `json:"createdAt" bson:"createdAt"`
 	DismissedAt         time.Time          `json:"dismissedAt" bson:"dismissedAt,omitempty"`
 	ServerVersion       string             `json:"serverVersion" bson:"serverVersion"`

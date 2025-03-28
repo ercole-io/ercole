@@ -121,6 +121,8 @@ type APIControllerInterface interface {
 	// DismissHost dismiss the specified host in the request
 	DismissHost(w http.ResponseWriter, r *http.Request)
 
+	CreateDr(w http.ResponseWriter, r *http.Request)
+
 	GetMissingDatabases(w http.ResponseWriter, r *http.Request)
 	GetMissingDatabasesByHostname(w http.ResponseWriter, r *http.Request)
 	UpdateMissingDatabaseIgnoredField(w http.ResponseWriter, r *http.Request)

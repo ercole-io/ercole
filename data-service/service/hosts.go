@@ -90,6 +90,11 @@ func (hds *HostDataService) InsertHostData(hostdata model.HostDataBE) error {
 		}
 	}
 
+	err = hds.createDR(hostdata)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
