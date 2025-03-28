@@ -3189,6 +3189,28 @@ paths:
         "500":
           $ref: "#/components/responses/error"
 
+  /hosts/{hostname}/create-dr:
+    put:
+        parameters:
+          - schema:
+              type: string
+            in: path
+            name: hostname
+            required: true
+        tags:
+          - api-service
+        summary: Create DR
+        responses:
+          "201":
+            description: Created
+            content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      hostname:
+                        type: string  
+
   /hosts/no-clusters:
     get:
       tags:
