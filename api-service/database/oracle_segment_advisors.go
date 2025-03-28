@@ -33,6 +33,7 @@ func (md *MongoDatabase) SearchOracleDatabaseSegmentAdvisors(keywords []string, 
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
+			ExcludeDR(),
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			mu.APUnwind("$features.oracle.database.databases"),
@@ -89,6 +90,7 @@ func (md *MongoDatabase) SearchOraclePdbSegmentAdvisors(sortBy string, sortDesc 
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
+			ExcludeDR(),
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			bson.M{"$unwind": bson.M{"path": "$features.oracle.database.databases"}},

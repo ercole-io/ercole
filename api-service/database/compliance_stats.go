@@ -32,6 +32,7 @@ const (
 func (md *MongoDatabase) CountAllHost() (int64, error) {
 	filter := bson.D{
 		{Key: "archived", Value: false},
+		{Key: "isDR", Value: false},
 	}
 
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(hostCollection).
@@ -144,7 +145,7 @@ func (md *MongoDatabase) CountMongoDbHostsByLocations(locations []string) (int64
 }
 
 func (md *MongoDatabase) getCountInstancePipeline(path string, locations ...string) bson.A {
-	match := bson.D{{Key: "archived", Value: false}}
+	match := bson.D{{Key: "archived", Value: false}, {Key: "isDR", Value: false}}
 	if len(locations) > 0 {
 		match = append(match, bson.E{Key: "location", Value: bson.M{"$in": locations}})
 	}
@@ -166,7 +167,7 @@ func (md *MongoDatabase) getCountInstancePipeline(path string, locations ...stri
 }
 
 func (md *MongoDatabase) getCountHostPipeline(path string, locations ...string) bson.A {
-	match := bson.D{{Key: "archived", Value: false}}
+	match := bson.D{{Key: "archived", Value: false}, {Key: "isDR", Value: false}}
 	if len(locations) > 0 {
 		match = append(match, bson.E{Key: "location", Value: bson.M{"$in": locations}})
 	}
@@ -183,7 +184,7 @@ func (md *MongoDatabase) getCountHostPipeline(path string, locations ...string) 
 
 func (md *MongoDatabase) count(pipeline bson.A) (int64, error) {
 	ctx := context.TODO()
-	
+
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(hostCollection).Aggregate(ctx, pipeline)
 	if err != nil {
 		return 0, err

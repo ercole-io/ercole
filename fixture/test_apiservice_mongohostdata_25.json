@@ -1,5 +1,6 @@
 {
     "agentVersion": "latest",
+    "isDR": false,
     "dismissedAt":  {
         "$date": {
             "$numberLong": "1587729005460"

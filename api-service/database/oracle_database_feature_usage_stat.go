@@ -33,6 +33,7 @@ func (md *MongoDatabase) GetOracleOptionList(filter dto.GlobalFilter) ([]dto.Ora
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		ctx,
 		mu.MAPipeline(
+			ExcludeDR(),
 			FilterByOldnessSteps(filter.OlderThan),
 			FilterByLocationAndEnvironmentSteps(filter.Location, filter.Environment),
 			bson.M{"$unwind": bson.M{"path": "$features.oracle.database.databases"}},
@@ -77,7 +78,7 @@ func (md *MongoDatabase) FindOracleOptionsByDbname(hostname string, dbname strin
 		}}}
 
 	stage := bson.A{
-		bson.M{"$match": bson.M{"archived": false}},
+		bson.M{"$match": bson.M{"archived": false, "isDR": false}},
 		bson.M{"$match": bson.M{"hostname": hostname}},
 		bson.M{"$unwind": "$features.oracle.database.databases"},
 		bson.M{"$match": bson.M{"features.oracle.database.databases.name": dbname}},

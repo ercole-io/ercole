@@ -32,7 +32,7 @@ func (md *MongoDatabase) FindAllOracleDatabasePdbs(filter dto.GlobalFilter) ([]d
 		FilterByOldnessSteps(filter.OlderThan),
 		FilterByLocationAndEnvironmentSteps(filter.Location, filter.Environment),
 		bson.A{
-			bson.D{{Key: "$match", Value: bson.D{{Key: "archived", Value: false}}}},
+			bson.D{{Key: "$match", Value: bson.D{{Key: "archived", Value: false}, {Key: "isDR", Value: false}}}},
 			bson.D{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$features.oracle.database.databases"}}}},
 			bson.D{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$features.oracle.database.databases.pdbs"}}}},
 			bson.D{
@@ -231,6 +231,7 @@ func (md *MongoDatabase) FindAllOracleDatabasePdbs(filter dto.GlobalFilter) ([]d
 func (md *MongoDatabase) PdbExist(hostname, dbname, pdbname string) (bool, error) {
 	filter := bson.D{
 		{Key: "archived", Value: false},
+		{Key: "isDR", Value: false},
 		{Key: "hostname", Value: hostname},
 		{Key: "features.oracle.database.databases.name", Value: dbname},
 		{Key: "features.oracle.database.databases.pdbs.name", Value: pdbname},

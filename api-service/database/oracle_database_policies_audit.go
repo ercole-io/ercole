@@ -30,6 +30,7 @@ func (md *MongoDatabase) FindOracleDatabasePoliciesAudit(hostname, dbname string
 			{Key: "$match",
 				Value: bson.D{
 					{Key: "archived", Value: false},
+					{Key: "isDR", Value: false},
 					{Key: "hostname", Value: hostname},
 				},
 			},
@@ -72,7 +73,7 @@ func (md *MongoDatabase) ListOracleDatabasePoliciesAudit() ([]dto.OraclePolicies
 	ctx := context.TODO()
 
 	pipeline := bson.A{
-		bson.D{{Key: "$match", Value: bson.D{{Key: "archived", Value: false}}}},
+		bson.D{{Key: "$match", Value: bson.D{{Key: "archived", Value: false}, {Key: "isDR", Value: false}}}},
 		bson.D{
 			{Key: "$lookup",
 				Value: bson.D{

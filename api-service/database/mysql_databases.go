@@ -31,6 +31,7 @@ func (md *MongoDatabase) SearchMySQLInstances(filter dto.GlobalFilter) ([]dto.My
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
+			ExcludeDR(),
 			FilterByOldnessSteps(filter.OlderThan),
 			FilterByLocationAndEnvironmentSteps(filter.Location, filter.Environment),
 			mu.APUnwind("$features.mysql.instances"),
