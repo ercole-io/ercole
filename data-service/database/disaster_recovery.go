@@ -30,3 +30,21 @@ func (md *MongoDatabase) ExistsDR(hostname string) bool {
 
 	return res.Err() == nil
 }
+
+func (md *MongoDatabase) UpdateVeritasClusterHostnames(veritascluster, hostname string) error {
+	filter := bson.M{"archived": false, "hostname": veritascluster}
+
+	pipeline := bson.M{
+		"$push": bson.M{
+			"clusterMembershipStatus.veritasClusterHostnames": hostname,
+		},
+	}
+
+	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").
+		UpdateOne(context.Background(), filter, pipeline)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
