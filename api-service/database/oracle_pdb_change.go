@@ -33,7 +33,6 @@ func (md *MongoDatabase) FindOraclePDBChangesByHostname(filter dto.GlobalFilter,
 		bson.D{
 			{Key: "$match",
 				Value: bson.D{
-					{Key: "isDR", Value: false},
 					{Key: "hostname", Value: hostname},
 					{Key: "createdAt",
 						Value: bson.D{

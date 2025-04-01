@@ -66,7 +66,7 @@ func (md *MongoDatabase) load(filter dto.GlobalFilter, hostname string, dbname s
 	}
 
 	pipeline = append(pipeline,
-		bson.D{{Key: "$match", Value: bson.M{"archived": false, "isDR": false}}},
+		bson.D{{Key: "$match", Value: bson.M{"archived": false}}},
 		bson.D{{Key: "$unwind", Value: bson.M{"path": "$features.oracle.database.databases"}}},
 		bson.D{{Key: "$unwind", Value: bson.M{"path": "$features.oracle.database.databases.diskGroups"}}},
 		bson.D{{Key: "$group", Value: bson.M{

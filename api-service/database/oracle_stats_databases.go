@@ -32,7 +32,6 @@ func (md *MongoDatabase) GetOracleDatabaseEnvironmentStats(location string, olde
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
-			ExcludeDR(),
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, ""),
 			mu.APGroup(bson.M{
@@ -73,7 +72,6 @@ func (md *MongoDatabase) GetOracleDatabaseHighReliabilityStats(location string, 
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
-			ExcludeDR(),
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, ""),
 			AddHardwareAbstraction("ha"),
@@ -116,7 +114,6 @@ func (md *MongoDatabase) GetOracleDatabaseVersionStats(location string, olderTha
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
-			ExcludeDR(),
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, ""),
 			mu.APUnwind("$features.oracle.database.databases"),
@@ -154,7 +151,6 @@ func (md *MongoDatabase) GetTopReclaimableOracleDatabaseStats(location string, l
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
-			ExcludeDR(),
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, ""),
 			mu.APUnwind("$features.oracle.database.databases"),
@@ -198,7 +194,6 @@ func (md *MongoDatabase) GetTopWorkloadOracleDatabaseStats(location string, limi
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
-			ExcludeDR(),
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, ""),
 			mu.APUnwind("$features.oracle.database.databases"),
@@ -242,7 +237,6 @@ func (md *MongoDatabase) GetOracleDatabasePatchStatusStats(location string, wind
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
-			ExcludeDR(),
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, ""),
 			mu.APUnwind("$features.oracle.database.databases"),
@@ -298,7 +292,6 @@ func (md *MongoDatabase) GetOracleDatabaseDataguardStatusStats(location string, 
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
-			ExcludeDR(),
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			mu.APUnwind("$features.oracle.database.databases"),
@@ -336,7 +329,6 @@ func (md *MongoDatabase) GetOracleDatabaseRACStatusStats(location string, enviro
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
-			ExcludeDR(),
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			mu.APUnwind("$features.oracle.database.databases"),
@@ -379,7 +371,6 @@ func (md *MongoDatabase) GetOracleDatabaseArchivelogStatusStats(location string,
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
-			ExcludeDR(),
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			mu.APUnwind("$features.oracle.database.databases"),
@@ -417,7 +408,6 @@ func (md *MongoDatabase) GetTotalOracleDatabaseWorkStats(location string, enviro
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
-			ExcludeDR(),
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			mu.APUnwind("$features.oracle.database.databases"),
@@ -453,7 +443,6 @@ func (md *MongoDatabase) GetTotalOracleDatabaseMemorySizeStats(location string, 
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
-			ExcludeDR(),
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			mu.APUnwind("$features.oracle.database.databases"),
@@ -499,7 +488,6 @@ func (md *MongoDatabase) GetTotalOracleDatabaseDatafileSizeStats(location string
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
-			ExcludeDR(),
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			mu.APUnwind("$features.oracle.database.databases"),
@@ -548,7 +536,6 @@ func (md *MongoDatabase) GetTotalOracleDatabaseSegmentSizeStats(location string,
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
-			ExcludeDR(),
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			mu.APUnwind("$features.oracle.database.databases"),
@@ -599,7 +586,6 @@ func (md *MongoDatabase) GetTopUnusedOracleDatabaseInstanceResourceStats(locatio
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
-			ExcludeDR(),
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			mu.APProject(bson.M{
