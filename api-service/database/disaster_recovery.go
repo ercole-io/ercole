@@ -46,8 +46,14 @@ func (md *MongoDatabase) CreateDR(hostname string) (string, error) {
 	}
 
 	host.ID = primitive.NewObjectID()
-	host.Hostname = fmt.Sprintf("%s-DR", hostname)
+	host.Hostname = fmt.Sprintf("%s_DR", hostname)
 	host.IsDR = true
+
+	if host.ClusterMembershipStatus.VeritasClusterServer {
+		for i := 0; i < len(host.ClusterMembershipStatus.VeritasClusterHostnames); i++ {
+			host.ClusterMembershipStatus.VeritasClusterHostnames[i] = fmt.Sprintf("%s_DR", host.ClusterMembershipStatus.VeritasClusterHostnames[i])
+		}
+	}
 
 	_, err := md.Client.Database(md.Config.Mongodb.DBName).
 		Collection(hostCollection).InsertOne(context.Background(), host)

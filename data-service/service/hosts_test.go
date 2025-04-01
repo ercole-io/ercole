@@ -90,7 +90,7 @@ func TestInsertHostData_Success(t *testing.T) {
 				}).
 				Return(nil),
 			db.EXPECT().DeleteNoDataAlertByHost(hd.Hostname).Return(nil),
-			db.EXPECT().ExistsDR("rac1_x-DR").Return(false),
+			db.EXPECT().ExistsDR("rac1_x_DR").Return(false),
 		)
 
 		err := hds.InsertHostData(hd)
@@ -120,7 +120,7 @@ func TestInsertHostData_Success(t *testing.T) {
 				}).
 				Return(nil),
 			db.EXPECT().DeleteNoDataAlertByHost(hd.Hostname).Return(nil),
-			db.EXPECT().ExistsDR("rac1_x-DR").Return(false),
+			db.EXPECT().ExistsDR("rac1_x_DR").Return(false),
 		)
 
 		err := hds.InsertHostData(hd)
@@ -146,7 +146,7 @@ func TestInsertHostData_Success(t *testing.T) {
 				}).
 				Return(nil),
 			db.EXPECT().DeleteNoDataAlertByHost(hd.Hostname).Return(nil),
-			db.EXPECT().ExistsDR("rac1_x-DR").Return(false),
+			db.EXPECT().ExistsDR("rac1_x_DR").Return(false),
 		)
 
 		err := hds.InsertHostData(hd)
