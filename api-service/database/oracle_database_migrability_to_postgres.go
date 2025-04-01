@@ -37,7 +37,6 @@ func (md *MongoDatabase) FindPsqlMigrabilities(hostname, dbname string) ([]model
 						Value: bson.D{
 							{Key: "archived", Value: false},
 							{Key: "hostname", Value: hostname},
-							{Key: "isDR", Value: false},
 						},
 					},
 				},
@@ -77,7 +76,6 @@ func (md *MongoDatabase) FindPdbPsqlMigrabilities(hostname, dbname, pdbname stri
 				Value: bson.D{
 					{Key: "archived", Value: false},
 					{Key: "hostname", Value: hostname},
-					{Key: "isDR", Value: false},
 				},
 			},
 		},
@@ -117,7 +115,7 @@ func (md *MongoDatabase) ListOracleDatabasePsqlMigrabilities() ([]dto.OracleData
 	result := make([]dto.OracleDatabasePgsqlMigrability, 0)
 
 	pipeline := bson.A{
-		bson.D{{Key: "$match", Value: bson.D{{Key: "archived", Value: false}, {Key: "isDR", Value: false}}}},
+		bson.D{{Key: "$match", Value: bson.D{{Key: "archived", Value: false}}}},
 		bson.D{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$features.oracle.database.databases"}}}},
 		bson.D{{Key: "$match", Value: bson.D{{Key: "features.oracle.database.databases.pgsqlMigrability", Value: bson.D{{Key: "$ne", Value: primitive.Null{}}}}}}},
 		bson.D{
@@ -267,7 +265,7 @@ func (md *MongoDatabase) ListOracleDatabasePdbPsqlMigrabilities() ([]dto.OracleD
 	result := make([]dto.OracleDatabasePdbPgsqlMigrability, 0)
 
 	pipeline := bson.A{
-		bson.D{{Key: "$match", Value: bson.D{{Key: "archived", Value: false}, {Key: "isDR", Value: false}}}},
+		bson.D{{Key: "$match", Value: bson.D{{Key: "archived", Value: false}}}},
 		bson.D{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$features.oracle.database.databases"}}}},
 		bson.D{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$features.oracle.database.databases.pdbs"}}}},
 		bson.D{{Key: "$match", Value: bson.D{{Key: "features.oracle.database.databases.pdbs.pgsqlMigrability", Value: bson.D{{Key: "$ne", Value: primitive.Null{}}}}}}},

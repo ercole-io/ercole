@@ -24,7 +24,7 @@ import (
 )
 
 func (hds *HostDataService) createDR(hostdata model.HostDataBE) error {
-	drname := fmt.Sprintf("%s-DR", hostdata.Hostname)
+	drname := fmt.Sprintf("%s_DR", hostdata.Hostname)
 
 	if !hds.Database.ExistsDR(drname) {
 		return nil
@@ -39,14 +39,9 @@ func (hds *HostDataService) createDR(hostdata model.HostDataBE) error {
 	hostdata.IsDR = true
 
 	if hostdata.ClusterMembershipStatus.VeritasClusterServer {
-		for _, hostname := range hostdata.ClusterMembershipStatus.VeritasClusterHostnames {
-			if err := hds.Database.UpdateVeritasClusterHostnames(hostname, drname); err != nil {
-				return err
-			}
+		for i := 0; i < len(hostdata.ClusterMembershipStatus.VeritasClusterHostnames); i++ {
+			hostdata.ClusterMembershipStatus.VeritasClusterHostnames[i] = fmt.Sprintf("%s_DR", hostdata.ClusterMembershipStatus.VeritasClusterHostnames[i])
 		}
-
-		hostdata.ClusterMembershipStatus.VeritasClusterHostnames =
-			append(hostdata.ClusterMembershipStatus.VeritasClusterHostnames, drname)
 	}
 
 	return hds.Database.InsertHostData(hostdata)

@@ -78,14 +78,6 @@ func FilterByOldnessSteps(olderThan time.Time) bson.A {
 	)
 }
 
-func ExcludeDR() bson.A {
-	return bson.A{
-		bson.M{
-			"$match": bson.M{"isDR": false},
-		},
-	}
-}
-
 func AddHardwareAbstraction(field string) bson.A {
 	return mu.MAPipeline(mu.APAddFields(bson.M{
 		field: mu.APOOr("$clusterMembershipStatus.oracleClusterware", "$clusterMembershipStatus.veritasClusterServer", "$clusterMembershipStatus.sunCluster", "$clusterMembershipStatus.hacmp"),

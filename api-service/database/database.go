@@ -175,7 +175,6 @@ type MongoDatabaseInterface interface {
 	DismissHost(hostname string) error
 	// CreateDR create a clone of the host as a disaster recovery
 	CreateDR(hostname string) (string, error)
-	UpdateVeritasClusterHostnames(veritascluster, hostname string) error
 	// GetHostMinValidCreatedAtDate get the host's minimun valid CreatedAt date
 	GetHostMinValidCreatedAtDate(hostname string) (time.Time, error)
 	// GetListValidHostsByRangeDates get list of valid hosts by range dates

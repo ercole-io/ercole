@@ -30,7 +30,6 @@ func (md *MongoDatabase) FindOracleDatabasePdbPoliciesAudit(hostname, dbname, pd
 			{Key: "$match",
 				Value: bson.D{
 					{Key: "archived", Value: false},
-					{Key: "isDR", Value: false},
 					{Key: "hostname", Value: hostname},
 				},
 			},
@@ -79,7 +78,6 @@ func (md *MongoDatabase) ListOracleDatabasePdbPoliciesAudit() ([]dto.OraclePdbPo
 			{Key: "$match",
 				Value: bson.D{
 					{Key: "archived", Value: false},
-					{Key: "isDR", Value: false},
 				},
 			},
 		},

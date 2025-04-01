@@ -47,7 +47,6 @@ func (md *MongoDatabase) SearchOracleDatabases(keywords []string, sortBy string,
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
-			ExcludeDR(),
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			mu.APUnwind("$features.oracle.database.databases"),
@@ -120,7 +119,6 @@ func (md *MongoDatabase) SearchOracleDatabases(keywords []string, sortBy string,
 		context.TODO(),
 
 		mu.MAPipeline(
-			ExcludeDR(),
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			mu.APUnwind("$features.oracle.database.databases"),

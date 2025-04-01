@@ -6,7 +6,6 @@
         }
     },
     "archived": true,
-    "isDR": false,
     "clusterMembershipStatus": {
         "hacmp": false,
         "oracleClusterware": false,

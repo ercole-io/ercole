@@ -32,7 +32,7 @@ func TestCreateDR(t *testing.T) {
 		Database: db,
 	}
 
-	drname := "test-DR"
+	drname := "test_DR"
 
 	db.EXPECT().ExistsDR(drname).Return(true).Times(1)
 	db.EXPECT().DismissHost(drname).Return(nil).Times(1)

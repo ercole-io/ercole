@@ -30,7 +30,6 @@ func (md *MongoDatabase) GetMissingDatabases() ([]dto.OracleDatabaseMissingDbs, 
 	pipeline := bson.A{
 		bson.D{{Key: "$match", Value: bson.D{
 			{Key: "archived", Value: false},
-			{Key: "isDR", Value: false},
 			{Key: "$expr", Value: bson.M{
 				"$gt": bson.A{
 					bson.M{
@@ -67,7 +66,6 @@ func (md *MongoDatabase) GetMissingDatabasesByHostname(hostname string) ([]model
 	pipeline := bson.A{
 		bson.D{{Key: "$match", Value: bson.D{
 			{Key: "archived", Value: false},
-			{Key: "isDR", Value: false},
 			{Key: "hostname", Value: hostname},
 		}}},
 		bson.D{{Key: "$unwind", Value: "$features.oracle.database.missingDatabases"}},
@@ -98,7 +96,6 @@ func (md *MongoDatabase) UpdateMissingDatabaseIgnoredField(hostname string, dbna
 		UpdateOne(context.TODO(),
 			bson.D{
 				{Key: "archived", Value: false},
-				{Key: "isDR", Value: false},
 				{Key: "hostname", Value: hostname},
 				{Key: "features.oracle.database.missingDatabases.name", Value: dbname},
 			},

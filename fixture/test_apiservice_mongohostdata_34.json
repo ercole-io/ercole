@@ -1,7 +1,6 @@
 {
     "agentVersion": "latest",
     "archived": false,
-    "isDR": false,
     "clusterMembershipStatus": {
         "hacmp": false,
         "oracleClusterware": false,

@@ -32,7 +32,6 @@ func (md *MongoDatabase) FindOracleChangesByHostname(filter dto.GlobalFilter, ho
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		ctx,
 		mu.MAPipeline(
-			ExcludeDR(),
 			FilterByOldnessSteps(filter.OlderThan),
 			FilterByLocationAndEnvironmentSteps(filter.Location, filter.Environment),
 			mu.APMatch(bson.M{

@@ -46,18 +46,13 @@ func (md *MongoDatabase) CreateDR(hostname string) (string, error) {
 	}
 
 	host.ID = primitive.NewObjectID()
-	host.Hostname = fmt.Sprintf("%s-DR", hostname)
+	host.Hostname = fmt.Sprintf("%s_DR", hostname)
 	host.IsDR = true
 
 	if host.ClusterMembershipStatus.VeritasClusterServer {
-		for _, hostnames := range host.ClusterMembershipStatus.VeritasClusterHostnames {
-			if err := md.UpdateVeritasClusterHostnames(hostnames, host.Hostname); err != nil {
-				return "", err
-			}
+		for i := 0; i < len(host.ClusterMembershipStatus.VeritasClusterHostnames); i++ {
+			host.ClusterMembershipStatus.VeritasClusterHostnames[i] = fmt.Sprintf("%s_DR", host.ClusterMembershipStatus.VeritasClusterHostnames[i])
 		}
-
-		host.ClusterMembershipStatus.VeritasClusterHostnames =
-			append(host.ClusterMembershipStatus.VeritasClusterHostnames, host.Hostname)
 	}
 
 	_, err := md.Client.Database(md.Config.Mongodb.DBName).
@@ -67,22 +62,4 @@ func (md *MongoDatabase) CreateDR(hostname string) (string, error) {
 	}
 
 	return host.Hostname, nil
-}
-
-func (md *MongoDatabase) UpdateVeritasClusterHostnames(veritascluster, hostname string) error {
-	filter := bson.M{"archived": false, "hostname": veritascluster}
-
-	pipeline := bson.M{
-		"$push": bson.M{
-			"clusterMembershipStatus.veritasClusterHostnames": hostname,
-		},
-	}
-
-	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(hostCollection).
-		UpdateOne(context.Background(), filter, pipeline)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
