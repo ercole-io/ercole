@@ -38,16 +38,5 @@ func (hds *HostDataService) createDR(hostdata model.HostDataBE) error {
 	hostdata.Hostname = drname
 	hostdata.IsDR = true
 
-	if hostdata.ClusterMembershipStatus.VeritasClusterServer {
-		for _, hostname := range hostdata.ClusterMembershipStatus.VeritasClusterHostnames {
-			if err := hds.Database.UpdateVeritasClusterHostnames(hostname, drname); err != nil {
-				return err
-			}
-		}
-
-		hostdata.ClusterMembershipStatus.VeritasClusterHostnames =
-			append(hostdata.ClusterMembershipStatus.VeritasClusterHostnames, drname)
-	}
-
 	return hds.Database.InsertHostData(hostdata)
 }
