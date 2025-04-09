@@ -16,6 +16,12 @@
 // Package service is a package that provides methods for querying data
 package service
 
-func (as *APIService) CreateDR(hostname string) (string, error) {
-	return as.Database.CreateDR(hostname)
+import "fmt"
+
+func (as *APIService) CreateDR(hostname string, clusterVeritasHostnames []string) (string, error) {
+	for i := 0; i < len(clusterVeritasHostnames); i++ {
+		clusterVeritasHostnames[i] = fmt.Sprintf("%s_DR", clusterVeritasHostnames[i])
+	}
+
+	return as.Database.CreateDR(hostname, clusterVeritasHostnames)
 }

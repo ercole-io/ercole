@@ -26,7 +26,18 @@ import (
 func (ctrl *APIController) CreateDr(w http.ResponseWriter, r *http.Request) {
 	hostname := mux.Vars(r)["hostname"]
 
-	drName, err := ctrl.Service.CreateDR(hostname)
+	type data struct {
+		ClusterVeritasHostnames []string `json:"clusterVeritasHostnames"`
+	}
+
+	d := data{}
+
+	if err := utils.Decode(r.Body, &d); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
+		return
+	}
+
+	drName, err := ctrl.Service.CreateDR(hostname, d.ClusterVeritasHostnames)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, err)
 		return
