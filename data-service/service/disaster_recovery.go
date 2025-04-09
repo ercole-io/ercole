@@ -30,7 +30,8 @@ func (hds *HostDataService) createDR(hostdata model.HostDataBE) error {
 		return nil
 	}
 
-	if err := hds.Database.DismissHost(drname); err != nil {
+	existingDR, err := hds.Database.FindDR(drname)
+	if err != nil {
 		return err
 	}
 
@@ -39,9 +40,11 @@ func (hds *HostDataService) createDR(hostdata model.HostDataBE) error {
 	hostdata.IsDR = true
 
 	if hostdata.ClusterMembershipStatus.VeritasClusterServer {
-		for i := 0; i < len(hostdata.ClusterMembershipStatus.VeritasClusterHostnames); i++ {
-			hostdata.ClusterMembershipStatus.VeritasClusterHostnames[i] = fmt.Sprintf("%s_DR", hostdata.ClusterMembershipStatus.VeritasClusterHostnames[i])
-		}
+		hostdata.ClusterMembershipStatus.VeritasClusterHostnames = existingDR.ClusterMembershipStatus.VeritasClusterHostnames
+	}
+
+	if err := hds.Database.DismissHost(drname); err != nil {
+		return err
 	}
 
 	return hds.Database.InsertHostData(hostdata)

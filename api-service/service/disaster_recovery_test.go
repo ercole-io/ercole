@@ -34,9 +34,9 @@ func TestCreateDR(t *testing.T) {
 	expected := "test-DR"
 
 	t.Run("Success", func(t *testing.T) {
-		db.EXPECT().CreateDR("test").Return(expected, nil).Times(1)
+		db.EXPECT().CreateDR("test", nil).Return(expected, nil).Times(1)
 
-		drname, err := as.CreateDR("test")
+		drname, err := as.CreateDR("test", nil)
 		require.NoError(t, err)
 		require.Equal(t, expected, drname)
 	})

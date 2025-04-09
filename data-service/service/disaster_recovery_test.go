@@ -35,6 +35,7 @@ func TestCreateDR(t *testing.T) {
 	drname := "test_DR"
 
 	db.EXPECT().ExistsDR(drname).Return(true).Times(1)
+	db.EXPECT().FindDR(drname)
 	db.EXPECT().DismissHost(drname).Return(nil).Times(1)
 	db.EXPECT().InsertHostData(gomock.Any()).Return(nil).Times(1)
 
