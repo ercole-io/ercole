@@ -59,6 +59,125 @@ func (md *MongoDatabase) FindClusterVeritasLicenses(filter dto.GlobalFilter) ([]
 						{Key: "description", Value: "$lic.itemDescription"},
 						{Key: "metric", Value: "$lic.metric"},
 						{Key: "cpuCores", Value: "$info.cpuCores"},
+						{Key: "isDR", Value: 1},
+					},
+				},
+			},
+			bson.D{
+				{Key: "$addFields",
+					Value: bson.D{
+						{Key: "activeClusterHosts",
+							Value: bson.D{
+								{Key: "$cond",
+									Value: bson.D{
+										{Key: "if",
+											Value: bson.D{
+												{Key: "$eq",
+													Value: bson.A{
+														"$isDR",
+														true,
+													},
+												},
+											},
+										},
+										{Key: "then", Value: "$clusterHosts"},
+										{Key: "else", Value: bson.A{}},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			bson.D{
+				{Key: "$lookup",
+					Value: bson.D{
+						{Key: "from", Value: "hosts"},
+						{Key: "let", Value: bson.D{{Key: "host", Value: "$activeClusterHosts"}}},
+						{Key: "pipeline",
+							Value: bson.A{
+								bson.D{
+									{Key: "$match",
+										Value: bson.D{
+											{Key: "$expr",
+												Value: bson.D{
+													{Key: "$and",
+														Value: bson.A{
+															bson.D{
+																{Key: "$in",
+																	Value: bson.A{
+																		"$hostname",
+																		"$$host",
+																	},
+																},
+															},
+															bson.D{
+																{Key: "$eq",
+																	Value: bson.A{
+																		"$archived",
+																		false,
+																	},
+																},
+															},
+															bson.D{
+																{Key: "$eq",
+																	Value: bson.A{
+																		"$isDR",
+																		true,
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+								bson.D{
+									{Key: "$project",
+										Value: bson.D{
+											{Key: "_id", Value: 0},
+											{Key: "hostname", Value: 1},
+											{Key: "cpuCores", Value: "$info.cpuCores"},
+											{Key: "isDR", Value: 1},
+										},
+									},
+								},
+							},
+						},
+						{Key: "as", Value: "hostExists"},
+					},
+				},
+			},
+			bson.D{
+				{Key: "$addFields",
+					Value: bson.D{
+						{Key: "hostExists",
+							Value: bson.D{
+								{Key: "$map",
+									Value: bson.D{
+										{Key: "input", Value: "$hostExists"},
+										{Key: "as", Value: "h"},
+										{Key: "in",
+											Value: bson.D{
+												{Key: "hostname", Value: "$$h.hostname"},
+												{Key: "cpuCores", Value: "$$h.cpuCores"},
+												{Key: "isDR", Value: "$$h.isDR"},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			bson.D{
+				{Key: "$unwind",
+					Value: bson.D{
+						{Key: "path", Value: "$hostExists"},
+						{Key: "preserveNullAndEmptyArrays", Value: true},
 					},
 				},
 			},
@@ -74,14 +193,67 @@ func (md *MongoDatabase) FindClusterVeritasLicenses(filter dto.GlobalFilter) ([]
 						{Key: "clusterHosts", Value: bson.D{{Key: "$first", Value: "$clusterHosts"}}},
 						{Key: "description", Value: bson.D{{Key: "$first", Value: "$description"}}},
 						{Key: "metric", Value: bson.D{{Key: "$first", Value: "$metric"}}},
-						{Key: "cpuCores", Value: bson.D{{Key: "$max", Value: "$cpuCores"}}},
+						{Key: "cpuCores",
+							Value: bson.D{
+								{Key: "$max",
+									Value: bson.D{
+										{Key: "$cond",
+											Value: bson.D{
+												{Key: "if",
+													Value: bson.D{
+														{Key: "$eq",
+															Value: bson.A{
+																"$hostExists.isDR",
+																true,
+															},
+														},
+													},
+												},
+												{Key: "then", Value: "$hostExists.cpuCores"},
+												{Key: "else", Value: "$cpuCores"},
+											},
+										},
+									},
+								},
+							},
+						},
+						{Key: "isDR", Value: bson.D{{Key: "$max", Value: "$isDR"}}},
+						{Key: "existingHosts", Value: bson.D{{Key: "$push", Value: "$hostExists"}}},
 					},
 				},
 			},
+			bson.D{{Key: "$match", Value: bson.D{{Key: "clusterHosts", Value: bson.D{{Key: "$ne", Value: nil}}}}}},
 			bson.D{
-				{Key: "$match",
+				{Key: "$project",
 					Value: bson.D{
-						{Key: "clusterHosts", Value: bson.D{{Key: "$ne", Value: nil}}},
+						{Key: "_id", Value: 1},
+						{Key: "clusterHosts", Value: 1},
+						{Key: "description", Value: 1},
+						{Key: "metric", Value: 1},
+						{Key: "cpuCores", Value: 1},
+						{Key: "isDR", Value: 1},
+						{Key: "existingHosts",
+							Value: bson.D{
+								{Key: "$reduce",
+									Value: bson.D{
+										{Key: "input", Value: "$existingHosts"},
+										{Key: "initialValue", Value: bson.A{}},
+										{Key: "in",
+											Value: bson.D{
+												{Key: "$setUnion",
+													Value: bson.A{
+														"$$value",
+														bson.A{
+															bson.D{{Key: "hostname", Value: "$$this.hostname"}},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -93,6 +265,7 @@ func (md *MongoDatabase) FindClusterVeritasLicenses(filter dto.GlobalFilter) ([]
 						{Key: "hostnames", Value: "$clusterHosts"},
 						{Key: "description", Value: 1},
 						{Key: "metric", Value: 1},
+						{Key: "existingHosts", Value: "$existingHosts"},
 						{Key: "count",
 							Value: bson.D{
 								{Key: "$cond",
@@ -110,14 +283,49 @@ func (md *MongoDatabase) FindClusterVeritasLicenses(filter dto.GlobalFilter) ([]
 										{Key: "then", Value: bson.D{{Key: "$size", Value: "$clusterHosts"}}},
 										{Key: "else",
 											Value: bson.D{
-												{Key: "$multiply",
-													Value: bson.A{
-														bson.D{{Key: "$size", Value: "$clusterHosts"}},
-														bson.D{
-															{Key: "$divide",
-																Value: bson.A{
-																	"$cpuCores",
-																	2,
+												{Key: "$cond",
+													Value: bson.D{
+														{Key: "if",
+															Value: bson.D{
+																{Key: "$eq",
+																	Value: bson.A{
+																		"$isDR",
+																		true,
+																	},
+																},
+															},
+														},
+														{Key: "then",
+															Value: bson.D{
+																{Key: "$multiply",
+																	Value: bson.A{
+																		bson.D{{Key: "$size", Value: "$existingHosts"}},
+																		bson.D{
+																			{Key: "$divide",
+																				Value: bson.A{
+																					"$cpuCores",
+																					2,
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+														{Key: "else",
+															Value: bson.D{
+																{Key: "$multiply",
+																	Value: bson.A{
+																		bson.D{{Key: "$size", Value: "$clusterHosts"}},
+																		bson.D{
+																			{Key: "$divide",
+																				Value: bson.A{
+																					"$cpuCores",
+																					2,
+																				},
+																			},
+																		},
+																	},
 																},
 															},
 														},
@@ -136,13 +344,32 @@ func (md *MongoDatabase) FindClusterVeritasLicenses(filter dto.GlobalFilter) ([]
 									Value: bson.D{
 										{Key: "input", Value: "$clusterHosts"},
 										{Key: "initialValue", Value: ""},
-										{Key: "in", Value: bson.D{
-											{Key: "$cond", Value: bson.A{
-												bson.D{{Key: "$eq", Value: bson.A{"$$value", ""}}},
-												"$$this",
-												bson.D{{Key: "$concat", Value: bson.A{"$$value", "-", "$$this"}}},
-											}},
-										}},
+										{Key: "in",
+											Value: bson.D{
+												{Key: "$cond",
+													Value: bson.A{
+														bson.D{
+															{Key: "$eq",
+																Value: bson.A{
+																	"$$value",
+																	"",
+																},
+															},
+														},
+														"$$this",
+														bson.D{
+															{Key: "$concat",
+																Value: bson.A{
+																	"$$value",
+																	"-",
+																	"$$this",
+																},
+															},
+														},
+													},
+												},
+											},
+										},
 									},
 								},
 							},

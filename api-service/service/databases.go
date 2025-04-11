@@ -663,6 +663,23 @@ func (as *APIService) CalcVeritasClusterLicenses(usedLicenses []dto.DatabaseUsed
 			ul.UsedLicenses = 1
 			ul.ClusterLicenses = used
 		}
+
+		if ul.ClusterType == "VeritasCluster" && strings.Contains(ul.Hostname, "_DR") {
+			existingHosts := make([]string, 0)
+
+			for _, clusterHost := range strings.Split(ul.ClusterName, ",") {
+				exists, err := as.Database.ExistHostdata(clusterHost)
+				if err != nil {
+					continue
+				}
+
+				if exists {
+					existingHosts = append(existingHosts, clusterHost)
+				}
+			}
+
+			ul.ClusterLicenses = float64(len(existingHosts)) * ul.UsedLicenses
+		}
 	}
 }
 

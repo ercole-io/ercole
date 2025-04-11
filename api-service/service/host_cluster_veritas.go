@@ -28,7 +28,63 @@ func (as *APIService) GetClusterVeritasLicenses(filter dto.GlobalFilter) ([]dto.
 		return nil, err
 	}
 
+	clusterVeritasLicensesMap := make(map[string][]dto.ClusterVeritasLicense)
+
+	for _, clusterLicenses := range clusterVeritasLicenses {
+		clusterVeritasLicensesMap[clusterLicenses.ID] = append(clusterVeritasLicensesMap[clusterLicenses.ID], clusterLicenses)
+	}
+
+	for k, v := range clusterVeritasLicensesMap {
+		if strings.Contains(k, "_DR") {
+			realclusterID := strings.Replace(k, "_DR", "", -1)
+			realclusterLicenses := clusterVeritasLicensesMap[realclusterID]
+
+			for _, realLicense := range realclusterLicenses {
+				if !containsClusterVeritasLicense(v, realLicense) {
+					clusterVeritasLicenses = append(clusterVeritasLicenses, dto.ClusterVeritasLicense{
+						ID:            k,
+						LicenseTypeID: realLicense.LicenseTypeID,
+						Description:   realLicense.Description,
+						Metric:        realLicense.Metric,
+						Count:         clusterVeritasLicensesMap[k][0].Count,
+						Hostnames:     clusterVeritasLicensesMap[k][0].Hostnames,
+					})
+				}
+			}
+		}
+	}
+
+	clusterVeritasLicenses = removeDuplicates(clusterVeritasLicenses)
+
 	return clusterVeritasLicenses, nil
+}
+
+func removeDuplicates(licenses []dto.ClusterVeritasLicense) []dto.ClusterVeritasLicense {
+	check := make(map[string]bool)
+	unique := []dto.ClusterVeritasLicense{}
+
+	for _, license := range licenses {
+		key := license.LicenseTypeID + "|" + license.Description + "|" + license.Metric + "|" + license.ID
+		if !check[key] {
+			check[key] = true
+
+			unique = append(unique, license)
+		}
+	}
+
+	return unique
+}
+
+func containsClusterVeritasLicense(licenses []dto.ClusterVeritasLicense, license dto.ClusterVeritasLicense) bool {
+	for _, v := range licenses {
+		if v.LicenseTypeID == license.LicenseTypeID &&
+			v.Description == license.Description &&
+			v.Metric == license.Metric {
+			return true
+		}
+	}
+
+	return false
 }
 
 func (as *APIService) GetClusterVeritasLicensesXlsx(filter dto.GlobalFilter) (*excelize.File, error) {
