@@ -19,7 +19,6 @@ package database
 import (
 	"context"
 
-	"github.com/ercole-io/ercole/v2/model"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -30,25 +29,4 @@ func (md *MongoDatabase) ExistsDR(hostname string) bool {
 		Collection("hosts").FindOne(context.Background(), filter)
 
 	return res.Err() == nil
-}
-
-func (md *MongoDatabase) FindDR(hostname string) (*model.HostDataBE, error) {
-	filter := bson.D{
-		{Key: "archived", Value: false},
-		{Key: "isDR", Value: true},
-		{Key: "hostname", Value: hostname},
-	}
-
-	res := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").FindOne(context.Background(), filter)
-	if res.Err() != nil {
-		return nil, res.Err()
-	}
-
-	dr := model.HostDataBE{}
-
-	if err := res.Decode(&dr); err != nil {
-		return nil, err
-	}
-
-	return &dr, nil
 }

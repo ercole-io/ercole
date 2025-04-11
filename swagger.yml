@@ -3190,7 +3190,7 @@ paths:
           $ref: "#/components/responses/error"
 
   /hosts/{hostname}/create-dr:
-    post:
+    put:
         parameters:
           - schema:
               type: string
@@ -3200,16 +3200,6 @@ paths:
         tags:
           - api-service
         summary: Create DR
-        requestBody:
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  clusterVeritasHostnames:
-                    type: array
-                    items:
-                      type: string
         responses:
           "201":
             description: Created
