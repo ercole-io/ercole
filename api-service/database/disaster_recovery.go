@@ -27,7 +27,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func (md *MongoDatabase) CreateDR(hostname string, clusterVeritasHostnames []string) (string, error) {
+func (md *MongoDatabase) CreateDR(hostname string) (string, error) {
 	filter := bson.M{"archived": false, "isDR": false, "hostname": hostname}
 
 	res := md.Client.Database(md.Config.Mongodb.DBName).
@@ -50,7 +50,9 @@ func (md *MongoDatabase) CreateDR(hostname string, clusterVeritasHostnames []str
 	host.IsDR = true
 
 	if host.ClusterMembershipStatus.VeritasClusterServer {
-		host.ClusterMembershipStatus.VeritasClusterHostnames = clusterVeritasHostnames
+		for i := 0; i < len(host.ClusterMembershipStatus.VeritasClusterHostnames); i++ {
+			host.ClusterMembershipStatus.VeritasClusterHostnames[i] = fmt.Sprintf("%s_DR", host.ClusterMembershipStatus.VeritasClusterHostnames[i])
+		}
 	}
 
 	_, err := md.Client.Database(md.Config.Mongodb.DBName).
