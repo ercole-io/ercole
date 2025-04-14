@@ -67,6 +67,10 @@ func replaceWithRealHostDR(licenses []dto.ClusterVeritasLicense) []dto.ClusterVe
 		if strings.Contains(licenses[i].ID, "_DR") && len(licenses[i].ExistingHostsDR) > 0 {
 			licenses[i].Hostnames = licenses[i].ExistingHostsDR
 		}
+
+		if licenses[i].Metric == "Named User Plus Perpetual" {
+			licenses[i].Count = licenses[i].Count * 25
+		}
 	}
 
 	return licenses
