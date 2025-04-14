@@ -218,7 +218,7 @@ func (md *MongoDatabase) FindClusterVeritasLicenses(filter dto.GlobalFilter) ([]
 							},
 						},
 						{Key: "isDR", Value: bson.D{{Key: "$max", Value: "$isDR"}}},
-						{Key: "existingHosts", Value: bson.D{{Key: "$push", Value: "$hostExists"}}},
+						{Key: "existingHostsDR", Value: bson.D{{Key: "$push", Value: "$hostExists"}}},
 					},
 				},
 			},
@@ -232,11 +232,11 @@ func (md *MongoDatabase) FindClusterVeritasLicenses(filter dto.GlobalFilter) ([]
 						{Key: "metric", Value: 1},
 						{Key: "cpuCores", Value: 1},
 						{Key: "isDR", Value: 1},
-						{Key: "existingHosts",
+						{Key: "existingHostsDR",
 							Value: bson.D{
 								{Key: "$reduce",
 									Value: bson.D{
-										{Key: "input", Value: "$existingHosts"},
+										{Key: "input", Value: "$existingHostsDR"},
 										{Key: "initialValue", Value: bson.A{}},
 										{Key: "in",
 											Value: bson.D{
@@ -265,7 +265,7 @@ func (md *MongoDatabase) FindClusterVeritasLicenses(filter dto.GlobalFilter) ([]
 						{Key: "hostnames", Value: "$clusterHosts"},
 						{Key: "description", Value: 1},
 						{Key: "metric", Value: 1},
-						{Key: "existingHosts", Value: "$existingHosts"},
+						{Key: "existingHostsDR", Value: "$existingHostsDR.hostname"},
 						{Key: "count",
 							Value: bson.D{
 								{Key: "$cond",
@@ -299,7 +299,7 @@ func (md *MongoDatabase) FindClusterVeritasLicenses(filter dto.GlobalFilter) ([]
 															Value: bson.D{
 																{Key: "$multiply",
 																	Value: bson.A{
-																		bson.D{{Key: "$size", Value: "$existingHosts"}},
+																		bson.D{{Key: "$size", Value: "$existingHostsDR"}},
 																		bson.D{
 																			{Key: "$divide",
 																				Value: bson.A{
