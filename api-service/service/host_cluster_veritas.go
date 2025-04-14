@@ -36,6 +36,8 @@ func (as *APIService) GetClusterVeritasLicenses(filter dto.GlobalFilter) ([]dto.
 
 	for k, v := range clusterVeritasLicensesMap {
 		if strings.Contains(k, "_DR") {
+			existingHostsDR := v[0].ExistingHostsDR
+
 			realclusterID := strings.Replace(k, "_DR", "", -1)
 			realclusterLicenses := clusterVeritasLicensesMap[realclusterID]
 
@@ -47,7 +49,7 @@ func (as *APIService) GetClusterVeritasLicenses(filter dto.GlobalFilter) ([]dto.
 						Description:   realLicense.Description,
 						Metric:        realLicense.Metric,
 						Count:         clusterVeritasLicensesMap[k][0].Count,
-						Hostnames:     clusterVeritasLicensesMap[k][0].Hostnames,
+						Hostnames:     existingHostsDR,
 					})
 				}
 			}
@@ -55,8 +57,19 @@ func (as *APIService) GetClusterVeritasLicenses(filter dto.GlobalFilter) ([]dto.
 	}
 
 	clusterVeritasLicenses = removeDuplicates(clusterVeritasLicenses)
+	clusterVeritasLicenses = replaceWithRealHostDR(clusterVeritasLicenses)
 
 	return clusterVeritasLicenses, nil
+}
+
+func replaceWithRealHostDR(licenses []dto.ClusterVeritasLicense) []dto.ClusterVeritasLicense {
+	for i := 0; i < len(licenses); i++ {
+		if strings.Contains(licenses[i].ID, "_DR") && len(licenses[i].ExistingHostsDR) > 0 {
+			licenses[i].Hostnames = licenses[i].ExistingHostsDR
+		}
+	}
+
+	return licenses
 }
 
 func removeDuplicates(licenses []dto.ClusterVeritasLicense) []dto.ClusterVeritasLicense {
