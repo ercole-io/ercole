@@ -434,6 +434,23 @@ func (as *APIService) GetHost(hostname string, olderThan time.Time, raw bool) (*
 		as.setMemoryTarget(host)
 	}
 
+	if host.ClusterMembershipStatus.VeritasClusterServer {
+		existingHosts := make([]string, 0)
+
+		for _, hostname := range host.ClusterMembershipStatus.VeritasClusterHostnames {
+			exists, err := as.Database.ExistHostdata(hostname)
+			if err != nil {
+				return nil, err
+			}
+
+			if exists {
+				existingHosts = append(existingHosts, hostname)
+			}
+		}
+
+		host.ClusterMembershipStatus.VeritasClusterHostnames = existingHosts
+	}
+
 	return host, nil
 }
 
