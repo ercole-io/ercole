@@ -15,11 +15,10 @@
 package dto
 
 type ClusterVeritasLicense struct {
-	ID              string   `json:"id"`
-	Hostnames       []string `json:"hostnames"`
-	LicenseTypeID   string   `json:"licenseTypeID"`
-	Description     string   `json:"description"`
-	Metric          string   `json:"metric"`
-	Count           float64  `json:"count"`
-	ExistingHostsDR []string `json:"existingHostsDR"`
+	ID            string   `json:"id"`
+	Hostnames     []string `json:"hostnames"`
+	LicenseTypeID string   `json:"licenseTypeID"`
+	Description   string   `json:"description"`
+	Metric        string   `json:"metric"`
+	Count         float64  `json:"count"`
 }

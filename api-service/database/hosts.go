@@ -903,6 +903,49 @@ func (md *MongoDatabase) ExistHostdata(hostname string) (bool, error) {
 	return val > 0, nil
 }
 
+func (md *MongoDatabase) GetCpuCore(hostname string) (int, error) {
+	pipeline := bson.A{
+		bson.D{
+			{Key: "$match",
+				Value: bson.D{
+					{Key: "archived", Value: false},
+					{Key: "hostname", Value: hostname},
+				},
+			},
+		},
+		bson.D{
+			{Key: "$project",
+				Value: bson.D{
+					{Key: "_id", Value: 0},
+					{Key: "cpucores", Value: "$info.cpuCores"},
+				},
+			},
+		},
+	}
+
+	type cpucores struct {
+		Cpucores int `json:"cpucores"`
+	}
+
+	var res []cpucores
+
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(hostCollection).
+		Aggregate(context.Background(), pipeline)
+	if err != nil {
+		return 0, err
+	}
+
+	if err := cur.All(context.Background(), &res); err != nil {
+		return 0, err
+	}
+
+	for _, cpucore := range res {
+		return cpucore.Cpucores, nil
+	}
+
+	return 0, nil
+}
+
 // DismissHost dismiss the specified host
 func (md *MongoDatabase) DismissHost(hostname string) error {
 	if _, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").UpdateMany(context.TODO(), bson.M{

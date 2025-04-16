@@ -678,7 +678,22 @@ func (as *APIService) CalcVeritasClusterLicenses(usedLicenses []dto.DatabaseUsed
 				}
 			}
 
-			ul.ClusterLicenses = float64(len(existingHosts)) * ul.UsedLicenses
+			totalCPU := 0
+
+			for _, host := range existingHosts {
+				cpu, err := as.Database.GetCpuCore(host)
+				if err != nil {
+					continue
+				}
+
+				totalCPU += cpu
+			}
+
+			ul.ClusterLicenses = float64(totalCPU) / 2
+
+			if ul.Metric == "Named User Plus Perpetual" {
+				ul.ClusterLicenses = (float64(totalCPU) / 2) * 25
+			}
 		}
 	}
 }
@@ -911,6 +926,10 @@ licenses:
 				}
 
 			}
+		}
+
+		if v.ClusterType == "VeritasCluster" {
+			clusterLicenses = v.ClusterLicenses
 		}
 
 		isCapped, err := as.manageLicenseWithCappedCPU(v, clustersMap, hostdatasMap)
