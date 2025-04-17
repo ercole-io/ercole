@@ -20,6 +20,7 @@ import (
 	"github.com/amreo/mu"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func (md *MongoDatabase) FindClusterVeritasLicenses(filter dto.GlobalFilter) ([]dto.ClusterVeritasLicense, error) {
@@ -301,8 +302,10 @@ func (md *MongoDatabase) FindClusterVeritasLicenses(filter dto.GlobalFilter) ([]
 		},
 	)
 
+	options := options.Aggregate().SetAllowDiskUse(true)
+
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(hostCollection).
-		Aggregate(ctx, pipeline)
+		Aggregate(ctx, pipeline, options)
 	if err != nil {
 		return nil, err
 	}
