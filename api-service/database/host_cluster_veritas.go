@@ -75,10 +75,32 @@ func (md *MongoDatabase) FindClusterVeritasLicenses(filter dto.GlobalFilter) ([]
 										Value: bson.D{
 											{Key: "$expr",
 												Value: bson.D{
-													{Key: "$in",
+													{Key: "$and",
 														Value: bson.A{
-															"$hostname",
-															"$$hosts",
+															bson.D{
+																{Key: "$in",
+																	Value: bson.A{
+																		"$hostname",
+																		"$$hosts",
+																	},
+																},
+															},
+															bson.D{
+																{Key: "$eq",
+																	Value: bson.A{
+																		"$archived",
+																		false,
+																	},
+																},
+															},
+															bson.D{
+																{Key: "$eq",
+																	Value: bson.A{
+																		"$clusterMembershipStatus.veritasClusterServer",
+																		true,
+																	},
+																},
+															},
 														},
 													},
 												},
