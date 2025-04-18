@@ -66,6 +66,10 @@ func (hds *HostDataService) InsertHostData(hostdata model.HostDataBE) error {
 		hds.clusterInfoChecks(hostdata.Clusters)
 	}
 
+	if hostdata.ClusterMembershipStatus.VeritasClusterServer {
+		hostdata.ClusterMembershipStatus.VeritasClusterHostnames = hds.getVeritasHostsFqdn(hostdata.Hostname, hostdata.ClusterMembershipStatus.VeritasClusterHostnames)
+	}
+
 	err = hds.Database.DismissHost(hostdata.Hostname)
 	if err != nil {
 		return err
