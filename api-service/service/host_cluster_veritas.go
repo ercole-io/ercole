@@ -31,7 +31,9 @@ func (as *APIService) GetClusterVeritasLicenses(filter dto.GlobalFilter) ([]dto.
 	clusterVeritasLicensesMap := make(map[string][]dto.ClusterVeritasLicense)
 
 	for _, clusterLicenses := range clusterVeritasLicenses {
-		clusterVeritasLicensesMap[clusterLicenses.ID] = append(clusterVeritasLicensesMap[clusterLicenses.ID], clusterLicenses)
+		if clusterLicenses.ID != "" {
+			clusterVeritasLicensesMap[clusterLicenses.ID] = append(clusterVeritasLicensesMap[clusterLicenses.ID], clusterLicenses)
+		}
 	}
 
 	for k, v := range clusterVeritasLicensesMap {
