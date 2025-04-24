@@ -68,7 +68,8 @@ func removeDuplicates(licenses []dto.ClusterVeritasLicense) []dto.ClusterVeritas
 	unique := []dto.ClusterVeritasLicense{}
 
 	for _, license := range licenses {
-		if license.ID == "" {
+		emptyLicense := license.LicenseTypeID == "" && license.Metric == "" && license.Description == ""
+		if license.ID == "" || emptyLicense {
 			continue
 		}
 
