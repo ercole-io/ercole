@@ -16,8 +16,8 @@
 package model
 
 type OracleDatabaseFeature struct {
-	Databases        []OracleDatabase  `json:"databases" bson:"databases"`
-	MissingDatabases []MissingDatabase `json:"missingDatabases" bson:"missingDatabases"`
-
-	UnlistedRunningDatabases []string `json:"unlistedRunningDatabases,omitempty" bson:"-"`
+	Databases                []OracleDatabase  `json:"databases" bson:"databases"`
+	MissingDatabases         []MissingDatabase `json:"missingDatabases" bson:"missingDatabases"`
+	UnlistedRunningDatabases []string          `json:"unlistedRunningDatabases,omitempty" bson:"-"`
+	UnretrievedDatabases     []string          `json:"unretrievedDatabases,omitempty" bson:"-"`
 }
