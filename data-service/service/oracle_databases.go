@@ -394,15 +394,27 @@ func (hds *HostDataService) ignorePreviousMissingDatabases(previous, new *model.
 		}
 	}
 
-	new.Features.Oracle.Database.MissingDatabases = []model.MissingDatabase{}
+	missingDbs := make([]model.MissingDatabase, 0)
+
 	for _, v := range new.Features.Oracle.Database.UnlistedRunningDatabases {
 		missingDB := model.MissingDatabase{Name: v}
 		if _, ok := prevIgnoredMissingDBS[v]; ok {
 			missingDB = prevIgnoredMissingDBS[v]
 		}
 
-		new.Features.Oracle.Database.MissingDatabases = append(new.Features.Oracle.Database.MissingDatabases, missingDB)
+		missingDbs = append(missingDbs, missingDB)
 	}
+
+	for _, v := range new.Features.Oracle.Database.UnretrievedDatabases {
+		missingDB := model.MissingDatabase{Name: v}
+		if _, ok := prevIgnoredMissingDBS[v]; ok {
+			missingDB = prevIgnoredMissingDBS[v]
+		}
+
+		missingDbs = append(missingDbs, missingDB)
+	}
+
+	new.Features.Oracle.Database.MissingDatabases = missingDbs
 
 	var alerts []model.Alert
 
