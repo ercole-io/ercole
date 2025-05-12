@@ -45,14 +45,20 @@ func (as *APIService) GetClusterVeritasLicenses(filter dto.GlobalFilter) ([]dto.
 
 			for _, realLicense := range realclusterLicenses {
 				if !containsClusterVeritasLicense(v, realLicense) {
-					clusterVeritasLicenses = append(clusterVeritasLicenses, dto.ClusterVeritasLicense{
+					add := dto.ClusterVeritasLicense{
 						ID:            k,
 						LicenseTypeID: realLicense.LicenseTypeID,
 						Description:   realLicense.Description,
 						Metric:        realLicense.Metric,
 						Count:         clusterVeritasLicensesMap[k][0].Count,
 						Hostnames:     existingHostsDR,
-					})
+					}
+
+					if realLicense.LicenseTypeID == "L47837" {
+						add.Count = float64(len(existingHostsDR))
+					}
+
+					clusterVeritasLicenses = append(clusterVeritasLicenses, add)
 				}
 			}
 		}
