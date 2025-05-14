@@ -237,6 +237,9 @@ func TestGetLicensesCompliance(t *testing.T) {
 		Return(hostdatas, nil).AnyTimes()
 	db.EXPECT().GetClusters(filter).
 		Return(clusters, nil).AnyTimes()
+	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
+		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
+
 	gomock.InOrder(
 		db.EXPECT().
 			ListOracleDatabaseContracts(gomock.Any()).
@@ -475,6 +478,9 @@ func TestGetLicensesCompliance_Veritas(t *testing.T) {
 		Return(hostdatas, nil).AnyTimes()
 	db.EXPECT().GetClusters(filter).
 		Return(clusters, nil).AnyTimes()
+
+	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
+		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
 
 	gomock.InOrder(
 		db.EXPECT().

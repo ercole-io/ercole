@@ -779,6 +779,8 @@ func TestGetUsedLicensesPerDatabases_Success(t *testing.T) {
 
 	sqlServerContracts := []model.SqlServerDatabaseContract{}
 
+	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
+		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
 	gomock.InOrder(
 
 		db.EXPECT().
@@ -906,6 +908,8 @@ func TestGetUsedLicensesPerDatabases_VMWareCluster_Success(t *testing.T) {
 
 	sqlServerContracts := []model.SqlServerDatabaseContract{}
 
+	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
+		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
 	gomock.InOrder(
 		db.EXPECT().
 			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, globalFilter.Location, globalFilter.Environment, globalFilter.OlderThan).
@@ -1006,6 +1010,8 @@ func TestGetUsedLicensesPerDatabases_VeritasCluster_Success(t *testing.T) {
 
 	sqlServerContracts := []model.SqlServerDatabaseContract{}
 
+	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
+		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
 	gomock.InOrder(
 		db.EXPECT().
 			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, globalFilter.Location, globalFilter.Environment, globalFilter.OlderThan).
@@ -1178,6 +1184,8 @@ func TestGetUsedLicensesPerDatabasesAsXLSX_Success(t *testing.T) {
 
 	sqlServerContracts := []model.SqlServerDatabaseContract{}
 
+	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
+		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
 	gomock.InOrder(
 		db.EXPECT().
 			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, globalFilter.Location, globalFilter.Environment, globalFilter.OlderThan).
@@ -1337,6 +1345,8 @@ func TestGetOracleDatabasesUsedLicenses_Host_WithActiveDataguardAndGoldenGate_Su
 		History:                 []model.History{},
 	}
 
+	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
+		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
 	gomock.InOrder(
 		db.EXPECT().
 			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, globalFilter.Location, globalFilter.Environment, globalFilter.OlderThan).
@@ -1510,6 +1520,8 @@ func TestGetOracleDatabasesUsedLicenses_VeritasCluster_WithActiveDataguardAndGol
 		},
 	}
 
+	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
+		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
 	gomock.InOrder(
 		db.EXPECT().
 			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, globalFilter.Location, globalFilter.Environment, globalFilter.OlderThan).
@@ -1654,6 +1666,8 @@ func TestGetOracleDatabasesUsedLicenses_Host_WithRacAndRacOneNode_Success(t *tes
 		History:                 []model.History{},
 	}
 
+	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
+		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
 	gomock.InOrder(
 		db.EXPECT().
 			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, globalFilter.Location, globalFilter.Environment, globalFilter.OlderThan).
@@ -1792,6 +1806,8 @@ func TestGetOracleDatabasesUsedLicenses_VeritasCluster_WithRacAndRacOneNode_Succ
 		History:                 []model.History{},
 	}
 
+	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
+		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
 	gomock.InOrder(
 		db.EXPECT().
 			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, globalFilter.Location, globalFilter.Environment, globalFilter.OlderThan).
@@ -1982,6 +1998,8 @@ func TestGetOracleDatabasesUsedLicenses_VmwareCluster_WithRacAndRacOneNode_Succe
 		History:                 []model.History{},
 	}
 
+	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
+		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
 	gomock.InOrder(
 		db.EXPECT().
 			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, globalFilter.Location, globalFilter.Environment, globalFilter.OlderThan).
@@ -2177,6 +2195,8 @@ func TestGetDatabaseLicensesComplianceAsXLSX_Success(t *testing.T) {
 		}}, nil).AnyTimes()
 	db.EXPECT().GetClusters(globalFilterAny).
 		Return(clusters, nil).AnyTimes()
+	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
+		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
 	gomock.InOrder(
 		db.EXPECT().ListOracleDatabaseContracts(gomock.Any()).
 			Return(oracleContracts, nil),
@@ -2401,6 +2421,8 @@ func TestGetDatabaseLicensesCompliance_Success(t *testing.T) {
 		}}, nil).AnyTimes()
 	db.EXPECT().GetClusters(globalFilterAny).
 		Return(clusters, nil).AnyTimes()
+	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
+		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
 	gomock.InOrder(
 		db.EXPECT().ListOracleDatabaseContracts(gomock.Any()).
 			Return(oracleContracts, nil),
@@ -2640,6 +2662,8 @@ func TestGetUsedLicensesPerHost_Success(t *testing.T) {
 		Return(hostdatas, nil).AnyTimes()
 	db.EXPECT().GetClusters(globalFilterAny).
 		Return(clusters, nil).AnyTimes()
+	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
+		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
 	gomock.InOrder(
 		db.EXPECT().
 			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
@@ -2828,6 +2852,8 @@ func TestGetUsedLicensesPerHostAsXLSX_Success(t *testing.T) {
 		Return(hostdatas, nil).AnyTimes()
 	db.EXPECT().GetClusters(globalFilterAny).
 		Return(clusters, nil).AnyTimes()
+	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
+		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
 	gomock.InOrder(
 		db.EXPECT().
 			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
@@ -2911,6 +2937,8 @@ func TestGetUsedLicensesPerCluster_OneVm_Success(t *testing.T) {
 		Return(hostdatasVm1, nil).AnyTimes()
 	db.EXPECT().GetClusters(globalFilterAny).
 		Return(clusters, nil).AnyTimes()
+	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
+		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
 	gomock.InOrder(
 		db.EXPECT().
 			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
@@ -3039,6 +3067,8 @@ func TestGetUsedLicensesPerCluster_MultipleVms_Success(t *testing.T) {
 		Return(hostdatasVm1, nil).AnyTimes()
 	db.EXPECT().GetClusters(globalFilterAny).
 		Return(clusters, nil).AnyTimes()
+	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
+		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
 	gomock.InOrder(
 		db.EXPECT().
 			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
@@ -3122,6 +3152,8 @@ func TestGetUsedLicensesPerClusterAsXLSX_Success(t *testing.T) {
 		Return(hostdatasVm1, nil).AnyTimes()
 	db.EXPECT().GetClusters(globalFilterAny).
 		Return(clusters, nil).AnyTimes()
+	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
+		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
 	gomock.InOrder(
 		db.EXPECT().
 			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
@@ -3197,6 +3229,8 @@ func TestGetDatabaseLicensesComplianceSqlServerHostWithContractContract_Success(
 		}}, nil).AnyTimes()
 	db.EXPECT().GetClusters(globalFilterAny).
 		Return(clusters, nil).AnyTimes()
+	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
+		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
 	gomock.InOrder(
 		db.EXPECT().ListOracleDatabaseContracts(gomock.Any()).
 			Return(oracleContracts, nil),
@@ -3286,6 +3320,8 @@ func TestGetDatabaseLicensesComplianceSqlServerHostNoContract_Success(t *testing
 		}}, nil).AnyTimes()
 	db.EXPECT().GetClusters(globalFilterAny).
 		Return(clusters, nil).AnyTimes()
+	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
+		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
 	gomock.InOrder(
 		db.EXPECT().ListOracleDatabaseContracts(gomock.Any()).
 			Return(oracleContracts, nil),
@@ -3463,6 +3499,8 @@ func TestGetDatabaseLicensesComplianceSqlServerHostInClusterWithContract_Success
 		}}, nil).AnyTimes()
 	db.EXPECT().GetClusters(globalFilterAny).
 		Return(clusters, nil).AnyTimes()
+	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
+		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
 	gomock.InOrder(
 		db.EXPECT().ListOracleDatabaseContracts(gomock.Any()).
 			Return(oracleContracts, nil),

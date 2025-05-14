@@ -16,6 +16,7 @@
 package service
 
 import (
+	"fmt"
 	"math"
 	"strings"
 
@@ -149,7 +150,113 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance(locations []string) ([
 		result = append(result, *license)
 	}
 
+	drLicenses, err := as.getVeritasClusterLicensesDR()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(drLicenses) > 0 {
+		result = as.mergeDrLicensesCompliances(result, drLicenses)
+	}
+
 	return result, nil
+}
+
+func (as *APIService) getVeritasClusterLicensesDR() (map[string]dto.LicenseCompliance, error) {
+	licenses, err := as.GetClusterVeritasLicenses(dto.GlobalFilter{OlderThan: utils.MAX_TIME})
+	if err != nil {
+		return nil, err
+	}
+
+	drLicenses := make([]dto.ClusterVeritasLicense, 0)
+
+	for _, l := range licenses {
+		if strings.Contains(l.ID, "_DR") {
+			var licenseExist bool
+
+			for _, hostname := range l.Hostnames {
+				var realHost string
+
+				exists, err := as.Database.ExistHostdata(hostname)
+				if err != nil {
+					return nil, err
+				}
+
+				realHost = hostname
+
+				if !exists {
+					dr := fmt.Sprintf("%s_DR", hostname)
+
+					existsDR, err := as.Database.ExistHostdata(dr)
+					if err != nil {
+						return nil, err
+					}
+
+					if existsDR {
+						realHost = dr
+					}
+				}
+
+				isIgnored, err := as.Database.IsOracleLicenseIgnored(realHost, l.LicenseTypeID)
+				if err != nil {
+					return nil, err
+				}
+
+				licenseExists, err := as.Database.OracleLicenseExists(realHost, l.LicenseTypeID)
+				if err != nil {
+					return nil, err
+				}
+
+				if licenseExist {
+					continue
+				}
+
+				licenseExist = !isIgnored && licenseExists
+			}
+
+			if licenseExist {
+				drLicenses = append(drLicenses, l)
+			}
+		}
+	}
+
+	grouped := make(map[string]dto.LicenseCompliance)
+
+	for _, drLicense := range drLicenses {
+		grouped[drLicense.LicenseTypeID] = dto.LicenseCompliance{
+			LicenseTypeID:   drLicense.LicenseTypeID,
+			ItemDescription: drLicense.Description,
+			Metric:          drLicense.Metric,
+			Consumed:        grouped[drLicense.LicenseTypeID].Consumed + drLicense.Count,
+		}
+	}
+
+	return grouped, nil
+}
+
+func (as *APIService) mergeDrLicensesCompliances(compliances []dto.LicenseCompliance, drlicenses map[string]dto.LicenseCompliance) []dto.LicenseCompliance {
+	res := make([]dto.LicenseCompliance, 0, len(drlicenses))
+	unmatched := make([]dto.LicenseCompliance, 0)
+
+	for _, c := range compliances {
+		if v, ok := drlicenses[c.LicenseTypeID]; ok {
+			c.Consumed = math.Round(v.Consumed + c.Consumed)
+
+			if c.Unlimited || c.Consumed == 0 || c.Cost == 0 {
+				c.Compliance = 1
+			} else {
+				c.Compliance = c.Covered / c.Consumed
+			}
+		} else {
+			unmatched = append(unmatched, v)
+		}
+
+		res = append(res, c)
+	}
+
+	res = append(res, unmatched...)
+
+	return res
 }
 
 func (as *APIService) getLicensesUsage(locations []string) ([]dto.HostUsingOracleDatabaseLicenses, error) {

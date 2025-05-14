@@ -138,6 +138,8 @@ type MongoDatabaseInterface interface {
 	ListOracleDatabaseContracts(filter dto.GetOracleDatabaseContractsFilter) ([]dto.OracleDatabaseContractFE, error)
 	// UpdateLicenseIgnoredField update license ignored field (true/false)
 	UpdateLicenseIgnoredField(hostname string, dbname string, licenseTypeID string, ignored bool, ignoredComment string) error
+	IsOracleLicenseIgnored(hostname, licenseTypeID string) (bool, error)
+	OracleLicenseExists(hostname, licenseTypeID string) (bool, error)
 
 	// InsertOracleDatabaseLicenseType insert an Oracle/Database license type into the database
 	InsertOracleDatabaseLicenseType(licenseType model.OracleDatabaseLicenseType) error
