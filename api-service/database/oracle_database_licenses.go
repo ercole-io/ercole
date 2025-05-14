@@ -46,12 +46,12 @@ func (md *MongoDatabase) SearchOracleDatabaseUsedLicenses(hostname string, sortB
 			bson.M{"$unwind": bson.M{"path": "$licenseType", "preserveNullAndEmptyArrays": true}},
 			mu.APProject(
 				bson.M{
-					"_id":           0,
-					"hostname":      1,
-					"dbName":        "$features.oracle.database.databases.name",
-					"licenseTypeID": "$features.oracle.database.databases.licenses.licenseTypeID",
-					"usedLicenses":  mu.APOCond(mu.APOEqual("$licenseType.metric", "Computer Perpetual"), 1, "$features.oracle.database.databases.licenses.count"),
-					"ignored":       "$features.oracle.database.databases.licenses.ignored",
+					"_id":            0,
+					"hostname":       1,
+					"dbName":         "$features.oracle.database.databases.name",
+					"licenseTypeID":  "$features.oracle.database.databases.licenses.licenseTypeID",
+					"usedLicenses":   mu.APOCond(mu.APOEqual("$licenseType.metric", "Computer Perpetual"), 1, "$features.oracle.database.databases.licenses.count"),
+					"ignored":        "$features.oracle.database.databases.licenses.ignored",
 					"ignoredComment": "$features.oracle.database.databases.licenses.ignoredComment",
 				},
 			),
@@ -102,4 +102,35 @@ func (md *MongoDatabase) UpdateLicenseIgnoredField(hostname string, dbname strin
 	}
 
 	return nil
+}
+
+func (md *MongoDatabase) IsOracleLicenseIgnored(hostname, licenseTypeID string) (bool, error) {
+	filter := bson.D{
+		{Key: "archived", Value: false},
+		{Key: "hostname", Value: hostname},
+		{Key: "features.oracle.database.databases.licenses.licenseTypeID", Value: licenseTypeID},
+		{Key: "features.oracle.database.databases.licenses.ignored", Value: true},
+	}
+
+	count, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(hostCollection).CountDocuments(context.Background(), filter)
+	if err != nil {
+		return false, err
+	}
+
+	return count > 0, nil
+}
+
+func (md *MongoDatabase) OracleLicenseExists(hostname, licenseTypeID string) (bool, error) {
+	filter := bson.D{
+		{Key: "archived", Value: false},
+		{Key: "hostname", Value: hostname},
+		{Key: "features.oracle.database.databases.licenses.licenseTypeID", Value: licenseTypeID},
+	}
+
+	count, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(hostCollection).CountDocuments(context.Background(), filter)
+	if err != nil {
+		return false, err
+	}
+
+	return count != 0, nil
 }

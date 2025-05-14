@@ -681,6 +681,9 @@ func TestGetComplianceStatsAsAdmin(t *testing.T) {
 		Return(hostdatas, nil).
 		AnyTimes()
 
+	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
+	Return( []dto.ClusterVeritasLicense{}, nil).AnyTimes()
+
 	gomock.InOrder(
 		db.EXPECT().
 			CountOracleInstance().
@@ -987,6 +990,9 @@ func TestGetComplianceStatsAsUser(t *testing.T) {
 		GetHostDatas(globalFilterWonderland).
 		Return(hostdatas, nil).
 		AnyTimes()
+
+	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
+		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
 
 	gomock.InOrder(
 		db.EXPECT().
