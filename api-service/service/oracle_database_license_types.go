@@ -16,7 +16,6 @@
 package service
 
 import (
-	"fmt"
 	"math"
 	"strings"
 
@@ -174,26 +173,28 @@ func (as *APIService) getVeritasClusterLicensesDR() (map[string]dto.LicenseCompl
 		if strings.Contains(l.ID, "_DR") {
 			var licenseExist bool
 
-			for _, hostname := range l.Hostnames {
+			drHostnames := strings.Split(l.ID, "-")
+
+			for _, drHostname := range drHostnames {
 				var realHost string
 
-				exists, err := as.Database.ExistHostdata(hostname)
+				exists, err := as.Database.ExistHostdata(drHostname)
 				if err != nil {
 					return nil, err
 				}
 
-				realHost = hostname
+				realHost = drHostname
 
 				if !exists {
-					dr := fmt.Sprintf("%s_DR", hostname)
+					hostname := strings.Replace(drHostname, "_DR", "", 1)
 
-					existsDR, err := as.Database.ExistHostdata(dr)
+					existsDR, err := as.Database.ExistHostdata(hostname)
 					if err != nil {
 						return nil, err
 					}
 
 					if existsDR {
-						realHost = dr
+						realHost = hostname
 					}
 				}
 
