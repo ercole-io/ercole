@@ -26,7 +26,8 @@ import (
 )
 
 const (
-	UNKNOWN_VALUE       = "UNKNOWN"
+	UNKNOWN_VALUE = "UNKNOWN"
+	UNUSED_VALUE  = "UNUSED"
 )
 
 type OracleExadataMeasurement struct {
@@ -117,6 +118,12 @@ func NewUnknownOracleExadataMeasurement() *OracleExadataMeasurement {
 	}
 }
 
+func NewUnusedOracleExadataMeasurement() *OracleExadataMeasurement {
+	return &OracleExadataMeasurement{
+		unparsedValue: UNUSED_VALUE,
+	}
+}
+
 func Convert(m OracleExadataMeasurement, symbol string) (*OracleExadataMeasurement, error) {
 	if m.String() == "" {
 		return nil, fmt.Errorf("invalid OracleExadataMeasurement, cannot convert to %s", symbol)
@@ -179,8 +186,11 @@ func StringToOracleExadataMeasurement(s string) (res *OracleExadataMeasurement, 
 		s = "0B"
 	}
 
-	if s == UNKNOWN_VALUE {
+	switch s {
+	case UNKNOWN_VALUE:
 		return NewUnknownOracleExadataMeasurement(), nil
+	case UNUSED_VALUE:
+		return NewUnusedOracleExadataMeasurement(), nil
 	}
 
 	res = &OracleExadataMeasurement{unparsedValue: s}
