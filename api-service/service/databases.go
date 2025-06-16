@@ -424,6 +424,10 @@ func (as *APIService) getOracleDatabasesUsedLicenses(hostname string, filter dto
 	usedLicenses := make([]dto.DatabaseUsedLicense, 0, len(oracleLics.Content))
 
 	for _, o := range oracleLics.Content {
+		if o.LicenseTypeID == "" {
+			continue
+		}
+
 		lt := licenseTypes[o.LicenseTypeID]
 
 		g := dto.DatabaseUsedLicense{
@@ -658,29 +662,23 @@ func (as *APIService) CalcVeritasClusterLicenses(usedLicenses []dto.DatabaseUsed
 	for i := 0; i < len(usedLicenses); i++ {
 		ul := &usedLicenses[i]
 
-		if ul.LicenseTypeID == "L47837" && ul.ClusterType == "VeritasCluster" {
-			used := float64(len(strings.Split(ul.ClusterName, ",")))
-			ul.UsedLicenses = 1
-			ul.ClusterLicenses = used
+		realClusterHosts := make([]string, 0)
+
+		for _, host := range strings.Split(ul.ClusterName, ",") {
+			exists, err := as.Database.ExistHostdata(host)
+			if err != nil {
+				continue
+			}
+
+			if exists {
+				realClusterHosts = append(realClusterHosts, host)
+			}
 		}
 
 		if ul.ClusterType == "VeritasCluster" && strings.Contains(ul.Hostname, "_DR") {
-			existingHosts := make([]string, 0)
-
-			for _, clusterHost := range strings.Split(ul.ClusterName, ",") {
-				exists, err := as.Database.ExistHostdata(clusterHost)
-				if err != nil {
-					continue
-				}
-
-				if exists {
-					existingHosts = append(existingHosts, clusterHost)
-				}
-			}
-
 			totalCPU := 0
 
-			for _, host := range existingHosts {
+			for _, host := range realClusterHosts {
 				cpu, err := as.Database.GetCpuCore(host)
 				if err != nil {
 					continue
@@ -694,6 +692,12 @@ func (as *APIService) CalcVeritasClusterLicenses(usedLicenses []dto.DatabaseUsed
 			if ul.Metric == "Named User Plus Perpetual" {
 				ul.ClusterLicenses = (float64(totalCPU) / 2) * 25
 			}
+		}
+
+		if ul.LicenseTypeID == "L47837" && ul.ClusterType == "VeritasCluster" {
+			used := float64(len(realClusterHosts))
+			ul.UsedLicenses = 1
+			ul.ClusterLicenses = used
 		}
 	}
 }

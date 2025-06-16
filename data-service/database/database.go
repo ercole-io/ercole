@@ -37,6 +37,7 @@ type MongoDatabaseInterface interface {
 	DismissHost(hostname string) error
 	InsertHostData(hostData model.HostDataBE) error
 	ExistsDR(hostname string) bool
+	GetClusterVeritasLicenseByHostnames(hostnames []string) ([]model.OracleDatabaseLicense, error)
 	GetCurrentHostnames() ([]string, error)
 	// FindOldCurrentHostnames return the list of current hosts names that haven't sent hostdata after time t
 	FindOldCurrentHostnames(t time.Time) ([]string, error)

@@ -28,42 +28,6 @@ func (as *APIService) GetClusterVeritasLicenses(filter dto.GlobalFilter) ([]dto.
 		return nil, err
 	}
 
-	clusterVeritasLicensesMap := make(map[string][]dto.ClusterVeritasLicense)
-
-	for _, clusterLicenses := range clusterVeritasLicenses {
-		if clusterLicenses.ID != "" {
-			clusterVeritasLicensesMap[clusterLicenses.ID] = append(clusterVeritasLicensesMap[clusterLicenses.ID], clusterLicenses)
-		}
-	}
-
-	for k, v := range clusterVeritasLicensesMap {
-		if strings.Contains(k, "_DR") {
-			existingHostsDR := v[0].Hostnames
-
-			realclusterID := strings.Replace(k, "_DR", "", -1)
-			realclusterLicenses := clusterVeritasLicensesMap[realclusterID]
-
-			for _, realLicense := range realclusterLicenses {
-				if !containsClusterVeritasLicense(v, realLicense) {
-					add := dto.ClusterVeritasLicense{
-						ID:            k,
-						LicenseTypeID: realLicense.LicenseTypeID,
-						Description:   realLicense.Description,
-						Metric:        realLicense.Metric,
-						Count:         clusterVeritasLicensesMap[k][0].Count,
-						Hostnames:     existingHostsDR,
-					}
-
-					if realLicense.LicenseTypeID == "L47837" {
-						add.Count = float64(len(existingHostsDR))
-					}
-
-					clusterVeritasLicenses = append(clusterVeritasLicenses, add)
-				}
-			}
-		}
-	}
-
 	clusterVeritasLicenses = removeDuplicates(clusterVeritasLicenses)
 
 	return clusterVeritasLicenses, nil
@@ -90,20 +54,8 @@ func removeDuplicates(licenses []dto.ClusterVeritasLicense) []dto.ClusterVeritas
 	return unique
 }
 
-func containsClusterVeritasLicense(licenses []dto.ClusterVeritasLicense, license dto.ClusterVeritasLicense) bool {
-	for _, v := range licenses {
-		if v.LicenseTypeID == license.LicenseTypeID &&
-			v.Description == license.Description &&
-			v.Metric == license.Metric {
-			return true
-		}
-	}
-
-	return false
-}
-
 func (as *APIService) GetClusterVeritasLicensesXlsx(filter dto.GlobalFilter) (*excelize.File, error) {
-	clusterVeritasLicenses, err := as.Database.FindClusterVeritasLicenses(filter)
+	clusterVeritasLicenses, err := as.GetClusterVeritasLicenses(filter)
 	if err != nil {
 		return nil, err
 	}

@@ -39,10 +39,56 @@ func (hds *HostDataService) createDR(hostdata model.HostDataBE) error {
 	hostdata.IsDR = true
 
 	if hostdata.ClusterMembershipStatus.VeritasClusterServer {
+		totalLicenses, err := hds.Database.GetClusterVeritasLicenseByHostnames(hostdata.ClusterMembershipStatus.VeritasClusterHostnames)
+		if err != nil {
+			return err
+		}
+
 		for i := 0; i < len(hostdata.ClusterMembershipStatus.VeritasClusterHostnames); i++ {
 			hostdata.ClusterMembershipStatus.VeritasClusterHostnames[i] = fmt.Sprintf("%s_DR", hostdata.ClusterMembershipStatus.VeritasClusterHostnames[i])
+		}
+
+		if len(hostdata.Features.Oracle.Database.Databases) == 0 {
+			hostdata.Features.Oracle.Database.Databases = append(hostdata.Features.Oracle.Database.Databases, model.OracleDatabase{
+				Name:     "ERC999",
+				Licenses: totalLicenses,
+			})
+		} else {
+			drLicenses := make([]model.OracleDatabaseLicense, 0)
+			for _, db := range hostdata.Features.Oracle.Database.Databases {
+				for _, l := range db.Licenses {
+					if !hds.containsLicense(drLicenses, l.LicenseTypeID) {
+						drLicenses = append(drLicenses, l)
+					}
+				}
+			}
+
+			diffLicenses := hds.diffLicenses(totalLicenses, drLicenses)
+			hostdata.Features.Oracle.Database.Databases[0].Licenses = append(hostdata.Features.Oracle.Database.Databases[0].Licenses, diffLicenses...)
 		}
 	}
 
 	return hds.Database.InsertHostData(hostdata)
+}
+
+func (hds *HostDataService) diffLicenses(real, dr []model.OracleDatabaseLicense) []model.OracleDatabaseLicense {
+	result := make([]model.OracleDatabaseLicense, 0)
+
+	for _, r := range real {
+		if !hds.containsLicense(dr, r.LicenseTypeID) {
+			result = append(result, r)
+		}
+	}
+
+	return result
+}
+
+func (hds *HostDataService) containsLicense(lics []model.OracleDatabaseLicense, id string) bool {
+	for _, l := range lics {
+		if l.LicenseTypeID == id {
+			return true
+		}
+	}
+
+	return false
 }
