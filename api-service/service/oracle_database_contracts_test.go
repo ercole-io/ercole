@@ -405,7 +405,7 @@ func TestGetOracleDatabaseContracts_Success(t *testing.T) {
 			CoveredLicenses:          3,
 		},
 	}
-
+	db.EXPECT().ExistHostdata(gomock.Any()).Return(true, nil).AnyTimes()
 	db.EXPECT().GetHostDatas(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).
 		Return(hostdatas, nil).AnyTimes()
 	db.EXPECT().GetClusters(globalFilterAny).
@@ -1056,6 +1056,8 @@ func TestGetOracleDatabaseContracts_SuccessFilter1(t *testing.T) {
 			Metric:          model.LicenseTypeMetricProcessorPerpetual,
 		},
 	}
+
+	db.EXPECT().ExistHostdata(gomock.Any()).Return(true, nil).AnyTimes()
 
 	db.EXPECT().GetHostDatas(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).
 		Return(hostdatas, nil).AnyTimes()

@@ -14,28 +14,16 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Package service is a package that provides methods for querying data
-package service
+package utils
 
-import (
-	"testing"
+import "encoding/json"
 
-	"github.com/ercole-io/ercole/v2/model"
-	"github.com/stretchr/testify/require"
-	"go.uber.org/mock/gomock"
-)
-
-func TestCreateDR(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	db := NewMockMongoDatabaseInterface(mockCtrl)
-	as := APIService{
-		Database: db,
+func DeepCopy[T any](src T) (T, error) {
+	var dst T
+	data, err := json.Marshal(src)
+	if err != nil {
+		return dst, err
 	}
-
-	t.Run("Success", func(t *testing.T) {
-		db.EXPECT().FindHostData("test").Return(model.HostDataBE{Hostname: "test"}, nil).Times(1)
-		db.EXPECT().InsertHostdata(gomock.Any()).Return(nil).Times(1)
-		_, err := as.CreateDR("test")
-		require.NoError(t, err)
-	})
+	err = json.Unmarshal(data, &dst)
+	return dst, err
 }
