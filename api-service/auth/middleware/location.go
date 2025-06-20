@@ -14,6 +14,12 @@ import (
 func Location(service service.APIServiceInterface) mux.MiddlewareFunc {
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			tokenString := r.Header.Get("Authorization")
+			if strings.HasPrefix(tokenString, "Basic") {
+				h.ServeHTTP(w, r)
+				return
+			}
+
 			claims, exists := context.GetOk(r, "user")
 			if !exists {
 				w.WriteHeader(http.StatusUnauthorized)
