@@ -47,6 +47,13 @@ func (md *MongoDatabase) FindClusterVeritasLicenses(filter dto.GlobalFilter) ([]
 				{Key: "preserveNullAndEmptyArrays", Value: true},
 			}}},
 			bson.D{
+				{Key: "$match",
+					Value: bson.D{
+						{Key: "features.oracle.database.databases.licenses.ignored", Value: false},
+					},
+				},
+			},
+			bson.D{
 				{Key: "$lookup",
 					Value: bson.D{
 						{Key: "from", Value: "oracle_database_license_types"},
