@@ -17,6 +17,7 @@ package job
 import (
 	"context"
 	"fmt"
+	"path"
 	"sync"
 	"time"
 
@@ -207,7 +208,7 @@ func (job *GcpDataRetrieveJob) Run() {
 				for _, attachedDisk := range instance.Disks {
 					diskWg.Add(1)
 
-					disk, err := job.GetDisk(ctx, project.ProjectId, attachedDisk.GetDeviceName(), instance.Zone())
+					disk, err := job.GetDisk(ctx, project.ProjectId, path.Base(attachedDisk.GetSource()), instance.Zone())
 					if err != nil {
 						gcperr := model.GcpError{
 							SeqValue:  seqValue,
