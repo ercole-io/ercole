@@ -681,7 +681,7 @@ func TestGetComplianceStatsAsAdmin(t *testing.T) {
 		Return(hostdatas, nil).
 		AnyTimes()
 
-	db.EXPECT().ExistHostdata(gomock.Any()).Return(true, nil).AnyTimes()
+	db.EXPECT().ExistHostdataBatch(gomock.Any()).Return([]string{}, nil).AnyTimes()
 	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
 		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
 
@@ -992,7 +992,7 @@ func TestGetComplianceStatsAsUser(t *testing.T) {
 		Return(hostdatas, nil).
 		AnyTimes()
 
-	db.EXPECT().ExistHostdata(gomock.Any()).Return(true, nil).AnyTimes()
+	db.EXPECT().ExistHostdataBatch(gomock.Any()).Return([]string{}, nil).AnyTimes()
 	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
 		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
 

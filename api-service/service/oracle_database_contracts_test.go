@@ -405,7 +405,7 @@ func TestGetOracleDatabaseContracts_Success(t *testing.T) {
 			CoveredLicenses:          3,
 		},
 	}
-	db.EXPECT().ExistHostdata(gomock.Any()).Return(true, nil).AnyTimes()
+	db.EXPECT().ExistHostdataBatch(gomock.Any()).Return([]string{}, nil).AnyTimes()
 	db.EXPECT().GetHostDatas(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).
 		Return(hostdatas, nil).AnyTimes()
 	db.EXPECT().GetClusters(globalFilterAny).
@@ -576,6 +576,7 @@ func TestGetOracleDatabaseContractsCluster_Success(t *testing.T) {
 	}
 
 	db.EXPECT().ExistHostdata(gomock.Any()).Return(false, nil).AnyTimes()
+	db.EXPECT().ExistHostdataBatch(gomock.Any()).Return([]string{"test-db"}, nil).AnyTimes()
 	db.EXPECT().GetHostDatas(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).
 		Return(hostdatas, nil).AnyTimes()
 	db.EXPECT().GetClusters(globalFilterAny).
@@ -747,6 +748,7 @@ func TestGetOracleDatabaseContractsClusterCappedCPU_Success(t *testing.T) {
 	}
 
 	db.EXPECT().ExistHostdata(gomock.Any()).Return(false, nil).AnyTimes()
+	db.EXPECT().ExistHostdataBatch(gomock.Any()).Return([]string{"test-db"}, nil).AnyTimes()
 	db.EXPECT().GetHostDatas(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).
 		Return(hostdatas, nil).AnyTimes()
 	db.EXPECT().GetClusters(globalFilterAny).
@@ -957,6 +959,7 @@ func TestGetOracleDatabaseContractsClusterCappedCPU2_Success(t *testing.T) {
 	}
 
 	db.EXPECT().ExistHostdata(gomock.Any()).Return(false, nil).AnyTimes()
+	db.EXPECT().ExistHostdataBatch(gomock.Any()).Return([]string{"bart"}, nil).AnyTimes()
 	db.EXPECT().ListOracleDatabaseContracts(gomock.Any()).
 		Return(returnedContracts, nil)
 
@@ -1057,8 +1060,7 @@ func TestGetOracleDatabaseContracts_SuccessFilter1(t *testing.T) {
 		},
 	}
 
-	db.EXPECT().ExistHostdata(gomock.Any()).Return(true, nil).AnyTimes()
-
+	db.EXPECT().ExistHostdataBatch(gomock.Any()).Return([]string{}, nil).AnyTimes()
 	db.EXPECT().GetHostDatas(dto.GlobalFilter{OlderThan: utils.MAX_TIME}).
 		Return(hostdatas, nil).AnyTimes()
 	db.EXPECT().GetClusters(globalFilterAny).
