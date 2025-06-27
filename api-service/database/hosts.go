@@ -903,6 +903,52 @@ func (md *MongoDatabase) ExistHostdata(hostname string) (bool, error) {
 	return val > 0, nil
 }
 
+func (md *MongoDatabase) ExistHostdataBatch(hostnames []string) ([]string, error) {
+	if len(hostnames) == 0 {
+		return []string{}, nil
+	}
+
+	filter := bson.M{
+		"archived": false,
+		"hostname": bson.M{
+			"$in": hostnames,
+		},
+	}
+
+	cursor, err := md.Client.Database(md.Config.Mongodb.DBName).
+		Collection("hosts").
+		Find(context.TODO(), filter, options.Find().SetProjection(bson.M{"hostname": 1}))
+	if err != nil {
+		return nil, utils.NewError(err, "DB ERROR")
+	}
+
+	defer cursor.Close(context.TODO())
+
+	existing := make(map[string]struct{})
+
+	for cursor.Next(context.TODO()) {
+		var result struct {
+			Hostname string `bson:"hostname"`
+		}
+
+		if err := cursor.Decode(&result); err != nil {
+			return nil, utils.NewError(err, "DECODE ERROR")
+		}
+
+		existing[result.Hostname] = struct{}{}
+	}
+
+	existingList := make([]string, 0, len(existing))
+
+	for _, h := range hostnames {
+		if _, ok := existing[h]; ok {
+			existingList = append(existingList, h)
+		}
+	}
+
+	return existingList, nil
+}
+
 func (md *MongoDatabase) GetCpuCore(hostname string) (int, error) {
 	pipeline := bson.A{
 		bson.D{

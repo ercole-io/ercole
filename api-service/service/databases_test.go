@@ -779,7 +779,7 @@ func TestGetUsedLicensesPerDatabases_Success(t *testing.T) {
 
 	sqlServerContracts := []model.SqlServerDatabaseContract{}
 
-	db.EXPECT().ExistHostdata(gomock.Any()).Return(true, nil).AnyTimes()
+	db.EXPECT().ExistHostdataBatch(gomock.Any()).Return([]string{}, nil).AnyTimes()
 	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
 		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
 	gomock.InOrder(
@@ -909,7 +909,7 @@ func TestGetUsedLicensesPerDatabases_VMWareCluster_Success(t *testing.T) {
 
 	sqlServerContracts := []model.SqlServerDatabaseContract{}
 
-	db.EXPECT().ExistHostdata(gomock.Any()).Return(true, nil).AnyTimes()
+	db.EXPECT().ExistHostdataBatch(gomock.Any()).Return([]string{}, nil).AnyTimes()
 	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
 		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
 	gomock.InOrder(
@@ -1012,7 +1012,7 @@ func TestGetUsedLicensesPerDatabases_VeritasCluster_Success(t *testing.T) {
 
 	sqlServerContracts := []model.SqlServerDatabaseContract{}
 
-	db.EXPECT().ExistHostdata(gomock.Any()).Return(true, nil).AnyTimes()
+	db.EXPECT().ExistHostdataBatch(gomock.Any()).Return([]string{}, nil).AnyTimes()
 	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
 		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
 	gomock.InOrder(
@@ -1187,7 +1187,7 @@ func TestGetUsedLicensesPerDatabasesAsXLSX_Success(t *testing.T) {
 
 	sqlServerContracts := []model.SqlServerDatabaseContract{}
 
-	db.EXPECT().ExistHostdata(gomock.Any()).Return(true, nil).AnyTimes()
+	db.EXPECT().ExistHostdataBatch(gomock.Any()).Return([]string{}, nil).AnyTimes()
 	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
 		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
 	gomock.InOrder(
@@ -1349,7 +1349,7 @@ func TestGetOracleDatabasesUsedLicenses_Host_WithActiveDataguardAndGoldenGate_Su
 		History:                 []model.History{},
 	}
 
-	db.EXPECT().ExistHostdata(gomock.Any()).Return(true, nil).AnyTimes()
+	db.EXPECT().ExistHostdataBatch(gomock.Any()).Return([]string{}, nil).AnyTimes()
 	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
 		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
 	gomock.InOrder(
@@ -1525,7 +1525,7 @@ func TestGetOracleDatabasesUsedLicenses_VeritasCluster_WithActiveDataguardAndGol
 		},
 	}
 
-	db.EXPECT().ExistHostdata(gomock.Any()).Return(true, nil).AnyTimes()
+	db.EXPECT().ExistHostdataBatch(gomock.Any()).Return([]string{}, nil).AnyTimes()
 	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
 		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
 	gomock.InOrder(
@@ -1672,7 +1672,7 @@ func TestGetOracleDatabasesUsedLicenses_Host_WithRacAndRacOneNode_Success(t *tes
 		History:                 []model.History{},
 	}
 
-	db.EXPECT().ExistHostdata(gomock.Any()).Return(true, nil).AnyTimes()
+	db.EXPECT().ExistHostdataBatch(gomock.Any()).Return([]string{}, nil).AnyTimes()
 	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
 		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
 	gomock.InOrder(
@@ -1813,7 +1813,7 @@ func TestGetOracleDatabasesUsedLicenses_VeritasCluster_WithRacAndRacOneNode_Succ
 		History:                 []model.History{},
 	}
 
-	db.EXPECT().ExistHostdata(gomock.Any()).Return(true, nil).AnyTimes()
+	db.EXPECT().ExistHostdataBatch(gomock.Any()).Return([]string{}, nil).AnyTimes()
 	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
 		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
 	gomock.InOrder(
@@ -2006,7 +2006,7 @@ func TestGetOracleDatabasesUsedLicenses_VmwareCluster_WithRacAndRacOneNode_Succe
 		History:                 []model.History{},
 	}
 
-	db.EXPECT().ExistHostdata(gomock.Any()).Return(true, nil).AnyTimes()
+	db.EXPECT().ExistHostdataBatch(gomock.Any()).Return([]string{}, nil).AnyTimes()
 	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
 		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
 	gomock.InOrder(
@@ -2204,7 +2204,7 @@ func TestGetDatabaseLicensesComplianceAsXLSX_Success(t *testing.T) {
 		}}, nil).AnyTimes()
 	db.EXPECT().GetClusters(globalFilterAny).
 		Return(clusters, nil).AnyTimes()
-	db.EXPECT().ExistHostdata(gomock.Any()).Return(true, nil).AnyTimes()
+	db.EXPECT().ExistHostdataBatch(gomock.Any()).Return([]string{}, nil).AnyTimes()
 	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
 		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
 	gomock.InOrder(
@@ -2431,7 +2431,7 @@ func TestGetDatabaseLicensesCompliance_Success(t *testing.T) {
 		}}, nil).AnyTimes()
 	db.EXPECT().GetClusters(globalFilterAny).
 		Return(clusters, nil).AnyTimes()
-	db.EXPECT().ExistHostdata(gomock.Any()).Return(true, nil).AnyTimes()
+	db.EXPECT().ExistHostdataBatch(gomock.Any()).Return([]string{}, nil).AnyTimes()
 	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
 		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
 	gomock.InOrder(
@@ -2673,7 +2673,7 @@ func TestGetUsedLicensesPerHost_Success(t *testing.T) {
 		Return(hostdatas, nil).AnyTimes()
 	db.EXPECT().GetClusters(globalFilterAny).
 		Return(clusters, nil).AnyTimes()
-	db.EXPECT().ExistHostdata(gomock.Any()).Return(true, nil).AnyTimes()
+	db.EXPECT().ExistHostdataBatch(gomock.Any()).Return([]string{}, nil).AnyTimes()
 	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
 		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
 	gomock.InOrder(
@@ -2864,7 +2864,7 @@ func TestGetUsedLicensesPerHostAsXLSX_Success(t *testing.T) {
 		Return(hostdatas, nil).AnyTimes()
 	db.EXPECT().GetClusters(globalFilterAny).
 		Return(clusters, nil).AnyTimes()
-	db.EXPECT().ExistHostdata(gomock.Any()).Return(true, nil).AnyTimes()
+	db.EXPECT().ExistHostdataBatch(gomock.Any()).Return([]string{}, nil).AnyTimes()
 	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
 		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
 	gomock.InOrder(
@@ -2950,7 +2950,7 @@ func TestGetUsedLicensesPerCluster_OneVm_Success(t *testing.T) {
 		Return(hostdatasVm1, nil).AnyTimes()
 	db.EXPECT().GetClusters(globalFilterAny).
 		Return(clusters, nil).AnyTimes()
-	db.EXPECT().ExistHostdata(gomock.Any()).Return(true, nil).AnyTimes()
+	db.EXPECT().ExistHostdataBatch(gomock.Any()).Return([]string{}, nil).AnyTimes()
 	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
 		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
 	gomock.InOrder(
@@ -3081,7 +3081,7 @@ func TestGetUsedLicensesPerCluster_MultipleVms_Success(t *testing.T) {
 		Return(hostdatasVm1, nil).AnyTimes()
 	db.EXPECT().GetClusters(globalFilterAny).
 		Return(clusters, nil).AnyTimes()
-	db.EXPECT().ExistHostdata(gomock.Any()).Return(true, nil).AnyTimes()
+	db.EXPECT().ExistHostdataBatch(gomock.Any()).Return([]string{}, nil).AnyTimes()
 	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
 		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
 	gomock.InOrder(
@@ -3167,7 +3167,7 @@ func TestGetUsedLicensesPerClusterAsXLSX_Success(t *testing.T) {
 		Return(hostdatasVm1, nil).AnyTimes()
 	db.EXPECT().GetClusters(globalFilterAny).
 		Return(clusters, nil).AnyTimes()
-	db.EXPECT().ExistHostdata(gomock.Any()).Return(true, nil).AnyTimes()
+	db.EXPECT().ExistHostdataBatch(gomock.Any()).Return([]string{}, nil).AnyTimes()
 	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
 		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
 	gomock.InOrder(
@@ -3245,7 +3245,7 @@ func TestGetDatabaseLicensesComplianceSqlServerHostWithContractContract_Success(
 		}}, nil).AnyTimes()
 	db.EXPECT().GetClusters(globalFilterAny).
 		Return(clusters, nil).AnyTimes()
-	db.EXPECT().ExistHostdata(gomock.Any()).Return(true, nil).AnyTimes()
+	db.EXPECT().ExistHostdataBatch(gomock.Any()).Return([]string{}, nil).AnyTimes()
 	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
 		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
 	gomock.InOrder(
@@ -3516,7 +3516,7 @@ func TestGetDatabaseLicensesComplianceSqlServerHostInClusterWithContract_Success
 		}}, nil).AnyTimes()
 	db.EXPECT().GetClusters(globalFilterAny).
 		Return(clusters, nil).AnyTimes()
-	db.EXPECT().ExistHostdata(gomock.Any()).Return(true, nil).AnyTimes()
+	db.EXPECT().ExistHostdataBatch(gomock.Any()).Return([]string{"plutocluster"}, nil).AnyTimes()
 	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
 		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
 	gomock.InOrder(
@@ -3559,7 +3559,7 @@ func TestGetDatabaseLicensesComplianceSqlServerHostInClusterWithContract_Success
 			Return(&cluster, nil),
 	)
 
-	db.EXPECT().ExistHostdata("plutocluster").Return(true, nil).AnyTimes()
+	db.EXPECT().ExistHostdata("plutohost").Return(true, nil).AnyTimes()
 
 	actual, err := as.GetDatabaseLicensesCompliance([]string{})
 	require.NoError(t, err)

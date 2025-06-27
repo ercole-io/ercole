@@ -192,6 +192,7 @@ type MongoDatabaseInterface interface {
 	FindHostData(hostname string) (model.HostDataBE, error)
 	// ExistHostdata return true if the host specified by hostname exist, otherwise false
 	ExistHostdata(hostname string) (bool, error)
+	ExistHostdataBatch(hostnames []string) ([]string, error)
 	GetCpuCore(hostname string) (int, error)
 	// GetHostsCountUsingTechnologies return a map that contains the number of usages for every features
 	GetHostsCountUsingTechnologies(location string, environment string, olderThan time.Time) (map[string]float64, error)
