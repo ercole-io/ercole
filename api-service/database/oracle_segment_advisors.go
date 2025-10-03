@@ -55,13 +55,25 @@ func (md *MongoDatabase) SearchOracleDatabaseSegmentAdvisors(keywords []string, 
 			}),
 			mu.APUnwind("$database.segmentAdvisors"),
 			mu.APProject(bson.M{
-				"hostname":       true,
-				"location":       true,
-				"environment":    true,
-				"createdAt":      true,
-				"dbname":         "$database.name",
-				"reclaimable":    "$database.segmentAdvisors.reclaimable",
-				"retrieve":       bson.M{"$round": bson.A{mu.APODivide("$database.segmentAdvisors.reclaimable", "$database.segmentsSize"), 4}},
+				"hostname":    true,
+				"location":    true,
+				"environment": true,
+				"createdAt":   true,
+				"dbname":      "$database.name",
+				"reclaimable": "$database.segmentAdvisors.reclaimable",
+				"retrieve": bson.M{
+					"$round": bson.A{
+						bson.M{
+							"$cond": bson.A{
+								bson.M{"$eq": bson.A{"$database.segmentsSize", 0}},
+								0,
+								bson.M{"$divide": bson.A{"$database.segmentAdvisors.reclaimable", "$database.segmentsSize"}},
+							},
+						},
+						4,
+					},
+				},
+
 				"segmentOwner":   "$database.segmentAdvisors.segmentOwner",
 				"segmentName":    "$database.segmentAdvisors.segmentName",
 				"segmentType":    "$database.segmentAdvisors.segmentType",
