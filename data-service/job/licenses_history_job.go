@@ -43,7 +43,7 @@ func (job *HistoricizeLicensesComplianceJob) Run() {
 		job.Config.APIService.AuthenticationProvider.Password,
 		"/hosts/technologies/all/databases/licenses-compliance").String()
 
-	client := http.Client{Timeout: 1 * time.Minute}
+	client := http.Client{Timeout: 3 * time.Minute}
 
 	resp, err := client.Get(url)
 	if err != nil || resp == nil {
