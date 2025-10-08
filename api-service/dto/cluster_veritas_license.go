@@ -14,6 +14,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package dto
 
+import "github.com/ercole-io/ercole/v2/model"
+
 type ClusterVeritasLicense struct {
 	ID            string   `json:"id"`
 	Hostnames     []string `json:"hostnames"`
@@ -21,4 +23,15 @@ type ClusterVeritasLicense struct {
 	Description   string   `json:"description"`
 	Metric        string   `json:"metric"`
 	Count         float64  `json:"count"`
+}
+
+func (c *ClusterVeritasLicense) ToModel() model.LicenseUsedClusterVeritas {
+	return model.LicenseUsedClusterVeritas{
+		ID:            c.ID,
+		Hostnames:     c.Hostnames,
+		LicenseTypeID: c.LicenseTypeID,
+		Description:   c.Description,
+		Metric:        c.Metric,
+		Count:         c.Count,
+	}
 }

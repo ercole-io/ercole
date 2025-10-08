@@ -15,6 +15,8 @@
 
 package dto
 
+import "github.com/ercole-io/ercole/v2/model"
+
 type Database struct {
 	Name             string  `json:"name"`
 	Type             string  `json:"type"`
@@ -51,6 +53,23 @@ type DatabaseUsedLicense struct {
 	OlvmCapped      bool    `json:"olvmCapped" bson:"olvmCapped"`
 }
 
+func (d *DatabaseUsedLicense) ToModel() model.LicenseUsedDatabase {
+	return model.LicenseUsedDatabase{
+		Hostname:        d.Hostname,
+		DbName:          d.DbName,
+		ClusterName:     d.ClusterName,
+		ClusterType:     d.ClusterType,
+		LicenseTypeID:   d.LicenseTypeID,
+		Description:     d.Description,
+		Metric:          d.Metric,
+		UsedLicenses:    d.UsedLicenses,
+		ClusterLicenses: d.ClusterLicenses,
+		Ignored:         d.Ignored,
+		IgnoredComment:  d.IgnoredComment,
+		OlvmCapped:      d.OlvmCapped,
+	}
+}
+
 type DatabaseUsedLicensePerHost struct {
 	Hostname        string   `json:"hostname" bson:"hostname"`
 	DatabaseNames   []string `json:"databaseNames" bson:"databaseNames"`
@@ -62,6 +81,19 @@ type DatabaseUsedLicensePerHost struct {
 	OlvmCapped      bool     `json:"olvmCapped" bson:"olvmCapped"`
 }
 
+func (d *DatabaseUsedLicensePerHost) ToModel() model.LicenseUsedHost {
+	return model.LicenseUsedHost{
+		Hostname:        d.Hostname,
+		DatabaseNames:   d.DatabaseNames,
+		LicenseTypeID:   d.LicenseTypeID,
+		Description:     d.Description,
+		Metric:          d.Metric,
+		UsedLicenses:    d.UsedLicenses,
+		ClusterLicenses: d.ClusterLicenses,
+		OlvmCapped:      d.OlvmCapped,
+	}
+}
+
 type DatabaseUsedLicensePerCluster struct {
 	Cluster       string   `json:"cluster"`
 	Hostnames     []string `json:"hostnames"`
@@ -69,4 +101,15 @@ type DatabaseUsedLicensePerCluster struct {
 	Description   string   `json:"description"`
 	Metric        string   `json:"metric"`
 	UsedLicenses  float64  `json:"usedLicenses"`
+}
+
+func (d *DatabaseUsedLicensePerCluster) ToModel() model.LicenseUsedCluster {
+	return model.LicenseUsedCluster{
+		Cluster:       d.Cluster,
+		Hostnames:     d.Hostnames,
+		LicenseTypeID: d.LicenseTypeID,
+		Description:   d.Description,
+		Metric:        d.Metric,
+		UsedLicenses:  d.UsedLicenses,
+	}
 }

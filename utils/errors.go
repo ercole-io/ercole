@@ -74,6 +74,8 @@ var ErrConnDB = errors.New("Can't connect to the database!")
 
 var ErrRoleNotFound = errors.New("Role not found")
 
+var ErrScenarioNotFound = errors.New("scenario not found")
+
 var ErrRoleAlreadyExists = errors.New("Role already exists")
 
 var ErrGroupNotFound = errors.New("Group not found")

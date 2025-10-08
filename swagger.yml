@@ -2711,6 +2711,256 @@ components:
         count:
           type: string
 
+    CreateScenarioRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        hosts:
+          type: array
+          items:
+            type: object
+            properties:
+              hostname:
+                type: string
+              core:
+                type: integer
+
+    ScenarioResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-10-06T08:23:40.000Z"
+        hosts:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              hostname:
+                type: string
+              originalCore:
+                type: integer
+              simulatedCore:
+                type: integer
+            
+    ScenarioLicenseComplianceResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-10-06T08:23:40.000Z"
+        actual:
+          type: array
+          items:
+            $ref: "#/components/schemas/LicenseCompliance"
+        got:
+          type: array
+          items:
+            $ref: "#/components/schemas/LicenseCompliance"
+
+    ScenarioLicenseUsedDatabaseResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-10-06T08:23:40.000Z"
+        actual:
+          type: array
+          items:
+            $ref: "#/components/schemas/LicenseUsedDatabase"
+        got:
+          type: array
+          items:
+            $ref: "#/components/schemas/LicenseUsedDatabase"
+
+    ScenarioLicenseUsedHostResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-10-06T08:23:40.000Z"
+        actual:
+          type: array
+          items:
+            $ref: "#/components/schemas/LicenseUsedHost"
+        got:
+          type: array
+          items:
+            $ref: "#/components/schemas/LicenseUsedHost"
+
+    ScenarioLicenseUsedClusterResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-10-06T08:23:40.000Z"
+        actual:
+          type: array
+          items:
+            $ref: "#/components/schemas/LicenseUsedCluster"
+        got:
+          type: array
+          items:
+            $ref: "#/components/schemas/LicenseUsedCluster"
+
+    ScenarioLicenseUsedClusterVeritasResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-10-06T08:23:40.000Z"
+        actual:
+          type: array
+          items:
+            $ref: "#/components/schemas/LicenseUsedClusterVeritas"
+        got:
+          type: array
+          items:
+            $ref: "#/components/schemas/LicenseUsedClusterVeritas"
+
+    LicenseCompliance:
+      type: object
+      properties:
+        licenseTypeID:
+          type: string
+        itemDescription:
+          type: string
+        metric:
+          type: string
+        cost:
+          type: number
+        consumed:
+          type: number
+        covered:
+          type: number
+        purchased:
+          type: number
+        compliance:
+          type: number
+        unlimited:
+          type: boolean
+        available:
+          type: number
+
+    LicenseUsedDatabase:
+      type: object
+      properties:
+        hostname:
+          type: string
+        dbName:
+          type: string
+        clusterName:
+          type: string
+        clusterType:
+          type: string
+        licenseTypeID:
+          type: string
+        description:
+          type: string
+        metric:
+          type: string
+        usedLicenses:
+          type: number
+        clusterLicenses:
+          type: number
+        ignored:
+          type: boolean
+        ignoredComment:
+          type: string
+        olvmCapped:
+          type: boolean
+
+    LicenseUsedHost:
+      type: object
+      properties:
+        hostname:
+          type: string      
+        databaseNames:
+          type: array      
+          items:
+            type: string
+        licenseTypeID:
+          type: string      
+        description:
+          type: string      
+        metric:
+          type: string      
+        usedLicenses:
+          type: number      
+        clusterLicenses:
+          type: number     
+        olvmCapped:
+          type: boolean     
+
+    LicenseUsedCluster:
+      type: object
+      properties:
+        cluster:
+          type: string
+        hostnames:
+          type: array
+          items:
+            type: string
+        licenseTypeID:
+          type: string
+        description:
+          type: string
+        metric:
+          type: string
+        usedLicenses:
+          type: number
+
+    LicenseUsedClusterVeritas:
+      type: object
+      properties:
+        id:
+          type: string
+        hostnames:
+          type: array
+          items:
+            type: string
+        licenseTypeID:
+          type: string
+        description:
+          type: string
+        metric:
+          type: string
+        count:
+          type: number
+
   parameters:
     search:
       in: query
@@ -9305,6 +9555,158 @@ paths:
       responses:
         "201":
           description: Created
+
+  /scenarios:
+    post:
+      tags:
+        - api-service
+      summary: create scenario
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateScenarioRequest"
+      responses:
+        200:
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScenarioResponse"
+    get:
+      tags:
+        - api-service
+      summary: list scenarios
+      responses:
+        200:
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ScenarioResponse"
+
+  /scenario/{id}:
+    get:
+      tags:
+        - api-service
+      parameters:
+        - schema:
+            type: string
+          name: id
+          in: path
+          required: true
+      responses:
+        200:
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScenarioResponse"
+    delete:
+      tags:
+        - api-service
+      summary: delete scenario
+      parameters:
+        - schema:
+            type: string
+          name: id
+          in: path
+          required: true
+      responses:
+        204:
+          description: no content
+
+  /scenario/{id}/license-compliance:
+    get:
+      tags:
+        - api-service
+      parameters:
+        - schema:
+            type: string
+          name: id
+          in: path
+          required: true
+      responses:
+        200:
+          description: ok
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/ScenarioLicenseComplianceResponse"
+
+  /scenario/{id}/license-used-database:
+    get:
+      tags:
+        - api-service
+      parameters:
+        - schema:
+            type: string
+          name: id
+          in: path
+          required: true
+      responses:
+        200:
+          description: ok
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/ScenarioLicenseUsedDatabaseResponse"
+
+  /scenario/{id}/license-used-host:
+    get:
+      tags:
+        - api-service
+      parameters:
+        - schema:
+            type: string
+          name: id
+          in: path
+          required: true
+      responses:
+        200:
+          description: ok
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/ScenarioLicenseUsedHostResponse"
+
+  /scenario/{id}/license-used-cluster:
+    get:
+      tags:
+        - api-service
+      parameters:
+        - schema:
+            type: string
+          name: id
+          in: path
+          required: true
+      responses:
+        200:
+          description: ok
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/ScenarioLicenseUsedClusterResponse"
+
+  /scenario/{id}/license-used-cluster-veritas:
+    get:
+      tags:
+        - api-service
+      parameters:
+        - schema:
+            type: string
+          name: id
+          in: path
+          required: true
+      responses:
+        200:
+          description: ok
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/ScenarioLicenseUsedClusterVeritasResponse"
 
 security:
   - basicAuthApiService: []

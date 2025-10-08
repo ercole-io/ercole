@@ -323,6 +323,14 @@ type MongoDatabaseInterface interface {
 	CountMongoDbHostsByLocations(locations []string) (int64, error)
 
 	FindClusterVeritasLicenses(filter dto.GlobalFilter) ([]dto.ClusterVeritasLicense, error)
+
+	CreateScenario(scenario *model.Scenario) (*model.Scenario, error)
+	CreateSimulatedHosts(hosts ...model.SimulatedHost) error
+	UpdateHostCores(hostname string, cores int) error
+	RemoveSimulatedHost(id primitive.ObjectID) error
+	GetScenarios() ([]model.Scenario, error)
+	GetScenario(id primitive.ObjectID) (*model.Scenario, error)
+	RemoveScenario(id primitive.ObjectID) error
 }
 
 // MongoDatabase is a implementation

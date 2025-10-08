@@ -15,6 +15,8 @@
 
 package dto
 
+import "github.com/ercole-io/ercole/v2/model"
+
 // LicenseCompliance contains the information about usage of a license
 type LicenseCompliance struct {
 	LicenseTypeID   string  `json:"licenseTypeID" bson:"licenseTypeID"`
@@ -28,4 +30,19 @@ type LicenseCompliance struct {
 	Compliance float64 `json:"compliance"`
 	Unlimited  bool    `json:"unlimited"`
 	Available  float64 `json:"available"`
+}
+
+func (l *LicenseCompliance) ToModel() model.LicenseCompliance {
+	return model.LicenseCompliance{
+		LicenseTypeID:   l.LicenseTypeID,
+		ItemDescription: l.ItemDescription,
+		Metric:          l.Metric,
+		Cost:            l.Cost,
+		Consumed:        l.Consumed,
+		Covered:         l.Covered,
+		Purchased:       l.Purchased,
+		Compliance:      l.Compliance,
+		Unlimited:       l.Unlimited,
+		Available:       l.Available,
+	}
 }

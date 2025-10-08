@@ -253,6 +253,12 @@ type APIControllerInterface interface {
 	HideExadataInstance(w http.ResponseWriter, r *http.Request)
 	ShowExadataInstance(w http.ResponseWriter, r *http.Request)
 	ListExadataPatchAdvisors(w http.ResponseWriter, r *http.Request)
+
+	CreateScenario(w http.ResponseWriter, r *http.Request)
+	ListScenario(w http.ResponseWriter, r *http.Request)
+	GetScenario(w http.ResponseWriter, r *http.Request)
+	RemoveScenario(w http.ResponseWriter, r *http.Request)
+	GetScenarioLicense(w http.ResponseWriter, r *http.Request)
 }
 
 // APIController is the struct used to handle the requests from agents and contains the concrete implementation of APIControllerInterface
