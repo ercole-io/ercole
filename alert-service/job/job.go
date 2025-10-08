@@ -1,6 +1,8 @@
 package job
 
 import (
+	"time"
+
 	"github.com/bamzi/jobrunner"
 	"github.com/ercole-io/ercole/v2/alert-service/database"
 	"github.com/ercole-io/ercole/v2/alert-service/emailer"
@@ -50,4 +52,7 @@ func (j *Job) Init() {
 	if j.Config.AlertService.ReportAlertJob.RunAtStartup {
 		jobrunner.Now(&reportAlertJob)
 	}
+
+	simulatedHostAlertJob := SimulatedHostAlertJob{Database: j.Database, Config: j.Config, Log: j.Log, Emailer: j.Emailer}
+	jobrunner.Every(time.Minute*5, &simulatedHostAlertJob)
 }

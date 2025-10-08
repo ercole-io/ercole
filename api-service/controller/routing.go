@@ -232,6 +232,17 @@ func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 	router.HandleFunc("/exadata/{rackID}/hide", ctrl.HideExadataInstance).Methods("PATCH")
 	router.HandleFunc("/exadata/{rackID}/show", ctrl.ShowExadataInstance).Methods("PATCH")
 
+	// SCENARIO
+	router.HandleFunc("/scenarios", ctrl.CreateScenario).Methods("POST")
+	router.HandleFunc("/scenarios", ctrl.ListScenario).Methods("GET")
+	router.HandleFunc("/scenarios/{id}", ctrl.GetScenario).Methods("GET")
+	router.HandleFunc("/scenarios/{id}", ctrl.RemoveScenario).Methods("DELETE")
+	router.HandleFunc("/scenarios/{id}/license-compliance", ctrl.GetScenarioLicense).Methods("GET")
+	router.HandleFunc("/scenarios/{id}/license-used-database", ctrl.GetScenarioLicense).Methods("GET")
+	router.HandleFunc("/scenarios/{id}/license-used-host", ctrl.GetScenarioLicense).Methods("GET")
+	router.HandleFunc("/scenarios/{id}/license-used-cluster", ctrl.GetScenarioLicense).Methods("GET")
+	router.HandleFunc("/scenarios/{id}/license-used-cluster-veritas", ctrl.GetScenarioLicense).Methods("GET")
+
 	ctrl.setupFrontendAPIRoutes(router.PathPrefix("/frontend").Subrouter())
 	ctrl.setupAdminRoutes(router.PathPrefix("/admin").Subrouter())
 }

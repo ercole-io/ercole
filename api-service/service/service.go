@@ -349,6 +349,11 @@ type APIServiceInterface interface {
 	ShowExadataInstance(rackID string) error
 	GetExadataPatchAdvisors() ([]dto.OracleExadataPatchAdvisor, error)
 	GetAllExadataPatchAdvisorsAsXlsx() (*excelize.File, error)
+
+	CreateScenario(req dto.CreateScenarioRequest, locations []string, filter dto.GlobalFilter) (*model.Scenario, error)
+	GetScenarios() ([]model.Scenario, error)
+	GetScenario(id primitive.ObjectID) (*model.Scenario, error)
+	RemoveScenario(id primitive.ObjectID) error 
 }
 
 // APIService is the concrete implementation of APIServiceInterface.
