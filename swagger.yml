@@ -9587,7 +9587,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/ScenarioResponse"
 
-  /scenario/{id}:
+  /scenarios/{id}:
     get:
       tags:
         - api-service
@@ -9618,7 +9618,7 @@ paths:
         204:
           description: no content
 
-  /scenario/{id}/license-compliance:
+  /scenarios/{id}/license-compliance:
     get:
       tags:
         - api-service
@@ -9636,7 +9636,7 @@ paths:
               schema: 
                 $ref: "#/components/schemas/ScenarioLicenseComplianceResponse"
 
-  /scenario/{id}/license-used-database:
+  /scenarios/{id}/license-used-database:
     get:
       tags:
         - api-service
@@ -9654,7 +9654,7 @@ paths:
               schema: 
                 $ref: "#/components/schemas/ScenarioLicenseUsedDatabaseResponse"
 
-  /scenario/{id}/license-used-host:
+  /scenarios/{id}/license-used-host:
     get:
       tags:
         - api-service
@@ -9672,7 +9672,7 @@ paths:
               schema: 
                 $ref: "#/components/schemas/ScenarioLicenseUsedHostResponse"
 
-  /scenario/{id}/license-used-cluster:
+  /scenarios/{id}/license-used-cluster:
     get:
       tags:
         - api-service
@@ -9690,7 +9690,7 @@ paths:
               schema: 
                 $ref: "#/components/schemas/ScenarioLicenseUsedClusterResponse"
 
-  /scenario/{id}/license-used-cluster-veritas:
+  /scenarios/{id}/license-used-cluster-veritas:
     get:
       tags:
         - api-service
