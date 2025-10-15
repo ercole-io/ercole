@@ -44,12 +44,21 @@ func (j *SimulatedHostAlertJob) Run() {
 			continue
 		}
 
-		if err := j.Database.UpdateHostCores(simulatedHost.Host.Hostname, simulatedHost.Core); err != nil {
+		if err := j.Database.UpdateHostCores(simulatedHost.Host.Hostname, simulatedHost.Host.Info.CPUCores); err != nil {
 			j.Log.Error(err)
 			return
 		}
 
-		j.Log.Infof("update host %q with original cores", simulatedHost.Host.Hostname)
+		j.Log.Infof("updated host %q with original cores", simulatedHost.Host.Hostname)
+
+		licenseCount := simulatedHost.Host.Info.CPUCores / 2
+
+		if err := j.Database.UpdateLicenseCount(simulatedHost.Host.Hostname, licenseCount); err != nil {
+			j.Log.Error(err)
+			return
+		}
+
+		j.Log.Infof("update host %q with original license count", simulatedHost.Host.Hostname)
 
 		if err := j.Database.RemoveSimulatedHost(simulatedHost.ID); err != nil {
 			j.Log.Error(err)

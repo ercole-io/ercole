@@ -331,6 +331,7 @@ type MongoDatabaseInterface interface {
 	GetScenarios() ([]model.Scenario, error)
 	GetScenario(id primitive.ObjectID) (*model.Scenario, error)
 	RemoveScenario(id primitive.ObjectID) error
+	UpdateLicenseCount(hostname string, licenseCount int) error
 }
 
 // MongoDatabase is a implementation
