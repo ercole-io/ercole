@@ -19,8 +19,21 @@ Ercole is the server component of the ercole project.
 %global debug_package %{nil}
 
 %pre
-getent group ercole || groupadd -r ercole
-getent passwd ercole >/dev/null || useradd -r -g ercole -s /bin/bash -c "Ercole user" ercole
+CONFIG_FILE="/etc/sysconfig/ercole"
+
+if [ -f "$CONFIG_FILE" ]; then
+    . "$CONFIG_FILE"
+else
+    NO_CREATE_USER=0
+fi
+
+if [ "${NO_CREATE_USER}" = "1" ]; then
+    echo "Skipping user creation (per configuration)"
+else
+    echo "Creating user ercole..."
+    getent group ercole || groupadd -r ercole
+    getent passwd ercole >/dev/null || useradd -r -g ercole -s /bin/bash -c "Ercole user" ercole
+fi
 
 %prep
 rm -rf %{_builddir}/%{name}-%{version}
