@@ -74,6 +74,30 @@ func (md *MongoDatabase) UpdateHostCores(hostname string, cores int) error {
 	return nil
 }
 
+func (md *MongoDatabase) UpdateLicenseCount(hostname string, licenseCount int) error {
+	filter := bson.M{
+		"archived": false,
+		"hostname": hostname,
+	}
+
+	update := bson.M{
+		"$set": bson.M{
+			"features.oracle.database.databases.$[].licenses.$[].count": licenseCount,
+		},
+	}
+
+	result, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(hostCollection).UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		return err
+	}
+
+	if result.MatchedCount != 1 {
+		return utils.ErrLicenseNotFound
+	}
+
+	return nil
+}
+
 func (md *MongoDatabase) RemoveSimulatedHost(id primitive.ObjectID) error {
 	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(simulatedHostCollection).
 		DeleteOne(context.Background(), bson.M{

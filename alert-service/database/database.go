@@ -51,6 +51,7 @@ type MongoDatabaseInterface interface {
 	GetSimulatedHosts() ([]model.SimulatedHost, error)
 	UpdateHostCores(hostname string, cores int) error
 	RemoveSimulatedHost(id primitive.ObjectID) error
+	UpdateLicenseCount(hostname string, licenseCount int) error
 }
 
 // MongoDatabase is a implementation

@@ -43,7 +43,7 @@ func (as *APIService) CreateScenario(req dto.CreateScenarioRequest, locations []
 		})
 	}
 
-	actualCompliance, err := as.getLicenseCompliance(model.AllLocations)
+	actualCompliance, err := as.getLicenseCompliance(locations)
 	if err != nil {
 		return nil, err
 	}
@@ -84,13 +84,12 @@ func (as *APIService) CreateScenario(req dto.CreateScenarioRequest, locations []
 	}
 
 	for _, simulatedHost := range scenario.Hosts {
-		err = as.Database.UpdateHostCores(simulatedHost.Host.Hostname, simulatedHost.Core)
-		if err != nil {
+		if err := as.UpdateHostLicenseCount(simulatedHost.Host.Hostname, simulatedHost.Core); err != nil {
 			return nil, err
 		}
 	}
 
-	gotCompliance, err := as.getLicenseCompliance(model.AllLocations)
+	gotCompliance, err := as.getLicenseCompliance(locations)
 	if err != nil {
 		return nil, err
 	}
@@ -131,8 +130,7 @@ func (as *APIService) CreateScenario(req dto.CreateScenarioRequest, locations []
 	}
 
 	for _, simulatedHost := range scenario.Hosts {
-		err = as.Database.UpdateHostCores(simulatedHost.Host.Hostname, simulatedHost.Host.Info.CPUCores)
-		if err != nil {
+		if err := as.UpdateHostLicenseCount(simulatedHost.Host.Hostname, simulatedHost.Host.Info.CPUCores); err != nil {
 			return nil, err
 		}
 
@@ -225,4 +223,20 @@ func (as *APIService) GetScenario(id primitive.ObjectID) (*model.Scenario, error
 
 func (as *APIService) RemoveScenario(id primitive.ObjectID) error {
 	return as.Database.RemoveScenario(id)
+}
+
+func (as *APIService) UpdateHostLicenseCount(hostname string, core int) error {
+	licenseCount := core / 2
+
+	err := as.Database.UpdateHostCores(hostname, core)
+	if err != nil {
+		return err
+	}
+
+	err = as.Database.UpdateLicenseCount(hostname, licenseCount)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
