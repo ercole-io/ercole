@@ -46,3 +46,17 @@ func (l *LicenseCompliance) ToModel() model.LicenseCompliance {
 		Available:       l.Available,
 	}
 }
+
+type IgnoreLicenseRequest struct {
+	Technology     string `json:"technology"`
+	Hostname       string `json:"hostname"`
+	DatabaseName   string `json:"databaseName"`
+	LicenseTypeID  string `json:"licenseTypeID"`
+	Ignored        bool   `json:"ignored"`
+	IgnoredComment string `json:"ignoredComment"`
+}
+
+type IgnoreLicenseResponse struct {
+	Updated []IgnoreLicenseRequest `json:"updated"`
+	Error   []IgnoreLicenseRequest `json:"error"`
+}
