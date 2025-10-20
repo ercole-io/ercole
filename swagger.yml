@@ -2961,6 +2961,32 @@ components:
         count:
           type: number
 
+    IgnoreLicenseRequest:
+      type: array
+      items:
+        type: object
+        properties:
+          technology:
+            type: string
+          hostname:
+            type: string
+          databaseName:
+            type: string
+          licenseTypeID:
+            type: string
+          ignored:
+            type: boolean
+          ignoredComment:
+            type: string
+
+    IgnoreLicenseResponse:
+      type: object
+      properties:
+        updated:
+          $ref: "#/components/schemas/IgnoreLicenseRequest"
+        error:
+          $ref: "#/components/schemas/IgnoreLicenseRequest"
+
   parameters:
     search:
       in: query
@@ -9707,6 +9733,23 @@ paths:
             application/json:
               schema: 
                 $ref: "#/components/schemas/ScenarioLicenseUsedClusterVeritasResponse"
+
+  /licenses/ignore:
+    post:
+      tags:
+        - api-service
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IgnoreLicenseRequest"
+      responses:
+        200:
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IgnoreLicenseResponse"
 
 security:
   - basicAuthApiService: []

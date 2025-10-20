@@ -269,6 +269,8 @@ type APIServiceInterface interface {
 	GetClusterVeritasLicenses(filter dto.GlobalFilter) ([]dto.ClusterVeritasLicense, error)
 	GetClusterVeritasLicensesXlsx(filter dto.GlobalFilter) (*excelize.File, error)
 
+	IgnoreLicenses(licenses []dto.IgnoreLicenseRequest) *dto.IgnoreLicenseResponse
+
 	// MYSQL
 
 	SearchMySQLInstances(filter dto.GlobalFilter) ([]dto.MySQLInstance, error)
@@ -353,7 +355,7 @@ type APIServiceInterface interface {
 	CreateScenario(req dto.CreateScenarioRequest, locations []string, filter dto.GlobalFilter) (*model.Scenario, error)
 	GetScenarios() ([]model.Scenario, error)
 	GetScenario(id primitive.ObjectID) (*model.Scenario, error)
-	RemoveScenario(id primitive.ObjectID) error 
+	RemoveScenario(id primitive.ObjectID) error
 }
 
 // APIService is the concrete implementation of APIServiceInterface.
