@@ -2762,14 +2762,15 @@ components:
           type: string
           format: date-time
           example: "2025-10-06T08:23:40.000Z"
-        actual:
+        licenses:
           type: array
           items:
-            $ref: "#/components/schemas/LicenseCompliance"
-        got:
-          type: array
-          items:
-            $ref: "#/components/schemas/LicenseCompliance"
+            type: object
+            properties:
+              actual:
+                $ref: "#/components/schemas/LicenseCompliance"
+              got:
+                $ref: "#/components/schemas/LicenseCompliance"
 
     ScenarioLicenseUsedDatabaseResponse:
       type: object
@@ -2782,14 +2783,15 @@ components:
           type: string
           format: date-time
           example: "2025-10-06T08:23:40.000Z"
-        actual:
+        licenses:
           type: array
           items:
-            $ref: "#/components/schemas/LicenseUsedDatabase"
-        got:
-          type: array
-          items:
-            $ref: "#/components/schemas/LicenseUsedDatabase"
+            type: object
+            properties:
+              actual:
+                $ref: "#/components/schemas/LicenseUsedDatabase"
+              got:
+                $ref: "#/components/schemas/LicenseUsedDatabase"
 
     ScenarioLicenseUsedHostResponse:
       type: object
@@ -2802,14 +2804,15 @@ components:
           type: string
           format: date-time
           example: "2025-10-06T08:23:40.000Z"
-        actual:
+        licenses:
           type: array
           items:
-            $ref: "#/components/schemas/LicenseUsedHost"
-        got:
-          type: array
-          items:
-            $ref: "#/components/schemas/LicenseUsedHost"
+            type: object
+            properties:
+              actual:
+                $ref: "#/components/schemas/LicenseUsedHost"
+              got:
+                $ref: "#/components/schemas/LicenseUsedHost"
 
     ScenarioLicenseUsedClusterResponse:
       type: object
@@ -2822,14 +2825,15 @@ components:
           type: string
           format: date-time
           example: "2025-10-06T08:23:40.000Z"
-        actual:
+        licenses:
           type: array
           items:
-            $ref: "#/components/schemas/LicenseUsedCluster"
-        got:
-          type: array
-          items:
-            $ref: "#/components/schemas/LicenseUsedCluster"
+            type: object
+            properties:
+              actual:
+                $ref: "#/components/schemas/LicenseUsedCluster"
+              got:
+                $ref: "#/components/schemas/LicenseUsedCluster"
 
     ScenarioLicenseUsedClusterVeritasResponse:
       type: object
@@ -2842,14 +2846,15 @@ components:
           type: string
           format: date-time
           example: "2025-10-06T08:23:40.000Z"
-        actual:
+        licenses:
           type: array
           items:
-            $ref: "#/components/schemas/LicenseUsedClusterVeritas"
-        got:
-          type: array
-          items:
-            $ref: "#/components/schemas/LicenseUsedClusterVeritas"
+            type: object
+            properties:
+              actual:
+                $ref: "#/components/schemas/LicenseUsedClusterVeritas"
+              got:
+                $ref: "#/components/schemas/LicenseUsedClusterVeritas"
 
     LicenseCompliance:
       type: object
