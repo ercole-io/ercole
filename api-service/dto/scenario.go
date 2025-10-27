@@ -77,91 +77,191 @@ func ToScenariosResponse(scenarios []model.Scenario) []ScenarioResponse {
 }
 
 type ScenarioLicenseComplianceResponse struct {
-	ID        string                    `json:"id"`
-	Name      string                    `json:"name"`
-	CreatedAt time.Time                 `json:"createdAt"`
-	Actual    []model.LicenseCompliance `json:"actual"`
-	Got       []model.LicenseCompliance `json:"got"`
+	ID        string                        `json:"id"`
+	Name      string                        `json:"name"`
+	CreatedAt time.Time                     `json:"createdAt"`
+	Licenses  []LicenseComplianceSimulation `json:"licenses"`
+}
+
+type LicenseComplianceSimulation struct {
+	Actual *model.LicenseCompliance `json:"actual"`
+	Got    *model.LicenseCompliance `json:"got"`
 }
 
 func ToScenarioLicenseComplianceResponse(m model.Scenario) ScenarioLicenseComplianceResponse {
+	licenses := make([]LicenseComplianceSimulation, 0)
+
+	for _, g := range m.LicenseCompliance.Got {
+		got := g
+
+		for _, a := range m.LicenseCompliance.Actual {
+			actual := a
+
+			if a.LicenseTypeID == g.LicenseTypeID {
+				licenses = append(licenses, LicenseComplianceSimulation{
+					Actual: &actual,
+					Got:    &got,
+				})
+			}
+		}
+	}
+
 	return ScenarioLicenseComplianceResponse{
 		ID:        m.ID.Hex(),
 		Name:      m.Name,
 		CreatedAt: m.CreatedAt,
-		Actual:    m.LicenseCompliance.Actual,
-		Got:       m.LicenseCompliance.Got,
+		Licenses:  licenses,
 	}
 }
 
 type ScenarioLicenseUsedDatabaseResponse struct {
-	ID        string                      `json:"id"`
-	Name      string                      `json:"name"`
-	CreatedAt time.Time                   `json:"createdAt"`
-	Actual    []model.LicenseUsedDatabase `json:"actual"`
-	Got       []model.LicenseUsedDatabase `json:"got"`
+	ID        string                          `json:"id"`
+	Name      string                          `json:"name"`
+	CreatedAt time.Time                       `json:"createdAt"`
+	Licenses  []LicenseUsedDatabaseSimulation `json:"licenses"`
+}
+
+type LicenseUsedDatabaseSimulation struct {
+	Actual *model.LicenseUsedDatabase `json:"actual"`
+	Got    *model.LicenseUsedDatabase `json:"got"`
 }
 
 func ToScenarioLicenseUsedDatabaseResponse(m model.Scenario) ScenarioLicenseUsedDatabaseResponse {
+	licenses := make([]LicenseUsedDatabaseSimulation, 0)
+
+	for _, g := range m.LicenseUsed.LicenseDatabase.Got {
+		got := g
+
+		for _, a := range m.LicenseUsed.LicenseDatabase.Actual {
+			actual := a
+
+			if a.Hostname == g.Hostname && a.DbName == g.DbName && a.LicenseTypeID == g.LicenseTypeID {
+				licenses = append(licenses, LicenseUsedDatabaseSimulation{
+					Actual: &actual,
+					Got:    &got,
+				})
+			}
+		}
+	}
+
 	return ScenarioLicenseUsedDatabaseResponse{
 		ID:        m.ID.Hex(),
 		Name:      m.Name,
 		CreatedAt: m.CreatedAt,
-		Actual:    m.LicenseUsed.LicenseDatabase.Actual,
-		Got:       m.LicenseUsed.LicenseDatabase.Got,
+		Licenses:  licenses,
 	}
 }
 
 type ScenarioLicenseUsedHostResponse struct {
-	ID        string                  `json:"id"`
-	Name      string                  `json:"name"`
-	CreatedAt time.Time               `json:"createdAt"`
-	Actual    []model.LicenseUsedHost `json:"actual"`
-	Got       []model.LicenseUsedHost `json:"got"`
+	ID        string                      `json:"id"`
+	Name      string                      `json:"name"`
+	CreatedAt time.Time                   `json:"createdAt"`
+	Licenses  []LicenseUsedHostSimulation `json:"licenses"`
+}
+
+type LicenseUsedHostSimulation struct {
+	Actual *model.LicenseUsedHost `json:"actual"`
+	Got    *model.LicenseUsedHost `json:"got"`
 }
 
 func ToScenarioLicenseUsedHostResponse(m model.Scenario) ScenarioLicenseUsedHostResponse {
+	licenses := make([]LicenseUsedHostSimulation, 0)
+
+	for _, g := range m.LicenseUsed.LicenseHost.Got {
+		got := g
+
+		for _, a := range m.LicenseUsed.LicenseHost.Got {
+			actual := a
+
+			if a.Hostname == g.Hostname && a.LicenseTypeID == g.LicenseTypeID {
+				licenses = append(licenses, LicenseUsedHostSimulation{
+					Actual: &actual,
+					Got:    &got,
+				})
+			}
+		}
+	}
+
 	return ScenarioLicenseUsedHostResponse{
 		ID:        m.ID.Hex(),
 		Name:      m.Name,
 		CreatedAt: m.CreatedAt,
-		Actual:    m.LicenseUsed.LicenseHost.Actual,
-		Got:       m.LicenseUsed.LicenseHost.Got,
+		Licenses:  licenses,
 	}
 }
 
 type ScenarioLicenseUsedClusterResponse struct {
-	ID        string                     `json:"id"`
-	Name      string                     `json:"name"`
-	CreatedAt time.Time                  `json:"createdAt"`
-	Actual    []model.LicenseUsedCluster `json:"actual"`
-	Got       []model.LicenseUsedCluster `json:"got"`
+	ID        string                         `json:"id"`
+	Name      string                         `json:"name"`
+	CreatedAt time.Time                      `json:"createdAt"`
+	Licenses  []LicenseUsedClusterSimulation `json:"licenses"`
+}
+
+type LicenseUsedClusterSimulation struct {
+	Actual *model.LicenseUsedCluster `json:"actual"`
+	Got    *model.LicenseUsedCluster `json:"got"`
 }
 
 func ToScenarioLicenseUsedClusterResponse(m model.Scenario) ScenarioLicenseUsedClusterResponse {
+	licenses := make([]LicenseUsedClusterSimulation, 0)
+
+	for _, g := range m.LicenseUsed.LicenseHypervisorCluster.Got {
+		got := g
+
+		for _, a := range m.LicenseUsed.LicenseHypervisorCluster.Actual {
+			actual := a
+
+			if a.Cluster == g.Cluster && a.LicenseTypeID == g.LicenseTypeID {
+				licenses = append(licenses, LicenseUsedClusterSimulation{
+					Actual: &actual,
+					Got:    &got,
+				})
+			}
+		}
+	}
+
 	return ScenarioLicenseUsedClusterResponse{
 		ID:        m.ID.Hex(),
 		Name:      m.Name,
 		CreatedAt: m.CreatedAt,
-		Actual:    m.LicenseUsed.LicenseHypervisorCluster.Actual,
-		Got:       m.LicenseUsed.LicenseHypervisorCluster.Got,
+		Licenses:  licenses,
 	}
 }
 
 type ScenarioLicenseUsedClusterVeritasResponse struct {
-	ID        string                            `json:"id"`
-	Name      string                            `json:"name"`
-	CreatedAt time.Time                         `json:"createdAt"`
-	Actual    []model.LicenseUsedClusterVeritas `json:"actual"`
-	Got       []model.LicenseUsedClusterVeritas `json:"got"`
+	ID        string                                `json:"id"`
+	Name      string                                `json:"name"`
+	CreatedAt time.Time                             `json:"createdAt"`
+	Licenses  []LicenseUsedClsuterVeritasSimulation `json:"licenses"`
+}
+
+type LicenseUsedClsuterVeritasSimulation struct {
+	Actual *model.LicenseUsedClusterVeritas `json:"actual"`
+	Got    *model.LicenseUsedClusterVeritas `json:"got"`
 }
 
 func ToScenarioLicenseUsedClusterVeritasResponse(m model.Scenario) ScenarioLicenseUsedClusterVeritasResponse {
+	licenses := make([]LicenseUsedClsuterVeritasSimulation, 0)
+
+	for _, g := range m.LicenseUsed.LicenseClusterVeritas.Got {
+		got := g
+
+		for _, a := range m.LicenseUsed.LicenseClusterVeritas.Actual {
+			actual := a
+
+			if a.ID == g.ID && a.LicenseTypeID == g.LicenseTypeID {
+				licenses = append(licenses, LicenseUsedClsuterVeritasSimulation{
+					Actual: &actual,
+					Got:    &got,
+				})
+			}
+		}
+	}
+
 	return ScenarioLicenseUsedClusterVeritasResponse{
 		ID:        m.ID.Hex(),
 		Name:      m.Name,
 		CreatedAt: m.CreatedAt,
-		Actual:    m.LicenseUsed.LicenseClusterVeritas.Actual,
-		Got:       m.LicenseUsed.LicenseClusterVeritas.Got,
+		Licenses:  licenses,
 	}
 }
