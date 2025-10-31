@@ -15,6 +15,7 @@
 package service
 
 import (
+	"strings"
 	"time"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
@@ -22,11 +23,16 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (as *APIService) CreateScenario(req dto.CreateScenarioRequest, locations []string, filter dto.GlobalFilter) (*model.Scenario, error) {
+func (as *APIService) CreateScenario(req dto.CreateScenarioRequest) (*model.Scenario, error) {
 	scenario := &model.Scenario{
 		ID:        primitive.NewObjectID(),
 		Name:      req.Name,
 		CreatedAt: time.Now(),
+		Location:  req.Location,
+	}
+
+	filter := dto.GlobalFilter{
+		Location: req.Location,
 	}
 
 	for _, h := range req.Hosts {
@@ -43,7 +49,7 @@ func (as *APIService) CreateScenario(req dto.CreateScenarioRequest, locations []
 		})
 	}
 
-	actualCompliance, err := as.getLicenseCompliance(locations)
+	actualCompliance, err := as.getLicenseCompliance(req.Location)
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +95,7 @@ func (as *APIService) CreateScenario(req dto.CreateScenarioRequest, locations []
 		}
 	}
 
-	gotCompliance, err := as.getLicenseCompliance(locations)
+	gotCompliance, err := as.getLicenseCompliance(req.Location)
 	if err != nil {
 		return nil, err
 	}
@@ -143,7 +149,9 @@ func (as *APIService) CreateScenario(req dto.CreateScenarioRequest, locations []
 	return res, nil
 }
 
-func (as *APIService) getLicenseCompliance(locations []string) ([]model.LicenseCompliance, error) {
+func (as *APIService) getLicenseCompliance(location string) ([]model.LicenseCompliance, error) {
+	locations := strings.Split(location, ",")
+
 	licensesCompliance, err := as.GetDatabaseLicensesCompliance(locations)
 	if err != nil {
 		return nil, err

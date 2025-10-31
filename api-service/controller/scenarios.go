@@ -18,7 +18,6 @@ import (
 	"errors"
 	"net/http"
 	"path"
-	"strings"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
@@ -26,14 +25,6 @@ import (
 )
 
 func (ctrl *APIController) CreateScenario(w http.ResponseWriter, r *http.Request) {
-	f, err := dto.GetGlobalFilter(r)
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
-		return
-	}
-
-	locations := strings.Split(f.Location, ",")
-
 	req := &dto.CreateScenarioRequest{}
 
 	if err := utils.Decode(r.Body, &req); err != nil {
@@ -41,7 +32,7 @@ func (ctrl *APIController) CreateScenario(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	scenario, err := ctrl.Service.CreateScenario(*req, locations, *f)
+	scenario, err := ctrl.Service.CreateScenario(*req)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return

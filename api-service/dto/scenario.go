@@ -21,8 +21,9 @@ import (
 )
 
 type CreateScenarioRequest struct {
-	Name  string                      `json:"name"`
-	Hosts []CreateHostScenarioRequest `json:"hosts"`
+	Name     string                      `json:"name"`
+	Location string                      `json:"location"`
+	Hosts    []CreateHostScenarioRequest `json:"hosts"`
 }
 
 type CreateHostScenarioRequest struct {
@@ -34,6 +35,7 @@ type ScenarioResponse struct {
 	ID        string          `json:"id"`
 	Name      string          `json:"name"`
 	CreatedAt time.Time       `json:"createdAt"`
+	Location  string          `json:"location"`
 	Hosts     []SimulatedHost `json:"hosts"`
 }
 
@@ -63,6 +65,7 @@ func ToScenarioResponse(m model.Scenario) ScenarioResponse {
 		ID:        m.ID.Hex(),
 		Name:      m.Name,
 		CreatedAt: m.CreatedAt,
+		Location:  m.Location,
 		Hosts:     simulatedHosts,
 	}
 }
@@ -80,6 +83,7 @@ type ScenarioLicenseComplianceResponse struct {
 	ID        string                        `json:"id"`
 	Name      string                        `json:"name"`
 	CreatedAt time.Time                     `json:"createdAt"`
+	Location  string                        `json:"location"`
 	Licenses  []LicenseComplianceSimulation `json:"licenses"`
 }
 
@@ -110,6 +114,7 @@ func ToScenarioLicenseComplianceResponse(m model.Scenario) ScenarioLicenseCompli
 		ID:        m.ID.Hex(),
 		Name:      m.Name,
 		CreatedAt: m.CreatedAt,
+		Location:  m.Location,
 		Licenses:  licenses,
 	}
 }
@@ -118,6 +123,7 @@ type ScenarioLicenseUsedDatabaseResponse struct {
 	ID        string                          `json:"id"`
 	Name      string                          `json:"name"`
 	CreatedAt time.Time                       `json:"createdAt"`
+	Location  string                          `json:"location"`
 	Licenses  []LicenseUsedDatabaseSimulation `json:"licenses"`
 }
 
@@ -148,6 +154,7 @@ func ToScenarioLicenseUsedDatabaseResponse(m model.Scenario) ScenarioLicenseUsed
 		ID:        m.ID.Hex(),
 		Name:      m.Name,
 		CreatedAt: m.CreatedAt,
+		Location:  m.Location,
 		Licenses:  licenses,
 	}
 }
@@ -156,6 +163,7 @@ type ScenarioLicenseUsedHostResponse struct {
 	ID        string                      `json:"id"`
 	Name      string                      `json:"name"`
 	CreatedAt time.Time                   `json:"createdAt"`
+	Location  string                      `json:"location"`
 	Licenses  []LicenseUsedHostSimulation `json:"licenses"`
 }
 
@@ -186,6 +194,7 @@ func ToScenarioLicenseUsedHostResponse(m model.Scenario) ScenarioLicenseUsedHost
 		ID:        m.ID.Hex(),
 		Name:      m.Name,
 		CreatedAt: m.CreatedAt,
+		Location:  m.Location,
 		Licenses:  licenses,
 	}
 }
@@ -194,6 +203,7 @@ type ScenarioLicenseUsedClusterResponse struct {
 	ID        string                         `json:"id"`
 	Name      string                         `json:"name"`
 	CreatedAt time.Time                      `json:"createdAt"`
+	Location  string                         `json:"location"`
 	Licenses  []LicenseUsedClusterSimulation `json:"licenses"`
 }
 
@@ -224,6 +234,7 @@ func ToScenarioLicenseUsedClusterResponse(m model.Scenario) ScenarioLicenseUsedC
 		ID:        m.ID.Hex(),
 		Name:      m.Name,
 		CreatedAt: m.CreatedAt,
+		Location:  m.Location,
 		Licenses:  licenses,
 	}
 }
@@ -232,6 +243,7 @@ type ScenarioLicenseUsedClusterVeritasResponse struct {
 	ID        string                                `json:"id"`
 	Name      string                                `json:"name"`
 	CreatedAt time.Time                             `json:"createdAt"`
+	Location  string                                `json:"location"`
 	Licenses  []LicenseUsedClsuterVeritasSimulation `json:"licenses"`
 }
 
@@ -262,6 +274,7 @@ func ToScenarioLicenseUsedClusterVeritasResponse(m model.Scenario) ScenarioLicen
 		ID:        m.ID.Hex(),
 		Name:      m.Name,
 		CreatedAt: m.CreatedAt,
+		Location:  m.Location,
 		Licenses:  licenses,
 	}
 }
