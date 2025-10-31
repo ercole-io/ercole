@@ -352,7 +352,7 @@ type APIServiceInterface interface {
 	GetExadataPatchAdvisors() ([]dto.OracleExadataPatchAdvisor, error)
 	GetAllExadataPatchAdvisorsAsXlsx() (*excelize.File, error)
 
-	CreateScenario(req dto.CreateScenarioRequest, locations []string, filter dto.GlobalFilter) (*model.Scenario, error)
+	CreateScenario(req dto.CreateScenarioRequest) (*model.Scenario, error)
 	GetScenarios() ([]model.Scenario, error)
 	GetScenario(id primitive.ObjectID) (*model.Scenario, error)
 	RemoveScenario(id primitive.ObjectID) error

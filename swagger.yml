@@ -2716,6 +2716,8 @@ components:
       properties:
         name:
           type: string
+        location:
+          type: string
         hosts:
           type: array
           items:
@@ -2737,6 +2739,8 @@ components:
           type: string
           format: date-time
           example: "2025-10-06T08:23:40.000Z"
+        location:
+          type: string
         hosts:
           type: array
           items:
@@ -2762,6 +2766,8 @@ components:
           type: string
           format: date-time
           example: "2025-10-06T08:23:40.000Z"
+        location:
+          type: string
         licenses:
           type: array
           items:
@@ -2783,6 +2789,8 @@ components:
           type: string
           format: date-time
           example: "2025-10-06T08:23:40.000Z"
+        location:
+          type: string
         licenses:
           type: array
           items:
@@ -2804,6 +2812,8 @@ components:
           type: string
           format: date-time
           example: "2025-10-06T08:23:40.000Z"
+        location:
+          type: string
         licenses:
           type: array
           items:
@@ -2825,6 +2835,8 @@ components:
           type: string
           format: date-time
           example: "2025-10-06T08:23:40.000Z"
+        location:
+          type: string
         licenses:
           type: array
           items:
@@ -2846,6 +2858,8 @@ components:
           type: string
           format: date-time
           example: "2025-10-06T08:23:40.000Z"
+        location:
+          type: string
         licenses:
           type: array
           items:

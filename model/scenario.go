@@ -21,10 +21,13 @@ import (
 )
 
 type Scenario struct {
-	ID                primitive.ObjectID         `bson:"_id"`
-	Name              string                     `bson:"name"`
-	CreatedAt         time.Time                  `bson:"createdAt"`
-	Hosts             []SimulatedHost            `bson:"hosts"`
+	ID        primitive.ObjectID `bson:"_id"`
+	Name      string             `bson:"name"`
+	CreatedAt time.Time          `bson:"createdAt"`
+
+	Location string          `bson:"location"`
+	Hosts    []SimulatedHost `bson:"hosts"`
+
 	LicenseCompliance LicensesComplianceScenario `bson:"licenseCompliance"`
 	LicenseUsed       LicenseUsedScenario        `bson:"licenseUsed"`
 }
