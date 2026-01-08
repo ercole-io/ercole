@@ -17,6 +17,7 @@ package database
 
 import (
 	"context"
+	"strings"
 
 	"github.com/amreo/mu"
 
@@ -101,14 +102,13 @@ func (md *MongoDatabase) RemoveOracleDatabaseContract(id primitive.ObjectID) err
 func (md *MongoDatabase) ListOracleDatabaseContracts(filter dto.GetOracleDatabaseContractsFilter) ([]dto.OracleDatabaseContractFE, error) {
 	var out = make([]dto.OracleDatabaseContractFE, 0)
 
+	locations := strings.Join(filter.Locations, ",")
+
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(oracleDbContractsCollection).
 		Aggregate(
 			context.TODO(),
 			mu.MAPipeline(
-				mu.APOptionalStage(len(filter.Locations) > 0 && !utils.Contains(filter.Locations, ""),
-					bson.M{"$match": bson.M{"$or": bson.A{
-						bson.M{"location": bson.M{"$in": filter.Locations}},
-					}}}),
+				FilterByLocationAndEnvironmentSteps(locations, ""),
 				mu.APLookupSimple("oracle_database_license_types", "licenseTypeID", "_id", "licenseType"),
 				mu.APUnwind("$licenseType"),
 				mu.APSet(bson.M{
