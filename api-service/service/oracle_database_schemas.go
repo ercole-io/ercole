@@ -42,7 +42,7 @@ func (as *APIService) ListOracleDatabaseSchemas(filter dto.GlobalFilter) ([]dto.
 }
 
 func (as *APIService) CreateOracleDatabaseSchemasXlsx(filter dto.GlobalFilter) (*excelize.File, error) {
-	grants, err := as.Database.FindAllOracleDatabaseSchemas(filter)
+	result, err := as.ListOracleDatabaseSchemas(filter)
 	if err != nil {
 		return nil, err
 	}
@@ -51,6 +51,7 @@ func (as *APIService) CreateOracleDatabaseSchemasXlsx(filter dto.GlobalFilter) (
 	headers := []string{
 		"Hostname",
 		"DatabaseName",
+		"PluggableDatabaseName",
 		"Indexes",
 		"LOB",
 		"Tables",
@@ -66,10 +67,11 @@ func (as *APIService) CreateOracleDatabaseSchemasXlsx(filter dto.GlobalFilter) (
 
 	axisHelp := exutils.NewAxisHelper(1)
 
-	for _, val := range grants {
+	for _, val := range result {
 		nextAxis := axisHelp.NewRow()
 		sheets.SetCellValue(sheet, nextAxis(), val.Hostname)
 		sheets.SetCellValue(sheet, nextAxis(), val.DatabaseName)
+		sheets.SetCellValue(sheet, nextAxis(), val.Pdb)
 		sheets.SetCellValue(sheet, nextAxis(), val.Indexes)
 		sheets.SetCellValue(sheet, nextAxis(), val.LOB)
 		sheets.SetCellValue(sheet, nextAxis(), val.Tables)
