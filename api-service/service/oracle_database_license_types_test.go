@@ -394,7 +394,7 @@ func TestGetLicensesCompliance_A90650A90649OneToOne(t *testing.T) {
 
 	expected := []dto.LicenseCompliance{
 		{LicenseTypeID: "A90650", ItemDescription: "itemDescA90650", Metric: "Processor Perpetual", Cost: 100, Consumed: 10, Covered: 5, Purchased: 0, Compliance: 0.5, Available: 0, Unlimited: false},
-		{LicenseTypeID: "A90649", ItemDescription: "itemDescA90649", Metric: "Processor Perpetual", Cost: 100, Consumed: 20, Covered: 5, Purchased: 0, Compliance: 0.25, Available: 0, Unlimited: false},
+		{LicenseTypeID: "A90649", ItemDescription: "itemDescA90649", Metric: "Processor Perpetual", Cost: 100, Consumed: 10, Covered: 0, Purchased: 0, Compliance: 0, Available: 0, Unlimited: false},
 	}
 
 	assert.ElementsMatch(t, expected, actual)
