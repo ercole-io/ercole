@@ -24,6 +24,13 @@ import (
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
+// oracleDatabaseLicenseA90650 and oracleDatabaseLicenseA90649 are bound one-to-one:
+// every consumed A90650 license also counts as one consumed A90649 license.
+const (
+	oracleDatabaseLicenseA90650 = "A90650"
+	oracleDatabaseLicenseA90649 = "A90649"
+)
+
 // GetOracleDatabaseLicenseTypes return the list of OracleDatabaseLicenseType
 func (as *APIService) GetOracleDatabaseLicenseTypes() ([]model.OracleDatabaseLicenseType, error) {
 	parts, err := as.Database.GetOracleDatabaseLicenseTypes()
@@ -103,6 +110,21 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance(locations []string) ([
 		}
 	}
 
+	// A90650 and A90649 licenses are bound one-to-one: every consumed A90650
+	// also counts as one consumed A90649, so the A90649 consumption includes
+	// the A90650 one (e.g. 10 A90650 + 10 A90649 => A90649 consumed = 20).
+	if a90650, ok := licenses[oracleDatabaseLicenseA90650]; ok && a90650.Consumed > 0 {
+		a90649, ok := licenses[oracleDatabaseLicenseA90649]
+		if !ok {
+			a90649 = getLicenseCompliance(oracleDatabaseLicenseA90649)
+			// guard against a license type not being registered: keep the id explicit
+			a90649.LicenseTypeID = oracleDatabaseLicenseA90649
+			licenses[oracleDatabaseLicenseA90649] = a90649
+		}
+
+		a90649.Consumed += a90650.Consumed
+	}
+
 	availableLicenses := make(map[string]float64)
 	// get coverage values from contracts
 	for _, contract := range contracts {
@@ -129,6 +151,20 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance(locations []string) ([
 			license.Covered += contract.CoveredLicenses
 			license.Purchased += (contract.LicensesPerCore + contract.LicensesPerUser)
 		}
+	}
+
+	// A90650 and A90649 licenses are bound one-to-one: every covered A90650
+	// license also counts as one covered A90649 license.
+	if a90650, ok := licenses[oracleDatabaseLicenseA90650]; ok && a90650.Covered > 0 {
+		a90649, ok := licenses[oracleDatabaseLicenseA90649]
+		if !ok {
+			a90649 = getLicenseCompliance(oracleDatabaseLicenseA90649)
+			// guard against a license type not being registered: keep the id explicit
+			a90649.LicenseTypeID = oracleDatabaseLicenseA90649
+			licenses[oracleDatabaseLicenseA90649] = a90649
+		}
+
+		a90649.Covered += a90650.Covered
 	}
 
 	result := make([]dto.LicenseCompliance, 0, len(licenses))
