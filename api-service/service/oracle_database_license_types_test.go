@@ -276,7 +276,8 @@ func TestGetLicensesCompliance(t *testing.T) {
 
 func TestGetLicensesCompliance_A90650A90649OneToOne(t *testing.T) {
 	// A90650 and A90649 are bound one-to-one: every consumed A90650 also counts
-	// as one consumed A90649.
+	// as one consumed A90649 only on hosts without A90649 usage. Here the host
+	// already uses A90649, so nothing fictitious is added.
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -327,22 +328,24 @@ func TestGetLicensesCompliance_A90650A90649OneToOne(t *testing.T) {
 	var clusters []dto.Cluster
 	var sampleContracts []dto.OracleDatabaseContractFE = []dto.OracleDatabaseContractFE{
 		{
-			ID:                 utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
-			ContractID:         "C1",
-			CSI:                "",
-			LicenseTypeID:      oracleDatabaseLicenseA90650,
-			ItemDescription:    "",
-			Metric:             model.LicenseTypeMetricProcessorPerpetual,
-			ReferenceNumber:    "",
-			Unlimited:          false,
-			Basket:             false,
-			Restricted:         false,
-			Hosts:              []dto.OracleDatabaseContractAssociatedHostFE{},
-			LicensesPerCore:    0,
-			LicensesPerUser:    0,
-			AvailableLicensesPerCore: 0,
+			ID:              utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
+			ContractID:      "C1",
+			CSI:             "",
+			LicenseTypeID:   oracleDatabaseLicenseA90650,
+			ItemDescription: "",
+			Metric:          model.LicenseTypeMetricProcessorPerpetual,
+			ReferenceNumber: "",
+			Unlimited:       false,
+			Basket:          false,
+			Restricted:      false,
+			Hosts: []dto.OracleDatabaseContractAssociatedHostFE{
+				{Hostname: "paperone", TotalCoveredLicensesCount: 5, ConsumedLicensesCount: 10},
+			},
+			LicensesPerCore:          5,
+			LicensesPerUser:          0,
+			AvailableLicensesPerCore: 5,
 			AvailableLicensesPerUser: 0,
-			CoveredLicenses:    5,
+			CoveredLicenses:          5,
 		},
 	}
 
@@ -393,7 +396,7 @@ func TestGetLicensesCompliance_A90650A90649OneToOne(t *testing.T) {
 	require.NoError(t, err)
 
 	expected := []dto.LicenseCompliance{
-		{LicenseTypeID: "A90650", ItemDescription: "itemDescA90650", Metric: "Processor Perpetual", Cost: 100, Consumed: 10, Covered: 5, Purchased: 0, Compliance: 0.5, Available: 0, Unlimited: false},
+		{LicenseTypeID: "A90650", ItemDescription: "itemDescA90650", Metric: "Processor Perpetual", Cost: 100, Consumed: 10, Covered: 10, Purchased: 5, Compliance: 1, Available: 0, Unlimited: false},
 		{LicenseTypeID: "A90649", ItemDescription: "itemDescA90649", Metric: "Processor Perpetual", Cost: 100, Consumed: 10, Covered: 0, Purchased: 0, Compliance: 0, Available: 0, Unlimited: false},
 	}
 
@@ -446,22 +449,24 @@ func TestGetLicensesCompliance_A90650OnlyCountsA90649(t *testing.T) {
 	var clusters []dto.Cluster
 	var sampleContracts []dto.OracleDatabaseContractFE = []dto.OracleDatabaseContractFE{
 		{
-			ID:                 utils.Str2oid("bbbbbbbbbbbbbbbbbbbbbbbb"),
-			ContractID:         "C2",
-			CSI:                "",
-			LicenseTypeID:      oracleDatabaseLicenseA90650,
-			ItemDescription:    "",
-			Metric:             model.LicenseTypeMetricProcessorPerpetual,
-			ReferenceNumber:    "",
-			Unlimited:          false,
-			Basket:             false,
-			Restricted:         false,
-			Hosts:              []dto.OracleDatabaseContractAssociatedHostFE{},
-			LicensesPerCore:    0,
-			LicensesPerUser:    0,
-			AvailableLicensesPerCore: 0,
+			ID:              utils.Str2oid("bbbbbbbbbbbbbbbbbbbbbbbb"),
+			ContractID:      "C2",
+			CSI:             "",
+			LicenseTypeID:   oracleDatabaseLicenseA90650,
+			ItemDescription: "",
+			Metric:          model.LicenseTypeMetricProcessorPerpetual,
+			ReferenceNumber: "",
+			Unlimited:       false,
+			Basket:          false,
+			Restricted:      false,
+			Hosts: []dto.OracleDatabaseContractAssociatedHostFE{
+				{Hostname: "paperone", TotalCoveredLicensesCount: 5, ConsumedLicensesCount: 10},
+			},
+			LicensesPerCore:          5,
+			LicensesPerUser:          0,
+			AvailableLicensesPerCore: 5,
 			AvailableLicensesPerUser: 0,
-			CoveredLicenses:    5,
+			CoveredLicenses:          5,
 		},
 	}
 
@@ -506,8 +511,118 @@ func TestGetLicensesCompliance_A90650OnlyCountsA90649(t *testing.T) {
 	require.NoError(t, err)
 
 	expected := []dto.LicenseCompliance{
-		{LicenseTypeID: "A90650", ItemDescription: "itemDescA90650", Metric: "Processor Perpetual", Cost: 100, Consumed: 10, Covered: 5, Purchased: 0, Compliance: 0.5, Available: 0, Unlimited: false},
-		{LicenseTypeID: "A90649", ItemDescription: "", Metric: "", Cost: 0, Consumed: 10, Covered: 5, Purchased: 0, Compliance: 1, Available: 0, Unlimited: false},
+		{LicenseTypeID: "A90650", ItemDescription: "itemDescA90650", Metric: "Processor Perpetual", Cost: 100, Consumed: 10, Covered: 10, Purchased: 5, Compliance: 1, Available: 0, Unlimited: false},
+		{LicenseTypeID: "A90649", ItemDescription: "", Metric: "", Cost: 0, Consumed: 10, Covered: 10, Purchased: 0, Compliance: 1, Available: 0, Unlimited: false},
+	}
+
+	assert.ElementsMatch(t, expected, actual)
+}
+
+func TestGetLicensesCompliance_A90650A90649PerHost(t *testing.T) {
+	// Per-host behavior: A90650/A90649 one-to-one is applied per host, not globally.
+	// Host "paperone" has A90650=10 but no A90649 → A90649 gets Consumed=10 and Covered=10 on that host.
+	// Host "pluto" has A90649=5 (regardless of A90650) → nothing added for that host.
+	// Total: A90649 Consumed = 15 (10 from paperone + 5 from pluto).
+	// With old global behavior, since A90649 exists globally, nothing would be added → A90649 = 5.
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+		Log:      logger.NewLogger("TEST"),
+		Config:   config.Configuration{},
+	}
+
+	hostdatas := []model.HostDataBE{
+		{
+			ClusterMembershipStatus: model.ClusterMembershipStatus{
+				OracleClusterware:       false,
+				SunCluster:              false,
+				HACMP:                   false,
+				VeritasClusterServer:    false,
+				VeritasClusterHostnames: []string{},
+			},
+		},
+	}
+
+	filter := dto.GlobalFilter{
+		Location:    "",
+		Environment: "",
+		OlderThan:   utils.MAX_TIME,
+	}
+
+	searchResponse := dto.OracleDatabaseUsedLicenseSearchResponse{
+		Content: []dto.OracleDatabaseUsedLicense{
+			{
+				LicenseTypeID: oracleDatabaseLicenseA90650,
+				DbName:        "db1",
+				Hostname:      "paperone",
+				UsedLicenses:  10,
+				Ignored:       false,
+			},
+			{
+				LicenseTypeID: oracleDatabaseLicenseA90649,
+				DbName:        "db2",
+				Hostname:      "pluto",
+				UsedLicenses:  5,
+				Ignored:       false,
+			},
+		},
+		Metadata: dto.PagingMetadata{},
+	}
+
+	var clusters []dto.Cluster
+	var sampleContracts []dto.OracleDatabaseContractFE
+
+	expectedLicenseTypes := []model.OracleDatabaseLicenseType{
+		{
+			ID:              oracleDatabaseLicenseA90650,
+			ItemDescription: "itemDescA90650",
+			Cost:            100,
+			Metric:          model.LicenseTypeMetricProcessorPerpetual,
+		},
+		{
+			ID:              oracleDatabaseLicenseA90649,
+			ItemDescription: "itemDescA90649",
+			Cost:            100,
+			Metric:          model.LicenseTypeMetricProcessorPerpetual,
+		},
+	}
+
+	db.EXPECT().GetHostDatas(globalFilterAny).
+		Return(hostdatas, nil).AnyTimes()
+	db.EXPECT().GetClusters(filter).
+		Return(clusters, nil).AnyTimes()
+	db.EXPECT().ExistHostdataBatch(gomock.Any()).Return([]string{}, nil).AnyTimes()
+	db.EXPECT().FindClusterVeritasLicenses(gomock.Any()).
+		Return([]dto.ClusterVeritasLicense{}, nil).AnyTimes()
+
+	gomock.InOrder(
+		db.EXPECT().
+			ListOracleDatabaseContracts(gomock.Any()).
+			Return(sampleContracts, nil),
+		db.EXPECT().SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
+			Return(&searchResponse, nil),
+		db.EXPECT().
+			GetOracleDatabaseLicenseTypes().
+			Times(1).
+			Return(expectedLicenseTypes, nil),
+		db.EXPECT().
+			GetOracleDatabaseLicenseTypes().
+			Times(1).
+			Return(expectedLicenseTypes, nil),
+		db.EXPECT().
+			GetOracleDatabaseLicenseTypes().
+			Times(1).
+			Return(expectedLicenseTypes, nil),
+	)
+
+	actual, err := as.GetOracleDatabaseLicensesCompliance([]string{})
+	require.NoError(t, err)
+
+	expected := []dto.LicenseCompliance{
+		{LicenseTypeID: "A90650", ItemDescription: "itemDescA90650", Metric: "Processor Perpetual", Cost: 100, Consumed: 10, Covered: 0, Purchased: 0, Compliance: 0, Available: 0, Unlimited: false},
+		{LicenseTypeID: "A90649", ItemDescription: "itemDescA90649", Metric: "Processor Perpetual", Cost: 100, Consumed: 15, Covered: 10, Purchased: 0, Compliance: 10.0 / 15.0, Available: 0, Unlimited: false},
 	}
 
 	assert.ElementsMatch(t, expected, actual)

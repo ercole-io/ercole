@@ -95,6 +95,41 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance(locations []string) ([
 
 	licenses := make(map[string]*dto.LicenseCompliance)
 
+	// Per-host A90650/A90649 one-to-one:
+	// if a host has A90650 usage but no A90649 usage on that same host,
+	// add a fictitious A90649 usage equal to A90650 on that host. The fictitious
+	// A90649 licenses count both as consumed and as covered.
+	var a90649FictitiousCovered float64
+
+	hostLicenseTypes := make(map[string]map[string]bool)
+	for _, usage := range usages {
+		if hostLicenseTypes[usage.Name] == nil {
+			hostLicenseTypes[usage.Name] = make(map[string]bool)
+		}
+
+		hostLicenseTypes[usage.Name][usage.LicenseTypeID] = true
+	}
+
+	for host, lts := range hostLicenseTypes {
+		if lts[oracleDatabaseLicenseA90650] && !lts[oracleDatabaseLicenseA90649] {
+			for _, usage := range usages {
+				if usage.Name == host && usage.LicenseTypeID == oracleDatabaseLicenseA90650 {
+					usages = append(usages, dto.HostUsingOracleDatabaseLicenses{
+						LicenseTypeID: oracleDatabaseLicenseA90649,
+						Name:          host,
+						Type:          usage.Type,
+						LicenseCount:  0,
+						OriginalCount: usage.OriginalCount,
+					})
+
+					a90649FictitiousCovered += usage.OriginalCount
+
+					break
+				}
+			}
+		}
+	}
+
 	for _, usage := range usages {
 		license, ok := licenses[usage.LicenseTypeID]
 
@@ -138,25 +173,18 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance(locations []string) ([
 		}
 	}
 
-	// A90650 and A90649 licenses are bound one-to-one: if A90650 is consumed/covered and
-	// A90649 is not present at all, A90649 counts as consumed/covered as A90650 is
-	// (e.g. 10 A90650 and 0 A90649 => A90649 consumed = 10, covered = same as A90650).
-	// If A90649 already exists, nothing is added to it.
-	if a90650, ok := licenses[oracleDatabaseLicenseA90650]; ok {
-		if _, ok := licenses[oracleDatabaseLicenseA90649]; !ok {
-			a90649 := getLicenseCompliance(oracleDatabaseLicenseA90649)
+	// fictitious A90649 licenses are covered in addition to A90649 covered by contracts
+	if a90649FictitiousCovered > 0 {
+		license, ok := licenses[oracleDatabaseLicenseA90649]
+		if !ok {
+			license = getLicenseCompliance(oracleDatabaseLicenseA90649)
+			licenses[oracleDatabaseLicenseA90649] = license
+		}
 
-			// guard against a license type not being registered: keep the id explicit
-			a90649.LicenseTypeID = oracleDatabaseLicenseA90649
-			if a90650.Consumed > 0 {
-				a90649.Consumed = a90650.Consumed
-			}
-
-			if a90650.Covered > 0 {
-				a90649.Covered = a90650.Covered
-			}
-
-			licenses[oracleDatabaseLicenseA90649] = a90649
+		if as.Config.APIService.RoundLicenses {
+			license.Covered += math.Round(a90649FictitiousCovered)
+		} else {
+			license.Covered += a90649FictitiousCovered
 		}
 	}
 
@@ -384,7 +412,7 @@ func (as *APIService) getterNewLicenseCompliance() (func(licenseTypeID string) *
 		l, ok := licenseTypes[licenseTypeID]
 		if !ok {
 			return &dto.LicenseCompliance{
-				LicenseTypeID: l.ID,
+				LicenseTypeID: licenseTypeID,
 			}
 		}
 
